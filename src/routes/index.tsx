@@ -46,6 +46,62 @@ function LandingPage() {
 					</p>
 				</div>
 
+				{/* Trust Banner - Trusted by Leading Culinary Experts */}
+				<div className="mb-16">
+					<div className="mx-auto max-w-5xl rounded-sm border-2 border-primary/20 bg-gradient-to-br from-[oklch(0.97_0.012_75)] to-[oklch(0.95_0.015_70)] px-8 py-8 shadow-md relative overflow-hidden">
+						{/* Subtle texture overlay */}
+						<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,oklch(0.85_0.02_70_/_0.1)_2px,oklch(0.85_0.02_70_/_0.1)_3px)]" />
+
+						<div className="relative z-10">
+							<p className="mb-6 text-center text-sm font-serif-elegant tracking-widest text-[oklch(0.4_0.03_145)] uppercase">
+								Trusted by Leading Culinary Experts
+							</p>
+							<div className="grid grid-cols-5 gap-6 items-center">
+								{/* Logo Placeholder 1 */}
+								<div className="flex items-center justify-center">
+									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
+											CHEF CO
+										</span>
+									</div>
+								</div>
+								{/* Logo Placeholder 2 */}
+								<div className="flex items-center justify-center">
+									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
+											GASTRO GUILD
+										</span>
+									</div>
+								</div>
+								{/* Logo Placeholder 3 */}
+								<div className="flex items-center justify-center">
+									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
+											CULINARY ARTS
+										</span>
+									</div>
+								</div>
+								{/* Logo Placeholder 4 */}
+								<div className="flex items-center justify-center">
+									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
+											EPICURE
+										</span>
+									</div>
+								</div>
+								{/* Logo Placeholder 5 */}
+								<div className="flex items-center justify-center">
+									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
+											FINE DINE
+										</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
 				{/* Main CTA Card - Restaurant Search */}
 				<div className="mx-auto mb-16 max-w-4xl">
 					<Link to="/restaurants">
@@ -211,6 +267,85 @@ function LandingPage() {
 							<p className="mt-3 text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wide">
 								Average Rating
 							</p>
+						</div>
+					</div>
+				</div>
+
+				{/* Used By Section - Footer */}
+				<div className="mt-20 pt-16 border-t-2 border-primary/20">
+					<div className="text-center mb-10">
+						<h2 className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)] mb-3">
+							Used by High-Profile Companies
+						</h2>
+						<p className="text-base font-serif-elegant text-[oklch(0.4_0.03_145)]">
+							Trusted by leading organizations worldwide for premium dining
+							experiences
+						</p>
+					</div>
+
+					<div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+						{/* Company Logo 1 */}
+						<div className="rounded-sm border-2 border-primary/20 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.96_0.012_75)] p-8 flex items-center justify-center hover:border-primary/40 hover:shadow-lg transition-all group relative overflow-hidden">
+							<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+							<span className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wider relative z-10">
+								LUXE HOTELS
+							</span>
+						</div>
+
+						{/* Company Logo 2 */}
+						<div className="rounded-sm border-2 border-secondary/20 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.96_0.012_70)] p-8 flex items-center justify-center hover:border-secondary/40 hover:shadow-lg transition-all group relative overflow-hidden">
+							<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_60_/_0.1)_8px,oklch(0.85_0.02_60_/_0.1)_9px)]" />
+							<span className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wider relative z-10">
+								GRAND RESORTS
+							</span>
+						</div>
+
+						{/* Company Logo 3 */}
+						<div className="rounded-sm border-2 border-primary/20 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.96_0.012_75)] p-8 flex items-center justify-center hover:border-primary/40 hover:shadow-lg transition-all group relative overflow-hidden">
+							<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+							<span className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wider relative z-10">
+								PLATINUM TRAVEL
+							</span>
+						</div>
+
+						{/* Company Logo 4 */}
+						<div className="rounded-sm border-2 border-secondary/20 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.96_0.012_70)] p-8 flex items-center justify-center hover:border-secondary/40 hover:shadow-lg transition-all group relative overflow-hidden">
+							<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_60_/_0.1)_8px,oklch(0.85_0.02_60_/_0.1)_9px)]" />
+							<span className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wider relative z-10">
+								ELITE CONCIERGE
+							</span>
+						</div>
+
+						{/* Company Logo 5 */}
+						<div className="rounded-sm border-2 border-primary/20 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.96_0.012_75)] p-8 flex items-center justify-center hover:border-primary/40 hover:shadow-lg transition-all group relative overflow-hidden">
+							<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+							<span className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wider relative z-10">
+								PREMIER CORP
+							</span>
+						</div>
+
+						{/* Company Logo 6 */}
+						<div className="rounded-sm border-2 border-secondary/20 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.96_0.012_70)] p-8 flex items-center justify-center hover:border-secondary/40 hover:shadow-lg transition-all group relative overflow-hidden">
+							<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_60_/_0.1)_8px,oklch(0.85_0.02_60_/_0.1)_9px)]" />
+							<span className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wider relative z-10">
+								VISTA GROUP
+							</span>
+						</div>
+
+						{/* Company Logo 7 */}
+						<div className="rounded-sm border-2 border-primary/20 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.96_0.012_75)] p-8 flex items-center justify-center hover:border-primary/40 hover:shadow-lg transition-all group relative overflow-hidden">
+							<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+							<span className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wider relative z-10">
+								ROYAL EVENTS
+							</span>
+						</div>
+
+						{/* Company Logo 8 */}
+						<div className="rounded-sm border-2 border-secondary/20 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.96_0.012_70)] p-8 flex items-center justify-center hover:border-secondary/40 hover:shadow-lg transition-all group relative overflow-hidden">
+							<div className="absolute inset-0 opacity-10 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_60_/_0.1)_8px,oklch(0.85_0.02_60_/_0.1)_9px)]" />
+							<span className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] tracking-wider relative z-10">
+								ZENITH CO
+							</span>
 						</div>
 					</div>
 				</div>
