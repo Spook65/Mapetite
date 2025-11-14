@@ -3882,646 +3882,788 @@ function App() {
 
 	return (
 		<Layout>
-			<div className="min-h-screen bg-background texture-paper">
-				<div className="container mx-auto px-8 py-12">
-					{/* Hero Header - Vintage Explorer Aesthetic */}
-					<div className="mb-12 text-center relative">
-						{/* Decorative top border */}
-						<div className="flex items-center justify-center mb-6">
-							<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent w-full max-w-md" />
-						</div>
-
-						<h1 className="text-5xl md:text-6xl lg:text-7xl font-serif-display text-foreground mb-4 tracking-tight">
-							Discover Your Next
-							<span className="block text-primary mt-2">
-								Culinary Adventure
-							</span>
-						</h1>
-
-						<p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-serif-elegant italic">
-							Embark on a journey through extraordinary flavors and
-							unforgettable dining experiences
-						</p>
-
-						{/* Decorative bottom border with ornament */}
-						<div className="flex items-center justify-center gap-3 mt-6">
-							<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-primary/60 w-32" />
-							<div className="w-2 h-2 rotate-45 border border-primary/60" />
-							<div className="h-px bg-gradient-to-l from-transparent via-primary/40 to-primary/60 w-32" />
-						</div>
+			<div className="container mx-auto px-8 py-16">
+				{/* Hero Header - Vintage Explorer Aesthetic */}
+				<div className="mb-12 text-center relative">
+					{/* Decorative top border */}
+					<div className="flex items-center justify-center mb-6">
+						<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent w-full max-w-md" />
 					</div>
 
-					{/* Search Section - Ornate Centerpiece */}
-					<Card className="mb-12 relative texture-linen shadow-ornate border-2 border-primary/30 bg-gradient-to-br from-card/95 via-card to-card/95 backdrop-blur-sm">
-						{/* Decorative corner accents */}
-						<div className="absolute top-0 left-0 w-12 h-12 border-l-2 border-t-2 border-primary/40" />
-						<div className="absolute top-0 right-0 w-12 h-12 border-r-2 border-t-2 border-primary/40" />
-						<div className="absolute bottom-0 left-0 w-12 h-12 border-l-2 border-b-2 border-primary/40" />
-						<div className="absolute bottom-0 right-0 w-12 h-12 border-r-2 border-b-2 border-primary/40" />
+					<h1 className="text-5xl md:text-6xl lg:text-7xl font-serif-display text-[oklch(0.2_0.03_145)] mb-4 tracking-tight">
+						Discover Your Next
+						<span className="block bg-gradient-to-r from-primary via-[oklch(0.6_0.1_60)] to-secondary bg-clip-text text-transparent mt-2">
+							Culinary Adventure
+						</span>
+					</h1>
 
-						<CardHeader className="text-center pb-6">
-							{/* Ornate icon frame */}
-							<div className="mb-5 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary via-primary/90 to-secondary shadow-layered border-2 border-primary/20">
-								<Search className="h-8 w-8 text-primary-foreground" />
-							</div>
-							<CardTitle className="text-3xl font-serif-display text-foreground mb-2">
-								Your Expedition Begins
-							</CardTitle>
-							<CardDescription className="text-base text-muted-foreground font-serif-elegant max-w-lg mx-auto">
-								Chart your course through the world's finest dining
-								establishments
-							</CardDescription>
-						</CardHeader>
-						<CardContent className="pt-6">
-							<div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-								{/* Country Dropdown */}
-								<div className="space-y-2">
-									<Label
-										htmlFor="country"
-										className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
-									>
-										Country
-									</Label>
-									<Combobox
-										options={getCountries().map((country) => ({
-											value: country,
-											label: country,
-										}))}
-										value={location.country}
-										onValueChange={(value) => {
-											setLocation({ country: value, state: "", city: "" });
-										}}
-										placeholder="Select a country"
-										searchPlaceholder="Search countries..."
-										emptyText="No country found."
-									/>
-								</div>
+					<p className="text-lg md:text-xl text-[oklch(0.35_0.03_145)] max-w-2xl mx-auto font-serif-elegant leading-relaxed">
+						Embark on a journey through extraordinary flavors and unforgettable
+						dining experiences
+					</p>
 
-								{/* State Dropdown */}
-								<div className="space-y-2">
-									<Label
-										htmlFor="state"
-										className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
-									>
-										State/Province
-									</Label>
-									<Select
-										value={location.state}
-										onValueChange={(value) => {
-											setLocation({ ...location, state: value, city: "" });
-										}}
-										disabled={!location.country}
-									>
-										<SelectTrigger id="state">
-											<SelectValue
-												placeholder={
-													location.country
-														? "Select a state"
-														: "Select country first"
-												}
-											/>
-										</SelectTrigger>
-										<SelectContent>
-											{getStates(location.country).map((state) => (
-												<SelectItem key={state} value={state}>
-													{state}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
-								</div>
+					{/* Decorative bottom border with ornament */}
+					<div className="flex items-center justify-center gap-3 mt-6">
+						<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-primary/60 w-32" />
+						<div className="w-2 h-2 rotate-45 border border-primary/60" />
+						<div className="h-px bg-gradient-to-l from-transparent via-primary/40 to-primary/60 w-32" />
+					</div>
+				</div>
 
-								{/* City Dropdown */}
-								<div className="space-y-2">
-									<Label
-										htmlFor="city"
-										className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
-									>
-										City
-									</Label>
-									<Select
-										value={location.city}
-										onValueChange={(value) => {
-											setLocation({ ...location, city: value });
-										}}
-										disabled={!location.state}
-									>
-										<SelectTrigger id="city">
-											<SelectValue
-												placeholder={
-													location.state
-														? "Select a city"
-														: "Select state first"
-												}
-											/>
-										</SelectTrigger>
-										<SelectContent>
-											{getCities(location.country, location.state).map(
-												(city) => (
-													<SelectItem key={city} value={city}>
-														{city}
-													</SelectItem>
-												),
-											)}
-										</SelectContent>
-									</Select>
-								</div>
-							</div>
-							{/* Action Buttons with Ornate Styling */}
-							<div className="flex flex-wrap gap-4 justify-center">
-								<Button
-									onClick={handleSearch}
-									size="lg"
-									className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-layered font-semibold tracking-wide px-8 py-6 text-base border border-primary/20"
+				{/* Search Section - Ornate Centerpiece */}
+				<Card className="mb-12 relative shadow-ornate border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] via-[oklch(0.96_0.012_75)] to-[oklch(0.94_0.015_70)] overflow-hidden">
+					{/* Subtle texture overlay */}
+					<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.85_0.02_70_/_0.1)_10px,oklch(0.85_0.02_70_/_0.1)_11px)]" />
+
+					{/* Decorative corner accents */}
+					<div className="absolute top-0 left-0 w-12 h-12 border-l-2 border-t-2 border-primary/40 z-10" />
+					<div className="absolute top-0 right-0 w-12 h-12 border-r-2 border-t-2 border-primary/40 z-10" />
+					<div className="absolute bottom-0 left-0 w-12 h-12 border-l-2 border-b-2 border-primary/40 z-10" />
+					<div className="absolute bottom-0 right-0 w-12 h-12 border-r-2 border-b-2 border-primary/40 z-10" />
+
+					<CardHeader className="text-center pb-6 relative z-10">
+						{/* Ornate icon frame */}
+						<div className="mb-5 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary via-primary/90 to-secondary shadow-layered border-2 border-primary/20">
+							<Search className="h-8 w-8 text-[oklch(0.16_0.02_145)]" />
+						</div>
+						<CardTitle className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)] mb-2">
+							Your Expedition Begins
+						</CardTitle>
+						<CardDescription className="text-base text-[oklch(0.35_0.03_145)] font-serif-elegant max-w-lg mx-auto">
+							Chart your course through the world's finest dining establishments
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="pt-6 relative z-10">
+						<div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
+							{/* Country Dropdown */}
+							<div className="space-y-2">
+								<Label
+									htmlFor="country"
+									className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
 								>
-									<Search className="mr-2 h-5 w-5" />
-									Start Exploring
-								</Button>
-								<Button
-									variant="outline"
-									size="lg"
-									onClick={handleGetCurrentLocation}
-									disabled={isGettingLocation}
-									className="border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-semibold tracking-wide px-8 py-6 text-base shadow-md"
+									Country
+								</Label>
+								<Combobox
+									options={getCountries().map((country) => ({
+										value: country,
+										label: country,
+									}))}
+									value={location.country}
+									onValueChange={(value) => {
+										setLocation({ country: value, state: "", city: "" });
+									}}
+									placeholder="Select a country"
+									searchPlaceholder="Search countries..."
+									emptyText="No country found."
+								/>
+							</div>
+
+							{/* State Dropdown */}
+							<div className="space-y-2">
+								<Label
+									htmlFor="state"
+									className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
 								>
-									<Navigation className="mr-2 h-5 w-5" />
-									{isGettingLocation ? "Locating..." : "Use My Location"}
-								</Button>
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Category Filters - Refined Styling */}
-					<Card className="mb-10 border-2 border-border/60 bg-card/95 texture-linen shadow-layered">
-						<CardHeader>
-							<div className="flex items-center gap-3 mb-2">
-								<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15 border border-primary/30">
-									<Filter className="h-5 w-5 text-primary" />
-								</div>
-								<CardTitle className="text-2xl font-serif-elegant text-foreground">
-									Culinary Categories
-								</CardTitle>
-							</div>
-							<CardDescription className="text-base text-muted-foreground ml-13">
-								Refine your journey by selecting one or more cuisines
-							</CardDescription>
-						</CardHeader>
-						<CardContent>
-							<div className="flex flex-wrap gap-3">
-								{categories.map((category) => (
-									<Badge
-										key={category}
-										variant={
-											selectedCategories.has(category) ? "default" : "outline"
-										}
-										className={cn(
-											"cursor-pointer px-5 py-2.5 text-sm font-semibold transition-all tracking-wide",
-											selectedCategories.has(category)
-												? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-layered border border-primary/20"
-												: "border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 shadow-sm",
-										)}
-										onClick={() => toggleCategory(category)}
-									>
-										{category}
-									</Badge>
-								))}
-							</div>
-						</CardContent>
-					</Card>
-
-					{/* Search Refinement Component */}
-					{restaurants.length > 0 && (
-						<Card className="mb-8">
-							<CardHeader>
-								<div className="flex items-center justify-between">
-									<div>
-										<CardTitle className="flex items-center gap-2">
-											<SlidersHorizontal className="size-5" />
-											Refine Search
-										</CardTitle>
-										<CardDescription>
-											Filter and sort results by price, rating, distance, and
-											more
-										</CardDescription>
-									</div>
-									<Button
-										variant="ghost"
-										size="sm"
-										onClick={() => setShowRefinements(!showRefinements)}
-									>
-										{showRefinements ? "Hide" : "Show"}
-									</Button>
-								</div>
-							</CardHeader>
-							{showRefinements && (
-								<CardContent className="space-y-6">
-									{/* Price Range Filter */}
-									<div className="space-y-3">
-										<Label className="text-base font-semibold">
-											Price Range
-										</Label>
-										<div className="flex flex-wrap gap-2">
-											{[1, 2, 3, 4].map((price) => (
-												<Button
-													key={price}
-													variant={
-														priceFilter.includes(price) ? "default" : "outline"
-													}
-													size="sm"
-													onClick={() => togglePriceFilter(price)}
-													className="gap-1"
-												>
-													{"$".repeat(price)}
-												</Button>
-											))}
-										</div>
-									</div>
-
-									{/* Rating Filter */}
-									<div className="space-y-3">
-										<div className="flex items-center justify-between">
-											<Label className="text-base font-semibold">
-												Minimum Rating
-											</Label>
-											<span className="text-sm font-medium">
-												{minRating === 0
-													? "Any"
-													: `${minRating.toFixed(1)}+ stars`}
-											</span>
-										</div>
-										<Slider
-											value={[minRating]}
-											onValueChange={(values) => setMinRating(values[0])}
-											min={0}
-											max={5}
-											step={0.5}
-											className="w-full"
-										/>
-										<div className="flex justify-between text-xs text-gray-500">
-											<span>Any</span>
-											<span>5 stars</span>
-										</div>
-									</div>
-
-									{/* Sort By */}
-									<div className="space-y-3">
-										<Label className="text-base font-semibold">Sort By</Label>
-										<Select
-											value={sortBy}
-											onValueChange={(value) =>
-												setSortBy(
-													value as "distance" | "rating" | "reviews" | "none",
-												)
+									State/Province
+								</Label>
+								<Select
+									value={location.state}
+									onValueChange={(value) => {
+										setLocation({ ...location, state: value, city: "" });
+									}}
+									disabled={!location.country}
+								>
+									<SelectTrigger id="state">
+										<SelectValue
+											placeholder={
+												location.country
+													? "Select a state"
+													: "Select country first"
 											}
-										>
-											<SelectTrigger>
-												<SelectValue />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem value="none">Default</SelectItem>
-												<SelectItem value="distance">
-													Distance (Closest First)
-												</SelectItem>
-												<SelectItem value="rating">
-													Rating (Highest First)
-												</SelectItem>
-												<SelectItem value="reviews">Most Reviews</SelectItem>
-											</SelectContent>
-										</Select>
-									</div>
-
-									{/* Open Now Toggle */}
-									<div className="flex items-center justify-between">
-										<div className="space-y-0.5">
-											<Label className="text-base font-semibold">
-												Open Now
-											</Label>
-											<p className="text-sm text-gray-500">
-												Show only restaurants currently open
-											</p>
-										</div>
-										<Switch
-											checked={openNowOnly}
-											onCheckedChange={setOpenNowOnly}
 										/>
-									</div>
+									</SelectTrigger>
+									<SelectContent>
+										{getStates(location.country).map((state) => (
+											<SelectItem key={state} value={state}>
+												{state}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
 
-									{/* Clear Filters Button */}
-									<div className="pt-2 border-t">
-										<Button
-											variant="outline"
-											className="w-full"
-											onClick={clearAllFilters}
-										>
-											Clear All Filters
-										</Button>
-									</div>
-								</CardContent>
-							)}
-						</Card>
-					)}
+							{/* City Dropdown */}
+							<div className="space-y-2">
+								<Label
+									htmlFor="city"
+									className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
+								>
+									City
+								</Label>
+								<Select
+									value={location.city}
+									onValueChange={(value) => {
+										setLocation({ ...location, city: value });
+									}}
+									disabled={!location.state}
+								>
+									<SelectTrigger id="city">
+										<SelectValue
+											placeholder={
+												location.state ? "Select a city" : "Select state first"
+											}
+										/>
+									</SelectTrigger>
+									<SelectContent>
+										{getCities(location.country, location.state).map((city) => (
+											<SelectItem key={city} value={city}>
+												{city}
+											</SelectItem>
+										))}
+									</SelectContent>
+								</Select>
+							</div>
+						</div>
+						{/* Action Buttons with Ornate Styling */}
+						<div className="flex flex-wrap gap-4 justify-center">
+							<Button
+								onClick={handleSearch}
+								size="lg"
+								className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-layered font-semibold tracking-wide px-8 py-6 text-base border border-primary/20"
+							>
+								<Search className="mr-2 h-5 w-5" />
+								Start Exploring
+							</Button>
+							<Button
+								variant="outline"
+								size="lg"
+								onClick={handleGetCurrentLocation}
+								disabled={isGettingLocation}
+								className="border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-semibold tracking-wide px-8 py-6 text-base shadow-md"
+							>
+								<Navigation className="mr-2 h-5 w-5" />
+								{isGettingLocation ? "Locating..." : "Use My Location"}
+							</Button>
+						</div>
+					</CardContent>
+				</Card>
 
-					{/* Results Header - Elegant Typography */}
-					{restaurants.length > 0 && (
-						<div className="mb-8 space-y-4">
+				{/* Category Filters - Refined Styling */}
+				<Card className="mb-10 border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.97_0.012_75)] to-[oklch(0.94_0.015_70)] shadow-ornate relative overflow-hidden">
+					{/* Subtle texture overlay */}
+					<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.85_0.02_70_/_0.1)_10px,oklch(0.85_0.02_70_/_0.1)_11px)]" />
+
+					<CardHeader className="relative z-10">
+						<div className="flex items-center gap-3 mb-2">
+							<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15 border border-primary/30">
+								<Filter className="h-5 w-5 text-primary" />
+							</div>
+							<CardTitle className="text-2xl font-serif-elegant text-[oklch(0.2_0.03_145)]">
+								Culinary Categories
+							</CardTitle>
+						</div>
+						<CardDescription className="text-base font-serif-elegant text-[oklch(0.35_0.03_145)] ml-13">
+							Refine your journey by selecting one or more cuisines
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="relative z-10">
+						<div className="flex flex-wrap gap-3">
+							{categories.map((category) => (
+								<Badge
+									key={category}
+									variant={
+										selectedCategories.has(category) ? "default" : "outline"
+									}
+									className={cn(
+										"cursor-pointer px-5 py-2.5 text-sm font-semibold transition-all tracking-wide",
+										selectedCategories.has(category)
+											? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-layered border border-primary/20"
+											: "border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 shadow-sm",
+									)}
+									onClick={() => toggleCategory(category)}
+								>
+									{category}
+								</Badge>
+							))}
+						</div>
+					</CardContent>
+				</Card>
+
+				{/* Search Refinement Component */}
+				{restaurants.length > 0 && (
+					<Card className="mb-8">
+						<CardHeader>
 							<div className="flex items-center justify-between">
 								<div>
-									<h2 className="text-3xl font-serif-display text-foreground">
-										{showFavorites
-											? `Your Curated Collection (${favorites.size})`
-											: `${restaurants.length} Distinguished Establishments`}
-									</h2>
-									{displayedRestaurants.length !== restaurants.length && (
-										<p className="text-sm text-muted-foreground mt-2 font-serif-elegant">
-											Showcasing {displayedRestaurants.length} refined
-											selections
-										</p>
-									)}
+									<CardTitle className="flex items-center gap-2">
+										<SlidersHorizontal className="size-5" />
+										Refine Search
+									</CardTitle>
+									<CardDescription>
+										Filter and sort results by price, rating, distance, and more
+									</CardDescription>
 								</div>
 								<Button
-									variant={showFavorites ? "default" : "outline"}
-									onClick={() => setShowFavorites(!showFavorites)}
-									className={cn(
-										"font-semibold tracking-wide shadow-md",
-										showFavorites
-											? "shadow-layered"
-											: "border-2 border-primary/40",
-									)}
+									variant="ghost"
+									size="sm"
+									onClick={() => setShowRefinements(!showRefinements)}
 								>
-									<Heart
-										className={cn(
-											"size-4 mr-2",
-											showFavorites && "fill-current",
-										)}
-									/>
-									{showFavorites ? "View All" : `Favorites (${favorites.size})`}
+									{showRefinements ? "Hide" : "Show"}
 								</Button>
 							</div>
-
-							{/* Active Filters Summary */}
-							{(priceFilter.length < 4 ||
-								minRating > 0 ||
-								sortBy !== "none" ||
-								openNowOnly) && (
-								<div className="flex flex-wrap items-center gap-2">
-									<span className="text-sm font-medium text-gray-700">
-										Active Filters:
-									</span>
-									{priceFilter.length < 4 && (
-										<Badge variant="secondary" className="gap-1">
-											Price: {priceFilter.map((p) => "$".repeat(p)).join(", ")}
-										</Badge>
-									)}
-									{minRating > 0 && (
-										<Badge variant="secondary">
-											Rating: {minRating.toFixed(1)}+ stars
-										</Badge>
-									)}
-									{sortBy !== "none" && (
-										<Badge variant="secondary" className="gap-1">
-											<ArrowUpDown className="size-3" />
-											{sortBy === "distance"
-												? "Distance"
-												: sortBy === "rating"
-													? "Rating"
-													: "Reviews"}
-										</Badge>
-									)}
-									{openNowOnly && (
-										<Badge variant="secondary" className="gap-1">
-											<Clock className="size-3" />
-											Open Now
-										</Badge>
-									)}
-								</div>
-							)}
-						</div>
-					)}
-
-					{/* Restaurant List - Layered Cards */}
-					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-						{displayedRestaurants.map((restaurant) => (
-							<Card
-								key={restaurant.id}
-								className="border-2 border-border/60 bg-card texture-linen shadow-layered hover:shadow-ornate hover:border-primary/40 transition-all duration-300 relative overflow-hidden"
-							>
-								{/* Subtle corner decoration */}
-								<div className="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-primary/10 to-transparent pointer-events-none" />
-
-								<CardHeader className="relative">
-									<div className="flex items-start justify-between">
-										<div className="flex-1">
-											<CardTitle className="text-2xl mb-3 text-foreground font-serif-elegant">
-												{restaurant.name}
-											</CardTitle>
-											<div className="flex items-center gap-2 mb-2">
-												{renderStars(restaurant.rating)}
-												<span className="text-sm text-muted-foreground">
-													({restaurant.reviewCount} reviews)
-												</span>
-											</div>
-										</div>
-										<CardAction>
+						</CardHeader>
+						{showRefinements && (
+							<CardContent className="space-y-6">
+								{/* Price Range Filter */}
+								<div className="space-y-3">
+									<Label className="text-base font-semibold">Price Range</Label>
+									<div className="flex flex-wrap gap-2">
+										{[1, 2, 3, 4].map((price) => (
 											<Button
-												size="icon"
+												key={price}
 												variant={
-													favorites.has(restaurant.id) ? "default" : "outline"
+													priceFilter.includes(price) ? "default" : "outline"
 												}
-												onClick={() => toggleFavorite(restaurant.id)}
-												className={cn(
-													"shadow-md",
-													favorites.has(restaurant.id)
-														? "shadow-layered"
-														: "border-2 border-primary/30",
-												)}
-											>
-												<Heart
-													className={cn(
-														"size-4",
-														favorites.has(restaurant.id) && "fill-current",
-													)}
-												/>
-											</Button>
-										</CardAction>
-									</div>
-									<div className="flex flex-wrap gap-2 items-center">
-										{restaurant.categories.map((cat) => (
-											<Badge
-												key={cat}
-												variant="secondary"
-												className="font-medium shadow-sm"
-											>
-												{cat}
-											</Badge>
-										))}
-										<div className="ml-auto">
-											{renderPriceRange(restaurant.priceRange)}
-										</div>
-									</div>
-								</CardHeader>
-								<CardContent className="space-y-4">
-									<p className="text-sm text-muted-foreground">
-										{restaurant.description}
-									</p>
-
-									<div className="flex items-start gap-2 text-sm text-muted-foreground">
-										<MapPin className="size-4 mt-0.5 shrink-0 text-primary" />
-										<div className="flex-1">
-											<div>
-												{restaurant.address.street}, {restaurant.address.city},{" "}
-												{restaurant.address.state} {restaurant.address.zipCode}
-											</div>
-											{restaurant.distance !== undefined && (
-												<div className="text-xs text-muted-foreground/70 mt-1">
-													{restaurant.distance.toFixed(1)} miles away
-												</div>
-											)}
-										</div>
-									</div>
-
-									{/* Operating Hours */}
-									{restaurant.hours && (
-										<div className="flex items-center gap-2 text-sm">
-											<Clock className="size-4 shrink-0 text-primary" />
-											<div className="flex items-center gap-2">
-												<span className="text-muted-foreground">
-													{restaurant.hours.open} - {restaurant.hours.close}
-												</span>
-												<Badge
-													variant={
-														restaurant.isOpenNow ? "default" : "secondary"
-													}
-													className={cn(
-														"text-xs",
-														restaurant.isOpenNow &&
-															"bg-primary hover:bg-primary/90",
-													)}
-												>
-													{restaurant.isOpenNow ? "Open Now" : "Closed"}
-												</Badge>
-											</div>
-										</div>
-									)}
-
-									<div className="border-t border-border/40 pt-4">
-										<div className="flex items-center justify-between mb-3">
-											<h4 className="font-semibold text-sm text-foreground tracking-wide">
-												Recent Reviews
-											</h4>
-											<Button
 												size="sm"
-												variant="ghost"
-												onClick={() =>
-													setSelectedRestaurant(
-														selectedRestaurant?.id === restaurant.id
-															? null
-															: restaurant,
-													)
-												}
-												className="hover:bg-primary/10"
+												onClick={() => togglePriceFilter(price)}
+												className="gap-1"
 											>
-												{selectedRestaurant?.id === restaurant.id
-													? "Hide"
-													: "View All"}
+												{"$".repeat(price)}
 											</Button>
-										</div>
+										))}
+									</div>
+								</div>
 
-										{selectedRestaurant?.id === restaurant.id ? (
-											<div className="space-y-3">
-												{restaurant.reviews.map((review) => (
-													<div
-														key={review.id}
-														className="border-l-2 border-primary/30 pl-3 bg-muted/20 py-2"
-													>
-														<div className="flex items-center gap-2 mb-1">
-															<span className="font-medium text-sm">
-																{review.author}
-															</span>
-															{renderStars(review.rating)}
-														</div>
-														<p className="text-sm text-gray-600">
-															{review.comment}
-														</p>
-														<span className="text-xs text-gray-400">
-															{review.date}
-														</span>
-													</div>
-												))}
-											</div>
-										) : (
-											<div className="space-y-2">
-												{restaurant.reviews.slice(0, 1).map((review) => (
-													<div
-														key={review.id}
-														className="border-l-2 border-gray-200 pl-3"
-													>
-														<div className="flex items-center gap-2 mb-1">
-															<span className="font-medium text-sm">
-																{review.author}
-															</span>
-															{renderStars(review.rating)}
-														</div>
-														<p className="text-sm text-gray-600 line-clamp-2">
-															{review.comment}
-														</p>
-													</div>
-												))}
+								{/* Rating Filter */}
+								<div className="space-y-3">
+									<div className="flex items-center justify-between">
+										<Label className="text-base font-semibold">
+											Minimum Rating
+										</Label>
+										<span className="text-sm font-medium">
+											{minRating === 0
+												? "Any"
+												: `${minRating.toFixed(1)}+ stars`}
+										</span>
+									</div>
+									<Slider
+										value={[minRating]}
+										onValueChange={(values) => setMinRating(values[0])}
+										min={0}
+										max={5}
+										step={0.5}
+										className="w-full"
+									/>
+									<div className="flex justify-between text-xs text-gray-500">
+										<span>Any</span>
+										<span>5 stars</span>
+									</div>
+								</div>
+
+								{/* Sort By */}
+								<div className="space-y-3">
+									<Label className="text-base font-semibold">Sort By</Label>
+									<Select
+										value={sortBy}
+										onValueChange={(value) =>
+											setSortBy(
+												value as "distance" | "rating" | "reviews" | "none",
+											)
+										}
+									>
+										<SelectTrigger>
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="none">Default</SelectItem>
+											<SelectItem value="distance">
+												Distance (Closest First)
+											</SelectItem>
+											<SelectItem value="rating">
+												Rating (Highest First)
+											</SelectItem>
+											<SelectItem value="reviews">Most Reviews</SelectItem>
+										</SelectContent>
+									</Select>
+								</div>
+
+								{/* Open Now Toggle */}
+								<div className="flex items-center justify-between">
+									<div className="space-y-0.5">
+										<Label className="text-base font-semibold">Open Now</Label>
+										<p className="text-sm text-gray-500">
+											Show only restaurants currently open
+										</p>
+									</div>
+									<Switch
+										checked={openNowOnly}
+										onCheckedChange={setOpenNowOnly}
+									/>
+								</div>
+
+								{/* Clear Filters Button */}
+								<div className="pt-2 border-t">
+									<Button
+										variant="outline"
+										className="w-full"
+										onClick={clearAllFilters}
+									>
+										Clear All Filters
+									</Button>
+								</div>
+							</CardContent>
+						)}
+					</Card>
+				)}
+
+				{/* Results Header - Elegant Typography */}
+				{restaurants.length > 0 && (
+					<div className="mb-8 space-y-4">
+						<div className="flex items-center justify-between">
+							<div>
+								<h2 className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)]">
+									{showFavorites
+										? `Your Curated Collection (${favorites.size})`
+										: `${restaurants.length} Distinguished Establishments`}
+								</h2>
+								{displayedRestaurants.length !== restaurants.length && (
+									<p className="text-sm text-[oklch(0.35_0.03_145)] mt-2 font-serif-elegant">
+										Showcasing {displayedRestaurants.length} refined selections
+									</p>
+								)}
+							</div>
+							<Button
+								variant={showFavorites ? "default" : "outline"}
+								onClick={() => setShowFavorites(!showFavorites)}
+								className={cn(
+									"font-semibold tracking-wide shadow-md",
+									showFavorites
+										? "shadow-layered"
+										: "border-2 border-primary/40",
+								)}
+							>
+								<Heart
+									className={cn("size-4 mr-2", showFavorites && "fill-current")}
+								/>
+								{showFavorites ? "View All" : `Favorites (${favorites.size})`}
+							</Button>
+						</div>
+
+						{/* Active Filters Summary */}
+						{(priceFilter.length < 4 ||
+							minRating > 0 ||
+							sortBy !== "none" ||
+							openNowOnly) && (
+							<div className="flex flex-wrap items-center gap-2">
+								<span className="text-sm font-medium text-gray-700">
+									Active Filters:
+								</span>
+								{priceFilter.length < 4 && (
+									<Badge variant="secondary" className="gap-1">
+										Price: {priceFilter.map((p) => "$".repeat(p)).join(", ")}
+									</Badge>
+								)}
+								{minRating > 0 && (
+									<Badge variant="secondary">
+										Rating: {minRating.toFixed(1)}+ stars
+									</Badge>
+								)}
+								{sortBy !== "none" && (
+									<Badge variant="secondary" className="gap-1">
+										<ArrowUpDown className="size-3" />
+										{sortBy === "distance"
+											? "Distance"
+											: sortBy === "rating"
+												? "Rating"
+												: "Reviews"}
+									</Badge>
+								)}
+								{openNowOnly && (
+									<Badge variant="secondary" className="gap-1">
+										<Clock className="size-3" />
+										Open Now
+									</Badge>
+								)}
+							</div>
+						)}
+					</div>
+				)}
+
+				{/* Restaurant List - Layered Cards */}
+				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+					{displayedRestaurants.map((restaurant) => (
+						<Card
+							key={restaurant.id}
+							className="border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.95_0.012_75)] shadow-md hover:shadow-ornate hover:border-primary/40 transition-all duration-300 relative overflow-hidden"
+						>
+							{/* Subtle texture overlay */}
+							<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+
+							<CardHeader className="relative z-10">
+								<div className="flex items-start justify-between">
+									<div className="flex-1">
+										<CardTitle className="text-2xl mb-3 text-[oklch(0.2_0.03_145)] font-serif-elegant">
+											{restaurant.name}
+										</CardTitle>
+										<div className="flex items-center gap-2 mb-2">
+											{renderStars(restaurant.rating)}
+											<span className="text-sm text-[oklch(0.45_0.03_145)]">
+												({restaurant.reviewCount} reviews)
+											</span>
+										</div>
+									</div>
+									<CardAction>
+										<Button
+											size="icon"
+											variant={
+												favorites.has(restaurant.id) ? "default" : "outline"
+											}
+											onClick={() => toggleFavorite(restaurant.id)}
+											className={cn(
+												"shadow-md",
+												favorites.has(restaurant.id)
+													? "shadow-layered"
+													: "border-2 border-primary/30",
+											)}
+										>
+											<Heart
+												className={cn(
+													"size-4",
+													favorites.has(restaurant.id) && "fill-current",
+												)}
+											/>
+										</Button>
+									</CardAction>
+								</div>
+								<div className="flex flex-wrap gap-2 items-center">
+									{restaurant.categories.map((cat) => (
+										<Badge
+											key={cat}
+											variant="secondary"
+											className="font-medium shadow-sm"
+										>
+											{cat}
+										</Badge>
+									))}
+									<div className="ml-auto">
+										{renderPriceRange(restaurant.priceRange)}
+									</div>
+								</div>
+							</CardHeader>
+							<CardContent className="space-y-4 relative z-10">
+								<p className="text-sm text-[oklch(0.35_0.03_145)]">
+									{restaurant.description}
+								</p>
+
+								<div className="flex items-start gap-2 text-sm text-[oklch(0.35_0.03_145)]">
+									<MapPin className="size-4 mt-0.5 shrink-0 text-primary" />
+									<div className="flex-1">
+										<div>
+											{restaurant.address.street}, {restaurant.address.city},{" "}
+											{restaurant.address.state} {restaurant.address.zipCode}
+										</div>
+										{restaurant.distance !== undefined && (
+											<div className="text-xs text-[oklch(0.45_0.03_145)] mt-1">
+												{restaurant.distance.toFixed(1)} miles away
 											</div>
 										)}
 									</div>
-
-									<Button
-										className="w-full border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-semibold tracking-wide shadow-md"
-										variant="outline"
-										onClick={() => openInMaps(restaurant)}
-									>
-										<MapPin className="size-4 mr-2" />
-										Chart Your Course
-									</Button>
-								</CardContent>
-							</Card>
-						))}
-					</div>
-
-					{/* Empty State - Elegant Prompt */}
-					{restaurants.length === 0 && (
-						<Card className="text-center py-16 texture-linen shadow-layered border-2 border-border/60">
-							<CardContent>
-								<div className="mx-auto w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mb-6 border-2 border-primary/30">
-									<Search className="size-10 text-primary" />
 								</div>
-								<h3 className="text-3xl font-serif-display text-foreground mb-3">
-									Begin Your Expedition
+
+								{/* Operating Hours */}
+								{restaurant.hours && (
+									<div className="flex items-center gap-2 text-sm">
+										<Clock className="size-4 shrink-0 text-primary" />
+										<div className="flex items-center gap-2">
+											<span className="text-[oklch(0.35_0.03_145)]">
+												{restaurant.hours.open} - {restaurant.hours.close}
+											</span>
+											<Badge
+												variant={restaurant.isOpenNow ? "default" : "secondary"}
+												className={cn(
+													"text-xs",
+													restaurant.isOpenNow &&
+														"bg-primary hover:bg-primary/90",
+												)}
+											>
+												{restaurant.isOpenNow ? "Open Now" : "Closed"}
+											</Badge>
+										</div>
+									</div>
+								)}
+
+								<div className="border-t border-border/40 pt-4">
+									<div className="flex items-center justify-between mb-3">
+										<h4 className="font-semibold text-sm text-foreground tracking-wide">
+											Recent Reviews
+										</h4>
+										<Button
+											size="sm"
+											variant="ghost"
+											onClick={() =>
+												setSelectedRestaurant(
+													selectedRestaurant?.id === restaurant.id
+														? null
+														: restaurant,
+												)
+											}
+											className="hover:bg-primary/10"
+										>
+											{selectedRestaurant?.id === restaurant.id
+												? "Hide"
+												: "View All"}
+										</Button>
+									</div>
+
+									{selectedRestaurant?.id === restaurant.id ? (
+										<div className="space-y-3">
+											{restaurant.reviews.map((review) => (
+												<div
+													key={review.id}
+													className="border-l-2 border-primary/30 pl-3 bg-muted/20 py-2"
+												>
+													<div className="flex items-center gap-2 mb-1">
+														<span className="font-medium text-sm">
+															{review.author}
+														</span>
+														{renderStars(review.rating)}
+													</div>
+													<p className="text-sm text-gray-600">
+														{review.comment}
+													</p>
+													<span className="text-xs text-gray-400">
+														{review.date}
+													</span>
+												</div>
+											))}
+										</div>
+									) : (
+										<div className="space-y-2">
+											{restaurant.reviews.slice(0, 1).map((review) => (
+												<div
+													key={review.id}
+													className="border-l-2 border-gray-200 pl-3"
+												>
+													<div className="flex items-center gap-2 mb-1">
+														<span className="font-medium text-sm">
+															{review.author}
+														</span>
+														{renderStars(review.rating)}
+													</div>
+													<p className="text-sm text-gray-600 line-clamp-2">
+														{review.comment}
+													</p>
+												</div>
+											))}
+										</div>
+									)}
+								</div>
+
+								<Button
+									className="w-full border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-semibold tracking-wide shadow-md"
+									variant="outline"
+									onClick={() => openInMaps(restaurant)}
+								>
+									<MapPin className="size-4 mr-2" />
+									Chart Your Course
+								</Button>
+							</CardContent>
+						</Card>
+					))}
+				</div>
+
+				{/* Empty State - Elegant Prompt */}
+				{restaurants.length === 0 && (
+					<Card className="text-center py-16 shadow-ornate border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.95_0.012_75)] relative overflow-hidden">
+						<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+						<CardContent className="relative z-10">
+							<div className="mx-auto w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mb-6 border-2 border-primary/30">
+								<Search className="size-10 text-primary" />
+							</div>
+							<h3 className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)] mb-3">
+								Begin Your Expedition
+							</h3>
+							<p className="text-[oklch(0.35_0.03_145)] font-serif-elegant text-lg max-w-md mx-auto">
+								Chart your destination above to unveil extraordinary culinary
+								experiences awaiting your discovery
+							</p>
+						</CardContent>
+					</Card>
+				)}
+
+				{/* Empty Favorites State */}
+				{showFavorites &&
+					displayedRestaurants.length === 0 &&
+					restaurants.length > 0 && (
+						<Card className="text-center py-12 shadow-ornate border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.95_0.012_75)] relative overflow-hidden">
+							<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+							<CardContent className="relative z-10">
+								<Heart className="size-16 mx-auto text-primary/40 mb-4" />
+								<h3 className="text-xl font-serif-display text-[oklch(0.2_0.03_145)] mb-2">
+									No Favorites Yet
 								</h3>
-								<p className="text-muted-foreground font-serif-elegant text-lg max-w-md mx-auto">
-									Chart your destination above to unveil extraordinary culinary
-									experiences awaiting your discovery
+								<p className="text-[oklch(0.35_0.03_145)] font-serif-elegant mb-4">
+									Start adding restaurants to your favorites list
 								</p>
+								<Button onClick={() => setShowFavorites(false)}>
+									Browse Restaurants
+								</Button>
 							</CardContent>
 						</Card>
 					)}
-
-					{/* Empty Favorites State */}
-					{showFavorites &&
-						displayedRestaurants.length === 0 &&
-						restaurants.length > 0 && (
-							<Card className="text-center py-12">
-								<CardContent>
-									<Heart className="size-16 mx-auto text-gray-400 mb-4" />
-									<h3 className="text-xl font-semibold text-gray-700 mb-2">
-										No Favorites Yet
-									</h3>
-									<p className="text-gray-500 mb-4">
-										Start adding restaurants to your favorites list
-									</p>
-									<Button onClick={() => setShowFavorites(false)}>
-										Browse Restaurants
-									</Button>
-								</CardContent>
-							</Card>
-						)}
-				</div>
 			</div>
+
+			{/* Professional Footer - Full Width with Muted Deep Aubergine Background */}
+			<footer className="relative -mx-8 mt-24 bg-gradient-to-b from-[oklch(0.18_0.05_310)] to-[oklch(0.12_0.04_310)] border-t-2 border-primary/30">
+				<div className="container mx-auto px-8 py-16">
+					<div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+						{/* Company Info */}
+						<div className="space-y-5">
+							<h3 className="text-xl font-serif-display text-white tracking-wide">
+								Mapetite
+							</h3>
+							<p className="text-sm font-serif-elegant text-white/90 leading-relaxed">
+								Discover exquisite restaurants worldwide with our premium dining
+								discovery platform.
+							</p>
+						</div>
+
+						{/* About Section */}
+						<div className="space-y-5">
+							<h4 className="text-base font-serif-elegant text-white tracking-wide uppercase">
+								About
+							</h4>
+							<ul className="space-y-3">
+								<li>
+									<a
+										href="#about-us"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										About Us
+									</a>
+								</li>
+								<li>
+									<a
+										href="#our-story"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Our Story
+									</a>
+								</li>
+								<li>
+									<a
+										href="#team"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Team
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						{/* Legal Section */}
+						<div className="space-y-5">
+							<h4 className="text-base font-serif-elegant text-white tracking-wide uppercase">
+								Legal
+							</h4>
+							<ul className="space-y-3">
+								<li>
+									<a
+										href="#privacy-policy"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Privacy Policy
+									</a>
+								</li>
+								<li>
+									<a
+										href="#terms-of-service"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Terms of Service
+									</a>
+								</li>
+								<li>
+									<a
+										href="#cookies"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Cookie Policy
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						{/* Contact Section */}
+						<div className="space-y-5">
+							<h4 className="text-base font-serif-elegant text-white tracking-wide uppercase">
+								Contact
+							</h4>
+							<ul className="space-y-3">
+								<li>
+									<a
+										href="mailto:info@mapetite.com"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										info@mapetite.com
+									</a>
+								</li>
+								<li>
+									<a
+										href="#support"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Support Center
+									</a>
+								</li>
+								<li>
+									<a
+										href="#contact-us"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Contact Us
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					{/* Bottom Bar */}
+					<div className="mt-16 pt-8 border-t-2 border-white/20">
+						<div className="flex flex-col md:flex-row justify-between items-center gap-4">
+							<p className="text-sm font-serif-elegant text-white/90">
+								© 2024 Mapetite. All rights reserved.
+							</p>
+							<div className="flex gap-6">
+								<a
+									href="#facebook"
+									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+								>
+									Facebook
+								</a>
+								<a
+									href="#twitter"
+									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+								>
+									Twitter
+								</a>
+								<a
+									href="#instagram"
+									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+								>
+									Instagram
+								</a>
+								<a
+									href="#linkedin"
+									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+								>
+									LinkedIn
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</footer>
 		</Layout>
 	);
 }

@@ -109,14 +109,17 @@ export function Layout({ children }: LayoutProps) {
 				</div>
 			</aside>
 
-			{/* Main Content - Warm Parchment Background */}
-			<div className="flex flex-1 flex-col bg-[oklch(0.94_0.015_75)] relative">
-				{/* Aged parchment texture overlay */}
-				<div className="absolute inset-0 opacity-30 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,oklch(0.85_0.02_70_/_0.3)_2px,oklch(0.85_0.02_70_/_0.3)_3px)]" />
-				<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,oklch(0.88_0.02_65_/_0.2)_2px,oklch(0.88_0.02_65_/_0.2)_3px)]" />
+			{/* Main Content - Warm Parchment Background with Vertical Gradient */}
+			<div className="flex flex-1 flex-col bg-gradient-to-b from-[oklch(0.97_0.008_75)] to-[oklch(0.95_0.012_65)] relative">
+				{/* Extremely subtle parchment/paper texture - fine grain */}
+				<div className="absolute inset-0 opacity-[0.04] bg-[repeating-linear-gradient(0deg,transparent,transparent_1px,oklch(0.82_0.015_65)_1px,oklch(0.82_0.015_65)_1.5px)]" />
+				<div className="absolute inset-0 opacity-[0.03] bg-[repeating-linear-gradient(90deg,transparent,transparent_1px,oklch(0.85_0.012_68)_1px,oklch(0.85_0.012_68)_1.5px)]" />
 
-				{/* Subtle vignette effect */}
-				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,oklch(0.85_0.02_70_/_0.15)_100%)]" />
+				{/* Ultra-subtle organic noise pattern - simulates paper fiber */}
+				<div className="absolute inset-0 opacity-[0.05] bg-[radial-gradient(circle_at_20%_30%,oklch(0.88_0.01_70)_0%,transparent_1px),radial-gradient(circle_at_60%_70%,oklch(0.86_0.01_68)_0%,transparent_1px),radial-gradient(circle_at_40%_50%,oklch(0.87_0.01_72)_0%,transparent_1px)] bg-[length:4px_4px]" />
+
+				{/* Very subtle vignette - maintains depth without darkening */}
+				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,oklch(0.92_0.01_70_/_0.08)_100%)]" />
 
 				{/* Top Navigation Bar - Subtle Journal Header */}
 				<header className="border-b-2 border-primary/20 bg-gradient-to-b from-[oklch(0.96_0.015_75)] to-[oklch(0.94_0.015_75)] shadow-sm relative z-10">
