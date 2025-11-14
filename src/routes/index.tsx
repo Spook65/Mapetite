@@ -58,44 +58,34 @@ function LandingPage() {
 							</p>
 							<div className="grid grid-cols-5 gap-6 items-center">
 								{/* Logo Placeholder 1 */}
-								<div className="flex items-center justify-center">
-									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
-										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
-											CHEF CO
-										</span>
-									</div>
+								<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+									<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider text-center">
+										CHEF CO
+									</span>
 								</div>
 								{/* Logo Placeholder 2 */}
-								<div className="flex items-center justify-center">
-									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
-										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
-											GASTRO GUILD
-										</span>
-									</div>
+								<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+									<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider text-center">
+										GASTRO GUILD
+									</span>
 								</div>
 								{/* Logo Placeholder 3 */}
-								<div className="flex items-center justify-center">
-									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
-										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
-											CULINARY ARTS
-										</span>
-									</div>
+								<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+									<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider text-center">
+										CULINARY ARTS
+									</span>
 								</div>
 								{/* Logo Placeholder 4 */}
-								<div className="flex items-center justify-center">
-									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
-										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
-											EPICURE
-										</span>
-									</div>
+								<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+									<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider text-center">
+										EPICURE
+									</span>
 								</div>
 								{/* Logo Placeholder 5 */}
-								<div className="flex items-center justify-center">
-									<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
-										<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider">
-											FINE DINE
-										</span>
-									</div>
+								<div className="w-full h-16 rounded-sm border border-primary/20 bg-[oklch(0.96_0.01_75)] flex items-center justify-center group hover:border-primary/40 transition-all hover:shadow-md">
+									<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)] tracking-wider text-center">
+										FINE DINE
+									</span>
 								</div>
 							</div>
 						</div>
@@ -104,7 +94,7 @@ function LandingPage() {
 
 				{/* Main CTA Card - Restaurant Search */}
 				<div className="mx-auto mb-16 max-w-4xl">
-					<Link to="/restaurants">
+					<Link to="/restaurants" className="cursor-pointer">
 						<Card className="group cursor-pointer border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] via-[oklch(0.96_0.012_75)] to-[oklch(0.94_0.015_70)] transition-all hover:border-primary/60 hover:shadow-2xl hover:shadow-primary/20 shadow-ornate relative overflow-hidden">
 							{/* Subtle texture overlay */}
 							<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.85_0.02_70_/_0.1)_10px,oklch(0.85_0.02_70_/_0.1)_11px)]" />
@@ -162,7 +152,7 @@ function LandingPage() {
 								<div className="mt-6">
 									<Button
 										size="lg"
-										className="w-full bg-gradient-to-r from-primary via-[oklch(0.6_0.1_60)] to-secondary text-[oklch(0.16_0.02_145)] shadow-lg shadow-primary/30 hover:shadow-primary/50 border-2 border-primary/40 font-serif-elegant text-base tracking-wide transition-all hover:scale-[1.02]"
+										className="w-full cursor-pointer bg-gradient-to-r from-primary via-[oklch(0.6_0.1_60)] to-secondary text-[oklch(0.16_0.02_145)] shadow-lg shadow-primary/30 hover:shadow-primary/50 border-2 border-primary/40 font-serif-elegant text-base tracking-wide transition-all hover:scale-[1.02]"
 									>
 										Start Exploring
 										<ArrowRight className="ml-2 h-5 w-5 stroke-[2.5]" />
@@ -350,6 +340,158 @@ function LandingPage() {
 					</div>
 				</div>
 			</div>
+
+			{/* Professional Footer - Full Width with Muted Deep Aubergine Background */}
+			<footer className="relative -mx-8 mt-24 bg-gradient-to-b from-[oklch(0.18_0.05_310)] to-[oklch(0.12_0.04_310)] border-t-2 border-primary/30">
+				<div className="container mx-auto px-8 py-16">
+					<div className="grid grid-cols-1 md:grid-cols-4 gap-10">
+						{/* Company Info */}
+						<div className="space-y-5">
+							<h3 className="text-xl font-serif-display text-white tracking-wide">
+								Mapetite
+							</h3>
+							<p className="text-sm font-serif-elegant text-white/90 leading-relaxed">
+								Discover exquisite restaurants worldwide with our premium dining
+								discovery platform.
+							</p>
+						</div>
+
+						{/* About Section */}
+						<div className="space-y-5">
+							<h4 className="text-base font-serif-elegant text-white tracking-wide uppercase">
+								About
+							</h4>
+							<ul className="space-y-3">
+								<li>
+									<a
+										href="#about-us"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										About Us
+									</a>
+								</li>
+								<li>
+									<a
+										href="#our-story"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Our Story
+									</a>
+								</li>
+								<li>
+									<a
+										href="#team"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Team
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						{/* Legal Section */}
+						<div className="space-y-5">
+							<h4 className="text-base font-serif-elegant text-white tracking-wide uppercase">
+								Legal
+							</h4>
+							<ul className="space-y-3">
+								<li>
+									<a
+										href="#privacy-policy"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Privacy Policy
+									</a>
+								</li>
+								<li>
+									<a
+										href="#terms-of-service"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Terms of Service
+									</a>
+								</li>
+								<li>
+									<a
+										href="#cookies"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Cookie Policy
+									</a>
+								</li>
+							</ul>
+						</div>
+
+						{/* Contact Section */}
+						<div className="space-y-5">
+							<h4 className="text-base font-serif-elegant text-white tracking-wide uppercase">
+								Contact
+							</h4>
+							<ul className="space-y-3">
+								<li>
+									<a
+										href="mailto:info@mapetite.com"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										info@mapetite.com
+									</a>
+								</li>
+								<li>
+									<a
+										href="#support"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Support Center
+									</a>
+								</li>
+								<li>
+									<a
+										href="#contact-us"
+										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									>
+										Contact Us
+									</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+
+					{/* Bottom Bar */}
+					<div className="mt-16 pt-8 border-t-2 border-white/20">
+						<div className="flex flex-col md:flex-row justify-between items-center gap-4">
+							<p className="text-sm font-serif-elegant text-white/90">
+								© 2024 Mapetite. All rights reserved.
+							</p>
+							<div className="flex gap-6">
+								<a
+									href="#facebook"
+									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+								>
+									Facebook
+								</a>
+								<a
+									href="#twitter"
+									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+								>
+									Twitter
+								</a>
+								<a
+									href="#instagram"
+									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+								>
+									Instagram
+								</a>
+								<a
+									href="#linkedin"
+									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+								>
+									LinkedIn
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</footer>
 		</Layout>
 	);
 }
