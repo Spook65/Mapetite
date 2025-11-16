@@ -1,9 +1,5 @@
 {
-  "name": "mapetite",
-  "version": "1.0.0",
-  "description": "A modern web app to discover and share food places to eat",
-  "author": {"name": "Brandon Hann"},
-  "license": "MIT",
+  "name": "basic_template",
   "private": true,
   "type": "module",
   "scripts": {
