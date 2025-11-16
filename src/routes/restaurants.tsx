@@ -24,6 +24,7 @@ import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { createFileRoute } from "@tanstack/react-router";
 import {
+	ArrowRight,
 	ArrowUpDown,
 	Clock,
 	DollarSign,
@@ -34,6 +35,7 @@ import {
 	Search,
 	SlidersHorizontal,
 	Star,
+	Utensils,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -4289,8 +4291,8 @@ function App() {
 					</div>
 				)}
 
-				{/* Restaurant List - Layered Cards */}
-				<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+				{/* Restaurant Listing Cards - 25 Distinguished Establishments */}
+				<div className="space-y-8">
 					{displayedRestaurants.map((restaurant) => (
 						<Card
 							key={restaurant.id}
@@ -4299,174 +4301,239 @@ function App() {
 							{/* Subtle texture overlay */}
 							<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
 
-							<CardHeader className="relative z-10">
-								<div className="flex items-start justify-between">
-									<div className="flex-1">
-										<CardTitle className="text-2xl mb-3 text-[oklch(0.2_0.03_145)] font-serif-elegant">
-											{restaurant.name}
-										</CardTitle>
-										<div className="flex items-center gap-2 mb-2">
-											{renderStars(restaurant.rating)}
+							<CardContent className="p-8 relative z-10">
+								<div className="flex flex-col md:flex-row gap-8">
+									{/* Photo Placeholder - Left Side */}
+									<div className="flex-shrink-0">
+										<div className="w-full md:w-64 h-64 rounded-sm border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.92_0.015_70)] to-[oklch(0.88_0.02_65)] shadow-lg flex items-center justify-center relative overflow-hidden group">
+											{/* Decorative pattern overlay */}
+											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_12px,oklch(0.85_0.02_70_/_0.15)_12px,oklch(0.85_0.02_70_/_0.15)_13px)]" />
+											{/* Icon placeholder */}
+											<Utensils className="h-20 w-20 text-primary/40 group-hover:scale-110 transition-transform duration-300" />
+										</div>
+									</div>
+
+									{/* Main Content - Right Side */}
+									<div className="flex-1 space-y-5">
+										{/* Restaurant Name & Favorite */}
+										<div className="flex items-start justify-between gap-4">
+											<h3 className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)] tracking-tight leading-tight">
+												{restaurant.name}
+											</h3>
+											<Button
+												size="icon"
+												variant={
+													favorites.has(restaurant.id) ? "default" : "outline"
+												}
+												onClick={() => toggleFavorite(restaurant.id)}
+												className={cn(
+													"cursor-pointer shadow-md flex-shrink-0",
+													favorites.has(restaurant.id)
+														? "shadow-layered"
+														: "border-2 border-primary/30",
+												)}
+											>
+												<Heart
+													className={cn(
+														"size-4",
+														favorites.has(restaurant.id) && "fill-current",
+													)}
+												/>
+											</Button>
+										</div>
+
+										{/* Location & Cuisine Type */}
+										<div className="flex flex-wrap items-center gap-3">
+											<div className="flex items-center gap-2 text-[oklch(0.35_0.03_145)] text-base font-serif-elegant">
+												<MapPin className="size-5 text-primary flex-shrink-0" />
+												<span>
+													{restaurant.address.city}, {restaurant.address.state}
+												</span>
+											</div>
+											<span className="text-[oklch(0.45_0.03_145)]">•</span>
+											<div className="flex flex-wrap gap-2">
+												{restaurant.categories.map((cat) => (
+													<Badge
+														key={cat}
+														variant="secondary"
+														className="font-serif-elegant font-medium shadow-sm px-3 py-1"
+													>
+														{cat}
+													</Badge>
+												))}
+											</div>
+										</div>
+
+										{/* Star Rating - Bronze/Copper Accent */}
+										<div className="flex items-center gap-3">
+											<div className="flex items-center gap-1">
+												{[...Array(5)].map((_, i) => (
+													<Star
+														key={`star-${restaurant.id}-${i}`}
+														className={cn(
+															"size-5",
+															i < Math.floor(restaurant.rating)
+																? "fill-[oklch(0.45_0.08_35)] text-[oklch(0.45_0.08_35)]"
+																: i < restaurant.rating
+																	? "fill-[oklch(0.45_0.08_35)]/50 text-[oklch(0.45_0.08_35)]"
+																	: "fill-muted text-muted",
+														)}
+													/>
+												))}
+											</div>
+											<span className="text-lg font-serif-elegant font-semibold text-[oklch(0.45_0.08_35)]">
+												{restaurant.rating.toFixed(1)} / 5.0
+											</span>
 											<span className="text-sm text-[oklch(0.45_0.03_145)]">
 												({restaurant.reviewCount} reviews)
 											</span>
 										</div>
-									</div>
-									<CardAction>
-										<Button
-											size="icon"
-											variant={
-												favorites.has(restaurant.id) ? "default" : "outline"
-											}
-											onClick={() => toggleFavorite(restaurant.id)}
-											className={cn(
-												"shadow-md",
-												favorites.has(restaurant.id)
-													? "shadow-layered"
-													: "border-2 border-primary/30",
-											)}
-										>
-											<Heart
-												className={cn(
-													"size-4",
-													favorites.has(restaurant.id) && "fill-current",
-												)}
-											/>
-										</Button>
-									</CardAction>
-								</div>
-								<div className="flex flex-wrap gap-2 items-center">
-									{restaurant.categories.map((cat) => (
-										<Badge
-											key={cat}
-											variant="secondary"
-											className="font-medium shadow-sm"
-										>
-											{cat}
-										</Badge>
-									))}
-									<div className="ml-auto">
-										{renderPriceRange(restaurant.priceRange)}
-									</div>
-								</div>
-							</CardHeader>
-							<CardContent className="space-y-4 relative z-10">
-								<p className="text-sm text-[oklch(0.35_0.03_145)]">
-									{restaurant.description}
-								</p>
 
-								<div className="flex items-start gap-2 text-sm text-[oklch(0.35_0.03_145)]">
-									<MapPin className="size-4 mt-0.5 shrink-0 text-primary" />
-									<div className="flex-1">
-										<div>
-											{restaurant.address.street}, {restaurant.address.city},{" "}
-											{restaurant.address.state} {restaurant.address.zipCode}
+										{/* Dining Experience Summary */}
+										<p className="text-base font-serif-elegant text-[oklch(0.35_0.03_145)] leading-relaxed">
+											{restaurant.description}
+										</p>
+
+										{/* Additional Details */}
+										<div className="flex flex-wrap items-center gap-4 text-sm">
+											{/* Price Range */}
+											<div className="flex items-center gap-1.5">
+												<DollarSign className="size-4 text-[oklch(0.45_0.08_35)]" />
+												<span className="font-serif-elegant text-[oklch(0.35_0.03_145)]">
+													{"$".repeat(restaurant.priceRange)} Pricing
+												</span>
+											</div>
+
+											{/* Distance */}
+											{restaurant.distance !== undefined && (
+												<>
+													<span className="text-[oklch(0.45_0.03_145)]">•</span>
+													<span className="font-serif-elegant text-[oklch(0.35_0.03_145)]">
+														{restaurant.distance.toFixed(1)} miles away
+													</span>
+												</>
+											)}
+
+											{/* Operating Status */}
+											{restaurant.hours && (
+												<>
+													<span className="text-[oklch(0.45_0.03_145)]">•</span>
+													<div className="flex items-center gap-2">
+														<Clock className="size-4 text-primary" />
+														<span className="font-serif-elegant text-[oklch(0.35_0.03_145)]">
+															{restaurant.hours.open} - {restaurant.hours.close}
+														</span>
+														<Badge
+															variant={
+																restaurant.isOpenNow ? "default" : "secondary"
+															}
+															className={cn(
+																"text-xs",
+																restaurant.isOpenNow &&
+																	"bg-[oklch(0.45_0.08_35)] hover:bg-[oklch(0.45_0.08_35)]/90",
+															)}
+														>
+															{restaurant.isOpenNow ? "Open Now" : "Closed"}
+														</Badge>
+													</div>
+												</>
+											)}
 										</div>
-										{restaurant.distance !== undefined && (
-											<div className="text-xs text-[oklch(0.45_0.03_145)] mt-1">
-												{restaurant.distance.toFixed(1)} miles away
+
+										{/* View Details CTA */}
+										<div className="pt-3">
+											<Button
+												className="cursor-pointer group bg-[oklch(0.45_0.08_35)] text-white hover:bg-[oklch(0.38_0.08_35)] font-serif-elegant font-semibold tracking-wide shadow-md px-8 py-5 text-base transition-all duration-300"
+												onClick={() =>
+													setSelectedRestaurant(
+														selectedRestaurant?.id === restaurant.id
+															? null
+															: restaurant,
+													)
+												}
+											>
+												{selectedRestaurant?.id === restaurant.id
+													? "Hide Details"
+													: "View Details"}
+												<ArrowRight className="ml-2 h-5 w-5 transition-colors duration-300 group-hover:text-primary" />
+											</Button>
+										</div>
+
+										{/* Expanded Details Section */}
+										{selectedRestaurant?.id === restaurant.id && (
+											<div className="mt-6 pt-6 border-t-2 border-primary/20 space-y-5">
+												{/* Full Address */}
+												<div className="flex items-start gap-3">
+													<MapPin className="size-5 mt-0.5 shrink-0 text-primary" />
+													<div className="flex-1">
+														<p className="text-sm font-serif-elegant font-semibold text-[oklch(0.2_0.03_145)] mb-1">
+															Full Address
+														</p>
+														<p className="text-base font-serif-elegant text-[oklch(0.35_0.03_145)]">
+															{restaurant.address.street}
+															<br />
+															{restaurant.address.city},{" "}
+															{restaurant.address.state}{" "}
+															{restaurant.address.zipCode}
+															<br />
+															{restaurant.address.country}
+														</p>
+													</div>
+												</div>
+
+												{/* Recent Reviews */}
+												<div>
+													<h4 className="text-lg font-serif-display text-[oklch(0.2_0.03_145)] mb-4">
+														Recent Reviews
+													</h4>
+													<div className="space-y-4">
+														{restaurant.reviews.map((review) => (
+															<div
+																key={review.id}
+																className="border-l-3 border-[oklch(0.45_0.08_35)] pl-4 bg-[oklch(0.96_0.01_75)] py-3 px-4 rounded-sm"
+															>
+																<div className="flex items-center gap-3 mb-2">
+																	<span className="font-serif-elegant font-semibold text-sm text-[oklch(0.2_0.03_145)]">
+																		{review.author}
+																	</span>
+																	<div className="flex items-center gap-1">
+																		{[...Array(5)].map((_, i) => (
+																			<Star
+																				key={`review-star-${review.id}-${i}`}
+																				className={cn(
+																					"size-3.5",
+																					i < Math.floor(review.rating)
+																						? "fill-[oklch(0.45_0.08_35)] text-[oklch(0.45_0.08_35)]"
+																						: "fill-muted text-muted",
+																				)}
+																			/>
+																		))}
+																	</div>
+																	<span className="text-xs font-serif-elegant text-[oklch(0.45_0.03_145)]">
+																		{review.date}
+																	</span>
+																</div>
+																<p className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] leading-relaxed">
+																	{review.comment}
+																</p>
+															</div>
+														))}
+													</div>
+												</div>
+
+												{/* Map Direction Button */}
+												<Button
+													variant="outline"
+													className="cursor-pointer w-full border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-serif-elegant font-semibold tracking-wide shadow-md py-6"
+													onClick={() => openInMaps(restaurant)}
+												>
+													<MapPin className="size-5 mr-2" />
+													Get Directions
+												</Button>
 											</div>
 										)}
 									</div>
 								</div>
-
-								{/* Operating Hours */}
-								{restaurant.hours && (
-									<div className="flex items-center gap-2 text-sm">
-										<Clock className="size-4 shrink-0 text-primary" />
-										<div className="flex items-center gap-2">
-											<span className="text-[oklch(0.35_0.03_145)]">
-												{restaurant.hours.open} - {restaurant.hours.close}
-											</span>
-											<Badge
-												variant={restaurant.isOpenNow ? "default" : "secondary"}
-												className={cn(
-													"text-xs",
-													restaurant.isOpenNow &&
-														"bg-primary hover:bg-primary/90",
-												)}
-											>
-												{restaurant.isOpenNow ? "Open Now" : "Closed"}
-											</Badge>
-										</div>
-									</div>
-								)}
-
-								<div className="border-t border-border/40 pt-4">
-									<div className="flex items-center justify-between mb-3">
-										<h4 className="font-semibold text-sm text-foreground tracking-wide">
-											Recent Reviews
-										</h4>
-										<Button
-											size="sm"
-											variant="ghost"
-											onClick={() =>
-												setSelectedRestaurant(
-													selectedRestaurant?.id === restaurant.id
-														? null
-														: restaurant,
-												)
-											}
-											className="hover:bg-primary/10"
-										>
-											{selectedRestaurant?.id === restaurant.id
-												? "Hide"
-												: "View All"}
-										</Button>
-									</div>
-
-									{selectedRestaurant?.id === restaurant.id ? (
-										<div className="space-y-3">
-											{restaurant.reviews.map((review) => (
-												<div
-													key={review.id}
-													className="border-l-2 border-primary/30 pl-3 bg-muted/20 py-2"
-												>
-													<div className="flex items-center gap-2 mb-1">
-														<span className="font-medium text-sm">
-															{review.author}
-														</span>
-														{renderStars(review.rating)}
-													</div>
-													<p className="text-sm text-gray-600">
-														{review.comment}
-													</p>
-													<span className="text-xs text-gray-400">
-														{review.date}
-													</span>
-												</div>
-											))}
-										</div>
-									) : (
-										<div className="space-y-2">
-											{restaurant.reviews.slice(0, 1).map((review) => (
-												<div
-													key={review.id}
-													className="border-l-2 border-gray-200 pl-3"
-												>
-													<div className="flex items-center gap-2 mb-1">
-														<span className="font-medium text-sm">
-															{review.author}
-														</span>
-														{renderStars(review.rating)}
-													</div>
-													<p className="text-sm text-gray-600 line-clamp-2">
-														{review.comment}
-													</p>
-												</div>
-											))}
-										</div>
-									)}
-								</div>
-
-								<Button
-									className="w-full border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-semibold tracking-wide shadow-md"
-									variant="outline"
-									onClick={() => openInMaps(restaurant)}
-								>
-									<MapPin className="size-4 mr-2" />
-									Chart Your Course
-								</Button>
 							</CardContent>
 						</Card>
 					))}
