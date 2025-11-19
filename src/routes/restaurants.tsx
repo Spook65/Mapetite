@@ -36,6 +36,7 @@ import {
 	SlidersHorizontal,
 	Star,
 	Utensils,
+	X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -3667,6 +3668,7 @@ function App() {
 	>("none");
 	const [openNowOnly, setOpenNowOnly] = useState(false);
 	const [showRefinements, setShowRefinements] = useState(false);
+	const [showMobileFilters, setShowMobileFilters] = useState(false);
 
 	const categories = [
 		"Noodles",
@@ -3884,31 +3886,31 @@ function App() {
 
 	return (
 		<Layout>
-			<div className="container mx-auto px-8 py-16">
+			<div className="container mx-auto px-4 md:px-8 py-8 md:py-16">
 				{/* Hero Header - Vintage Explorer Aesthetic */}
-				<div className="mb-12 text-center relative">
+				<div className="mb-8 md:mb-12 text-center relative px-4">
 					{/* Decorative top border */}
-					<div className="flex items-center justify-center mb-6">
+					<div className="flex items-center justify-center mb-4 md:mb-6">
 						<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent w-full max-w-md" />
 					</div>
 
-					<h1 className="text-5xl md:text-6xl lg:text-7xl font-serif-display text-[oklch(0.2_0.03_145)] mb-4 tracking-tight">
+					<h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif-display text-[oklch(0.2_0.03_145)] mb-3 md:mb-4 tracking-tight">
 						Discover Your Next
 						<span className="block bg-gradient-to-r from-primary via-[oklch(0.6_0.1_60)] to-secondary bg-clip-text text-transparent mt-2">
 							Culinary Adventure
 						</span>
 					</h1>
 
-					<p className="text-lg md:text-xl text-[oklch(0.35_0.03_145)] max-w-2xl mx-auto font-serif-elegant leading-relaxed">
+					<p className="text-base md:text-lg lg:text-xl text-[oklch(0.35_0.03_145)] max-w-2xl mx-auto font-serif-elegant leading-relaxed">
 						Embark on a journey through extraordinary flavors and unforgettable
 						dining experiences
 					</p>
 
 					{/* Decorative bottom border with ornament */}
-					<div className="flex items-center justify-center gap-3 mt-6">
-						<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-primary/60 w-32" />
+					<div className="flex items-center justify-center gap-2 md:gap-3 mt-4 md:mt-6">
+						<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-primary/60 w-20 md:w-32" />
 						<div className="w-2 h-2 rotate-45 border border-primary/60" />
-						<div className="h-px bg-gradient-to-l from-transparent via-primary/40 to-primary/60 w-32" />
+						<div className="h-px bg-gradient-to-l from-transparent via-primary/40 to-primary/60 w-20 md:w-32" />
 					</div>
 				</div>
 
@@ -4091,9 +4093,162 @@ function App() {
 					</CardContent>
 				</Card>
 
-				{/* Search Refinement Component */}
+				{/* Mobile Filter Button */}
 				{restaurants.length > 0 && (
-					<Card className="mb-8">
+					<div className="md:hidden mb-4">
+						<Button
+							onClick={() => setShowMobileFilters(true)}
+							className="w-full bg-primary text-primary-foreground hover:bg-primary/90 shadow-md"
+						>
+							<SlidersHorizontal className="mr-2 h-5 w-5" />
+							Filters & Sort
+						</Button>
+					</div>
+				)}
+
+				{/* Mobile Filter Overlay */}
+				{showMobileFilters && (
+					// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
+					<div
+						className="md:hidden fixed inset-0 z-50 bg-black/50"
+						onClick={() => setShowMobileFilters(false)}
+					>
+						{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
+						<div
+							className="absolute top-0 right-0 h-full w-80 max-w-[85vw] bg-[oklch(0.97_0.008_75)] shadow-2xl overflow-y-auto"
+							onClick={(e) => e.stopPropagation()}
+						>
+							<div className="p-6 border-b-2 border-primary/20 sticky top-0 bg-[oklch(0.97_0.008_75)] z-10">
+								<div className="flex items-center justify-between mb-2">
+									<h2 className="text-xl font-serif-display text-[oklch(0.2_0.03_145)]">
+										Filters & Sort
+									</h2>
+									<button
+										type="button"
+										onClick={() => setShowMobileFilters(false)}
+										className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20 hover:bg-primary/30 transition-colors"
+									>
+										<X className="h-5 w-5 text-primary" />
+									</button>
+								</div>
+								<p className="text-sm text-[oklch(0.35_0.03_145)] font-serif-elegant">
+									Filter and sort results
+								</p>
+							</div>
+							<div className="p-6 space-y-6">
+								{/* Price Range Filter */}
+								<div className="space-y-3">
+									<Label className="text-base font-semibold">Price Range</Label>
+									<div className="flex flex-wrap gap-2">
+										{[1, 2, 3, 4].map((price) => (
+											<Button
+												key={price}
+												variant={
+													priceFilter.includes(price) ? "default" : "outline"
+												}
+												size="sm"
+												onClick={() => togglePriceFilter(price)}
+												className="gap-1"
+											>
+												{"$".repeat(price)}
+											</Button>
+										))}
+									</div>
+								</div>
+
+								{/* Rating Filter */}
+								<div className="space-y-3">
+									<div className="flex items-center justify-between">
+										<Label className="text-base font-semibold">
+											Minimum Rating
+										</Label>
+										<span className="text-sm font-medium">
+											{minRating === 0
+												? "Any"
+												: `${minRating.toFixed(1)}+ stars`}
+										</span>
+									</div>
+									<Slider
+										value={[minRating]}
+										onValueChange={(values) => setMinRating(values[0])}
+										min={0}
+										max={5}
+										step={0.5}
+										className="w-full"
+									/>
+									<div className="flex justify-between text-xs text-gray-500">
+										<span>Any</span>
+										<span>5 stars</span>
+									</div>
+								</div>
+
+								{/* Sort By */}
+								<div className="space-y-3">
+									<Label className="text-base font-semibold">Sort By</Label>
+									<Select
+										value={sortBy}
+										onValueChange={(value) =>
+											setSortBy(
+												value as "distance" | "rating" | "reviews" | "none",
+											)
+										}
+									>
+										<SelectTrigger>
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="none">Default</SelectItem>
+											<SelectItem value="distance">
+												Distance (Closest First)
+											</SelectItem>
+											<SelectItem value="rating">
+												Rating (Highest First)
+											</SelectItem>
+											<SelectItem value="reviews">Most Reviews</SelectItem>
+										</SelectContent>
+									</Select>
+								</div>
+
+								{/* Open Now Toggle */}
+								<div className="flex items-center justify-between">
+									<div className="space-y-0.5">
+										<Label className="text-base font-semibold">Open Now</Label>
+										<p className="text-sm text-gray-500">
+											Show only restaurants currently open
+										</p>
+									</div>
+									<Switch
+										checked={openNowOnly}
+										onCheckedChange={setOpenNowOnly}
+									/>
+								</div>
+
+								{/* Clear Filters Button */}
+								<div className="pt-2 border-t">
+									<Button
+										variant="outline"
+										className="w-full"
+										onClick={clearAllFilters}
+									>
+										Clear All Filters
+									</Button>
+								</div>
+
+								{/* Apply Button */}
+								<Button
+									className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
+									onClick={() => setShowMobileFilters(false)}
+								>
+									Apply Filters
+								</Button>
+							</div>
+						</div>
+					</div>
+				)}
+
+				{/* Desktop Search Refinement Component */}
+				{restaurants.length > 0 && (
+					<Card className="mb-8 hidden md:block">
 						<CardHeader>
 							<div className="flex items-center justify-between">
 								<div>
@@ -4220,10 +4375,10 @@ function App() {
 
 				{/* Results Header - Elegant Typography */}
 				{restaurants.length > 0 && (
-					<div className="mb-8 space-y-4">
-						<div className="flex items-center justify-between">
+					<div className="mb-6 md:mb-8 space-y-4 px-4 md:px-0">
+						<div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
 							<div>
-								<h2 className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)]">
+								<h2 className="text-2xl md:text-3xl font-serif-display text-[oklch(0.2_0.03_145)]">
 									{showFavorites
 										? `Your Curated Collection (${favorites.size})`
 										: `${restaurants.length} Distinguished Establishments`}
@@ -4301,23 +4456,23 @@ function App() {
 							{/* Subtle texture overlay */}
 							<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
 
-							<CardContent className="p-8 relative z-10">
-								<div className="flex flex-col md:flex-row gap-8">
+							<CardContent className="p-4 md:p-8 relative z-10">
+								<div className="flex flex-col md:flex-row gap-4 md:gap-8">
 									{/* Photo Placeholder - Left Side */}
 									<div className="flex-shrink-0">
-										<div className="w-full md:w-64 h-64 rounded-sm border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.92_0.015_70)] to-[oklch(0.88_0.02_65)] shadow-lg flex items-center justify-center relative overflow-hidden group">
+										<div className="w-full md:w-64 h-48 md:h-64 rounded-sm border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.92_0.015_70)] to-[oklch(0.88_0.02_65)] shadow-lg flex items-center justify-center relative overflow-hidden group">
 											{/* Decorative pattern overlay */}
 											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_12px,oklch(0.85_0.02_70_/_0.15)_12px,oklch(0.85_0.02_70_/_0.15)_13px)]" />
 											{/* Icon placeholder */}
-											<Utensils className="h-20 w-20 text-primary/40 group-hover:scale-110 transition-transform duration-300" />
+											<Utensils className="h-16 md:h-20 w-16 md:w-20 text-primary/40 group-hover:scale-110 transition-transform duration-300" />
 										</div>
 									</div>
 
 									{/* Main Content - Right Side */}
-									<div className="flex-1 space-y-5">
+									<div className="flex-1 space-y-3 md:space-y-5">
 										{/* Restaurant Name & Favorite */}
 										<div className="flex items-start justify-between gap-4">
-											<h3 className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)] tracking-tight leading-tight">
+											<h3 className="text-xl md:text-2xl lg:text-3xl font-serif-display text-[oklch(0.2_0.03_145)] tracking-tight leading-tight">
 												{restaurant.name}
 											</h3>
 											<Button
@@ -4581,8 +4736,8 @@ function App() {
 			</div>
 
 			{/* Professional Footer - Full Width with Muted Deep Aubergine Background */}
-			<footer className="relative -mx-8 mt-24 bg-gradient-to-b from-[oklch(0.18_0.05_310)] to-[oklch(0.12_0.04_310)] border-t-2 border-primary/30">
-				<div className="container mx-auto px-8 py-16">
+			<footer className="relative mt-16 md:mt-24 bg-gradient-to-b from-[oklch(0.18_0.05_310)] to-[oklch(0.12_0.04_310)] border-t-2 border-primary/30">
+				<div className="container mx-auto px-4 md:px-8 py-10 md:py-16">
 					<div className="grid grid-cols-1 md:grid-cols-4 gap-10">
 						{/* Company Info */}
 						<div className="space-y-5">
@@ -4696,7 +4851,7 @@ function App() {
 					</div>
 
 					{/* Bottom Bar */}
-					<div className="mt-16 pt-8 border-t-2 border-white/20">
+					<div className="mt-10 md:mt-16 pt-6 md:pt-8 border-t-2 border-white/20">
 						<div className="flex flex-col md:flex-row justify-between items-center gap-4">
 							<p className="text-sm font-serif-elegant text-white/90">
 								© 2024 Mapetite. All rights reserved.

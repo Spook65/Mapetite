@@ -9,8 +9,8 @@ export const Route = createRootRoute({
 
 function Root() {
 	return (
-		<div className="flex flex-col min-h-screen">
-			<ErrorBoundary tagName="main" className="flex-1">
+		<div className="flex flex-col min-h-screen w-full overflow-x-hidden">
+			<ErrorBoundary tagName="main" className="flex-1 w-full">
 				<Outlet />
 			</ErrorBoundary>
 			<TanStackRouterDevtools position="bottom-right" />
