@@ -1,6 +1,6 @@
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_GET_TABLE_SCHEMA
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GOOGLESHEETS_GET_TABLE_SCHEMA ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_INSERT_DIMENSION
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GOOGLESHEETS_INSERT_DIMENSION ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_LIST_TABLES
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GOOGLESHEETS_LIST_TABLES ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_LOOKUP_SPREADSHEET_ROW
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GOOGLESHEETS_LOOKUP_SPREADSHEET_ROW ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_QUERY_TABLE
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GOOGLESHEETS_QUERY_TABLE ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_SEARCH_DEVELOPER_METADATA
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GOOGLESHEETS_SEARCH_DEVELOPER_METADATA ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_SEARCH_SPREADSHEETS
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GOOGLESHEETS_SEARCH_SPREADSHEETS ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_SET_BASIC_FILTER
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of GOOGLESHEETS_SET_BASIC_FILTER ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_SHEET_FROM_JSON
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of GOOGLESHEETS_SHEET_FROM_JSON ends.
 
 
-Mcp name: GoogleSheets
-Mcp Id: 686de48c6fd1cae1afbb55ba
-Mcp Url: https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GoogleSheets"
+Mcp id: "686de48c6fd1cae1afbb55ba"
+Mcp url: "https://backend.composio.dev/v3/mcp/01b46296-8ea1-4686-a211-87ba79800a99/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLESHEETS_SPREADSHEETS_SHEETS_COPY_TO
 

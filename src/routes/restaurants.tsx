@@ -3887,53 +3887,47 @@ function App() {
 	return (
 		<Layout>
 			<div className="container mx-auto px-4 md:px-8 py-8 md:py-16">
-				{/* Hero Header - Vintage Explorer Aesthetic */}
+				{/* Hero Header - Dark Theme */}
 				<div className="mb-8 md:mb-12 text-center relative px-4">
 					{/* Decorative top border */}
 					<div className="flex items-center justify-center mb-4 md:mb-6">
-						<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent w-full max-w-md" />
+						<div className="h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent w-full max-w-md shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.4)]" />
 					</div>
 
-					<h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif-display text-[oklch(0.2_0.03_145)] mb-3 md:mb-4 tracking-tight">
+					<h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif-display text-white mb-3 md:mb-4 tracking-tight">
 						Discover Your Next
-						<span className="block bg-gradient-to-r from-primary via-[oklch(0.6_0.1_60)] to-secondary bg-clip-text text-transparent mt-2">
+						<span className="block bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mt-2 drop-shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.3)]">
 							Culinary Adventure
 						</span>
 					</h1>
 
-					<p className="text-base md:text-lg lg:text-xl text-[oklch(0.35_0.03_145)] max-w-2xl mx-auto font-serif-elegant leading-relaxed">
+					<p className="text-base md:text-lg lg:text-xl text-white/90 max-w-2xl mx-auto font-serif-elegant leading-relaxed">
 						Embark on a journey through extraordinary flavors and unforgettable
 						dining experiences
 					</p>
 
 					{/* Decorative bottom border with ornament */}
 					<div className="flex items-center justify-center gap-2 md:gap-3 mt-4 md:mt-6">
-						<div className="h-px bg-gradient-to-r from-transparent via-primary/40 to-primary/60 w-20 md:w-32" />
-						<div className="w-2 h-2 rotate-45 border border-primary/60" />
-						<div className="h-px bg-gradient-to-l from-transparent via-primary/40 to-primary/60 w-20 md:w-32" />
+						<div className="h-px bg-gradient-to-r from-transparent via-primary/60 to-primary/80 w-20 md:w-32 shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.4)]" />
+						<div className="w-2 h-2 rotate-45 border border-primary/80 shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)]" />
+						<div className="h-px bg-gradient-to-l from-transparent via-primary/60 to-primary/80 w-20 md:w-32 shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.4)]" />
 					</div>
 				</div>
 
-				{/* Search Section - Ornate Centerpiece */}
-				<Card className="mb-12 relative shadow-ornate border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] via-[oklch(0.96_0.012_75)] to-[oklch(0.94_0.015_70)] overflow-hidden">
-					{/* Subtle texture overlay */}
-					<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.85_0.02_70_/_0.1)_10px,oklch(0.85_0.02_70_/_0.1)_11px)]" />
-
-					{/* Decorative corner accents */}
-					<div className="absolute top-0 left-0 w-12 h-12 border-l-2 border-t-2 border-primary/40 z-10" />
-					<div className="absolute top-0 right-0 w-12 h-12 border-r-2 border-t-2 border-primary/40 z-10" />
-					<div className="absolute bottom-0 left-0 w-12 h-12 border-l-2 border-b-2 border-primary/40 z-10" />
-					<div className="absolute bottom-0 right-0 w-12 h-12 border-r-2 border-b-2 border-primary/40 z-10" />
+				{/* Search Section - Floating Light Module */}
+				<Card className="mb-12 relative shadow-[0_0_30px_oklch(0.68_0.24_300_/_0.25),0_8px_24px_black] border-2 border-primary/40 bg-card overflow-hidden hover:shadow-[0_0_40px_oklch(0.68_0.24_300_/_0.35),0_10px_28px_black] transition-all">
+					{/* Subtle glowing texture overlay */}
+					<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.68_0.24_300_/_0.2)_10px,oklch(0.68_0.24_300_/_0.2)_11px)] pointer-events-none" />
 
 					<CardHeader className="text-center pb-6 relative z-10">
-						{/* Ornate icon frame */}
-						<div className="mb-5 mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-primary via-primary/90 to-secondary shadow-layered border-2 border-primary/20">
-							<Search className="h-8 w-8 text-[oklch(0.16_0.02_145)]" />
+						{/* Ornate icon frame with glow */}
+						<div className="mb-5 mx-auto flex h-16 w-16 items-center justify-center rounded-sm bg-gradient-to-br from-primary via-secondary to-primary shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.5)] border-2 border-primary/50">
+							<Search className="h-8 w-8 text-white stroke-[2.5] drop-shadow-[0_0_8px_white]" />
 						</div>
-						<CardTitle className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)] mb-2">
+						<CardTitle className="text-3xl font-serif-display text-card-foreground mb-2">
 							Your Expedition Begins
 						</CardTitle>
-						<CardDescription className="text-base text-[oklch(0.35_0.03_145)] font-serif-elegant max-w-lg mx-auto">
+						<CardDescription className="text-base text-card-foreground/70 font-serif-elegant max-w-lg mx-auto">
 							Chart your course through the world's finest dining establishments
 						</CardDescription>
 					</CardHeader>
@@ -4052,21 +4046,21 @@ function App() {
 					</CardContent>
 				</Card>
 
-				{/* Category Filters - Refined Styling */}
-				<Card className="mb-10 border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.97_0.012_75)] to-[oklch(0.94_0.015_70)] shadow-ornate relative overflow-hidden">
-					{/* Subtle texture overlay */}
-					<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.85_0.02_70_/_0.1)_10px,oklch(0.85_0.02_70_/_0.1)_11px)]" />
+				{/* Category Filters - Floating Light Module */}
+				<Card className="mb-10 border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.68_0.24_300_/_0.2),0_6px_20px_black] hover:shadow-[0_0_35px_oklch(0.68_0.24_300_/_0.3),0_8px_24px_black] transition-all relative overflow-hidden">
+					{/* Subtle glowing texture */}
+					<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.68_0.24_300_/_0.15)_10px,oklch(0.68_0.24_300_/_0.15)_11px)] pointer-events-none" />
 
 					<CardHeader className="relative z-10">
 						<div className="flex items-center gap-3 mb-2">
-							<div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/15 border border-primary/30">
-								<Filter className="h-5 w-5 text-primary" />
+							<div className="flex h-10 w-10 items-center justify-center rounded-sm bg-gradient-to-br from-primary/40 to-primary/20 border-2 border-primary/50 shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.4)]">
+								<Filter className="h-5 w-5 text-primary stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.68_0.24_300_/_0.5)]" />
 							</div>
-							<CardTitle className="text-2xl font-serif-elegant text-[oklch(0.2_0.03_145)]">
+							<CardTitle className="text-2xl font-serif-elegant text-card-foreground">
 								Culinary Categories
 							</CardTitle>
 						</div>
-						<CardDescription className="text-base font-serif-elegant text-[oklch(0.35_0.03_145)] ml-13">
+						<CardDescription className="text-base font-serif-elegant text-card-foreground/70 ml-13">
 							Refine your journey by selecting one or more cuisines
 						</CardDescription>
 					</CardHeader>
@@ -4081,8 +4075,8 @@ function App() {
 									className={cn(
 										"cursor-pointer px-5 py-2.5 text-sm font-semibold transition-all tracking-wide",
 										selectedCategories.has(category)
-											? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-layered border border-primary/20"
-											: "border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/50 shadow-sm",
+											? "bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.4)] border-2 border-primary/60 hover:shadow-[0_0_25px_oklch(0.68_0.24_300_/_0.5)]"
+											: "border-2 border-primary/40 bg-card hover:bg-primary/10 hover:border-primary/60 shadow-sm",
 									)}
 									onClick={() => toggleCategory(category)}
 								>
@@ -4246,17 +4240,20 @@ function App() {
 					</div>
 				)}
 
-				{/* Desktop Search Refinement Component */}
+				{/* Desktop Search Refinement Component - Floating Light Module */}
 				{restaurants.length > 0 && (
-					<Card className="mb-8 hidden md:block">
-						<CardHeader>
+					<Card className="mb-8 hidden md:block border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.68_0.24_300_/_0.2),0_6px_20px_black] relative overflow-hidden z-50">
+						{/* Subtle glowing texture */}
+						<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.68_0.24_300_/_0.15)_8px,oklch(0.68_0.24_300_/_0.15)_9px)] pointer-events-none" />
+
+						<CardHeader className="relative z-10">
 							<div className="flex items-center justify-between">
 								<div>
-									<CardTitle className="flex items-center gap-2">
-										<SlidersHorizontal className="size-5" />
+									<CardTitle className="flex items-center gap-2 text-card-foreground">
+										<SlidersHorizontal className="size-5 text-primary stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.68_0.24_300_/_0.4)]" />
 										Refine Search
 									</CardTitle>
-									<CardDescription>
+									<CardDescription className="text-card-foreground/70">
 										Filter and sort results by price, rating, distance, and more
 									</CardDescription>
 								</div>
@@ -4264,6 +4261,7 @@ function App() {
 									variant="ghost"
 									size="sm"
 									onClick={() => setShowRefinements(!showRefinements)}
+									className="hover:bg-primary/10"
 								>
 									{showRefinements ? "Hide" : "Show"}
 								</Button>
@@ -4373,18 +4371,18 @@ function App() {
 					</Card>
 				)}
 
-				{/* Results Header - Elegant Typography */}
+				{/* Results Header - Dark Theme */}
 				{restaurants.length > 0 && (
 					<div className="mb-6 md:mb-8 space-y-4 px-4 md:px-0">
 						<div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
 							<div>
-								<h2 className="text-2xl md:text-3xl font-serif-display text-[oklch(0.2_0.03_145)]">
+								<h2 className="text-2xl md:text-3xl font-serif-display text-white drop-shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.2)]">
 									{showFavorites
 										? `Your Curated Collection (${favorites.size})`
 										: `${restaurants.length} Distinguished Establishments`}
 								</h2>
 								{displayedRestaurants.length !== restaurants.length && (
-									<p className="text-sm text-[oklch(0.35_0.03_145)] mt-2 font-serif-elegant">
+									<p className="text-sm text-white/80 mt-2 font-serif-elegant">
 										Showcasing {displayedRestaurants.length} refined selections
 									</p>
 								)}
@@ -4446,25 +4444,25 @@ function App() {
 					</div>
 				)}
 
-				{/* Restaurant Listing Cards - 25 Distinguished Establishments */}
+				{/* Restaurant Listing Cards - Floating Light Modules */}
 				<div className="space-y-8">
 					{displayedRestaurants.map((restaurant) => (
 						<Card
 							key={restaurant.id}
-							className="border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.95_0.012_75)] shadow-md hover:shadow-ornate hover:border-primary/40 transition-all duration-300 relative overflow-hidden"
+							className="border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.68_0.24_300_/_0.2),0_6px_20px_black] hover:shadow-[0_0_35px_oklch(0.68_0.24_300_/_0.3),0_8px_24px_black] hover:border-primary/60 transition-all duration-300 relative overflow-hidden"
 						>
-							{/* Subtle texture overlay */}
-							<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+							{/* Subtle glowing texture */}
+							<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.68_0.24_300_/_0.15)_8px,oklch(0.68_0.24_300_/_0.15)_9px)] pointer-events-none" />
 
 							<CardContent className="p-4 md:p-8 relative z-10">
 								<div className="flex flex-col md:flex-row gap-4 md:gap-8">
 									{/* Photo Placeholder - Left Side */}
 									<div className="flex-shrink-0">
-										<div className="w-full md:w-64 h-48 md:h-64 rounded-sm border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.92_0.015_70)] to-[oklch(0.88_0.02_65)] shadow-lg flex items-center justify-center relative overflow-hidden group">
+										<div className="w-full md:w-64 h-48 md:h-64 rounded-sm border-2 border-primary/40 bg-gradient-to-br from-[oklch(0.92_0.015_70)] to-[oklch(0.88_0.02_65)] shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.2)] flex items-center justify-center relative overflow-hidden group">
 											{/* Decorative pattern overlay */}
-											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_12px,oklch(0.85_0.02_70_/_0.15)_12px,oklch(0.85_0.02_70_/_0.15)_13px)]" />
+											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_12px,oklch(0.85_0.02_70_/_0.15)_12px,oklch(0.85_0.02_70_/_0.15)_13px)] pointer-events-none" />
 											{/* Icon placeholder */}
-											<Utensils className="h-16 md:h-20 w-16 md:w-20 text-primary/40 group-hover:scale-110 transition-transform duration-300" />
+											<Utensils className="h-16 md:h-20 w-16 md:w-20 text-primary/50 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.3)]" />
 										</div>
 									</div>
 
@@ -4472,7 +4470,7 @@ function App() {
 									<div className="flex-1 space-y-3 md:space-y-5">
 										{/* Restaurant Name & Favorite */}
 										<div className="flex items-start justify-between gap-4">
-											<h3 className="text-xl md:text-2xl lg:text-3xl font-serif-display text-[oklch(0.2_0.03_145)] tracking-tight leading-tight">
+											<h3 className="text-xl md:text-2xl lg:text-3xl font-serif-display text-card-foreground tracking-tight leading-tight">
 												{restaurant.name}
 											</h3>
 											<Button
@@ -4499,19 +4497,19 @@ function App() {
 
 										{/* Location & Cuisine Type */}
 										<div className="flex flex-wrap items-center gap-3">
-											<div className="flex items-center gap-2 text-[oklch(0.35_0.03_145)] text-base font-serif-elegant">
-												<MapPin className="size-5 text-primary flex-shrink-0" />
+											<div className="flex items-center gap-2 text-card-foreground/80 text-base font-serif-elegant">
+												<MapPin className="size-5 text-primary flex-shrink-0 stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.68_0.24_300_/_0.4)]" />
 												<span>
 													{restaurant.address.city}, {restaurant.address.state}
 												</span>
 											</div>
-											<span className="text-[oklch(0.45_0.03_145)]">•</span>
+											<span className="text-card-foreground/60">•</span>
 											<div className="flex flex-wrap gap-2">
 												{restaurant.categories.map((cat) => (
 													<Badge
 														key={cat}
 														variant="secondary"
-														className="font-serif-elegant font-medium shadow-sm px-3 py-1"
+														className="font-serif-elegant font-medium shadow-sm px-3 py-1 border border-primary/20"
 													>
 														{cat}
 													</Badge>
@@ -4519,7 +4517,7 @@ function App() {
 											</div>
 										</div>
 
-										{/* Star Rating - Bronze/Copper Accent */}
+										{/* Star Rating - Glowing Accent */}
 										<div className="flex items-center gap-3">
 											<div className="flex items-center gap-1">
 												{[...Array(5)].map((_, i) => (
@@ -4528,24 +4526,24 @@ function App() {
 														className={cn(
 															"size-5",
 															i < Math.floor(restaurant.rating)
-																? "fill-[oklch(0.45_0.08_35)] text-[oklch(0.45_0.08_35)]"
+																? "fill-secondary text-secondary drop-shadow-[0_0_8px_oklch(0.78_0.12_85_/_0.5)]"
 																: i < restaurant.rating
-																	? "fill-[oklch(0.45_0.08_35)]/50 text-[oklch(0.45_0.08_35)]"
+																	? "fill-secondary/50 text-secondary drop-shadow-[0_0_6px_oklch(0.78_0.12_85_/_0.3)]"
 																	: "fill-muted text-muted",
 														)}
 													/>
 												))}
 											</div>
-											<span className="text-lg font-serif-elegant font-semibold text-[oklch(0.45_0.08_35)]">
+											<span className="text-lg font-serif-elegant font-semibold text-secondary drop-shadow-[0_0_8px_oklch(0.78_0.12_85_/_0.4)]">
 												{restaurant.rating.toFixed(1)} / 5.0
 											</span>
-											<span className="text-sm text-[oklch(0.45_0.03_145)]">
+											<span className="text-sm text-card-foreground/70">
 												({restaurant.reviewCount} reviews)
 											</span>
 										</div>
 
 										{/* Dining Experience Summary */}
-										<p className="text-base font-serif-elegant text-[oklch(0.35_0.03_145)] leading-relaxed">
+										<p className="text-base font-serif-elegant text-card-foreground/80 leading-relaxed">
 											{restaurant.description}
 										</p>
 
@@ -4553,8 +4551,8 @@ function App() {
 										<div className="flex flex-wrap items-center gap-4 text-sm">
 											{/* Price Range */}
 											<div className="flex items-center gap-1.5">
-												<DollarSign className="size-4 text-[oklch(0.45_0.08_35)]" />
-												<span className="font-serif-elegant text-[oklch(0.35_0.03_145)]">
+												<DollarSign className="size-4 text-secondary stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.78_0.12_85_/_0.4)]" />
+												<span className="font-serif-elegant text-card-foreground/80">
 													{"$".repeat(restaurant.priceRange)} Pricing
 												</span>
 											</div>
@@ -4562,8 +4560,8 @@ function App() {
 											{/* Distance */}
 											{restaurant.distance !== undefined && (
 												<>
-													<span className="text-[oklch(0.45_0.03_145)]">•</span>
-													<span className="font-serif-elegant text-[oklch(0.35_0.03_145)]">
+													<span className="text-card-foreground/60">•</span>
+													<span className="font-serif-elegant text-card-foreground/80">
 														{restaurant.distance.toFixed(1)} miles away
 													</span>
 												</>
@@ -4572,10 +4570,10 @@ function App() {
 											{/* Operating Status */}
 											{restaurant.hours && (
 												<>
-													<span className="text-[oklch(0.45_0.03_145)]">•</span>
+													<span className="text-card-foreground/60">•</span>
 													<div className="flex items-center gap-2">
-														<Clock className="size-4 text-primary" />
-														<span className="font-serif-elegant text-[oklch(0.35_0.03_145)]">
+														<Clock className="size-4 text-primary stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.68_0.24_300_/_0.4)]" />
+														<span className="font-serif-elegant text-card-foreground/80">
 															{restaurant.hours.open} - {restaurant.hours.close}
 														</span>
 														<Badge
@@ -4585,7 +4583,7 @@ function App() {
 															className={cn(
 																"text-xs",
 																restaurant.isOpenNow &&
-																	"bg-[oklch(0.45_0.08_35)] hover:bg-[oklch(0.45_0.08_35)]/90",
+																	"bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.4)] border border-primary/40",
 															)}
 														>
 															{restaurant.isOpenNow ? "Open Now" : "Closed"}
@@ -4598,7 +4596,7 @@ function App() {
 										{/* View Details CTA */}
 										<div className="pt-3">
 											<Button
-												className="cursor-pointer group bg-[oklch(0.45_0.08_35)] text-white hover:bg-[oklch(0.38_0.08_35)] font-serif-elegant font-semibold tracking-wide shadow-md px-8 py-5 text-base transition-all duration-300"
+												className="cursor-pointer group bg-gradient-to-r from-primary via-secondary to-primary text-white hover:shadow-[0_0_30px_oklch(0.68_0.24_300_/_0.5)] font-serif-elegant font-semibold tracking-wide shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.4)] px-8 py-5 text-base transition-all duration-300 border-2 border-primary/60"
 												onClick={() =>
 													setSelectedRestaurant(
 														selectedRestaurant?.id === restaurant.id
@@ -4610,21 +4608,21 @@ function App() {
 												{selectedRestaurant?.id === restaurant.id
 													? "Hide Details"
 													: "View Details"}
-												<ArrowRight className="ml-2 h-5 w-5 transition-colors duration-300 group-hover:text-primary" />
+												<ArrowRight className="ml-2 h-5 w-5 stroke-[2.5]" />
 											</Button>
 										</div>
 
 										{/* Expanded Details Section */}
 										{selectedRestaurant?.id === restaurant.id && (
-											<div className="mt-6 pt-6 border-t-2 border-primary/20 space-y-5">
+											<div className="mt-6 pt-6 border-t-2 border-primary/30 shadow-[0_-2px_20px_oklch(0.68_0.24_300_/_0.1)] space-y-5">
 												{/* Full Address */}
 												<div className="flex items-start gap-3">
-													<MapPin className="size-5 mt-0.5 shrink-0 text-primary" />
+													<MapPin className="size-5 mt-0.5 shrink-0 text-primary stroke-[2.5] drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)]" />
 													<div className="flex-1">
-														<p className="text-sm font-serif-elegant font-semibold text-[oklch(0.2_0.03_145)] mb-1">
+														<p className="text-sm font-serif-elegant font-semibold text-card-foreground mb-1">
 															Full Address
 														</p>
-														<p className="text-base font-serif-elegant text-[oklch(0.35_0.03_145)]">
+														<p className="text-base font-serif-elegant text-card-foreground/80">
 															{restaurant.address.street}
 															<br />
 															{restaurant.address.city},{" "}
@@ -4638,14 +4636,14 @@ function App() {
 
 												{/* Recent Reviews */}
 												<div>
-													<h4 className="text-lg font-serif-display text-[oklch(0.2_0.03_145)] mb-4">
+													<h4 className="text-lg font-serif-display text-card-foreground mb-4">
 														Recent Reviews
 													</h4>
 													<div className="space-y-4">
 														{restaurant.reviews.map((review) => (
 															<div
 																key={review.id}
-																className="border-l-3 border-[oklch(0.45_0.08_35)] pl-4 bg-[oklch(0.96_0.01_75)] py-3 px-4 rounded-sm"
+																className="border-l-3 border-secondary pl-4 bg-[oklch(0.96_0.01_75)] py-3 px-4 rounded-sm shadow-[0_0_15px_oklch(0.78_0.12_85_/_0.15)]"
 															>
 																<div className="flex items-center gap-3 mb-2">
 																	<span className="font-serif-elegant font-semibold text-sm text-[oklch(0.2_0.03_145)]">
@@ -4658,7 +4656,7 @@ function App() {
 																				className={cn(
 																					"size-3.5",
 																					i < Math.floor(review.rating)
-																						? "fill-[oklch(0.45_0.08_35)] text-[oklch(0.45_0.08_35)]"
+																						? "fill-secondary text-secondary drop-shadow-[0_0_6px_oklch(0.78_0.12_85_/_0.4)]"
 																						: "fill-muted text-muted",
 																				)}
 																			/>
@@ -4694,18 +4692,18 @@ function App() {
 					))}
 				</div>
 
-				{/* Empty State - Elegant Prompt */}
+				{/* Empty State - Floating Light Module */}
 				{restaurants.length === 0 && (
-					<Card className="text-center py-16 shadow-ornate border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.95_0.012_75)] relative overflow-hidden">
-						<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+					<Card className="text-center py-16 shadow-[0_0_30px_oklch(0.68_0.24_300_/_0.25),0_8px_24px_black] border-2 border-primary/40 bg-card relative overflow-hidden">
+						<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.68_0.24_300_/_0.15)_8px,oklch(0.68_0.24_300_/_0.15)_9px)] pointer-events-none" />
 						<CardContent className="relative z-10">
-							<div className="mx-auto w-20 h-20 rounded-full bg-primary/15 flex items-center justify-center mb-6 border-2 border-primary/30">
-								<Search className="size-10 text-primary" />
+							<div className="mx-auto w-20 h-20 rounded-sm bg-gradient-to-br from-primary/40 to-primary/20 flex items-center justify-center mb-6 border-2 border-primary/50 shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.4)]">
+								<Search className="size-10 text-primary stroke-[2.5] drop-shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.5)]" />
 							</div>
-							<h3 className="text-3xl font-serif-display text-[oklch(0.2_0.03_145)] mb-3">
+							<h3 className="text-3xl font-serif-display text-card-foreground mb-3">
 								Begin Your Expedition
 							</h3>
-							<p className="text-[oklch(0.35_0.03_145)] font-serif-elegant text-lg max-w-md mx-auto">
+							<p className="text-card-foreground/80 font-serif-elegant text-lg max-w-md mx-auto">
 								Chart your destination above to unveil extraordinary culinary
 								experiences awaiting your discovery
 							</p>
@@ -4713,21 +4711,24 @@ function App() {
 					</Card>
 				)}
 
-				{/* Empty Favorites State */}
+				{/* Empty Favorites State - Floating Light Module */}
 				{showFavorites &&
 					displayedRestaurants.length === 0 &&
 					restaurants.length > 0 && (
-						<Card className="text-center py-12 shadow-ornate border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.98_0.01_75)] to-[oklch(0.95_0.012_75)] relative overflow-hidden">
-							<div className="absolute inset-0 opacity-15 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.85_0.02_70_/_0.1)_8px,oklch(0.85_0.02_70_/_0.1)_9px)]" />
+						<Card className="text-center py-12 shadow-[0_0_30px_oklch(0.68_0.24_300_/_0.25),0_8px_24px_black] border-2 border-primary/40 bg-card relative overflow-hidden">
+							<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.68_0.24_300_/_0.15)_8px,oklch(0.68_0.24_300_/_0.15)_9px)] pointer-events-none" />
 							<CardContent className="relative z-10">
-								<Heart className="size-16 mx-auto text-primary/40 mb-4" />
-								<h3 className="text-xl font-serif-display text-[oklch(0.2_0.03_145)] mb-2">
+								<Heart className="size-16 mx-auto text-primary/50 mb-4 drop-shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.3)]" />
+								<h3 className="text-xl font-serif-display text-card-foreground mb-2">
 									No Favorites Yet
 								</h3>
-								<p className="text-[oklch(0.35_0.03_145)] font-serif-elegant mb-4">
+								<p className="text-card-foreground/80 font-serif-elegant mb-4">
 									Start adding restaurants to your favorites list
 								</p>
-								<Button onClick={() => setShowFavorites(false)}>
+								<Button
+									onClick={() => setShowFavorites(false)}
+									className="bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.4)] border-2 border-primary/60"
+								>
 									Browse Restaurants
 								</Button>
 							</CardContent>
@@ -4735,13 +4736,13 @@ function App() {
 					)}
 			</div>
 
-			{/* Professional Footer - Full Width with Muted Deep Aubergine Background */}
-			<footer className="relative mt-16 md:mt-24 bg-gradient-to-b from-[oklch(0.18_0.05_310)] to-[oklch(0.12_0.04_310)] border-t-2 border-primary/30">
+			{/* Professional Footer - Deep Midnight Navy with Glowing Accents */}
+			<footer className="relative mt-16 md:mt-24 bg-gradient-to-b from-[oklch(0.10_0.018_280)] to-[oklch(0.08_0.02_280)] border-t-2 border-primary/40 shadow-[0_-4px_30px_oklch(0.68_0.24_300_/_0.15)]">
 				<div className="container mx-auto px-4 md:px-8 py-10 md:py-16">
 					<div className="grid grid-cols-1 md:grid-cols-4 gap-10">
 						{/* Company Info */}
 						<div className="space-y-5">
-							<h3 className="text-xl font-serif-display text-white tracking-wide">
+							<h3 className="text-xl font-serif-display text-white tracking-wide drop-shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.3)]">
 								Mapetite
 							</h3>
 							<p className="text-sm font-serif-elegant text-white/90 leading-relaxed">
@@ -4759,7 +4760,7 @@ function App() {
 								<li>
 									<a
 										href="#about-us"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										About Us
 									</a>
@@ -4767,7 +4768,7 @@ function App() {
 								<li>
 									<a
 										href="#our-story"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										Our Story
 									</a>
@@ -4775,7 +4776,7 @@ function App() {
 								<li>
 									<a
 										href="#team"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										Team
 									</a>
@@ -4792,7 +4793,7 @@ function App() {
 								<li>
 									<a
 										href="#privacy-policy"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										Privacy Policy
 									</a>
@@ -4800,7 +4801,7 @@ function App() {
 								<li>
 									<a
 										href="#terms-of-service"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										Terms of Service
 									</a>
@@ -4808,7 +4809,7 @@ function App() {
 								<li>
 									<a
 										href="#cookies"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										Cookie Policy
 									</a>
@@ -4825,7 +4826,7 @@ function App() {
 								<li>
 									<a
 										href="mailto:info@mapetite.com"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										info@mapetite.com
 									</a>
@@ -4833,7 +4834,7 @@ function App() {
 								<li>
 									<a
 										href="#support"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										Support Center
 									</a>
@@ -4841,7 +4842,7 @@ function App() {
 								<li>
 									<a
 										href="#contact-us"
-										className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+										className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 									>
 										Contact Us
 									</a>
@@ -4851,7 +4852,7 @@ function App() {
 					</div>
 
 					{/* Bottom Bar */}
-					<div className="mt-10 md:mt-16 pt-6 md:pt-8 border-t-2 border-white/20">
+					<div className="mt-10 md:mt-16 pt-6 md:pt-8 border-t-2 border-primary/30">
 						<div className="flex flex-col md:flex-row justify-between items-center gap-4">
 							<p className="text-sm font-serif-elegant text-white/90">
 								© 2024 Mapetite. All rights reserved.
@@ -4859,25 +4860,25 @@ function App() {
 							<div className="flex gap-6">
 								<a
 									href="#facebook"
-									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 								>
 									Facebook
 								</a>
 								<a
 									href="#twitter"
-									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 								>
 									Twitter
 								</a>
 								<a
 									href="#instagram"
-									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 								>
 									Instagram
 								</a>
 								<a
 									href="#linkedin"
-									className="text-sm font-serif-elegant text-[oklch(0.65_0.08_50)] hover:text-secondary transition-colors cursor-pointer"
+									className="text-sm font-serif-elegant text-secondary hover:text-primary hover:drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)] transition-all cursor-pointer"
 								>
 									LinkedIn
 								</a>

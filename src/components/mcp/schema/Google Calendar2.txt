@@ -1,6 +1,6 @@
-Mcp name: Google Calendar
-Mcp Id: 6874a16d565d2b53f95cd043
-Mcp Url: https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Google Calendar"
+Mcp id: "6874a16d565d2b53f95cd043"
+Mcp url: "https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLECALENDAR_PATCH_EVENT
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GOOGLECALENDAR_PATCH_EVENT ends.
 
 
-Mcp name: Google Calendar
-Mcp Id: 6874a16d565d2b53f95cd043
-Mcp Url: https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Google Calendar"
+Mcp id: "6874a16d565d2b53f95cd043"
+Mcp url: "https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLECALENDAR_QUICK_ADD
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GOOGLECALENDAR_QUICK_ADD ends.
 
 
-Mcp name: Google Calendar
-Mcp Id: 6874a16d565d2b53f95cd043
-Mcp Url: https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Google Calendar"
+Mcp id: "6874a16d565d2b53f95cd043"
+Mcp url: "https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLECALENDAR_REMOVE_ATTENDEE
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GOOGLECALENDAR_REMOVE_ATTENDEE ends.
 
 
-Mcp name: Google Calendar
-Mcp Id: 6874a16d565d2b53f95cd043
-Mcp Url: https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Google Calendar"
+Mcp id: "6874a16d565d2b53f95cd043"
+Mcp url: "https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLECALENDAR_SETTINGS_LIST
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GOOGLECALENDAR_SETTINGS_LIST ends.
 
 
-Mcp name: Google Calendar
-Mcp Id: 6874a16d565d2b53f95cd043
-Mcp Url: https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Google Calendar"
+Mcp id: "6874a16d565d2b53f95cd043"
+Mcp url: "https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLECALENDAR_SETTINGS_WATCH
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GOOGLECALENDAR_SETTINGS_WATCH ends.
 
 
-Mcp name: Google Calendar
-Mcp Id: 6874a16d565d2b53f95cd043
-Mcp Url: https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Google Calendar"
+Mcp id: "6874a16d565d2b53f95cd043"
+Mcp url: "https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLECALENDAR_SYNC_EVENTS
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GOOGLECALENDAR_SYNC_EVENTS ends.
 
 
-Mcp name: Google Calendar
-Mcp Id: 6874a16d565d2b53f95cd043
-Mcp Url: https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Google Calendar"
+Mcp id: "6874a16d565d2b53f95cd043"
+Mcp url: "https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLECALENDAR_UPDATE_ACL_RULE
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GOOGLECALENDAR_UPDATE_ACL_RULE ends.
 
 
-Mcp name: Google Calendar
-Mcp Id: 6874a16d565d2b53f95cd043
-Mcp Url: https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Google Calendar"
+Mcp id: "6874a16d565d2b53f95cd043"
+Mcp url: "https://backend.composio.dev/v3/mcp/a123b074-4724-4fa8-89c2-a7746b7f8828/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GOOGLECALENDAR_UPDATE_EVENT
 

@@ -1,6 +1,6 @@
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_FETCH_BLOCK_METADATA
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of NOTION_FETCH_BLOCK_METADATA ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_FETCH_COMMENTS
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of NOTION_FETCH_COMMENTS ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_FETCH_DATA
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of NOTION_FETCH_DATA ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_FETCH_DATABASE
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of NOTION_FETCH_DATABASE ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_FETCH_ROW
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of NOTION_FETCH_ROW ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_GET_ABOUT_ME
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of NOTION_GET_ABOUT_ME ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_GET_ABOUT_USER
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of NOTION_GET_ABOUT_USER ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_GET_PAGE_PROPERTY_ACTION
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of NOTION_GET_PAGE_PROPERTY_ACTION ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_INSERT_ROW_DATABASE
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of NOTION_INSERT_ROW_DATABASE ends.
 
 
-Mcp name: Notion
-Mcp Id: 686de4616fd1cae1afbb55b9
-Mcp Url: https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Notion"
+Mcp id: "686de4616fd1cae1afbb55b9"
+Mcp url: "https://backend.composio.dev/v3/mcp/4c5f76f7-bbb8-4a8a-a478-ab5a2d7b0fa2/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: NOTION_LIST_USERS
 

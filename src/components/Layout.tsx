@@ -19,28 +19,28 @@ export function Layout({ children }: LayoutProps) {
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
 	return (
-		<div className="flex min-h-screen w-full overflow-x-hidden">
-			{/* Left Sidebar - Curated Explorer's Journal Style - Hidden on mobile */}
-			<aside className="hidden md:flex w-72 flex-shrink-0 border-r-2 border-primary/20 bg-sidebar relative texture-linen">
-				{/* Subtle wood grain overlay */}
-				<div className="absolute inset-0 opacity-10 bg-[linear-gradient(90deg,transparent_0%,oklch(0.3_0.04_150)_50%,transparent_100%)] bg-[length:3px_100%]" />
+		<div className="flex min-h-screen w-full overflow-x-hidden bg-background">
+			{/* Left Sidebar - Ultra-Premium Dark Theme - Hidden on mobile */}
+			<aside className="hidden md:flex w-72 flex-shrink-0 border-r-2 border-primary/30 bg-sidebar relative shadow-[0_0_30px_oklch(0.68_0.24_300_/_0.15)]">
+				{/* Subtle dark texture overlay with purple glow */}
+				<div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_30%_40%,oklch(0.68_0.24_300_/_0.1)_0%,transparent_50%)]" />
 
 				<div className="flex h-full flex-col relative z-10">
-					{/* Logo/Brand - Engraved Plate Style */}
-					<div className="border-b-2 border-primary/30 p-8 bg-gradient-to-b from-sidebar to-[oklch(0.14_0.015_145)]">
+					{/* Logo/Brand - Premium Dark Style with Glow */}
+					<div className="border-b-2 border-primary/30 p-8 bg-gradient-to-b from-sidebar to-[oklch(0.08_0.02_280)]">
 						<Link to="/" className="block">
-							{/* Ornamental frame */}
-							<div className="border-2 border-primary/40 rounded-sm p-4 bg-[oklch(0.12_0.01_145)] shadow-ornate">
+							{/* Glowing ornamental frame */}
+							<div className="border-2 border-primary/50 rounded-sm p-4 bg-[oklch(0.08_0.02_280)] shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.3),0_4px_12px_black]">
 								<div className="flex items-center gap-4">
-									{/* Etched icon with gold accent */}
-									<div className="flex h-14 w-14 items-center justify-center rounded-md bg-gradient-to-br from-primary via-[oklch(0.6_0.1_60)] to-[oklch(0.55_0.08_50)] shadow-lg border border-primary/50">
-										<Utensils className="h-8 w-8 text-[oklch(0.16_0.02_145)] stroke-[2.5]" />
+									{/* Icon with digital gold/purple gradient and glow */}
+									<div className="flex h-14 w-14 items-center justify-center rounded-md bg-gradient-to-br from-primary via-secondary to-primary shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.6)] border-2 border-primary/60">
+										<Utensils className="h-8 w-8 text-white stroke-[2.5] drop-shadow-[0_0_8px_white]" />
 									</div>
 									<div>
-										<h1 className="text-2xl font-serif-display text-primary tracking-wide">
+										<h1 className="text-2xl font-serif-display text-white tracking-wide drop-shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.5)]">
 											Mapetite
 										</h1>
-										<p className="text-xs text-primary/70 font-serif-elegant tracking-wider uppercase">
+										<p className="text-xs text-secondary font-serif-elegant tracking-wider uppercase drop-shadow-[0_0_8px_oklch(0.78_0.12_85_/_0.4)]">
 											Curated Dining
 										</p>
 									</div>
@@ -49,7 +49,7 @@ export function Layout({ children }: LayoutProps) {
 						</Link>
 					</div>
 
-					{/* Navigation - Elegant Journal Entries */}
+					{/* Navigation - Premium Dark with Glowing Effects */}
 					<nav className="flex-1 p-6">
 						<div className="space-y-3">
 							{navItems.map((item) => {
@@ -64,28 +64,28 @@ export function Layout({ children }: LayoutProps) {
 											"flex items-center gap-4 rounded-sm px-5 py-4 text-base font-serif-elegant transition-all duration-200",
 											"border-l-4 relative overflow-hidden group",
 											isActive
-												? "bg-gradient-to-r from-primary/20 to-primary/5 border-primary text-primary shadow-md"
-												: "border-transparent text-sidebar-foreground/70 hover:border-primary/50 hover:bg-primary/5 hover:text-primary",
+												? "bg-gradient-to-r from-primary/25 to-primary/10 border-primary text-white shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.3)]"
+												: "border-transparent text-white/70 hover:border-secondary hover:bg-gradient-to-r hover:from-secondary/15 hover:to-secondary/5 hover:text-white",
 										)}
 									>
-										{/* Subtle etched background pattern on hover */}
-										<div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(circle_at_center,oklch(0.65_0.12_70_/_0.05)_0%,transparent_70%)]" />
+										{/* Glowing background pattern on hover */}
+										<div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(circle_at_center,oklch(0.78_0.12_85_/_0.08)_0%,transparent_70%)]" />
 
 										<Icon
 											className={cn(
 												"h-6 w-6 relative z-10 transition-all",
 												isActive
-													? "stroke-[2.5] drop-shadow-[0_0_8px_oklch(0.65_0.12_70_/_0.4)]"
-													: "stroke-[2]",
+													? "stroke-[2.5] drop-shadow-[0_0_12px_oklch(0.68_0.24_300_/_0.8)] text-primary"
+													: "stroke-[2] group-hover:text-secondary group-hover:drop-shadow-[0_0_10px_oklch(0.78_0.12_85_/_0.6)]",
 											)}
 										/>
 										<span className="relative z-10 tracking-wide">
 											{item.label}
 										</span>
 
-										{/* Active indicator ornament */}
+										{/* Active indicator with strong glow */}
 										{isActive && (
-											<div className="ml-auto h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_oklch(0.65_0.12_70)]" />
+											<div className="ml-auto h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.8),0_0_20px_oklch(0.68_0.24_300_/_0.4)]" />
 										)}
 									</Link>
 								);
@@ -93,19 +93,19 @@ export function Layout({ children }: LayoutProps) {
 						</div>
 					</nav>
 
-					{/* Footer - Journal Signature */}
+					{/* Footer - Premium Dark Signature */}
 					<div className="border-t-2 border-primary/30 p-6">
-						<div className="rounded-sm border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.14_0.015_145)] to-[oklch(0.18_0.02_145)] p-5 shadow-layered">
-							{/* Decorative corner ornaments */}
-							<div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-primary/50" />
-							<div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-primary/50" />
-							<div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-primary/50" />
-							<div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary/50" />
+						<div className="rounded-sm border-2 border-primary/40 bg-gradient-to-br from-[oklch(0.08_0.02_280)] to-[oklch(0.12_0.025_285)] p-5 shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.2)] relative">
+							{/* Decorative glowing corner ornaments */}
+							<div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-primary/70 shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)]" />
+							<div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-secondary/70 shadow-[0_0_8px_oklch(0.78_0.12_85_/_0.5)]" />
+							<div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-secondary/70 shadow-[0_0_8px_oklch(0.78_0.12_85_/_0.5)]" />
+							<div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary/70 shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)]" />
 
-							<p className="text-sm font-serif-elegant text-primary/90 leading-relaxed">
+							<p className="text-sm font-serif-elegant text-white leading-relaxed">
 								Discover exquisite restaurants worldwide
 							</p>
-							<p className="mt-2 text-xs text-primary/60 tracking-wider uppercase font-medium">
+							<p className="mt-2 text-xs text-secondary tracking-wider uppercase font-medium drop-shadow-[0_0_6px_oklch(0.78_0.12_85_/_0.4)]">
 								Est. 2024 · Premium Dining
 							</p>
 						</div>
@@ -117,42 +117,42 @@ export function Layout({ children }: LayoutProps) {
 			{isMobileMenuOpen && (
 				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
 				<div
-					className="md:hidden fixed inset-0 z-50 bg-black/50"
+					className="md:hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
 					onClick={closeMobileMenu}
 				>
 					{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
 					<aside
-						className="absolute top-0 right-0 h-full w-80 max-w-[85vw] border-l-2 border-primary/20 bg-sidebar shadow-2xl animate-in slide-in-from-right"
+						className="absolute top-0 right-0 h-full w-80 max-w-[85vw] border-l-2 border-primary/40 bg-sidebar shadow-[0_0_40px_oklch(0.68_0.24_300_/_0.3)] animate-in slide-in-from-right"
 						onClick={(e) => e.stopPropagation()}
 					>
-						{/* Subtle wood grain overlay */}
-						<div className="absolute inset-0 opacity-10 bg-[linear-gradient(90deg,transparent_0%,oklch(0.3_0.04_150)_50%,transparent_100%)] bg-[length:3px_100%]" />
+						{/* Subtle dark texture with purple glow */}
+						<div className="absolute inset-0 opacity-5 bg-[radial-gradient(circle_at_30%_40%,oklch(0.68_0.24_300_/_0.15)_0%,transparent_50%)]" />
 
 						<div className="flex h-full flex-col relative z-10">
 							{/* Mobile Menu Header */}
-							<div className="border-b-2 border-primary/30 p-6 bg-gradient-to-b from-sidebar to-[oklch(0.14_0.015_145)]">
+							<div className="border-b-2 border-primary/30 p-6 bg-gradient-to-b from-sidebar to-[oklch(0.08_0.02_280)]">
 								<div className="flex items-center justify-between mb-4">
-									<h2 className="text-xl font-serif-display text-primary tracking-wide">
+									<h2 className="text-xl font-serif-display text-white tracking-wide drop-shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.4)]">
 										Menu
 									</h2>
 									<button
 										type="button"
 										onClick={closeMobileMenu}
-										className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/20 hover:bg-primary/30 transition-colors"
+										className="h-10 w-10 flex items-center justify-center rounded-full bg-primary/30 hover:bg-primary/40 transition-colors shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.4)]"
 									>
-										<X className="h-5 w-5 text-primary" />
+										<X className="h-5 w-5 text-white drop-shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.8)]" />
 									</button>
 								</div>
-								<div className="border-2 border-primary/40 rounded-sm p-4 bg-[oklch(0.12_0.01_145)] shadow-ornate">
+								<div className="border-2 border-primary/50 rounded-sm p-4 bg-[oklch(0.08_0.02_280)] shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.3)]">
 									<div className="flex items-center gap-4">
-										<div className="flex h-12 w-12 items-center justify-center rounded-md bg-gradient-to-br from-primary via-[oklch(0.6_0.1_60)] to-[oklch(0.55_0.08_50)] shadow-lg border border-primary/50">
-											<Utensils className="h-6 w-6 text-[oklch(0.16_0.02_145)] stroke-[2.5]" />
+										<div className="flex h-12 w-12 items-center justify-center rounded-md bg-gradient-to-br from-primary via-secondary to-primary shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.6)] border-2 border-primary/60">
+											<Utensils className="h-6 w-6 text-white stroke-[2.5] drop-shadow-[0_0_8px_white]" />
 										</div>
 										<div>
-											<h1 className="text-xl font-serif-display text-primary tracking-wide">
+											<h1 className="text-xl font-serif-display text-white tracking-wide drop-shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.5)]">
 												Mapetite
 											</h1>
-											<p className="text-xs text-primary/70 font-serif-elegant tracking-wider uppercase">
+											<p className="text-xs text-secondary font-serif-elegant tracking-wider uppercase drop-shadow-[0_0_8px_oklch(0.78_0.12_85_/_0.4)]">
 												Curated Dining
 											</p>
 										</div>
@@ -176,18 +176,18 @@ export function Layout({ children }: LayoutProps) {
 													"flex items-center gap-4 rounded-sm px-5 py-4 text-base font-serif-elegant transition-all duration-200",
 													"border-l-4 relative overflow-hidden group",
 													isActive
-														? "bg-gradient-to-r from-primary/20 to-primary/5 border-primary text-primary shadow-md"
-														: "border-transparent text-sidebar-foreground/70 hover:border-primary/50 hover:bg-primary/5 hover:text-primary",
+														? "bg-gradient-to-r from-primary/25 to-primary/10 border-primary text-white shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.3)]"
+														: "border-transparent text-white/70 hover:border-secondary hover:bg-gradient-to-r hover:from-secondary/15 hover:to-secondary/5 hover:text-white",
 												)}
 											>
-												<div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(circle_at_center,oklch(0.65_0.12_70_/_0.05)_0%,transparent_70%)]" />
+												<div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-[radial-gradient(circle_at_center,oklch(0.78_0.12_85_/_0.08)_0%,transparent_70%)]" />
 
 												<Icon
 													className={cn(
 														"h-6 w-6 relative z-10 transition-all",
 														isActive
-															? "stroke-[2.5] drop-shadow-[0_0_8px_oklch(0.65_0.12_70_/_0.4)]"
-															: "stroke-[2]",
+															? "stroke-[2.5] drop-shadow-[0_0_12px_oklch(0.68_0.24_300_/_0.8)] text-primary"
+															: "stroke-[2] group-hover:text-secondary group-hover:drop-shadow-[0_0_10px_oklch(0.78_0.12_85_/_0.6)]",
 													)}
 												/>
 												<span className="relative z-10 tracking-wide">
@@ -195,7 +195,7 @@ export function Layout({ children }: LayoutProps) {
 												</span>
 
 												{isActive && (
-													<div className="ml-auto h-2 w-2 rounded-full bg-primary shadow-[0_0_8px_oklch(0.65_0.12_70)]" />
+													<div className="ml-auto h-2 w-2 rounded-full bg-primary shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.8),0_0_20px_oklch(0.68_0.24_300_/_0.4)]" />
 												)}
 											</Link>
 										);
@@ -205,16 +205,16 @@ export function Layout({ children }: LayoutProps) {
 
 							{/* Mobile Footer */}
 							<div className="border-t-2 border-primary/30 p-6">
-								<div className="rounded-sm border-2 border-primary/30 bg-gradient-to-br from-[oklch(0.14_0.015_145)] to-[oklch(0.18_0.02_145)] p-5 shadow-layered relative">
-									<div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-primary/50" />
-									<div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-primary/50" />
-									<div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-primary/50" />
-									<div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary/50" />
+								<div className="rounded-sm border-2 border-primary/40 bg-gradient-to-br from-[oklch(0.08_0.02_280)] to-[oklch(0.12_0.025_285)] p-5 shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.2)] relative">
+									<div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-primary/70 shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)]" />
+									<div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-secondary/70 shadow-[0_0_8px_oklch(0.78_0.12_85_/_0.5)]" />
+									<div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-secondary/70 shadow-[0_0_8px_oklch(0.78_0.12_85_/_0.5)]" />
+									<div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-primary/70 shadow-[0_0_8px_oklch(0.68_0.24_300_/_0.5)]" />
 
-									<p className="text-sm font-serif-elegant text-primary/90 leading-relaxed">
+									<p className="text-sm font-serif-elegant text-white leading-relaxed">
 										Discover exquisite restaurants worldwide
 									</p>
-									<p className="mt-2 text-xs text-primary/60 tracking-wider uppercase font-medium">
+									<p className="mt-2 text-xs text-secondary tracking-wider uppercase font-medium drop-shadow-[0_0_6px_oklch(0.78_0.12_85_/_0.4)]">
 										Est. 2024 · Premium Dining
 									</p>
 								</div>
@@ -224,24 +224,24 @@ export function Layout({ children }: LayoutProps) {
 				</div>
 			)}
 
-			{/* Main Content - Warm Parchment Background with Vertical Gradient */}
-			<div className="flex flex-1 flex-col bg-gradient-to-b from-[oklch(0.97_0.008_75)] to-[oklch(0.95_0.012_65)] relative min-w-0 overflow-x-hidden">
-				{/* Extremely subtle parchment/paper texture - fine grain */}
-				<div className="absolute inset-0 opacity-[0.04] bg-[repeating-linear-gradient(0deg,transparent,transparent_1px,oklch(0.82_0.015_65)_1px,oklch(0.82_0.015_65)_1.5px)]" />
-				<div className="absolute inset-0 opacity-[0.03] bg-[repeating-linear-gradient(90deg,transparent,transparent_1px,oklch(0.85_0.012_68)_1px,oklch(0.85_0.012_68)_1.5px)]" />
+			{/* Main Content - Deep Midnight Navy Background */}
+			<div className="flex flex-1 flex-col bg-background relative min-w-0 overflow-x-hidden">
+				{/* Subtle dark texture with purple undertone */}
+				<div className="absolute inset-0 opacity-[0.03] bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,oklch(0.15_0.02_285)_2px,oklch(0.15_0.02_285)_2.5px)]" />
+				<div className="absolute inset-0 opacity-[0.02] bg-[repeating-linear-gradient(90deg,transparent,transparent_2px,oklch(0.14_0.015_290)_2px,oklch(0.14_0.015_290)_2.5px)]" />
 
-				{/* Ultra-subtle organic noise pattern - simulates paper fiber */}
-				<div className="absolute inset-0 opacity-[0.05] bg-[radial-gradient(circle_at_20%_30%,oklch(0.88_0.01_70)_0%,transparent_1px),radial-gradient(circle_at_60%_70%,oklch(0.86_0.01_68)_0%,transparent_1px),radial-gradient(circle_at_40%_50%,oklch(0.87_0.01_72)_0%,transparent_1px)] bg-[length:4px_4px]" />
+				{/* Ambient purple glow effects */}
+				<div className="absolute inset-0 opacity-[0.08] bg-[radial-gradient(circle_at_20%_30%,oklch(0.68_0.24_300_/_0.15)_0%,transparent_40%),radial-gradient(circle_at_80%_70%,oklch(0.78_0.12_85_/_0.1)_0%,transparent_40%)]" />
 
-				{/* Very subtle vignette - maintains depth without darkening */}
-				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,oklch(0.92_0.01_70_/_0.08)_100%)]" />
+				{/* Subtle vignette for depth */}
+				<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,oklch(0.08_0.02_280_/_0.3)_100%)]" />
 
-				{/* Top Navigation Bar - Subtle Journal Header */}
-				<header className="border-b-2 border-primary/20 bg-gradient-to-b from-[oklch(0.96_0.015_75)] to-[oklch(0.94_0.015_75)] shadow-sm relative z-10">
+				{/* Top Navigation Bar - Premium Dark Header */}
+				<header className="border-b-2 border-primary/30 bg-gradient-to-b from-[oklch(0.10_0.018_280)] to-[oklch(0.12_0.015_280)] shadow-[0_4px_20px_oklch(0.68_0.24_300_/_0.15)] relative z-10">
 					<div className="flex h-16 items-center justify-between px-4 md:px-8">
 						<div className="flex items-center gap-3 md:gap-4">
-							<Search className="h-5 w-5 text-primary/60" />
-							<span className="text-sm md:text-base font-serif-elegant text-foreground tracking-wide">
+							<Search className="h-5 w-5 text-primary drop-shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.6)]" />
+							<span className="text-sm md:text-base font-serif-elegant text-white tracking-wide">
 								{location.pathname === "/"
 									? "Welcome, Explorer"
 									: "Restaurant Search"}
@@ -253,12 +253,12 @@ export function Layout({ children }: LayoutProps) {
 							<button
 								type="button"
 								onClick={() => setIsMobileMenuOpen(true)}
-								className="md:hidden h-10 w-10 flex items-center justify-center rounded-full bg-primary hover:bg-primary/90 transition-colors shadow-md"
+								className="md:hidden h-10 w-10 flex items-center justify-center rounded-full bg-gradient-to-br from-primary to-secondary hover:opacity-90 transition-opacity shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.5)]"
 								aria-label="Open menu"
 							>
-								<Menu className="h-5 w-5 text-[oklch(0.16_0.02_145)]" />
+								<Menu className="h-5 w-5 text-white drop-shadow-[0_0_8px_white]" />
 							</button>
-							<div className="hidden md:block h-9 w-9 rounded-full bg-gradient-to-br from-primary to-secondary shadow-md border-2 border-primary/30" />
+							<div className="hidden md:block h-9 w-9 rounded-full bg-gradient-to-br from-primary to-secondary shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.5)] border-2 border-primary/40" />
 						</div>
 					</div>
 				</header>

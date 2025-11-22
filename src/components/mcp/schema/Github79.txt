@@ -1,6 +1,6 @@
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_PROJECT
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_PROJECT ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_PULL_REQUEST
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_PULL_REQUEST ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_PULL_REQUEST_BRANCH
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_PULL_REQUEST_BRANCH ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_REFERENCE
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_REFERENCE ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_RELEASE
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_RELEASE ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_RELEASE_ASSET
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_RELEASE_ASSET ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_REPOSITORY
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_REPOSITORY ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_REPOSITORY_INVITATION
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_REPOSITORY_INVITATION ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_REPOSITORY_RULESET
 
@@ -124,15 +124,15 @@ outputSchema:
 schema info of GITHUB_UPDATE_A_REPOSITORY_RULESET ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_UPDATE_A_REPOSITORY_VARIABLE
 
 Here is the input and output schema info of Tool GITHUB_UPDATE_A_REPOSITORY_VARIABLE of Mcp Github (Mcp Id: 686de4e26fd1cae1afbb55bc):
 inputSchema:
-{"type":"object","properties":{"name":{"type":"string","description":"The new name for the Actions variable. If provided, renames the variable. Allows alphanumeric characters or underscores; case-insensitive.","title":"Name","examples":["NEW_VARIABLE_NAME","UPDATED_DEPLOY_SERVER"]},"owner":{"type":"string","description":"The current name of the Actions variable to update (path parameter); case-insensitive.","title":"Owner","examples":["EXISTING_VARIABLE_NAME","DEPLOY_SERVER_HOST"]},"repo":{"type":"string","description":"The name of the repository, without the `.git` extension; case-insensitive.","title":"Repo","examples":["hello-world","my-project-repo"]},"value":{"type":"string","description":"The new value for the Actions variable. If omitted, its current value is retained. An empty string clears the value.","title":"Value","examples":["new_secret_value_123","prod.example.com",""]}},"required":["owner","repo","owner"],"title":"UpdateARepositoryVariableRequest","description":"Request to update a GitHub Actions variable in a repository, optionally changing its name, value, or both."}
+{}
 outputSchema:
-{"type":"object","properties":{"data":{"type":"object","description":"API response data; typically empty for a successful variable update (HTTP 204 No Content).","title":"Data","additionalProperties":true},"error":{"type":"string","description":"Error if any occurred during the execution of the action","title":"Error","default":null,"nullable":true},"successful":{"type":"boolean","description":"Whether or not the action execution was successful or not","title":"Successful"}},"required":["successful"],"title":"UpdateARepositoryVariableResponseWrapper"}
+{}
 schema info of GITHUB_UPDATE_A_REPOSITORY_VARIABLE ends.
