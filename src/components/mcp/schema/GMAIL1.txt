@@ -1,6 +1,6 @@
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_GET_PEOPLE
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GMAIL_GET_PEOPLE ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_GET_PROFILE
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GMAIL_GET_PROFILE ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_LIST_DRAFTS
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GMAIL_LIST_DRAFTS ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_LIST_LABELS
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GMAIL_LIST_LABELS ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_LIST_THREADS
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GMAIL_LIST_THREADS ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_MODIFY_THREAD_LABELS
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GMAIL_MODIFY_THREAD_LABELS ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_MOVE_TO_TRASH
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GMAIL_MOVE_TO_TRASH ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_PATCH_LABEL
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of GMAIL_PATCH_LABEL ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_REMOVE_LABEL
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of GMAIL_REMOVE_LABEL ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_REPLY_TO_THREAD
 

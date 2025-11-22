@@ -1,6 +1,6 @@
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REGISTRATION_TOKEN_FOR_AN_ORGANIZATION
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_REGISTRATION_TOKEN_FOR_AN_ORGANIZATION ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REGISTRATION_TOKEN_FOR_A_REPOSITORY
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_REGISTRATION_TOKEN_FOR_A_REPOSITORY ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_RELEASE
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_RELEASE ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REMOVE_TOKEN_FOR_AN_ORGANIZATION
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_REMOVE_TOKEN_FOR_AN_ORGANIZATION ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REMOVE_TOKEN_FOR_A_REPOSITORY
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_REMOVE_TOKEN_FOR_A_REPOSITORY ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REPLY_FOR_A_REVIEW_COMMENT
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_REPLY_FOR_A_REVIEW_COMMENT ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REPOSITORY_DISPATCH_EVENT
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_REPOSITORY_DISPATCH_EVENT ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REPOSITORY_FOR_THE_AUTHENTICATED_USER
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_REPOSITORY_FOR_THE_AUTHENTICATED_USER ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REPOSITORY_FROM_AN_UNPUBLISHED_CODESPACE
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_REPOSITORY_FROM_AN_UNPUBLISHED_CODESPACE ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_REPOSITORY_PROJECT
 

@@ -1,6 +1,6 @@
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PACKAGE_VERSIONS_FOR_A_PACKAGE_OWNED_BY_A_USER
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GITHUB_LIST_PACKAGE_VERSIONS_FOR_A_PACKAGE_OWNED_BY_A_USER ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PENDING_TEAM_INVITATIONS
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GITHUB_LIST_PENDING_TEAM_INVITATIONS ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PROJECT_CARDS
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GITHUB_LIST_PROJECT_CARDS ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PROJECT_COLLABORATORS
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GITHUB_LIST_PROJECT_COLLABORATORS ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PROJECT_COLUMNS
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GITHUB_LIST_PROJECT_COLUMNS ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PUBLIC_EMAIL_ADDRESSES_FOR_THE_AUTHENTICATED_USER
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GITHUB_LIST_PUBLIC_EMAIL_ADDRESSES_FOR_THE_AUTHENTICATED_USER ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PUBLIC_EVENTS
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GITHUB_LIST_PUBLIC_EVENTS ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PUBLIC_EVENTS_FOR_A_NETWORK_OF_REPOSITORIES
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of GITHUB_LIST_PUBLIC_EVENTS_FOR_A_NETWORK_OF_REPOSITORIES ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PUBLIC_EVENTS_FOR_A_USER
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of GITHUB_LIST_PUBLIC_EVENTS_FOR_A_USER ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_LIST_PUBLIC_EVENTS_RECEIVED_BY_A_USER
 

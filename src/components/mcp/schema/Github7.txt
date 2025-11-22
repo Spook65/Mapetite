@@ -1,6 +1,6 @@
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_FORK
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_FORK ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_GIST
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_GIST ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_GIST_COMMENT
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_GIST_COMMENT ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_GITHUB_APP_FROM_A_MANIFEST
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_GITHUB_APP_FROM_A_MANIFEST ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_GITHUB_PAGES_DEPLOYMENT
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_GITHUB_PAGES_DEPLOYMENT ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_GITHUB_PAGES_SITE
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_GITHUB_PAGES_SITE ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_LABEL
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_LABEL ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_A_MILESTONE
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of GITHUB_CREATE_A_MILESTONE ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_AN_AUTOLINK_REFERENCE_FOR_A_REPOSITORY
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of GITHUB_CREATE_AN_AUTOLINK_REFERENCE_FOR_A_REPOSITORY ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_CREATE_AN_ENVIRONMENT_VARIABLE
 

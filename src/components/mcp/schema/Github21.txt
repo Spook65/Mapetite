@@ -1,6 +1,6 @@
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DELETE_SOCIAL_ACCOUNTS_FOR_THE_AUTHENTICATED_USER
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GITHUB_DELETE_SOCIAL_ACCOUNTS_FOR_THE_AUTHENTICATED_USER ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DELETE_TEAM_DISCUSSION_COMMENT_REACTION
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GITHUB_DELETE_TEAM_DISCUSSION_COMMENT_REACTION ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DELETE_TEAM_DISCUSSION_REACTION
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GITHUB_DELETE_TEAM_DISCUSSION_REACTION ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DELETE_WORKFLOW_RUN_LOGS
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GITHUB_DELETE_WORKFLOW_RUN_LOGS ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DISABLE_A_CUSTOM_PROTECTION_RULE_FOR_AN_ENVIRONMENT
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GITHUB_DISABLE_A_CUSTOM_PROTECTION_RULE_FOR_AN_ENVIRONMENT ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DISABLE_A_WORKFLOW
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GITHUB_DISABLE_A_WORKFLOW ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DISABLE_PRIVATE_VULNERABILITY_REPORTING_FOR_A_REPOSITORY
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GITHUB_DISABLE_PRIVATE_VULNERABILITY_REPORTING_FOR_A_REPOSITORY ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DISABLE_REPOSITORY_ACTIONS_IN_ORG
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of GITHUB_DISABLE_REPOSITORY_ACTIONS_IN_ORG ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DISMISS_A_REVIEW_FOR_A_PULL_REQUEST
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of GITHUB_DISMISS_A_REVIEW_FOR_A_PULL_REQUEST ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DOWNLOAD_AN_ARTIFACT
 

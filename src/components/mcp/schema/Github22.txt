@@ -1,6 +1,6 @@
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DOWNLOAD_A_REPOSITORY_ARCHIVE_TAR
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GITHUB_DOWNLOAD_A_REPOSITORY_ARCHIVE_TAR ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DOWNLOAD_A_REPOSITORY_ARCHIVE_ZIP
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GITHUB_DOWNLOAD_A_REPOSITORY_ARCHIVE_ZIP ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DOWNLOAD_JOB_LOGS_FOR_A_WORKFLOW_RUN
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of GITHUB_DOWNLOAD_JOB_LOGS_FOR_A_WORKFLOW_RUN ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DOWNLOAD_WORKFLOW_RUN_ATTEMPT_LOGS
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of GITHUB_DOWNLOAD_WORKFLOW_RUN_ATTEMPT_LOGS ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_DOWNLOAD_WORKFLOW_RUN_LOGS
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of GITHUB_DOWNLOAD_WORKFLOW_RUN_LOGS ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_EMO_J_IS_GET
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of GITHUB_EMO_J_IS_GET ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_ENABLE_A_WORKFLOW
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of GITHUB_ENABLE_A_WORKFLOW ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_ENABLE_GITHUB_ACTIONS_IN_SELECTED_REPOSITORIES
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of GITHUB_ENABLE_GITHUB_ACTIONS_IN_SELECTED_REPOSITORIES ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_ENABLE_PRIVATE_VULNERABILITY_REPORTING_FOR_A_REPOSITORY
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of GITHUB_ENABLE_PRIVATE_VULNERABILITY_REPORTING_FOR_A_REPOSITORY ends.
 
 
-Mcp name: Github
-Mcp Id: 686de4e26fd1cae1afbb55bc
-Mcp Url: https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Github"
+Mcp id: "686de4e26fd1cae1afbb55bc"
+Mcp url: "https://backend.composio.dev/v3/mcp/4e4720cb-01e7-4e14-88f8-3567f0453182/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GITHUB_ENABLE_REPO_FORGITHUB_ACTIONS
 

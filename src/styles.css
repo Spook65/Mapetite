@@ -255,38 +255,38 @@ code {
 }
 
 html {
-	/* Curated Explorer's Journal Theme - Deep Forest Green & Muted Gold */
-	--background: oklch(0.94 0.015 75); /* Warm aged parchment background */
-	--foreground: oklch(0.2 0.03 145); /* Deep forest green text */
-	--card: oklch(0.96 0.012 75); /* Slightly lighter parchment for cards */
-	--card-foreground: oklch(0.2 0.03 145);
-	--popover: oklch(0.97 0.01 75);
-	--popover-foreground: oklch(0.2 0.03 145);
-	--primary: oklch(0.65 0.12 70); /* Muted Gold accent */
-	--primary-foreground: oklch(0.16 0.02 145); /* Dark green text on gold */
-	--secondary: oklch(0.45 0.08 35); /* Burnt Orange */
-	--secondary-foreground: oklch(0.95 0.01 80);
-	--muted: oklch(0.88 0.015 75);
-	--muted-foreground: oklch(0.45 0.03 145);
-	--accent: oklch(0.65 0.12 70); /* Muted Gold for highlights */
-	--accent-foreground: oklch(0.16 0.02 145);
-	--destructive: oklch(0.5 0.15 25);
-	--destructive-foreground: oklch(0.95 0.01 80);
-	--border: oklch(0.75 0.03 70); /* Subtle gold-tinted borders */
-	--input: oklch(0.93 0.015 75);
-	--ring: oklch(0.65 0.12 70);
-	--chart-1: oklch(0.65 0.12 70); /* Muted Gold */
-	--chart-2: oklch(0.55 0.1 120); /* Forest Green */
-	--chart-3: oklch(0.45 0.08 35); /* Burnt Orange */
-	--chart-4: oklch(0.4 0.05 350); /* Deep Wine */
-	--chart-5: oklch(0.35 0.04 170); /* Deep Teal */
-	/* Sidebar: Deep sophisticated forest green with texture */
-	--sidebar: oklch(0.16 0.02 145); /* Deep forest green - like aged leather book cover */
-	--sidebar-foreground: oklch(0.92 0.01 80); /* Cream text */
-	--sidebar-primary: oklch(0.65 0.12 70); /* Muted gold for active states */
-	--sidebar-primary-foreground: oklch(0.16 0.02 145);
-	--sidebar-accent: oklch(0.22 0.025 150); /* Slightly lighter green for hover */
-	--sidebar-accent-foreground: oklch(0.92 0.01 80);
-	--sidebar-border: oklch(0.32 0.04 150); /* Subtle gold-tinted borders */
-	--sidebar-ring: oklch(0.65 0.12 70);
+	/* Ultra-Premium Dark Theme - Deep Midnight Navy & Digital Gold */
+	--background: oklch(0.12 0.015 280); /* Deep Midnight Navy/Black with dark purple undertone */
+	--foreground: oklch(0.98 0 0); /* Pure white text */
+	--card: oklch(0.96 0.008 50); /* Light cream/off-white - floating modules */
+	--card-foreground: oklch(0.18 0.02 280); /* Dark text on light cards */
+	--popover: oklch(0.14 0.015 280);
+	--popover-foreground: oklch(0.98 0 0);
+	--primary: oklch(0.68 0.24 300); /* Vibrant Amethyst Purple - glowing accent */
+	--primary-foreground: oklch(0.98 0 0); /* Pure white text on purple */
+	--secondary: oklch(0.78 0.12 85); /* Digital Gold/Champagne - high-contrast */
+	--secondary-foreground: oklch(0.18 0.02 280); /* Dark text on gold */
+	--muted: oklch(0.18 0.02 285);
+	--muted-foreground: oklch(0.65 0.01 280);
+	--accent: oklch(0.68 0.24 300); /* Vibrant Amethyst for highlights */
+	--accent-foreground: oklch(0.98 0 0);
+	--destructive: oklch(0.55 0.22 25);
+	--destructive-foreground: oklch(0.98 0 0);
+	--border: oklch(0.25 0.08 295); /* Purple-tinted borders with glow potential */
+	--input: oklch(0.16 0.015 280);
+	--ring: oklch(0.68 0.24 300);
+	--chart-1: oklch(0.68 0.24 300); /* Vibrant Amethyst Purple */
+	--chart-2: oklch(0.78 0.12 85); /* Digital Gold */
+	--chart-3: oklch(0.58 0.18 320); /* Lighter Purple */
+	--chart-4: oklch(0.72 0.15 65); /* Warm Gold */
+	--chart-5: oklch(0.62 0.2 310); /* Mid Purple */
+	/* Sidebar: Deep Midnight Navy/Black matching main background */
+	--sidebar: oklch(0.1 0.018 280); /* Deep Midnight Navy - slightly darker than main */
+	--sidebar-foreground: oklch(0.98 0 0); /* Pure white text */
+	--sidebar-primary: oklch(0.68 0.24 300); /* Vibrant Amethyst for active states */
+	--sidebar-primary-foreground: oklch(0.98 0 0);
+	--sidebar-accent: oklch(0.16 0.025 285); /* Slightly lighter navy for hover */
+	--sidebar-accent-foreground: oklch(0.98 0 0);
+	--sidebar-border: oklch(0.25 0.08 295); /* Purple-tinted glowing borders */
+	--sidebar-ring: oklch(0.68 0.24 300);
 }

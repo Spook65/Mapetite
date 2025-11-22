@@ -1,6 +1,6 @@
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_UPDATE_SLACK_CALL_INFORMATION
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of SLACK_UPDATE_SLACK_CALL_INFORMATION ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_UPDATE_USER_GROUP_MEMBERS
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of SLACK_UPDATE_USER_GROUP_MEMBERS ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_UPLOAD_OR_CREATE_A_FILE_IN_SLACK
 

@@ -1,6 +1,6 @@
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_LISTS_USER_S_STARRED_ITEMS_WITH_PAGINATION
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of SLACK_LISTS_USER_S_STARRED_ITEMS_WITH_PAGINATION ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_LIST_TEAM_CUSTOM_EMOJIS
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of SLACK_LIST_TEAM_CUSTOM_EMOJIS ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_LIST_USER_GROUPS_FOR_TEAM_WITH_OPTIONS
 
@@ -40,9 +40,9 @@ outputSchema:
 schema info of SLACK_LIST_USER_GROUPS_FOR_TEAM_WITH_OPTIONS ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_LIST_USER_REACTIONS
 
@@ -54,9 +54,9 @@ outputSchema:
 schema info of SLACK_LIST_USER_REACTIONS ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_LIST_USER_REMINDERS_WITH_DETAILS
 
@@ -68,9 +68,9 @@ outputSchema:
 schema info of SLACK_LIST_USER_REMINDERS_WITH_DETAILS ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_LIST_WORKSPACE_USERS
 
@@ -82,9 +82,9 @@ outputSchema:
 schema info of SLACK_LIST_WORKSPACE_USERS ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_MANUALLY_SET_USER_PRESENCE
 
@@ -96,9 +96,9 @@ outputSchema:
 schema info of SLACK_MANUALLY_SET_USER_PRESENCE ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_MARK_REMINDER_AS_COMPLETE
 
@@ -110,9 +110,9 @@ outputSchema:
 schema info of SLACK_MARK_REMINDER_AS_COMPLETE ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_OPEN_DM
 
@@ -124,9 +124,9 @@ outputSchema:
 schema info of SLACK_OPEN_DM ends.
 
 
-Mcp name: Slack
-Mcp Id: 688338e4ee9e1a9340d83b62
-Mcp Url: https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "Slack"
+Mcp id: "688338e4ee9e1a9340d83b62"
+Mcp url: "https://backend.composio.dev/v3/mcp/8ef98e31-cf09-45a1-b230-e9b01571a628/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: SLACK_OPEN_OR_RESUME_DIRECT_OR_MULTI_PERSON_MESSAGES
 

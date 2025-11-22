@@ -1,6 +1,6 @@
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_SEARCH_PEOPLE
 
@@ -12,9 +12,9 @@ outputSchema:
 schema info of GMAIL_SEARCH_PEOPLE ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_SEND_DRAFT
 
@@ -26,9 +26,9 @@ outputSchema:
 schema info of GMAIL_SEND_DRAFT ends.
 
 
-Mcp name: GMAIL
-Mcp Id: 686de5276fd1cae1afbb55be
-Mcp Url: https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8
+Mcp name: "GMAIL"
+Mcp id: "686de5276fd1cae1afbb55be"
+Mcp url: "https://backend.composio.dev/v3/mcp/64ddd793-75d0-4c3d-8abf-56c7554f19be/mcp?user_id=690453ed2b837acf3acbefe8"
 Schema info:
 Tool Name: GMAIL_SEND_EMAIL
 
