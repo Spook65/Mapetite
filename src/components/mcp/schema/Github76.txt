@@ -118,9 +118,9 @@ Tool Name: GITHUB_UNSTAR_A_REPOSITORY_FOR_THE_AUTHENTICATED_USER
 
 Here is the input and output schema info of Tool GITHUB_UNSTAR_A_REPOSITORY_FOR_THE_AUTHENTICATED_USER of Mcp Github (Mcp Id: 686de4e26fd1cae1afbb55bc):
 inputSchema:
-{}
+{"type":"object","properties":{"owner":{"type":"string","description":"Username of the repository owner (case-insensitive).","title":"Owner","examples":["octocat","torvalds"]},"repo":{"type":"string","description":"Repository name, without the `.git` extension (case-insensitive).","title":"Repo","examples":["Hello-World","linux"]}},"required":["owner","repo"],"title":"UnstarARepositoryForTheAuthenticatedUserRequest","description":"Specifies the repository to be unstarred by its owner and name."}
 outputSchema:
-{}
+{"type":"object","properties":{"data":{"type":"object","description":"Response body; typically empty on successful unstar (HTTP 204 No Content).","title":"Data","additionalProperties":true},"error":{"type":"string","description":"Error if any occurred during the execution of the action","title":"Error","default":null,"nullable":true},"successful":{"type":"boolean","description":"Whether or not the action execution was successful or not","title":"Successful"}},"required":["data","successful"],"title":"UnstarARepositoryForTheAuthenticatedUserResponseWrapper"}
 schema info of GITHUB_UNSTAR_A_REPOSITORY_FOR_THE_AUTHENTICATED_USER ends.
 
 

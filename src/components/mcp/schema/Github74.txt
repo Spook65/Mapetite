@@ -132,7 +132,7 @@ Tool Name: GITHUB_SET_TEAM_ACCESS_RESTRICTIONS
 
 Here is the input and output schema info of Tool GITHUB_SET_TEAM_ACCESS_RESTRICTIONS of Mcp Github (Mcp Id: 686de4e26fd1cae1afbb55bc):
 inputSchema:
-{}
+{"type":"object","properties":{"branch":{"type":"string","description":"The name of the branch to apply restrictions to. Wildcard characters are not supported for this field. For wildcard branch protection, please use the GraphQL API.","title":"Branch","examples":["main"]},"owner":{"type":"string","description":"The account owner of the repository. This name is not case sensitive.","title":"Owner","examples":["octocat"]},"repo":{"type":"string","description":"The name of the repository, without the `.git` extension. This name is not case sensitive.","title":"Repo","examples":["Spoon-Knife"]}},"required":["owner","repo","branch"],"title":"SetTeamAccessRestrictionsRequest","description":"Request schema for configuring team access restrictions on a protected branch."}
 outputSchema:
-{}
+{"type":"object","properties":{"data":{"type":"object","description":"A list of team objects granted push access to the protected branch, each including details like team ID, slug, name, and permissions.","title":"Data","additionalProperties":true},"error":{"type":"string","description":"Error if any occurred during the execution of the action","title":"Error","default":null,"nullable":true},"successful":{"type":"boolean","description":"Whether or not the action execution was successful or not","title":"Successful"}},"required":["data","successful"],"title":"SetTeamAccessRestrictionsResponseWrapper"}
 schema info of GITHUB_SET_TEAM_ACCESS_RESTRICTIONS ends.

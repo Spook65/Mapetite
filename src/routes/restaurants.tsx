@@ -1,4 +1,5 @@
 import { Layout } from "@/components/Layout";
+import { ReservationModal } from "@/components/ReservationModal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +23,7 @@ import {
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-import { createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import {
 	ArrowRight,
 	ArrowUpDown,
@@ -40,8 +41,18 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+// Define search params schema for the route
+type RestaurantsSearch = {
+	city?: string;
+};
+
 export const Route = createFileRoute("/restaurants")({
 	component: App,
+	validateSearch: (search: Record<string, unknown>): RestaurantsSearch => {
+		return {
+			city: typeof search.city === "string" ? search.city : undefined,
+		};
+	},
 });
 
 // Types and Interfaces
@@ -3644,7 +3655,21 @@ function generateMockReviews(count: number): Review[] {
 	}));
 }
 
+// Helper function to find country and state for a given city
+function findLocationForCity(cityName: string): LocationState | null {
+	for (const [country, states] of Object.entries(LOCATION_DATA)) {
+		for (const [state, cities] of Object.entries(states)) {
+			if (cities.includes(cityName)) {
+				return { country, state, city: cityName };
+			}
+		}
+	}
+	return null;
+}
+
 function App() {
+	const { city: searchCity } = Route.useSearch();
+
 	const [location, setLocation] = useState<LocationState>({
 		country: "",
 		state: "",
@@ -3659,6 +3684,9 @@ function App() {
 	const [selectedRestaurant, setSelectedRestaurant] =
 		useState<Restaurant | null>(null);
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
+	const [reservationModalOpen, setReservationModalOpen] = useState(false);
+	const [restaurantToReserve, setRestaurantToReserve] =
+		useState<Restaurant | null>(null);
 
 	// Refinement filters
 	const [priceFilter, setPriceFilter] = useState<number[]>([1, 2, 3, 4]);
@@ -3677,6 +3705,20 @@ function App() {
 		"Fast-Food",
 		"Best Tourist Spot",
 	];
+
+	// Handle city search parameter from navigation
+	useEffect(() => {
+		if (searchCity) {
+			const locationData = findLocationForCity(searchCity);
+			if (locationData) {
+				setLocation(locationData);
+				// Automatically trigger search for the city
+				const results = generateMockRestaurants(locationData, []);
+				setRestaurants(results);
+				setShowFavorites(false);
+			}
+		}
+	}, [searchCity]);
 
 	// Load favorites from localStorage
 	useEffect(() => {
@@ -3894,14 +3936,14 @@ function App() {
 						<div className="h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent w-full max-w-md shadow-[0_0_10px_oklch(0.68_0.24_300_/_0.4)]" />
 					</div>
 
-					<h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif-display text-white mb-3 md:mb-4 tracking-tight">
+					<h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-serif-display text-[oklch(0.10_0.018_280)] mb-3 md:mb-4 tracking-tight">
 						Discover Your Next
 						<span className="block bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent mt-2 drop-shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.3)]">
 							Culinary Adventure
 						</span>
 					</h1>
 
-					<p className="text-base md:text-lg lg:text-xl text-white/90 max-w-2xl mx-auto font-serif-elegant leading-relaxed">
+					<p className="text-base md:text-lg lg:text-xl text-[oklch(0.15_0.02_280)] max-w-2xl mx-auto font-serif-elegant leading-relaxed">
 						Embark on a journey through extraordinary flavors and unforgettable
 						dining experiences
 					</p>
@@ -3932,94 +3974,101 @@ function App() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="pt-6 relative z-10">
-						<div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-8">
-							{/* Country Dropdown */}
-							<div className="space-y-2">
-								<Label
-									htmlFor="country"
-									className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
-								>
-									Country
-								</Label>
-								<Combobox
-									options={getCountries().map((country) => ({
-										value: country,
-										label: country,
-									}))}
-									value={location.country}
-									onValueChange={(value) => {
-										setLocation({ country: value, state: "", city: "" });
-									}}
-									placeholder="Select a country"
-									searchPlaceholder="Search countries..."
-									emptyText="No country found."
-								/>
-							</div>
+						{/* Location inputs wrapper with responsive max-width constraint for extra-wide screens */}
+						<div className="mx-auto max-w-full 2xl:max-w-7xl">
+							<div className="grid grid-cols-1 md:grid-cols-3 gap-3 2xl:gap-4 mb-8">
+								{/* Country Dropdown */}
+								<div className="space-y-2">
+									<Label
+										htmlFor="country"
+										className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
+									>
+										Country
+									</Label>
+									<Combobox
+										options={getCountries().map((country) => ({
+											value: country,
+											label: country,
+										}))}
+										value={location.country}
+										onValueChange={(value) => {
+											setLocation({ country: value, state: "", city: "" });
+										}}
+										placeholder="Select a country"
+										searchPlaceholder="Search countries..."
+										emptyText="No country found."
+									/>
+								</div>
 
-							{/* State Dropdown */}
-							<div className="space-y-2">
-								<Label
-									htmlFor="state"
-									className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
-								>
-									State/Province
-								</Label>
-								<Select
-									value={location.state}
-									onValueChange={(value) => {
-										setLocation({ ...location, state: value, city: "" });
-									}}
-									disabled={!location.country}
-								>
-									<SelectTrigger id="state">
-										<SelectValue
-											placeholder={
-												location.country
-													? "Select a state"
-													: "Select country first"
-											}
-										/>
-									</SelectTrigger>
-									<SelectContent>
-										{getStates(location.country).map((state) => (
-											<SelectItem key={state} value={state}>
-												{state}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
-							</div>
+								{/* State Dropdown */}
+								<div className="space-y-2">
+									<Label
+										htmlFor="state"
+										className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
+									>
+										State/Province
+									</Label>
+									<Select
+										value={location.state}
+										onValueChange={(value) => {
+											setLocation({ ...location, state: value, city: "" });
+										}}
+										disabled={!location.country}
+									>
+										<SelectTrigger id="state">
+											<SelectValue
+												placeholder={
+													location.country
+														? "Select a state"
+														: "Select country first"
+												}
+											/>
+										</SelectTrigger>
+										<SelectContent>
+											{getStates(location.country).map((state) => (
+												<SelectItem key={state} value={state}>
+													{state}
+												</SelectItem>
+											))}
+										</SelectContent>
+									</Select>
+								</div>
 
-							{/* City Dropdown */}
-							<div className="space-y-2">
-								<Label
-									htmlFor="city"
-									className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
-								>
-									City
-								</Label>
-								<Select
-									value={location.city}
-									onValueChange={(value) => {
-										setLocation({ ...location, city: value });
-									}}
-									disabled={!location.state}
-								>
-									<SelectTrigger id="city">
-										<SelectValue
-											placeholder={
-												location.state ? "Select a city" : "Select state first"
-											}
-										/>
-									</SelectTrigger>
-									<SelectContent>
-										{getCities(location.country, location.state).map((city) => (
-											<SelectItem key={city} value={city}>
-												{city}
-											</SelectItem>
-										))}
-									</SelectContent>
-								</Select>
+								{/* City Dropdown */}
+								<div className="space-y-2">
+									<Label
+										htmlFor="city"
+										className="text-sm font-semibold text-foreground/90 tracking-wide uppercase text-xs"
+									>
+										City
+									</Label>
+									<Select
+										value={location.city}
+										onValueChange={(value) => {
+											setLocation({ ...location, city: value });
+										}}
+										disabled={!location.state}
+									>
+										<SelectTrigger id="city">
+											<SelectValue
+												placeholder={
+													location.state
+														? "Select a city"
+														: "Select state first"
+												}
+											/>
+										</SelectTrigger>
+										<SelectContent>
+											{getCities(location.country, location.state).map(
+												(city) => (
+													<SelectItem key={city} value={city}>
+														{city}
+													</SelectItem>
+												),
+											)}
+										</SelectContent>
+									</Select>
+								</div>
 							</div>
 						</div>
 						{/* Action Buttons with Ornate Styling */}
@@ -4593,23 +4642,29 @@ function App() {
 											)}
 										</div>
 
-										{/* View Details CTA */}
-										<div className="pt-3">
+										{/* View Details and Reserve CTA */}
+										<div className="pt-3 flex gap-3">
 											<Button
-												className="cursor-pointer group bg-gradient-to-r from-primary via-secondary to-primary text-white hover:shadow-[0_0_30px_oklch(0.68_0.24_300_/_0.5)] font-serif-elegant font-semibold tracking-wide shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.4)] px-8 py-5 text-base transition-all duration-300 border-2 border-primary/60"
-												onClick={() =>
-													setSelectedRestaurant(
-														selectedRestaurant?.id === restaurant.id
-															? null
-															: restaurant,
-													)
-												}
+												className="cursor-pointer group bg-gradient-to-r from-primary via-secondary to-primary text-white hover:text-[oklch(0.68_0.24_300)] hover:shadow-[0_0_30px_oklch(0.68_0.24_300_/_0.5)] font-serif-elegant font-semibold tracking-wide shadow-[0_0_20px_oklch(0.68_0.24_300_/_0.4)] px-8 py-5 text-base transition-all duration-300 border-2 border-primary/60"
+												onClick={() => {
+													setRestaurantToReserve(restaurant);
+													setReservationModalOpen(true);
+												}}
 											>
-												{selectedRestaurant?.id === restaurant.id
-													? "Hide Details"
-													: "View Details"}
+												Make Reservation
 												<ArrowRight className="ml-2 h-5 w-5 stroke-[2.5]" />
 											</Button>
+											<Link
+												to="/restaurants/$restaurantId"
+												params={{ restaurantId: restaurant.id }}
+											>
+												<Button
+													variant="outline"
+													className="cursor-pointer border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-serif-elegant font-semibold tracking-wide shadow-md px-8 py-5 text-base w-full"
+												>
+													View Details
+												</Button>
+											</Link>
 										</div>
 
 										{/* Expanded Details Section */}
@@ -4887,6 +4942,13 @@ function App() {
 					</div>
 				</div>
 			</footer>
+
+			{/* Reservation Modal */}
+			<ReservationModal
+				restaurant={restaurantToReserve}
+				open={reservationModalOpen}
+				onOpenChange={setReservationModalOpen}
+			/>
 		</Layout>
 	);
 }
