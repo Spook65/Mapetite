@@ -7,7 +7,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
 	ArrowRight,
 	MapPin,
@@ -22,6 +22,16 @@ export const Route = createFileRoute("/")({
 });
 
 function LandingPage() {
+	const navigate = useNavigate();
+
+	const handleCityCardClick = (cityName: string) => {
+		// Navigate to restaurants page with city as search parameter
+		navigate({
+			to: "/restaurants",
+			search: { city: cityName },
+		});
+	};
+
 	return (
 		<Layout>
 			<div className="container mx-auto px-4 md:px-8 py-8 md:py-16">
@@ -33,14 +43,14 @@ function LandingPage() {
 							Premium Dining Discovery
 						</span>
 					</div>
-					<h1 className="mb-4 md:mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif-display tracking-tight text-white">
+					<h1 className="mb-4 md:mb-6 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif-display tracking-tight text-[oklch(0.10_0.018_280)]">
 						Discover Your Next
 						<br />
 						<span className="bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent drop-shadow-[0_0_15px_oklch(0.68_0.24_300_/_0.3)]">
 							Culinary Adventure
 						</span>
 					</h1>
-					<p className="mx-auto mb-6 md:mb-8 max-w-2xl text-base md:text-xl font-serif-elegant leading-relaxed text-white/90 px-4">
+					<p className="mx-auto mb-6 md:mb-8 max-w-2xl text-base md:text-xl font-serif-elegant leading-relaxed text-[oklch(0.15_0.02_280)] px-4">
 						Explore world-class restaurants across the globe. Find the perfect
 						dining experience with our premium search and discovery platform.
 					</p>
@@ -278,15 +288,35 @@ function LandingPage() {
 						<div className="overflow-x-auto scrollbar-hide pb-4 -mx-4 md:mx-0 px-4 md:px-0">
 							<div className="flex gap-4 md:gap-6 px-2 min-w-max">
 								{/* Paris Card */}
-								<div className="group cursor-pointer w-72 md:w-80 flex-shrink-0">
+								<div
+									className="group cursor-pointer w-72 md:w-80 flex-shrink-0"
+									onClick={() => handleCityCardClick("Paris")}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											handleCityCardClick("Paris");
+										}
+									}}
+									// biome-ignore lint/a11y/useSemanticElements: Complex card component with custom styling not suitable for semantic button
+									role="button"
+									tabIndex={0}
+								>
 									<div className="relative overflow-hidden rounded-sm border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.68_0.24_300_/_0.2),0_6px_20px_black] transition-all duration-300 hover:border-primary hover:shadow-[0_0_35px_oklch(0.68_0.24_300_/_0.4),0_8px_24px_black] hover:scale-[1.02]">
-										{/* Image Placeholder */}
-										<div className="relative h-64 overflow-hidden bg-gradient-to-br from-[oklch(0.85_0.03_70)] to-[oklch(0.75_0.05_60)]">
-											{/* Overlay texture */}
-											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.65_0.08_70_/_0.15)_10px,oklch(0.65_0.08_70_/_0.15)_11px)]" />
+										{/* Background Image with Dark Overlay */}
+										<div className="relative h-64 overflow-hidden">
+											{/* Background Image */}
+											<div
+												className="absolute inset-0 bg-cover bg-center"
+												style={{
+													backgroundImage:
+														"url('http://googleusercontent.com/image_collection/image_retrieval/1330806874776151130_0')",
+												}}
+											/>
+
+											{/* Dark Overlay - Deep Midnight Navy/Black */}
+											<div className="absolute inset-0 bg-[oklch(0.10_0.018_280)]/60" />
 
 											{/* Elegant overlay on hover */}
-											<div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+											<div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.10_0.018_280)]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
 											{/* City name overlay */}
 											<div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -316,15 +346,35 @@ function LandingPage() {
 								</div>
 
 								{/* Tokyo Card */}
-								<div className="group cursor-pointer w-72 md:w-80 flex-shrink-0">
+								<div
+									className="group cursor-pointer w-72 md:w-80 flex-shrink-0"
+									onClick={() => handleCityCardClick("Tokyo")}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											handleCityCardClick("Tokyo");
+										}
+									}}
+									// biome-ignore lint/a11y/useSemanticElements: Complex card component with custom styling not suitable for semantic button
+									role="button"
+									tabIndex={0}
+								>
 									<div className="relative overflow-hidden rounded-sm border-2 border-secondary/40 bg-card shadow-[0_0_25px_oklch(0.78_0.12_85_/_0.2),0_6px_20px_black] transition-all duration-300 hover:border-secondary hover:shadow-[0_0_35px_oklch(0.78_0.12_85_/_0.4),0_8px_24px_black] hover:scale-[1.02]">
-										{/* Image Placeholder */}
-										<div className="relative h-64 overflow-hidden bg-gradient-to-br from-[oklch(0.75_0.08_350)] to-[oklch(0.65_0.1_340)]">
-											{/* Overlay texture */}
-											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.55_0.08_350_/_0.15)_10px,oklch(0.55_0.08_350_/_0.15)_11px)]" />
+										{/* Background Image with Dark Overlay */}
+										<div className="relative h-64 overflow-hidden">
+											{/* Background Image */}
+											<div
+												className="absolute inset-0 bg-cover bg-center"
+												style={{
+													backgroundImage:
+														"url('http://googleusercontent.com/image_collection/image_retrieval/580180491417338745_0')",
+												}}
+											/>
+
+											{/* Dark Overlay - Deep Midnight Navy/Black */}
+											<div className="absolute inset-0 bg-[oklch(0.10_0.018_280)]/60" />
 
 											{/* Elegant overlay on hover */}
-											<div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+											<div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.10_0.018_280)]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
 											{/* City name overlay */}
 											<div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -354,15 +404,35 @@ function LandingPage() {
 								</div>
 
 								{/* London Card */}
-								<div className="group cursor-pointer w-72 md:w-80 flex-shrink-0">
+								<div
+									className="group cursor-pointer w-72 md:w-80 flex-shrink-0"
+									onClick={() => handleCityCardClick("London")}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											handleCityCardClick("London");
+										}
+									}}
+									// biome-ignore lint/a11y/useSemanticElements: Complex card component with custom styling not suitable for semantic button
+									role="button"
+									tabIndex={0}
+								>
 									<div className="relative overflow-hidden rounded-sm border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.68_0.24_300_/_0.2),0_6px_20px_black] transition-all duration-300 hover:border-primary hover:shadow-[0_0_35px_oklch(0.68_0.24_300_/_0.4),0_8px_24px_black] hover:scale-[1.02]">
-										{/* Image Placeholder */}
-										<div className="relative h-64 overflow-hidden bg-gradient-to-br from-[oklch(0.7_0.08_120)] to-[oklch(0.6_0.1_140)]">
-											{/* Overlay texture */}
-											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.6_0.08_120_/_0.15)_10px,oklch(0.6_0.08_120_/_0.15)_11px)]" />
+										{/* Background Image with Dark Overlay */}
+										<div className="relative h-64 overflow-hidden">
+											{/* Placeholder Background Image */}
+											<div
+												className="absolute inset-0 bg-cover bg-center"
+												style={{
+													backgroundImage:
+														"url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&h=600&fit=crop')",
+												}}
+											/>
+
+											{/* Dark Overlay - Deep Midnight Navy/Black */}
+											<div className="absolute inset-0 bg-[oklch(0.10_0.018_280)]/60" />
 
 											{/* Elegant overlay on hover */}
-											<div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+											<div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.10_0.018_280)]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
 											{/* City name overlay */}
 											<div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -392,15 +462,35 @@ function LandingPage() {
 								</div>
 
 								{/* Dubai Card */}
-								<div className="group cursor-pointer w-72 md:w-80 flex-shrink-0">
+								<div
+									className="group cursor-pointer w-72 md:w-80 flex-shrink-0"
+									onClick={() => handleCityCardClick("Dubai")}
+									onKeyDown={(e) => {
+										if (e.key === "Enter" || e.key === " ") {
+											handleCityCardClick("Dubai");
+										}
+									}}
+									// biome-ignore lint/a11y/useSemanticElements: Complex card component with custom styling not suitable for semantic button
+									role="button"
+									tabIndex={0}
+								>
 									<div className="relative overflow-hidden rounded-sm border-2 border-secondary/40 bg-card shadow-[0_0_25px_oklch(0.78_0.12_85_/_0.2),0_6px_20px_black] transition-all duration-300 hover:border-secondary hover:shadow-[0_0_35px_oklch(0.78_0.12_85_/_0.4),0_8px_24px_black] hover:scale-[1.02]">
-										{/* Image Placeholder */}
-										<div className="relative h-64 overflow-hidden bg-gradient-to-br from-[oklch(0.8_0.06_50)] to-[oklch(0.7_0.08_40)]">
-											{/* Overlay texture */}
-											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.7_0.06_50_/_0.15)_10px,oklch(0.7_0.06_50_/_0.15)_11px)]" />
+										{/* Background Image with Dark Overlay */}
+										<div className="relative h-64 overflow-hidden">
+											{/* Placeholder Background Image */}
+											<div
+												className="absolute inset-0 bg-cover bg-center"
+												style={{
+													backgroundImage:
+														"url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop')",
+												}}
+											/>
+
+											{/* Dark Overlay - Deep Midnight Navy/Black */}
+											<div className="absolute inset-0 bg-[oklch(0.10_0.018_280)]/60" />
 
 											{/* Elegant overlay on hover */}
-											<div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+											<div className="absolute inset-0 bg-gradient-to-t from-[oklch(0.10_0.018_280)]/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
 											{/* City name overlay */}
 											<div className="absolute bottom-0 left-0 right-0 p-6 transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
