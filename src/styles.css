@@ -19,97 +19,40 @@ code {
 }
 
 :root {
-	/* Premium Dark Theme - Light mode fallback (rarely used) */
+	/* Blue/Indigo Theme - Light mode fallback (rarely used) */
 	--background: oklch(0.98 0 0);
 	--foreground: oklch(0.15 0 0);
 	--card: oklch(1 0 0);
 	--card-foreground: oklch(0.15 0 0);
 	--popover: oklch(1 0 0);
 	--popover-foreground: oklch(0.15 0 0);
-	--primary: oklch(0.55 0.25 290); /* Electric Violet */
+	--primary: oklch(0.55 0.18 240); /* Deep Sapphire Blue */
 	--primary-foreground: oklch(0.98 0 0);
-	--secondary: oklch(0.45 0.15 350); /* Maroon */
-	--secondary-foreground: oklch(0.98 0 0);
+	--secondary: oklch(0.65 0.14 195); /* Arctic Teal/Electric Cyan */
+	--secondary-foreground: oklch(0.18 0.035 250);
 	--muted: oklch(0.92 0 0);
 	--muted-foreground: oklch(0.45 0 0);
-	--accent: oklch(0.55 0.25 290); /* Electric Violet */
+	--accent: oklch(0.55 0.18 240); /* Deep Sapphire Blue */
 	--accent-foreground: oklch(0.98 0 0);
 	--destructive: oklch(0.55 0.22 25);
 	--destructive-foreground: oklch(0.98 0 0);
 	--border: oklch(0.85 0 0);
 	--input: oklch(0.85 0 0);
-	--ring: oklch(0.55 0.25 290);
-	--chart-1: oklch(0.55 0.25 290);
-	--chart-2: oklch(0.5 0.2 180);
-	--chart-3: oklch(0.45 0.15 350);
-	--chart-4: oklch(0.6 0.2 220);
-	--chart-5: oklch(0.65 0.18 140);
+	--ring: oklch(0.55 0.18 240);
+	--chart-1: oklch(0.55 0.18 240);
+	--chart-2: oklch(0.65 0.14 195);
+	--chart-3: oklch(0.48 0.16 230);
+	--chart-4: oklch(0.58 0.12 200);
+	--chart-5: oklch(0.52 0.15 245);
 	--radius: 0.75rem;
-	--sidebar: oklch(0.12 0.01 270);
-	--sidebar-foreground: oklch(0.95 0 0);
-	--sidebar-primary: oklch(0.55 0.25 290);
+	--sidebar: oklch(0.12 0.045 250);
+	--sidebar-foreground: oklch(0.98 0 0);
+	--sidebar-primary: oklch(0.55 0.18 240);
 	--sidebar-primary-foreground: oklch(0.98 0 0);
-	--sidebar-accent: oklch(0.18 0.02 280);
-	--sidebar-accent-foreground: oklch(0.95 0 0);
-	--sidebar-border: oklch(0.22 0.02 280);
-	--sidebar-ring: oklch(0.55 0.25 290);
-}
-
-.dark {
-	/* Premium Dark Theme - Primary Experience */
-	/* Deep near-black charcoal background */
-	--background: oklch(0.1 0.01 270);
-	--foreground: oklch(0.95 0 0); /* Bright white text */
-
-	/* Card styling with subtle elevation */
-	--card: oklch(0.14 0.015 275);
-	--card-foreground: oklch(0.95 0 0);
-
-	/* Popover styling */
-	--popover: oklch(0.12 0.01 270);
-	--popover-foreground: oklch(0.95 0 0);
-
-	/* Primary: Vibrant Electric Violet - striking accent */
-	--primary: oklch(0.6 0.28 290);
-	--primary-foreground: oklch(0.98 0 0);
-
-	/* Secondary: Deep Maroon - contrasting accent */
-	--secondary: oklch(0.42 0.18 350);
-	--secondary-foreground: oklch(0.98 0 0);
-
-	/* Muted elements */
-	--muted: oklch(0.18 0.02 280);
-	--muted-foreground: oklch(0.65 0.01 270);
-
-	/* Accent: Electric Violet for highlights */
-	--accent: oklch(0.6 0.28 290);
-	--accent-foreground: oklch(0.98 0 0);
-
-	/* Destructive actions */
-	--destructive: oklch(0.55 0.22 25);
-	--destructive-foreground: oklch(0.98 0 0);
-
-	/* Borders and inputs with subtle violet tint */
-	--border: oklch(0.22 0.04 285);
-	--input: oklch(0.16 0.02 280);
-	--ring: oklch(0.6 0.28 290);
-
-	/* Chart colors featuring violet and teal palette */
-	--chart-1: oklch(0.6 0.28 290); /* Electric Violet */
-	--chart-2: oklch(0.55 0.22 180); /* Deep Teal */
-	--chart-3: oklch(0.42 0.18 350); /* Maroon */
-	--chart-4: oklch(0.58 0.2 220); /* Royal Blue */
-	--chart-5: oklch(0.62 0.18 310); /* Purple accent */
-
-	/* Sidebar: darker with violet accents */
-	--sidebar: oklch(0.12 0.01 270);
-	--sidebar-foreground: oklch(0.95 0 0);
-	--sidebar-primary: oklch(0.6 0.28 290);
-	--sidebar-primary-foreground: oklch(0.98 0 0);
-	--sidebar-accent: oklch(0.18 0.02 280);
-	--sidebar-accent-foreground: oklch(0.95 0 0);
-	--sidebar-border: oklch(0.22 0.04 285);
-	--sidebar-ring: oklch(0.6 0.28 290);
+	--sidebar-accent: oklch(0.18 0.04 245);
+	--sidebar-accent-foreground: oklch(0.98 0 0);
+	--sidebar-border: oklch(0.28 0.1 235);
+	--sidebar-ring: oklch(0.55 0.18 240);
 }
 
 @theme inline {
@@ -219,9 +162,9 @@ code {
 		border-style: solid;
 		border-image: linear-gradient(
 				135deg,
-				oklch(0.65 0.12 70),
-				oklch(0.32 0.04 150),
-				oklch(0.65 0.12 70)
+				oklch(0.65 0.14 195),
+				oklch(0.55 0.18 240),
+				oklch(0.65 0.14 195)
 			)
 			1;
 	}
@@ -235,7 +178,7 @@ code {
 
 	.shadow-ornate {
 		box-shadow: 0 2px 4px oklch(0.1 0.02 145 / 0.5), 0 8px 16px
-			oklch(0.08 0.02 145 / 0.4), 0 0 0 1px oklch(0.65 0.12 70 / 0.2);
+			oklch(0.08 0.02 145 / 0.4), 0 0 0 1px oklch(0.65 0.14 195 / 0.2);
 	}
 
 	/* Hide scrollbar while maintaining scroll functionality */
@@ -255,38 +198,38 @@ code {
 }
 
 html {
-	/* Ultra-Premium Dark Theme - Deep Midnight Navy & Digital Gold */
-	--background: oklch(0.12 0.015 280); /* Deep Midnight Navy/Black with dark purple undertone */
+	/* Ultra-Premium Dark Theme - Deep Space Indigo & Arctic Teal */
+	--background: oklch(0.14 0.04 250); /* Deep Space Indigo/Navy - rich dark blue base */
 	--foreground: oklch(0.98 0 0); /* Pure white text */
 	--card: oklch(0.96 0.008 50); /* Light cream/off-white - floating modules */
-	--card-foreground: oklch(0.18 0.02 280); /* Dark text on light cards */
-	--popover: oklch(0.14 0.015 280);
+	--card-foreground: oklch(0.18 0.035 250); /* Dark blue text on light cards */
+	--popover: oklch(0.16 0.035 250);
 	--popover-foreground: oklch(0.98 0 0);
-	--primary: oklch(0.68 0.24 300); /* Vibrant Amethyst Purple - glowing accent */
-	--primary-foreground: oklch(0.98 0 0); /* Pure white text on purple */
-	--secondary: oklch(0.78 0.12 85); /* Digital Gold/Champagne - high-contrast */
-	--secondary-foreground: oklch(0.18 0.02 280); /* Dark text on gold */
-	--muted: oklch(0.18 0.02 285);
-	--muted-foreground: oklch(0.65 0.01 280);
-	--accent: oklch(0.68 0.24 300); /* Vibrant Amethyst for highlights */
+	--primary: oklch(0.55 0.18 240); /* Deep Sapphire Blue - glowing accent */
+	--primary-foreground: oklch(0.98 0 0); /* Pure white text on blue */
+	--secondary: oklch(0.65 0.14 195); /* Arctic Teal/Electric Cyan - high-contrast */
+	--secondary-foreground: oklch(0.18 0.035 250); /* Dark text on teal */
+	--muted: oklch(0.2 0.03 245);
+	--muted-foreground: oklch(0.65 0.02 250);
+	--accent: oklch(0.55 0.18 240); /* Deep Sapphire for highlights */
 	--accent-foreground: oklch(0.98 0 0);
 	--destructive: oklch(0.55 0.22 25);
 	--destructive-foreground: oklch(0.98 0 0);
-	--border: oklch(0.25 0.08 295); /* Purple-tinted borders with glow potential */
-	--input: oklch(0.16 0.015 280);
-	--ring: oklch(0.68 0.24 300);
-	--chart-1: oklch(0.68 0.24 300); /* Vibrant Amethyst Purple */
-	--chart-2: oklch(0.78 0.12 85); /* Digital Gold */
-	--chart-3: oklch(0.58 0.18 320); /* Lighter Purple */
-	--chart-4: oklch(0.72 0.15 65); /* Warm Gold */
-	--chart-5: oklch(0.62 0.2 310); /* Mid Purple */
-	/* Sidebar: Deep Midnight Navy/Black matching main background */
-	--sidebar: oklch(0.1 0.018 280); /* Deep Midnight Navy - slightly darker than main */
+	--border: oklch(0.28 0.1 235); /* Blue-tinted borders with glow potential */
+	--input: oklch(0.18 0.03 250);
+	--ring: oklch(0.55 0.18 240);
+	--chart-1: oklch(0.55 0.18 240); /* Deep Sapphire Blue */
+	--chart-2: oklch(0.65 0.14 195); /* Arctic Teal/Cyan */
+	--chart-3: oklch(0.48 0.16 230); /* Darker Blue */
+	--chart-4: oklch(0.58 0.12 200); /* Cool Teal */
+	--chart-5: oklch(0.52 0.15 245); /* Mid Blue */
+	/* Sidebar: Deep Space Indigo matching main background */
+	--sidebar: oklch(0.12 0.045 250); /* Deep Space Indigo - slightly darker than main */
 	--sidebar-foreground: oklch(0.98 0 0); /* Pure white text */
-	--sidebar-primary: oklch(0.68 0.24 300); /* Vibrant Amethyst for active states */
+	--sidebar-primary: oklch(0.55 0.18 240); /* Deep Sapphire for active states */
 	--sidebar-primary-foreground: oklch(0.98 0 0);
-	--sidebar-accent: oklch(0.16 0.025 285); /* Slightly lighter navy for hover */
+	--sidebar-accent: oklch(0.18 0.04 245); /* Slightly lighter indigo for hover */
 	--sidebar-accent-foreground: oklch(0.98 0 0);
-	--sidebar-border: oklch(0.25 0.08 295); /* Purple-tinted glowing borders */
-	--sidebar-ring: oklch(0.68 0.24 300);
+	--sidebar-border: oklch(0.28 0.1 235); /* Blue-tinted glowing borders */
+	--sidebar-ring: oklch(0.55 0.18 240);
 }

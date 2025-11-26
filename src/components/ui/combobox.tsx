@@ -51,7 +51,7 @@ export function Combobox({
 				<Button
 					variant="outline"
 					aria-expanded={open}
-					className={cn("w-full justify-between", className)}
+					className={cn("w-full justify-between cursor-pointer", className)}
 					disabled={disabled}
 				>
 					{value
