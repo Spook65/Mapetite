@@ -177,8 +177,11 @@ class AuthIntegration {
 	 * Set the authentication token (async now to validate)
 	 */
 	private async setToken(token: string, origin?: string): Promise<void> {
+		console.log("[AuthIntegration] Setting token, length:", token.length);
+
 		// Validate the token first
 		const isValid = await this.validateToken(token);
+		console.log("[AuthIntegration] Token validation result:", isValid);
 
 		if (isValid) {
 			this.state = {
@@ -189,6 +192,9 @@ class AuthIntegration {
 
 			// Store in localStorage for persistence
 			localStorage.setItem("creao_auth_token", token);
+			console.log(
+				"[AuthIntegration] Token stored in localStorage, key: creao_auth_token",
+			);
 		} else {
 			// Token is invalid, clear it
 			this.state = {
@@ -197,6 +203,7 @@ class AuthIntegration {
 				parentOrigin: origin || this.state.parentOrigin,
 			};
 			localStorage.removeItem("creao_auth_token");
+			console.log("[AuthIntegration] Invalid token, cleared from localStorage");
 		}
 
 		// Notify listeners
@@ -430,7 +437,14 @@ export async function initializeAuthIntegration(): Promise<void> {
  * Get the current authentication token
  */
 export function getAuthToken(): string | null {
-	return authIntegration.getAuthTokenSync();
+	const token = authIntegration.getAuthTokenSync();
+	console.log(
+		"[getAuthToken] Retrieving token, present:",
+		!!token,
+		"length:",
+		token?.length ?? 0,
+	);
+	return token;
 }
 
 /**
@@ -538,6 +552,17 @@ export async function authenticatedFetch(
 ): Promise<Response> {
 	const token = getAuthToken();
 
+	// Debug logging to verify token is present
+	console.log("[authenticatedFetch] Token present:", !!token);
+	if (token) {
+		console.log(
+			"[authenticatedFetch] Token length:",
+			token.length,
+			"First 20 chars:",
+			token.substring(0, 20),
+		);
+	}
+
 	const headers = new Headers(options.headers);
 	if (token) {
 		headers.set("Authorization", `Bearer ${token}`);
@@ -545,6 +570,17 @@ export async function authenticatedFetch(
 	if (!headers.has("Content-Type")) {
 		headers.set("Content-Type", "application/json");
 	}
+
+	// Debug logging to verify Authorization header is set
+	console.log(
+		"[authenticatedFetch] Authorization header:",
+		headers.get("Authorization"),
+	);
+	console.log(
+		"[authenticatedFetch] Content-Type header:",
+		headers.get("Content-Type"),
+	);
+	console.log("[authenticatedFetch] Request URL:", url);
 
 	return fetch(url, {
 		...options,
