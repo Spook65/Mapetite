@@ -14,6 +14,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
+import { isAuthenticatedSync } from "@/lib/auth-integration";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
@@ -108,6 +109,16 @@ function RestaurantDetailPage() {
 	const favoriteIds = new Set(favoritesData?.favorites ?? []);
 
 	const toggleFavorite = (restaurantId: string) => {
+		// Check authentication status before allowing favorite action
+		if (!isAuthenticatedSync()) {
+			toast.error("Please log in to save favorites", {
+				description:
+					"You need to be logged in to add restaurants to your favorites.",
+			});
+			return;
+		}
+
+		// Proceed with the toggle action if authenticated
 		toggleFavoriteMutate({ restaurant_id: restaurantId });
 	};
 
