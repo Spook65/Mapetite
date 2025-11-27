@@ -2,8 +2,8 @@
 // - Namespace: 01987547fc6c72ecb453bd2736bd4ea0.
 // - Entity Name: favorite.
 // - Entity ID: 102019ac271467d733cb3446ec2c5bae7cc.
-// - Entity Version: 102019ac2cced587929a6b7de716a78b963.
-// - Task ID: 6927a0e862536a2aabb67f4f.
+// - Entity Version: 102019ac3138ed877ddbd94e955350ef932.
+// - Task ID: 6927b2c2cfdf153f7040a43d.
 // - Task Root ID: 69252ff0f8ae0e617c83114d.
 
 import { DataType } from "./common";
@@ -55,8 +55,8 @@ export class FavoriteORM {
     this.namespace = '01987547fc6c72ecb453bd2736bd4ea0';
     this.entityId = '102019ac271467d733cb3446ec2c5bae7cc';
     this.entityName = 'favorite';
-    this.entityVersion = '102019ac2cced587929a6b7de716a78b963';
-    this.taskId = '6927a0e862536a2aabb67f4f';
+    this.entityVersion = '102019ac3138ed877ddbd94e955350ef932';
+    this.taskId = '6927b2c2cfdf153f7040a43d';
     this.taskRootId = '69252ff0f8ae0e617c83114d';
   }
 
