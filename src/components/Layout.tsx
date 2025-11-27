@@ -1,13 +1,48 @@
 import { LogInModal } from "@/components/auth/LogInModal";
 import { SignUpModal } from "@/components/auth/SignUpModal";
 import { Button } from "@/components/ui/button";
+import { useAuthState } from "@/hooks/use-auth-api";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "@tanstack/react-router";
-import { Home, LogIn, Menu, Search, UserPlus, Utensils, X } from "lucide-react";
+import {
+	Home,
+	LogIn,
+	LogOut,
+	Menu,
+	Search,
+	User,
+	UserPlus,
+	Utensils,
+	X,
+} from "lucide-react";
 import { useState } from "react";
 
 interface LayoutProps {
 	children: React.ReactNode;
+}
+
+/**
+ * Extract user initials from full name
+ * @param name - User's full name
+ * @returns Initials (e.g., "JD" for "John Doe")
+ */
+function getUserInitials(name: string): string {
+	const nameParts = name.trim().split(/\s+/);
+	if (nameParts.length === 0) return "U";
+	if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
+	// Get first and last name initials
+	const firstInitial = nameParts[0].charAt(0).toUpperCase();
+	const lastInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
+	return `${firstInitial}${lastInitial}`;
+}
+
+/**
+ * Extract first name from full name
+ * @param name - User's full name
+ * @returns First name
+ */
+function getFirstName(name: string): string {
+	return name.trim().split(/\s+/)[0];
 }
 
 export function Layout({ children }: LayoutProps) {
@@ -15,6 +50,13 @@ export function Layout({ children }: LayoutProps) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 	const [isLogInOpen, setIsLogInOpen] = useState(false);
+
+	// Get authentication state
+	const { isAuthenticated, profile, logout } = useAuthState();
+
+	// Get user display data
+	const userInitials = profile?.name ? getUserInitials(profile.name) : "U";
+	const firstName = profile?.name ? getFirstName(profile.name) : "User";
 
 	const navItems = [
 		{ path: "/", label: "Home", icon: Home },
@@ -206,29 +248,80 @@ export function Layout({ children }: LayoutProps) {
 										);
 									})}
 
-									{/* Mobile Auth Buttons */}
-									<div className="pt-4 border-t-2 border-primary/30 space-y-2">
-										<Button
-											onClick={() => {
-												closeMobileMenu();
-												setIsLogInOpen(true);
-											}}
-											variant="outline"
-											className="w-full border-primary/40 bg-transparent hover:bg-primary/10 text-white hover:text-white font-serif-elegant tracking-wide transition-all hover:border-primary hover:shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)]"
-										>
-											<LogIn className="mr-2 h-4 w-4" />
-											Log In
-										</Button>
-										<Button
-											onClick={() => {
-												closeMobileMenu();
-												setIsSignUpOpen(true);
-											}}
-											className="w-full bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)] hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.6)] border-2 border-primary/60 font-serif-elegant tracking-wide transition-all hover:scale-[1.02]"
-										>
-											<UserPlus className="mr-2 h-4 w-4" />
-											Sign Up
-										</Button>
+									{/* Mobile Auth Buttons & Profile */}
+									<div className="pt-4 border-t-2 border-primary/30 space-y-3">
+										{isAuthenticated ? (
+											<>
+												{/* Mobile Profile Section */}
+												<div className="rounded-sm border-2 border-primary/40 bg-gradient-to-br from-[oklch(0.10_0.045_250)] to-[oklch(0.16_0.045_245)] p-4 shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.2)]">
+													<div className="flex items-center gap-4">
+														{/* Profile Icon */}
+														<button
+															type="button"
+															onClick={() => {
+																closeMobileMenu();
+																// TODO: Future feature - open profile picture upload modal
+																console.log(
+																	"Profile icon clicked - future feature: upload profile picture",
+																);
+															}}
+															className="h-12 w-12 flex items-center justify-center rounded-full bg-gradient-to-br from-primary via-secondary to-primary text-white font-serif-display text-base font-semibold shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.5)] hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.7)] border-2 border-primary/60 transition-all hover:scale-105 cursor-pointer"
+															aria-label="User profile"
+															title="Click to change profile picture (coming soon)"
+														>
+															{userInitials}
+														</button>
+
+														{/* Welcome Message */}
+														<div className="flex-1">
+															<p className="text-sm font-serif-elegant text-white/70 tracking-wide">
+																Welcome back,
+															</p>
+															<p className="text-base font-serif-display text-white tracking-wide">
+																{firstName}
+															</p>
+														</div>
+													</div>
+												</div>
+
+												{/* Logout Button */}
+												<Button
+													onClick={() => {
+														closeMobileMenu();
+														logout();
+													}}
+													variant="outline"
+													className="cursor-pointer w-full border-primary/40 bg-transparent hover:bg-primary/10 text-white hover:text-white font-serif-elegant tracking-wide transition-all hover:border-primary hover:shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)]"
+												>
+													<LogOut className="mr-2 h-4 w-4" />
+													Log Out
+												</Button>
+											</>
+										) : (
+											<>
+												<Button
+													onClick={() => {
+														closeMobileMenu();
+														setIsLogInOpen(true);
+													}}
+													variant="outline"
+													className="cursor-pointer w-full border-primary/40 bg-transparent hover:bg-primary/10 text-white hover:text-white font-serif-elegant tracking-wide transition-all hover:border-primary hover:shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)]"
+												>
+													<LogIn className="mr-2 h-4 w-4" />
+													Log In
+												</Button>
+												<Button
+													onClick={() => {
+														closeMobileMenu();
+														setIsSignUpOpen(true);
+													}}
+													className="cursor-pointer w-full bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)] hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.6)] border-2 border-primary/60 font-serif-elegant tracking-wide transition-all hover:scale-[1.02]"
+												>
+													<UserPlus className="mr-2 h-4 w-4" />
+													Sign Up
+												</Button>
+											</>
+										)}
 									</div>
 								</div>
 							</nav>
@@ -279,25 +372,63 @@ export function Layout({ children }: LayoutProps) {
 						</div>
 
 						<div className="flex items-center gap-3">
-							{/* Auth Buttons - Hidden on mobile */}
-							<div className="hidden md:flex items-center gap-2">
-								<Button
-									onClick={() => setIsLogInOpen(true)}
-									variant="outline"
-									size="sm"
-									className="border-primary/40 bg-transparent hover:bg-primary/10 text-white hover:text-white font-serif-elegant tracking-wide transition-all hover:border-primary hover:shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)]"
-								>
-									<LogIn className="mr-2 h-4 w-4" />
-									Log In
-								</Button>
-								<Button
-									onClick={() => setIsSignUpOpen(true)}
-									size="sm"
-									className="bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)] hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.6)] border-2 border-primary/60 font-serif-elegant tracking-wide transition-all hover:scale-[1.02]"
-								>
-									<UserPlus className="mr-2 h-4 w-4" />
-									Sign Up
-								</Button>
+							{/* Auth Buttons & Profile - Hidden on mobile */}
+							<div className="hidden md:flex items-center gap-3">
+								{isAuthenticated ? (
+									<>
+										{/* Welcome Message */}
+										<span className="text-sm font-serif-elegant text-white/90 tracking-wide">
+											Welcome, {firstName}
+										</span>
+
+										{/* Profile Icon with Initials */}
+										<button
+											type="button"
+											onClick={() => {
+												// TODO: Future feature - open profile picture upload modal
+												console.log(
+													"Profile icon clicked - future feature: upload profile picture",
+												);
+											}}
+											className="h-10 w-10 flex items-center justify-center rounded-full bg-gradient-to-br from-primary via-secondary to-primary text-white font-serif-display text-sm font-semibold shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.5)] hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.7)] border-2 border-primary/60 transition-all hover:scale-105 cursor-pointer"
+											aria-label="User profile"
+											title="Click to change profile picture (coming soon)"
+										>
+											{userInitials}
+										</button>
+
+										{/* Logout Button */}
+										<Button
+											onClick={logout}
+											variant="outline"
+											size="sm"
+											className="cursor-pointer border-primary/40 bg-transparent hover:bg-primary/10 text-white hover:text-white font-serif-elegant tracking-wide transition-all hover:border-primary hover:shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)]"
+										>
+											<LogOut className="mr-2 h-4 w-4" />
+											Log Out
+										</Button>
+									</>
+								) : (
+									<>
+										<Button
+											onClick={() => setIsLogInOpen(true)}
+											variant="outline"
+											size="sm"
+											className="cursor-pointer border-primary/40 bg-transparent hover:bg-primary/10 text-white hover:text-white font-serif-elegant tracking-wide transition-all hover:border-primary hover:shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)]"
+										>
+											<LogIn className="mr-2 h-4 w-4" />
+											Log In
+										</Button>
+										<Button
+											onClick={() => setIsSignUpOpen(true)}
+											size="sm"
+											className="cursor-pointer bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)] hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.6)] border-2 border-primary/60 font-serif-elegant tracking-wide transition-all hover:scale-[1.02]"
+										>
+											<UserPlus className="mr-2 h-4 w-4" />
+											Sign Up
+										</Button>
+									</>
+								)}
 							</div>
 
 							{/* Mobile Hamburger Menu Button */}

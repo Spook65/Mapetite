@@ -225,7 +225,7 @@ function LandingPage() {
 				</div>
 
 				{/* Stats Section - Floating Light Module */}
-				<div className="mt-8 md:mt-16 rounded-sm border-2 border-primary/40 bg-card p-6 md:p-10 shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.25),0_8px_24px_black] relative overflow-hidden">
+				<div className="mt-8 md:mt-12 rounded-sm border-2 border-primary/40 bg-card p-4 md:p-6 shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.25),0_8px_24px_black] relative overflow-hidden">
 					{/* Glowing ornate corner decorations */}
 					<div className="absolute top-0 left-0 w-6 h-6 border-t-2 border-l-2 border-primary/60 shadow-[0_0_10px_oklch(0.55_0.18_240_/_0.4)]" />
 					<div className="absolute top-0 right-0 w-6 h-6 border-t-2 border-r-2 border-secondary/60 shadow-[0_0_10px_oklch(0.65_0.14_195_/_0.4)]" />
@@ -235,12 +235,12 @@ function LandingPage() {
 					{/* Subtle glowing texture */}
 					<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(0deg,transparent,transparent_2px,oklch(0.55_0.18_240_/_0.2)_2px,oklch(0.55_0.18_240_/_0.2)_3px)]" />
 
-					<div className="grid gap-6 md:gap-8 grid-cols-2 md:grid-cols-4 relative z-10">
+					<div className="grid gap-4 md:gap-6 grid-cols-2 md:grid-cols-4 relative z-10">
 						<div className="text-center">
 							<p className="text-3xl md:text-4xl lg:text-5xl font-serif-display text-primary drop-shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.5)]">
 								195
 							</p>
-							<p className="mt-2 md:mt-3 text-xs md:text-sm font-serif-elegant text-card-foreground/70 tracking-wide">
+							<p className="mt-1 md:mt-2 text-xs md:text-sm font-serif-elegant text-card-foreground/70 tracking-wide">
 								Countries Covered
 							</p>
 						</div>
@@ -248,7 +248,7 @@ function LandingPage() {
 							<p className="text-3xl md:text-4xl lg:text-5xl font-serif-display text-secondary drop-shadow-[0_0_15px_oklch(0.65_0.14_195_/_0.5)]">
 								1000+
 							</p>
-							<p className="mt-2 md:mt-3 text-xs md:text-sm font-serif-elegant text-card-foreground/70 tracking-wide">
+							<p className="mt-1 md:mt-2 text-xs md:text-sm font-serif-elegant text-card-foreground/70 tracking-wide">
 								Cities Available
 							</p>
 						</div>
@@ -256,7 +256,7 @@ function LandingPage() {
 							<p className="text-3xl md:text-4xl lg:text-5xl font-serif-display text-primary drop-shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.5)]">
 								50K+
 							</p>
-							<p className="mt-2 md:mt-3 text-xs md:text-sm font-serif-elegant text-card-foreground/70 tracking-wide">
+							<p className="mt-1 md:mt-2 text-xs md:text-sm font-serif-elegant text-card-foreground/70 tracking-wide">
 								Restaurant Listings
 							</p>
 						</div>
@@ -264,7 +264,7 @@ function LandingPage() {
 							<p className="text-3xl md:text-4xl lg:text-5xl font-serif-display text-secondary drop-shadow-[0_0_15px_oklch(0.65_0.14_195_/_0.5)]">
 								4.8★
 							</p>
-							<p className="mt-2 md:mt-3 text-xs md:text-sm font-serif-elegant text-card-foreground/70 tracking-wide">
+							<p className="mt-1 md:mt-2 text-xs md:text-sm font-serif-elegant text-card-foreground/70 tracking-wide">
 								Average Rating
 							</p>
 						</div>
@@ -272,9 +272,9 @@ function LandingPage() {
 				</div>
 
 				{/* Explore Trending Destinations Section */}
-				<div className="mt-12 md:mt-20">
-					<div className="mb-6 md:mb-8 text-center px-4">
-						<h2 className="text-2xl md:text-3xl lg:text-4xl font-serif-display text-[oklch(0.18_0.035_250)] mb-2 md:mb-3">
+				<div className="mt-8 md:mt-12">
+					<div className="mb-4 md:mb-6 text-center px-4">
+						<h2 className="text-2xl md:text-3xl lg:text-4xl font-serif-display text-[oklch(0.18_0.035_250)] mb-1 md:mb-2">
 							Curator's Picks
 						</h2>
 						<p className="text-sm md:text-base font-serif-elegant text-[oklch(0.22_0.03_250)] max-w-2xl mx-auto">

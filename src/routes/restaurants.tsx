@@ -56,6 +56,7 @@ import {
 	X,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 // Define search params schema for the route
 type RestaurantsSearch = {
@@ -191,9 +192,36 @@ function App() {
 		(state) => state.clearAllFilters,
 	);
 
-	// API-based favorites using React Query
+	// API-based favorites using React Query with error handling
 	const { data: favoritesData } = useFavorites();
-	const { mutate: toggleFavoriteMutate } = useToggleFavorite();
+	const { mutate: toggleFavoriteMutate, isPending: isTogglingFavorite } =
+		useToggleFavorite({
+			onSuccess: (data) => {
+				// Get restaurant name for better UX
+				const restaurant = restaurants.find((r) => r.id === data.restaurant_id);
+				const restaurantName = restaurant?.name || "Restaurant";
+
+				// Show success toast based on action
+				if (data.action === "added") {
+					toast.success("Added to favorites", {
+						description: `${restaurantName} has been added to your favorites.`,
+					});
+				} else {
+					toast.success("Removed from favorites", {
+						description: `${restaurantName} has been removed from your favorites.`,
+					});
+				}
+			},
+			onError: (error) => {
+				// Show error toast and log the error
+				console.error("Failed to toggle favorite:", error);
+				toast.error("Failed to update favorites", {
+					description:
+						error.message ||
+						"Something went wrong. Please try again in a moment.",
+				});
+			},
+		});
 
 	// Local component state (not persisted)
 	const [selectedRestaurant, setSelectedRestaurant] =
@@ -408,26 +436,26 @@ function App() {
 				</div>
 
 				{/* Search Section - Floating Light Module */}
-				<Card className="mb-12 relative shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.25),0_8px_24px_black] border-2 border-primary/40 bg-card overflow-hidden hover:shadow-[0_0_40px_oklch(0.55_0.18_240_/_0.35),0_10px_28px_black] transition-all">
+				<Card className="mb-12 relative shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.25),0_8px_24px_black] border-2 border-primary/40 bg-card overflow-hidden hover:shadow-[0_0_40px_oklch(0.55_0.18_240_/_0.35),0_10px_28px_black] transition-all search-container-mobile-centered">
 					{/* Subtle glowing texture overlay */}
 					<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.55_0.18_240_/_0.2)_10px,oklch(0.55_0.18_240_/_0.2)_11px)] pointer-events-none" />
 
-					<CardHeader className="text-center pb-6 relative z-10">
+					<CardHeader className="text-center pb-6 relative z-10 flex flex-col items-center">
 						{/* Ornate icon frame with glow */}
-						<div className="mb-5 mx-auto flex h-16 w-16 items-center justify-center rounded-sm bg-gradient-to-br from-primary via-secondary to-primary shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.5)] border-2 border-primary/50">
+						<div className="mb-5 flex h-16 w-16 items-center justify-center rounded-sm bg-gradient-to-br from-primary via-secondary to-primary shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.5)] border-2 border-primary/50 search-icon-wrapper">
 							<Search className="h-8 w-8 text-white stroke-[2.5] drop-shadow-[0_0_8px_white]" />
 						</div>
-						<CardTitle className="text-3xl font-serif-display text-card-foreground mb-2">
+						<CardTitle className="text-3xl font-serif-display text-card-foreground mb-2 search-title">
 							Your Expedition Begins
 						</CardTitle>
-						<CardDescription className="text-base text-card-foreground/70 font-serif-elegant max-w-lg mx-auto">
+						<CardDescription className="text-base text-card-foreground/70 font-serif-elegant max-w-lg search-subtitle">
 							Chart your course through the world's finest dining establishments
 						</CardDescription>
 					</CardHeader>
-					<CardContent className="pt-6 relative z-10">
-						{/* Location inputs wrapper with responsive max-width constraint for extra-wide screens */}
-						<div className="mx-auto max-w-full 2xl:max-w-7xl">
-							<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
+					<CardContent className="pt-6 relative z-10 flex flex-col items-center">
+						{/* Location inputs wrapper with centered layout and constrained width */}
+						<div className="w-full max-w-4xl search-inputs-wrapper">
+							<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
 								{/* Country Dropdown */}
 								<div className="space-y-2">
 									<Label
@@ -523,13 +551,13 @@ function App() {
 							</div>
 						</div>
 						{/* Action Buttons with Ornate Styling */}
-						<div className="flex flex-col sm:flex-row flex-wrap gap-3 md:gap-4 justify-center">
+						<div className="flex flex-col sm:flex-row gap-4 justify-center search-buttons-wrapper">
 							<Button
 								onClick={handleSearch}
 								size="lg"
-								className="w-full sm:w-auto cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-layered hover:shadow-[0_4px_12px_oklch(0.55_0.18_240_/_0.5),0_0_30px_oklch(0.55_0.18_240_/_0.7)] font-semibold tracking-wide px-6 md:px-8 py-5 md:py-6 text-sm md:text-base border border-primary/20 transition-all duration-300"
+								className="w-full sm:w-auto cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-layered hover:shadow-[0_4px_12px_oklch(0.55_0.18_240_/_0.5),0_0_30px_oklch(0.55_0.18_240_/_0.7)] font-semibold tracking-wide px-8 py-6 text-base border border-primary/20 transition-all duration-300"
 							>
-								<Search className="mr-2 h-4 md:h-5 w-4 md:w-5" />
+								<Search className="mr-2 h-5 w-5" />
 								Start Exploring
 							</Button>
 							<Button
@@ -537,9 +565,9 @@ function App() {
 								size="lg"
 								onClick={handleGetCurrentLocation}
 								disabled={isGettingLocation}
-								className="w-full sm:w-auto cursor-pointer border-2 border-primary/40 hover:bg-[oklch(0.96_0.01_75)] hover:border-primary/70 hover:shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.5),0_4px_12px_oklch(0.55_0.18_240_/_0.4)] font-semibold tracking-wide px-6 md:px-8 py-5 md:py-6 text-sm md:text-base shadow-md transition-all duration-300"
+								className="w-full sm:w-auto cursor-pointer border-2 border-primary/40 hover:bg-[oklch(0.96_0.01_75)] hover:border-primary/70 hover:shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.5),0_4px_12px_oklch(0.55_0.18_240_/_0.4)] font-semibold tracking-wide px-8 py-6 text-base shadow-md transition-all duration-300"
 							>
-								<Navigation className="mr-2 h-4 md:h-5 w-4 md:w-5" />
+								<Navigation className="mr-2 h-5 w-5" />
 								{isGettingLocation ? "Locating..." : "Use My Location"}
 							</Button>
 						</div>
@@ -785,7 +813,7 @@ function App() {
 													}
 													size="sm"
 													onClick={() => togglePriceFilter(price)}
-													className="gap-1"
+													className="gap-1 cursor-pointer"
 												>
 													{"$".repeat(price)}
 												</Button>
@@ -841,7 +869,7 @@ function App() {
 										min={0}
 										max={5}
 										step={0.5}
-										className="w-full"
+										className="w-full cursor-pointer"
 									/>
 									<div className="flex justify-between text-xs text-gray-500">
 										<span>Any</span>
@@ -862,6 +890,7 @@ function App() {
 									<Switch
 										checked={openNowOnly}
 										onCheckedChange={setOpenNowOnly}
+										className="cursor-pointer"
 									/>
 								</div>
 
@@ -869,7 +898,7 @@ function App() {
 								<div className="pt-2 border-t">
 									<Button
 										variant="outline"
-										className="w-full"
+										className="w-full cursor-pointer"
 										onClick={clearAllFilters}
 									>
 										Clear All Filters
@@ -1032,17 +1061,20 @@ function App() {
 													favoriteIds.has(restaurant.id) ? "default" : "outline"
 												}
 												onClick={() => toggleFavorite(restaurant.id)}
+												disabled={isTogglingFavorite}
 												className={cn(
-													"cursor-pointer shadow-md flex-shrink-0",
+													"cursor-pointer shadow-md flex-shrink-0 transition-all duration-200",
 													favoriteIds.has(restaurant.id)
 														? "shadow-layered"
 														: "border-2 border-primary/30",
+													isTogglingFavorite && "opacity-60 cursor-not-allowed",
 												)}
 											>
 												<Heart
 													className={cn(
-														"size-4",
+														"size-4 transition-all duration-200",
 														favoriteIds.has(restaurant.id) && "fill-current",
+														isTogglingFavorite && "animate-pulse",
 													)}
 												/>
 											</Button>

@@ -192,6 +192,44 @@ code {
 	}
 }
 
+/* Mobile-specific styles for "Your Expedition Begins" search container */
+@media (max-width: 768px) {
+	.search-container-mobile-centered {
+		text-align: center;
+	}
+
+	.search-container-mobile-centered .search-icon-wrapper,
+	.search-container-mobile-centered .search-title,
+	.search-container-mobile-centered .search-subtitle {
+		text-align: center;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.search-container-mobile-centered .search-inputs-wrapper {
+		max-width: 100%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.search-container-mobile-centered .search-buttons-wrapper {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+		max-width: 100%;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	.search-container-mobile-centered .search-buttons-wrapper button {
+		width: 100%;
+		max-width: 400px;
+		margin-left: auto;
+		margin-right: auto;
+	}
+}
+
 /* Force dark mode globally */
 :root {
 	color-scheme: dark;
