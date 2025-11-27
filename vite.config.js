@@ -7,6 +7,7 @@ import svgr from "vite-plugin-svgr";
 import { resolve } from "node:path";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import { creaoPlugins } from "./config/vite/creao-plugin.mjs";
+import { mockApiPlugin } from "./config/vite/mock-api-plugin.mjs";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -16,6 +17,7 @@ export default defineConfig({
 	},
 	plugins: [
 		...creaoPlugins(),
+		mockApiPlugin(),
 		TanStackRouterVite({
 			autoCodeSplitting: false, // affects pick-n-edit feature. disabled for now.
 		}),

@@ -1,5 +1,6 @@
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { FloatingBanner } from "@/components/FloatingBanner";
+import { Toaster } from "@/components/ui/sonner";
 import { Outlet, createRootRoute } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
 
@@ -15,6 +16,7 @@ function Root() {
 			</ErrorBoundary>
 			<TanStackRouterDevtools position="bottom-right" />
 			<FloatingBanner position="bottom-left" />
+			<Toaster />
 		</div>
 	);
 }

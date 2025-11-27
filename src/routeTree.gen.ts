@@ -14,7 +14,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as RestaurantsImport } from './routes/restaurants'
 import { Route as JwtDebugImport } from './routes/jwt-debug'
 import { Route as IndexImport } from './routes/index'
-import { Route as RestaurantsRestaurantIdImport } from './routes/restaurants.$restaurantId'
+import { Route as RestaurantsRestaurantIdImport } from './routes/restaurants/$restaurantId'
 
 // Create/Update Routes
 
@@ -167,7 +167,7 @@ export const routeTree = rootRoute
       ]
     },
     "/restaurants/$restaurantId": {
-      "filePath": "restaurants.$restaurantId.tsx",
+      "filePath": "restaurants/$restaurantId.tsx",
       "parent": "/restaurants"
     }
   }
