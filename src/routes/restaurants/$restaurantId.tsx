@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { ReservationModal } from "@/components/ReservationModal";
 import { ReviewSummary } from "@/components/ReviewSummary";
 import { SignatureMenu } from "@/components/SignatureMenu";
+import { MapPreview } from "@/components/MapPreview";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -333,6 +334,17 @@ function RestaurantDetailPage() {
 								</CardContent>
 							</Card>
 						</div>
+
+						{/* Map Preview */}
+						{restaurant.latitude && restaurant.longitude && (
+							<div className="mb-8 w-full">
+								<MapPreview
+									latitude={restaurant.latitude}
+									longitude={restaurant.longitude}
+									className="border-primary/40"
+								/>
+							</div>
+						)}
 
 						{/* Photo Carousel */}
 						<div className="mb-8 w-full">

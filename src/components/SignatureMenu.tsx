@@ -24,56 +24,40 @@ interface SignatureMenuProps {
 	className?: string;
 }
 
-// Mock signature dishes for fallback
-const mockDishes: SignatureDish[] = [
-	{
-		name: "Pan-Seared Scallops",
-		description:
-			"Succulent diver scallops with cauliflower purée, crispy prosciutto, and truffle beurre blanc",
-		price: 48,
-		tags: ["Gluten-Free"],
-		featured: true,
-	},
-	{
-		name: "Wagyu Beef Tenderloin",
-		description:
-			"Japanese A5 wagyu with roasted bone marrow, heirloom carrots, and red wine reduction",
-		price: 125,
-		tags: ["Chef's Specialty"],
-		featured: true,
-	},
-	{
-		name: "Lobster Risotto",
-		description:
-			"Arborio rice with Maine lobster, saffron, peas, and aged Parmigiano-Reggiano",
-		price: 62,
-		tags: ["Signature"],
-	},
-	{
-		name: "Wild Mushroom Tart",
-		description:
-			"Puff pastry with foraged mushrooms, goat cheese, thyme, and balsamic glaze",
-		price: 32,
-		tags: ["Vegetarian", "Seasonal"],
-	},
-	{
-		name: "Dover Sole Meunière",
-		description:
-			"Whole dover sole filleted tableside, brown butter, lemon, and fresh herbs",
-		price: 78,
-		tags: ["Classic"],
-	},
-];
-
 /**
  * SignatureMenu - Displays signature dishes with styling and estimated pricing
  * Features dark theme with light floating card aesthetic and blue/teal accents
  */
 export function SignatureMenu({
-	dishes = mockDishes,
-	pricingNote = "Prices are estimates and may vary by season and availability",
+	dishes = [],
+	pricingNote,
 	className,
 }: SignatureMenuProps) {
+	if (!dishes.length) {
+		return (
+			<Card
+				className={cn(
+					"border-2 border-primary/40 bg-card shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.2)] relative overflow-hidden",
+					className,
+				)}
+			>
+				<CardHeader>
+					<div className="flex items-center gap-3 mb-2">
+						<div className="flex h-10 w-10 items-center justify-center rounded-sm bg-gradient-to-br from-primary/40 to-primary/20 border-2 border-primary/50 shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)]">
+							<UtensilsCrossed className="h-5 w-5 text-primary stroke-[2.5]" />
+						</div>
+						<CardTitle className="text-2xl font-serif-display text-card-foreground">
+							Signature Dishes
+						</CardTitle>
+					</div>
+				</CardHeader>
+				<CardContent className="text-sm text-card-foreground/70">
+					No menu data available for this restaurant yet.
+				</CardContent>
+			</Card>
+		);
+	}
+
 	return (
 		<Card
 			className={cn(

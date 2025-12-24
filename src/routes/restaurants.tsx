@@ -13,32 +13,19 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
-import { Combobox } from "@/components/ui/combobox";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
+import { reverseGeocode } from "@/lib/api/nominatim";
 import {
-	findLocationForCity,
-	getCities,
-	getCountries,
-	getStates,
+	resolveCityLocation,
 	searchRestaurants,
 } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
-import type {
-	LocationState,
-	Restaurant,
-	Review,
-} from "@/store/restaurant-search-store";
+import type { Restaurant } from "@/store/restaurant-search-store";
 import { createFileRoute } from "@tanstack/react-router";
 import {
 	ArrowRight,
@@ -72,79 +59,15 @@ export const Route = createFileRoute("/restaurants")({
 	},
 });
 
-// Helper functions moved to @/lib/search-restaurants.ts
-
-// Helper function to calculate distance between two coordinates (in miles)
-function calculateDistance(
-	lat1: number,
-	lon1: number,
-	lat2: number,
-	lon2: number,
-): number {
-	const R = 3959; // Earth's radius in miles
-	const dLat = ((lat2 - lat1) * Math.PI) / 180;
-	const dLon = ((lon2 - lon1) * Math.PI) / 180;
-	const a =
-		Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-		Math.cos((lat1 * Math.PI) / 180) *
-			Math.cos((lat2 * Math.PI) / 180) *
-			Math.sin(dLon / 2) *
-			Math.sin(dLon / 2);
-	const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-	return R * c;
-}
-
-// Helper function to check if restaurant is open now
-function isRestaurantOpen(hours: { open: string; close: string }): boolean {
-	const now = new Date();
-	const currentTime = now.getHours() * 60 + now.getMinutes();
-
-	const [openHour, openMin] = hours.open.split(":").map(Number);
-	const [closeHour, closeMin] = hours.close.split(":").map(Number);
-
-	const openTime = openHour * 60 + openMin;
-	const closeTime = closeHour * 60 + closeMin;
-
-	// Handle cases where closing time is after midnight
-	if (closeTime < openTime) {
-		return currentTime >= openTime || currentTime <= closeTime;
-	}
-
-	return currentTime >= openTime && currentTime <= closeTime;
-}
-
-// Mock data generator moved to @/lib/search-restaurants.ts
-
-function generateMockReviews(count: number): Review[] {
-	const comments = [
-		"Amazing food and great service!",
-		"A bit crowded but worth the wait.",
-		"Excellent atmosphere and delicious dishes.",
-		"Perfect spot for a quick meal.",
-		"The best place I've tried in this area!",
-	];
-
-	const authors = ["John D.", "Sarah M.", "Michael K.", "Emma L.", "David P."];
-
-	return Array.from({ length: count }, (_, i) => ({
-		id: `review-${i}`,
-		author: authors[i % authors.length],
-		rating: 3 + Math.random() * 2,
-		comment: comments[i % comments.length],
-		date: new Date(
-			Date.now() - Math.random() * 90 * 24 * 60 * 60 * 1000,
-		).toLocaleDateString(),
-	}));
-}
-
-// findLocationForCity moved to @/lib/search-restaurants.ts
-
 function App() {
 	const { city: searchCity } = Route.useSearch();
 
 	// Global state from Zustand store
 	const location = useRestaurantSearchStore((state) => state.location);
 	const setLocation = useRestaurantSearchStore((state) => state.setLocation);
+	const updateLocation = useRestaurantSearchStore(
+		(state) => state.updateLocation,
+	);
 	const restaurants = useRestaurantSearchStore((state) => state.restaurants);
 	const setRestaurants = useRestaurantSearchStore(
 		(state) => state.setRestaurants,
@@ -227,6 +150,7 @@ function App() {
 	const [selectedRestaurant, setSelectedRestaurant] =
 		useState<Restaurant | null>(null);
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
+	const [isSearching, setIsSearching] = useState(false);
 	const [reservationModalOpen, setReservationModalOpen] = useState(false);
 	const [restaurantToReserve, setRestaurantToReserve] =
 		useState<Restaurant | null>(null);
@@ -242,54 +166,80 @@ function App() {
 	// Handle city search parameter from navigation
 	useEffect(() => {
 		if (searchCity) {
-			const locationData = findLocationForCity(searchCity);
-			if (locationData) {
-				setLocation(locationData);
-				// Automatically trigger search for the city
-				const results = searchRestaurants(locationData, []);
+			(async () => {
+				const resolved = await resolveCityLocation(searchCity);
+				if (!resolved) return;
+				setLocation(resolved);
+				const results = await searchRestaurants(resolved, []);
 				setRestaurants(results);
 				setShowFavorites(false);
-			}
+			})();
 		}
 	}, [searchCity, setLocation, setRestaurants, setShowFavorites]);
 
-	const handleSearch = () => {
-		if (!location.city || !location.state || !location.country) {
-			alert("Please enter Country, State, and City");
+	const handleSearch = async () => {
+		if (!location.city) {
+			toast.error("Add a city to search");
 			return;
 		}
-		const results = searchRestaurants(location, Array.from(selectedCategories));
-		setRestaurants(results);
-		setShowFavorites(false);
+		setIsSearching(true);
+		try {
+			const resolved =
+				(location.latitude && location.longitude && location) ||
+				(await resolveCityLocation(
+					location.city,
+					location.state,
+					location.country,
+				));
+			if (!resolved) {
+				toast.error("Could not find that location");
+				return;
+			}
+			setLocation(resolved);
+			const results = await searchRestaurants(
+				resolved,
+				Array.from(selectedCategories),
+			);
+			setRestaurants(results);
+			setShowFavorites(false);
+		} catch (error) {
+			console.error("Search failed", error);
+			toast.error("Search failed", {
+				description: "Unable to fetch restaurants right now.",
+			});
+		} finally {
+			setIsSearching(false);
+		}
 	};
 
 	const handleGetCurrentLocation = () => {
 		setIsGettingLocation(true);
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
-				(position) => {
+				async (position) => {
 					const { latitude, longitude } = position.coords;
-					// Mock reverse geocoding
-					setLocation({
-						country: "United States",
-						state: "New York",
-						city: "New York City",
-						latitude,
-						longitude,
-					});
-					setIsGettingLocation(false);
-					const results = searchRestaurants(
-						{
-							country: "United States",
-							state: "New York",
-							city: "New York City",
+					try {
+						const reverse = await reverseGeocode(latitude, longitude);
+						const resolved = {
+							country: reverse?.country || "",
+							state: reverse?.state || "",
+							city: reverse?.city || "Current Location",
 							latitude,
 							longitude,
-						},
-						Array.from(selectedCategories),
-					);
-					setRestaurants(results);
-					setShowFavorites(false);
+						};
+						setLocation(resolved);
+						const results = await searchRestaurants(
+							resolved,
+							Array.from(selectedCategories),
+						);
+						setRestaurants(results);
+						setShowFavorites(false);
+					} catch (error) {
+						console.error("Geolocation search failed", error);
+						toast.error("Unable to get nearby places");
+					} finally {
+						setIsGettingLocation(false);
+					}
 				},
 				(error) => {
 					alert("Unable to get your location. Please enter manually.");
@@ -456,7 +406,6 @@ function App() {
 						{/* Location inputs wrapper with centered layout and constrained width */}
 						<div className="w-full max-w-4xl search-inputs-wrapper">
 							<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-								{/* Country Dropdown */}
 								<div className="space-y-2">
 									<Label
 										htmlFor="country"
@@ -464,22 +413,16 @@ function App() {
 									>
 										Country
 									</Label>
-									<Combobox
-										options={getCountries().map((country) => ({
-											value: country,
-											label: country,
-										}))}
+									<Input
+										id="country"
+										placeholder="Country (optional)"
 										value={location.country}
-										onValueChange={(value) => {
-											setLocation({ country: value, state: "", city: "" });
-										}}
-										placeholder="Select a country"
-										searchPlaceholder="Search countries..."
-										emptyText="No country found."
+										onChange={(e) =>
+											updateLocation({ country: e.target.value })
+										}
 									/>
 								</div>
 
-								{/* State Dropdown */}
 								<div className="space-y-2">
 									<Label
 										htmlFor="state"
@@ -487,33 +430,14 @@ function App() {
 									>
 										State/Province
 									</Label>
-									<Select
+									<Input
+										id="state"
+										placeholder="State or province"
 										value={location.state}
-										onValueChange={(value) => {
-											setLocation({ ...location, state: value, city: "" });
-										}}
-										disabled={!location.country}
-									>
-										<SelectTrigger id="state">
-											<SelectValue
-												placeholder={
-													location.country
-														? "Select a state"
-														: "Select country first"
-												}
-											/>
-										</SelectTrigger>
-										<SelectContent>
-											{getStates(location.country).map((state) => (
-												<SelectItem key={state} value={state}>
-													{state}
-												</SelectItem>
-											))}
-										</SelectContent>
-									</Select>
+										onChange={(e) => updateLocation({ state: e.target.value })}
+									/>
 								</div>
 
-								{/* City Dropdown */}
 								<div className="space-y-2">
 									<Label
 										htmlFor="city"
@@ -521,32 +445,12 @@ function App() {
 									>
 										City
 									</Label>
-									<Select
+									<Input
+										id="city"
+										placeholder="e.g. Paris, Tokyo"
 										value={location.city}
-										onValueChange={(value) => {
-											setLocation({ ...location, city: value });
-										}}
-										disabled={!location.state}
-									>
-										<SelectTrigger id="city">
-											<SelectValue
-												placeholder={
-													location.state
-														? "Select a city"
-														: "Select state first"
-												}
-											/>
-										</SelectTrigger>
-										<SelectContent>
-											{getCities(location.country, location.state).map(
-												(city) => (
-													<SelectItem key={city} value={city}>
-														{city}
-													</SelectItem>
-												),
-											)}
-										</SelectContent>
-									</Select>
+										onChange={(e) => updateLocation({ city: e.target.value })}
+									/>
 								</div>
 							</div>
 						</div>
@@ -555,10 +459,11 @@ function App() {
 							<Button
 								onClick={handleSearch}
 								size="lg"
+								disabled={isSearching}
 								className="w-full sm:w-auto cursor-pointer bg-primary text-primary-foreground hover:bg-primary/90 shadow-layered hover:shadow-[0_4px_12px_oklch(0.55_0.18_240_/_0.5),0_0_30px_oklch(0.55_0.18_240_/_0.7)] font-semibold tracking-wide px-8 py-6 text-base border border-primary/20 transition-all duration-300"
 							>
 								<Search className="mr-2 h-5 w-5" />
-								Start Exploring
+								{isSearching ? "Searching..." : "Start Exploring"}
 							</Button>
 							<Button
 								variant="outline"

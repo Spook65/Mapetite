@@ -47,66 +47,28 @@ interface ReviewSummaryProps {
 }
 
 // Mock data for fallback
-const mockRatingBreakdown: RatingBreakdown = {
-	5: 142,
-	4: 58,
-	3: 12,
-	2: 3,
-	1: 1,
+const emptyBreakdown: RatingBreakdown = {
+	5: 0,
+	4: 0,
+	3: 0,
+	2: 0,
+	1: 0,
 };
-
-const mockReviews: UserReview[] = [
-	{
-		id: "1",
-		author: "Sarah M.",
-		rating: 5,
-		comment:
-			"Absolutely phenomenal dining experience! Every dish was a work of art, and the service was impeccable. The wagyu beef tenderloin was the best I've ever had. Will definitely be returning.",
-		date: "2024-11-15",
-		helpfulCount: 24,
-	},
-	{
-		id: "2",
-		author: "James T.",
-		rating: 5,
-		comment:
-			"Outstanding food and atmosphere. The chef's attention to detail is evident in every bite. The wine pairing was perfect. Highly recommend for special occasions!",
-		date: "2024-11-10",
-		helpfulCount: 18,
-	},
-	{
-		id: "3",
-		author: "Emily R.",
-		rating: 4,
-		comment:
-			"Beautiful presentation and delicious food. The scallops were cooked to perfection. Only minor critique is the dessert menu could be more diverse. Overall, a wonderful experience.",
-		date: "2024-11-05",
-		helpfulCount: 12,
-	},
-	{
-		id: "4",
-		author: "Michael K.",
-		rating: 5,
-		comment:
-			"This is fine dining at its best. Every course exceeded expectations. The staff was knowledgeable and attentive without being intrusive. Can't wait to visit again!",
-		date: "2024-10-28",
-		helpfulCount: 15,
-	},
-];
 
 /**
  * ReviewSummary - Displays rating breakdown and user reviews
  * Features dark theme with light floating card aesthetic and blue/teal accents
  */
 export function ReviewSummary({
-	overallRating = 4.7,
-	totalReviews = 216,
-	ratingBreakdown = mockRatingBreakdown,
-	reviews = mockReviews,
+	overallRating = 0,
+	totalReviews = 0,
+	ratingBreakdown = emptyBreakdown,
+	reviews = [],
 	maxReviews = 4,
 	className,
 }: ReviewSummaryProps) {
 	const displayedReviews = reviews.slice(0, maxReviews);
+	const hasReviews = totalReviews > 0 && reviews.length > 0;
 
 	// Calculate percentage for each rating
 	const getPercentage = (count: number) => {
@@ -224,48 +186,54 @@ export function ReviewSummary({
 						</Badge>
 					</div>
 
-					{displayedReviews.map((review) => (
-						<div
-							key={review.id}
-							className="p-5 rounded-sm bg-[oklch(0.96_0.01_75)] border-2 border-primary/30 shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.1)] hover:shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.15)] hover:border-primary/40 transition-all"
-						>
-							{/* Review Header */}
-							<div className="flex flex-wrap items-start justify-between gap-4 mb-3">
-								<div className="flex-1">
-									<div className="flex items-center gap-3 mb-2">
-										<span className="font-serif-elegant font-semibold text-base text-card-foreground">
-											{review.author}
-										</span>
+					{hasReviews ? (
+						displayedReviews.map((review) => (
+							<div
+								key={review.id}
+								className="p-5 rounded-sm bg-[oklch(0.96_0.01_75)] border-2 border-primary/30 shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.1)] hover:shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.15)] hover:border-primary/40 transition-all"
+							>
+								{/* Review Header */}
+								<div className="flex flex-wrap items-start justify-between gap-4 mb-3">
+									<div className="flex-1">
+										<div className="flex items-center gap-3 mb-2">
+											<span className="font-serif-elegant font-semibold text-base text-card-foreground">
+												{review.author}
+											</span>
+											<span className="text-xs font-serif-elegant text-card-foreground/60">
+												{new Date(review.date).toLocaleDateString("en-US", {
+													year: "numeric",
+													month: "long",
+													day: "numeric",
+												})}
+											</span>
+										</div>
+										{renderStars(review.rating, "sm")}
+									</div>
+								</div>
+
+								{/* Review Comment */}
+								<p className="text-sm font-serif-elegant text-card-foreground/80 leading-relaxed mb-3">
+									{review.comment}
+								</p>
+
+								{/* Review Footer */}
+								{review.helpfulCount !== undefined && (
+									<div className="flex items-center gap-2 pt-3 border-t border-primary/20">
+										<ThumbsUp className="h-3.5 w-3.5 text-primary/70" />
 										<span className="text-xs font-serif-elegant text-card-foreground/60">
-											{new Date(review.date).toLocaleDateString("en-US", {
-												year: "numeric",
-												month: "long",
-												day: "numeric",
-											})}
+											{review.helpfulCount}{" "}
+											{review.helpfulCount === 1 ? "person" : "people"} found this
+											helpful
 										</span>
 									</div>
-									{renderStars(review.rating, "sm")}
-								</div>
+								)}
 							</div>
-
-							{/* Review Comment */}
-							<p className="text-sm font-serif-elegant text-card-foreground/80 leading-relaxed mb-3">
-								{review.comment}
-							</p>
-
-							{/* Review Footer */}
-							{review.helpfulCount !== undefined && (
-								<div className="flex items-center gap-2 pt-3 border-t border-primary/20">
-									<ThumbsUp className="h-3.5 w-3.5 text-primary/70" />
-									<span className="text-xs font-serif-elegant text-card-foreground/60">
-										{review.helpfulCount}{" "}
-										{review.helpfulCount === 1 ? "person" : "people"} found this
-										helpful
-									</span>
-								</div>
-							)}
-						</div>
-					))}
+						))
+					) : (
+						<p className="text-sm text-card-foreground/70">
+							No reviews available yet.
+						</p>
+					)}
 				</div>
 
 				{/* View More Reviews CTA */}

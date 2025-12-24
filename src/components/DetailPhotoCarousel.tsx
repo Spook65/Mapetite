@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ChevronLeft, ChevronRight, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 interface DetailPhotoCarouselProps {
@@ -12,10 +12,6 @@ interface DetailPhotoCarouselProps {
 	className?: string;
 }
 
-/**
- * DetailPhotoCarousel - Image slider/gallery component for restaurant detail page
- * Uses mock image data with elegant dark theme styling and glowing blue/teal accents
- */
 export function DetailPhotoCarousel({
 	images = [],
 	restaurantName,
@@ -23,16 +19,17 @@ export function DetailPhotoCarousel({
 }: DetailPhotoCarouselProps) {
 	const [currentIndex, setCurrentIndex] = useState(0);
 
-	// Mock images if none provided
-	const mockImages = [
-		{ id: 1, alt: "Restaurant Interior View" },
-		{ id: 2, alt: "Signature Dish Presentation" },
-		{ id: 3, alt: "Elegant Dining Area" },
-		{ id: 4, alt: "Chef's Special Creation" },
-		{ id: 5, alt: "Ambiance and Atmosphere" },
-	];
+	const generatedImages =
+		images.length > 0
+			? images
+			: Array.from({ length: 5 }).map(
+					(_, i) =>
+						`https://picsum.photos/seed/${encodeURIComponent(
+							`${restaurantName}-${i}`,
+						)}/1280/720`,
+				);
 
-	const displayImages = images.length > 0 ? images : mockImages;
+	const displayImages = generatedImages;
 	const totalImages = displayImages.length;
 
 	const handlePrevious = () => {
@@ -60,25 +57,13 @@ export function DetailPhotoCarousel({
 			<div className="relative z-10">
 				{/* Main Image Display Area */}
 				<div className="relative aspect-[16/9] bg-gradient-to-br from-[oklch(0.15_0.04_250)] to-[oklch(0.12_0.045_250)] overflow-hidden">
-					{/* Mock Image Placeholder with Gradient & Icon */}
-					<div className="absolute inset-0 flex items-center justify-center">
-						<div className="text-center space-y-4">
-							{/* Ornate frame for icon */}
-							<div className="mx-auto flex h-24 w-24 items-center justify-center rounded-sm bg-gradient-to-br from-primary/40 to-primary/20 shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.5)] border-2 border-primary/50">
-								<ImageIcon className="h-12 w-12 text-primary stroke-[2.5] drop-shadow-[0_0_10px_oklch(0.55_0.18_240_/_0.6)]" />
-							</div>
-							<div className="space-y-2">
-								<p className="text-white/90 font-serif-display text-xl drop-shadow-[0_0_10px_oklch(0.55_0.18_240_/_0.3)]">
-									{typeof displayImages[currentIndex] === "string"
-										? `Photo ${currentIndex + 1}`
-										: displayImages[currentIndex].alt}
-								</p>
-								<p className="text-white/70 font-serif-elegant text-sm">
-									{restaurantName}
-								</p>
-							</div>
-						</div>
-					</div>
+					<img
+						src={displayImages[currentIndex]}
+						alt={`${restaurantName} photo ${currentIndex + 1}`}
+						className="absolute inset-0 h-full w-full object-cover"
+						loading="lazy"
+						referrerPolicy="no-referrer"
+					/>
 
 					{/* Navigation Arrows */}
 					{totalImages > 1 && (
@@ -116,7 +101,7 @@ export function DetailPhotoCarousel({
 						<div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-primary/40 scrollbar-track-transparent pb-2">
 							{displayImages.map((img, index) => (
 								<button
-									key={typeof img === "string" ? index : img.id}
+									key={index}
 									type="button"
 									onClick={() => goToSlide(index)}
 									className={cn(
@@ -126,17 +111,13 @@ export function DetailPhotoCarousel({
 											: "border-primary/30 hover:border-primary/50 hover:shadow-[0_0_10px_oklch(0.55_0.18_240_/_0.2)]",
 									)}
 								>
-									{/* Mock thumbnail with icon */}
-									<div className="absolute inset-0 flex items-center justify-center">
-										<ImageIcon
-											className={cn(
-												"h-8 w-8 transition-all",
-												currentIndex === index
-													? "text-primary drop-shadow-[0_0_8px_oklch(0.55_0.18_240_/_0.5)]"
-													: "text-primary/50 group-hover:text-primary/70",
-											)}
-										/>
-									</div>
+									<img
+										src={img}
+										alt={`${restaurantName} thumbnail ${index + 1}`}
+										className="h-full w-full object-cover"
+										loading="lazy"
+										referrerPolicy="no-referrer"
+									/>
 								</button>
 							))}
 						</div>
