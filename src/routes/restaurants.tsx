@@ -44,6 +44,14 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+  } from "@/components/ui/select";
+  
 
 // Define search params schema for the route
 type RestaurantsSearch = {
@@ -282,34 +290,44 @@ function App() {
 		? restaurants.filter((r) => favoriteIds.has(r.id))
 		: restaurants;
 
-	// Apply price filter
-	displayedRestaurants = displayedRestaurants.filter((r) =>
-		priceFilter.includes(r.priceRange),
-	);
+	// Apply price filter - only filter if priceRange exists and is valid
+	displayedRestaurants = displayedRestaurants.filter((r) => {
+		if (r.priceRange == null) return true; // Include restaurants without price data
+		return priceFilter.includes(r.priceRange);
+	});
 
-	// Apply rating filter
-	displayedRestaurants = displayedRestaurants.filter(
-		(r) => r.rating >= minRating,
-	);
+	// Apply rating filter - only filter if rating exists and meets threshold
+	displayedRestaurants = displayedRestaurants.filter((r) => {
+		if (r.rating == null) return minRating === 0; // Include unrated only if minRating is 0
+		return r.rating >= minRating;
+	});
 
-	// Apply open now filter
+	// Apply open now filter - only filter if isOpenNow is explicitly false when filter is active
 	if (openNowOnly) {
-		displayedRestaurants = displayedRestaurants.filter((r) => r.isOpenNow);
+		displayedRestaurants = displayedRestaurants.filter(
+			(r) => r.isOpenNow === true, // Only exclude if explicitly false or undefined
+		);
 	}
 
-	// Apply sorting
+	// Apply sorting - handle undefined values gracefully
 	if (sortBy === "distance") {
-		displayedRestaurants = [...displayedRestaurants].sort(
-			(a, b) => (a.distance || 0) - (b.distance || 0),
-		);
+		displayedRestaurants = [...displayedRestaurants].sort((a, b) => {
+			const distA = a.distance ?? Infinity; // Put undefined at end
+			const distB = b.distance ?? Infinity;
+			return distA - distB;
+		});
 	} else if (sortBy === "rating") {
-		displayedRestaurants = [...displayedRestaurants].sort(
-			(a, b) => b.rating - a.rating,
-		);
+		displayedRestaurants = [...displayedRestaurants].sort((a, b) => {
+			const ratingA = a.rating ?? -1; // Put undefined at start (lowest)
+			const ratingB = b.rating ?? -1;
+			return ratingB - ratingA; // Descending
+		});
 	} else if (sortBy === "reviews") {
-		displayedRestaurants = [...displayedRestaurants].sort(
-			(a, b) => b.reviewCount - a.reviewCount,
-		);
+		displayedRestaurants = [...displayedRestaurants].sort((a, b) => {
+			const reviewsA = a.reviewCount ?? -1; // Put undefined at start (lowest)
+			const reviewsB = b.reviewCount ?? -1;
+			return reviewsB - reviewsA; // Descending
+		});
 	}
 
 	const renderStars = (rating: number) => {
@@ -1007,7 +1025,8 @@ function App() {
 											</div>
 										</div>
 
-										{/* Star Rating - Glowing Accent */}
+									{/* Star Rating - Glowing Accent */}
+									{restaurant.rating != null && (
 										<div className="flex flex-wrap items-center gap-2 md:gap-3">
 											<div className="flex items-center gap-0.5 md:gap-1">
 												{[...Array(5)].map((_, i) => (
@@ -1027,10 +1046,13 @@ function App() {
 											<span className="text-base md:text-lg font-serif-elegant font-semibold text-secondary drop-shadow-[0_0_8px_oklch(0.65_0.14_195_/_0.4)]">
 												{restaurant.rating.toFixed(1)} / 5.0
 											</span>
-											<span className="text-xs md:text-sm text-card-foreground/70">
-												({restaurant.reviewCount} reviews)
-											</span>
+											{restaurant.reviewCount != null && (
+												<span className="text-xs md:text-sm text-card-foreground/70">
+													({restaurant.reviewCount} reviews)
+												</span>
+											)}
 										</div>
+									)}
 
 										{/* Dining Experience Summary */}
 										<p className="text-sm md:text-base font-serif-elegant text-card-foreground/80 leading-relaxed">
@@ -1040,12 +1062,14 @@ function App() {
 										{/* Additional Details */}
 										<div className="flex flex-wrap items-center gap-3 md:gap-4 text-xs md:text-sm">
 											{/* Price Range */}
-											<div className="flex items-center gap-1.5">
-												<DollarSign className="size-4 text-secondary stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.65_0.14_195_/_0.4)]" />
-												<span className="font-serif-elegant text-card-foreground/80">
-													{"$".repeat(restaurant.priceRange)} Pricing
-												</span>
-											</div>
+											{restaurant.priceRange != null && (
+												<div className="flex items-center gap-1.5">
+													<DollarSign className="size-4 text-secondary stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.65_0.14_195_/_0.4)]" />
+													<span className="font-serif-elegant text-card-foreground/80">
+														{"$".repeat(restaurant.priceRange)} Pricing
+													</span>
+												</div>
+											)}
 
 											{/* Distance */}
 											{restaurant.distance !== undefined && (
@@ -1202,13 +1226,15 @@ function App() {
 												</div>
 
 												{/* Review Summary */}
-												<div className="mt-6">
-													<ReviewSummary
-														overallRating={restaurant.rating}
-														totalReviews={restaurant.reviewCount}
-														reviews={restaurant.reviews}
-													/>
-												</div>
+												{restaurant.rating != null && (
+													<div className="mt-6">
+														<ReviewSummary
+															overallRating={restaurant.rating}
+															totalReviews={restaurant.reviewCount ?? 0}
+															reviews={restaurant.reviews}
+														/>
+													</div>
+												)}
 											</div>
 										)}
 									</div>

@@ -74,3 +74,4 @@ export const searchAndNormalize = async (query: string, location: string) => {
   return results;
 };
 
+

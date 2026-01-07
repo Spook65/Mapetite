@@ -40,3 +40,4 @@ model Location {
   updatedAt   DateTime    @updatedAt
 }
 
+

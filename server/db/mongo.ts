@@ -26,3 +26,4 @@ export const connectMongo = async (uri: string | undefined) => {
 
 export default mongoose;
 
+

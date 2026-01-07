@@ -18,3 +18,4 @@ if (!globalForPrisma.prisma) {
 
 export default prisma;
 
+
