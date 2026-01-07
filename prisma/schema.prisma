@@ -1,0 +1,42 @@
+// Prisma schema for structured, relational data in Postgres.
+// Exists to define canonical restaurant records; keeps cache/experiments out.
+// Does NOT include Mongo collections or user auth until requirements surface.
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Restaurant {
+  id         String    @id @default(cuid())
+  externalId String    @unique // upstream provider identifier
+  name       String
+  cuisine    Cuisine?  @relation(fields: [cuisineId], references: [id])
+  cuisineId  String?
+  location   Location? @relation(fields: [locationId], references: [id])
+  locationId String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model Cuisine {
+  id         String       @id @default(cuid())
+  name       String       @unique
+  restaurants Restaurant[]
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+}
+
+model Location {
+  id          String      @id @default(cuid())
+  latitude    Float
+  longitude   Float
+  externalKey String      @unique // stable hash of upstream IDs for idempotency
+  restaurants Restaurant[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
