@@ -42,7 +42,7 @@ import {
 	Utensils,
 	X,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
 	Select,
@@ -284,51 +284,77 @@ function App() {
 		window.open(mapsUrl, "_blank");
 	};
 
-	// Apply filters and sorting
-	const favoriteIds = new Set(favoritesData?.favorites ?? []);
-	let displayedRestaurants = showFavorites
-		? restaurants.filter((r) => favoriteIds.has(r.id))
-		: restaurants;
+	// Memoize favorite IDs Set to avoid recreating on every render.
+	// Only recomputes when favoritesData?.favorites array reference changes.
+	const favoriteIds = useMemo(
+		() => new Set(favoritesData?.favorites ?? []),
+		[favoritesData?.favorites],
+	);
 
-	// Apply price filter - only filter if priceRange exists and is valid
-	displayedRestaurants = displayedRestaurants.filter((r) => {
-		if (r.priceRange == null) return true; // Include restaurants without price data
-		return priceFilter.includes(r.priceRange);
-	});
+	// Memoize filtered and sorted restaurant list to prevent unnecessary re-renders.
+	// This expensive operation (filtering + sorting large arrays) only runs when:
+	// - restaurants array changes (new search results)
+	// - filter/sort parameters change (priceFilter, minRating, openNowOnly, sortBy)
+	// - favorites toggle or favorites list changes (showFavorites, favoriteIds)
+	// Note: location is NOT a dependency because distance is pre-calculated in restaurant objects.
+	const displayedRestaurants = useMemo(() => {
+		// Start with favorites filter if enabled, otherwise use all restaurants
+		let filtered = showFavorites
+			? restaurants.filter((r) => favoriteIds.has(r.id))
+			: restaurants;
 
-	// Apply rating filter - only filter if rating exists and meets threshold
-	displayedRestaurants = displayedRestaurants.filter((r) => {
-		if (r.rating == null) return minRating === 0; // Include unrated only if minRating is 0
-		return r.rating >= minRating;
-	});
-
-	// Apply open now filter - only filter if isOpenNow is explicitly false when filter is active
-	if (openNowOnly) {
-		displayedRestaurants = displayedRestaurants.filter(
-			(r) => r.isOpenNow === true, // Only exclude if explicitly false or undefined
-		);
-	}
-
-	// Apply sorting - handle undefined values gracefully
-	if (sortBy === "distance") {
-		displayedRestaurants = [...displayedRestaurants].sort((a, b) => {
-			const distA = a.distance ?? Infinity; // Put undefined at end
-			const distB = b.distance ?? Infinity;
-			return distA - distB;
+		// Apply price filter - only filter if priceRange exists and is valid
+		filtered = filtered.filter((r) => {
+			if (r.priceRange == null) return true; // Include restaurants without price data
+			return priceFilter.includes(r.priceRange);
 		});
-	} else if (sortBy === "rating") {
-		displayedRestaurants = [...displayedRestaurants].sort((a, b) => {
-			const ratingA = a.rating ?? -1; // Put undefined at start (lowest)
-			const ratingB = b.rating ?? -1;
-			return ratingB - ratingA; // Descending
+
+		// Apply rating filter - only filter if rating exists and meets threshold
+		filtered = filtered.filter((r) => {
+			if (r.rating == null) return minRating === 0; // Include unrated only if minRating is 0
+			return r.rating >= minRating;
 		});
-	} else if (sortBy === "reviews") {
-		displayedRestaurants = [...displayedRestaurants].sort((a, b) => {
-			const reviewsA = a.reviewCount ?? -1; // Put undefined at start (lowest)
-			const reviewsB = b.reviewCount ?? -1;
-			return reviewsB - reviewsA; // Descending
-		});
-	}
+
+		// Apply open now filter - only filter if isOpenNow is explicitly false when filter is active
+		if (openNowOnly) {
+			filtered = filtered.filter(
+				(r) => r.isOpenNow === true, // Only exclude if explicitly false or undefined
+			);
+		}
+
+		// Apply sorting - handle undefined values gracefully
+		// Create a copy before sorting to avoid mutating the filtered array
+		const sorted = [...filtered];
+		if (sortBy === "distance") {
+			sorted.sort((a, b) => {
+				const distA = a.distance ?? Infinity; // Put undefined at end
+				const distB = b.distance ?? Infinity;
+				return distA - distB;
+			});
+		} else if (sortBy === "rating") {
+			sorted.sort((a, b) => {
+				const ratingA = a.rating ?? -1; // Put undefined at start (lowest)
+				const ratingB = b.rating ?? -1;
+				return ratingB - ratingA; // Descending
+			});
+		} else if (sortBy === "reviews") {
+			sorted.sort((a, b) => {
+				const reviewsA = a.reviewCount ?? -1; // Put undefined at start (lowest)
+				const reviewsB = b.reviewCount ?? -1;
+				return reviewsB - reviewsA; // Descending
+			});
+		}
+
+		return sorted;
+	}, [
+		restaurants,
+		showFavorites,
+		favoriteIds,
+		priceFilter,
+		minRating,
+		openNowOnly,
+		sortBy,
+	]);
 
 	const renderStars = (rating: number) => {
 		const stars = [];
