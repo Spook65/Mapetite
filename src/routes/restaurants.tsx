@@ -399,6 +399,69 @@ function App() {
 		return <div className="flex items-center gap-0.5">{dollars}</div>;
 	};
 
+	/**
+	 * Normalizes restaurant category for display in the category pill.
+	 * Follows fallback hierarchy: first cuisine → "Restaurant" (if amenity exists) → null.
+	 * 
+	 * Handles OSM data inconsistencies:
+	 * - Picks first category only (per requirement: "Pick the first cuisine only")
+	 * - Handles multiple values separated by semicolons (takes first before splitting)
+	 * - Replaces underscores/dashes with spaces
+	 * - Capitalizes properly (Title Case)
+	 * - Filters out geographic values (country/state/city names)
+	 * - Returns "Restaurant" if no valid cuisine but amenity/type exists, null if nothing
+	 */
+	const getDisplayCategory = (restaurant: Restaurant): string | null => {
+		// Geographic terms to exclude (case-insensitive)
+		const geographicTerms = new Set([
+			"country", "state", "city", "town", "village", "municipality",
+			"region", "province", "district", "county", "area", "locale",
+		]);
+
+		const categories = restaurant.categories;
+		if (!categories || categories.length === 0) return null;
+
+		// Take first category only (requirement: "Pick the first cuisine only")
+		let firstCategory = categories[0]?.trim();
+		if (!firstCategory) return null;
+
+		// Handle multiple values separated by semicolons: "mexican;american" → take "mexican"
+		if (firstCategory.includes(";")) {
+			firstCategory = firstCategory.split(";")[0]?.trim() || firstCategory;
+		}
+
+		// Normalize: replace underscores/dashes with spaces, lowercase for processing
+		const normalized = firstCategory
+			.replace(/[_-]/g, " ")
+			.trim()
+			.toLowerCase();
+
+		// If normalized is "restaurant", treat as amenity/type, not cuisine
+		if (normalized === "restaurant") {
+			return "Restaurant"; // Fallback: amenity/type exists
+		}
+
+		// Exclude empty, too short, or geographic values
+		if (
+			normalized.length < 2 ||
+			geographicTerms.has(normalized)
+		) {
+			// Check if amenity/type exists elsewhere in categories
+			if (categories.some((cat) => 
+				cat.trim().toLowerCase().replace(/[_-]/g, " ") === "restaurant"
+			)) {
+				return "Restaurant"; // Fallback: amenity/type exists
+			}
+			return null; // Nothing to display
+		}
+
+		// Valid cuisine found: capitalize properly (Title Case for each word)
+		return normalized
+			.split(" ")
+			.map((word) => word[0]?.toUpperCase() + word.slice(1))
+			.join(" ");
+	};
+
 	return (
 		<Layout>
 			<div className="container mx-auto px-4 md:px-8 py-8 md:py-16">
@@ -1029,27 +1092,30 @@ function App() {
 											</Button>
 										</div>
 
-										{/* Location & Cuisine Type */}
-										<div className="flex flex-wrap items-center gap-2 md:gap-3">
-											<div className="flex items-center gap-1.5 md:gap-2 text-card-foreground/80 text-sm md:text-base font-serif-elegant">
-												<MapPin className="size-5 text-primary flex-shrink-0 stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.55_0.18_240_/_0.4)]" />
-												<span>
-													{restaurant.address.city}, {restaurant.address.state}
-												</span>
-											</div>
-											<span className="text-card-foreground/60">•</span>
-											<div className="flex flex-wrap gap-2">
-												{restaurant.categories.map((cat) => (
+									{/* Location & Cuisine Type */}
+									<div className="flex flex-wrap items-center gap-2 md:gap-3">
+										<div className="flex items-center gap-1.5 md:gap-2 text-card-foreground/80 text-sm md:text-base font-serif-elegant">
+											<MapPin className="size-5 text-primary flex-shrink-0 stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.55_0.18_240_/_0.4)]" />
+											<span>
+												{restaurant.address.city}, {restaurant.address.state}
+											</span>
+										</div>
+										{(() => {
+											// Compute category once to avoid duplicate function calls
+											const displayCategory = getDisplayCategory(restaurant);
+											return displayCategory ? (
+												<>
+													<span className="text-card-foreground/60">•</span>
 													<Badge
-														key={cat}
 														variant="secondary"
 														className="font-serif-elegant font-medium shadow-sm px-3 py-1 border border-primary/20"
 													>
-														{cat}
+														{displayCategory}
 													</Badge>
-												))}
-											</div>
-										</div>
+												</>
+											) : null;
+										})()}
+									</div>
 
 									{/* Star Rating - Glowing Accent */}
 									{restaurant.rating != null && (
