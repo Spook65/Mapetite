@@ -22,7 +22,7 @@ export default defineConfig({
 			autoCodeSplitting: false, // affects pick-n-edit feature. disabled for now.
 		}),
 		viteReact({
-			jsxRuntime: "automatic",
+			
 		}),
 		svgr(),
 		tailwindcss(),

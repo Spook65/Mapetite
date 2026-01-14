@@ -42,7 +42,8 @@ import {
 	Utensils,
 	X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { List } from "react-window";
 import { toast } from "sonner";
 import {
 	Select,
@@ -260,11 +261,13 @@ function App() {
 		}
 	};
 
-	const toggleFavorite = (restaurantId: string) => {
+	// Memoize handlers with useCallback to prevent unnecessary re-renders of child components.
+	// These functions are passed as props to RestaurantCard, so stable references prevent re-renders.
+	const toggleFavorite = useCallback((restaurantId: string) => {
 		toggleFavoriteMutate({ restaurant_id: restaurantId });
-	};
+	}, [toggleFavoriteMutate]);
 
-	const openInMaps = (restaurant: Restaurant) => {
+	const openInMaps = useCallback((restaurant: Restaurant) => {
 		const address = `${restaurant.address.street}, ${restaurant.address.city}, ${restaurant.address.state} ${restaurant.address.zipCode}`;
 		const encodedAddress = encodeURIComponent(address);
 
@@ -282,7 +285,17 @@ function App() {
 		}
 
 		window.open(mapsUrl, "_blank");
-	};
+	}, []);
+
+	// Memoize handlers that update local state to prevent child re-renders
+	const handleSetRestaurantToReserve = useCallback((restaurant: Restaurant) => {
+		setRestaurantToReserve(restaurant);
+		setReservationModalOpen(true);
+	}, []);
+
+	const handleToggleSelectedRestaurant = useCallback((restaurant: Restaurant | null) => {
+		setSelectedRestaurant(restaurant);
+	}, []);
 
 	// Memoize favorite IDs Set to avoid recreating on every render.
 	// Only recomputes when favoritesData?.favorites array reference changes.
@@ -1203,10 +1216,7 @@ function App() {
 										<div className="pt-3 flex flex-col sm:flex-row gap-2 md:gap-3">
 											<Button
 												className="w-full sm:w-auto cursor-pointer group bg-gradient-to-r from-primary via-secondary to-primary text-white hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.5)] font-serif-elegant font-semibold tracking-wide shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)] px-6 md:px-8 py-4 md:py-5 text-sm md:text-base transition-all duration-300 border-2 border-primary/60"
-												onClick={() => {
-													setRestaurantToReserve(restaurant);
-													setReservationModalOpen(true);
-												}}
+												onClick={() => handleSetRestaurantToReserve(restaurant)}
 											>
 												Make Reservation
 												<ArrowRight className="ml-2 h-5 w-5 stroke-[2.5]" />
@@ -1215,7 +1225,7 @@ function App() {
 												variant="outline"
 												className="w-full sm:w-auto cursor-pointer border-2 border-primary/40 hover:bg-[oklch(0.96_0.01_75)] hover:shadow-[0_0_12px_oklch(0.55_0.18_240_/_0.3)] font-serif-elegant font-semibold tracking-wide shadow-md px-6 md:px-8 py-4 md:py-5 text-sm md:text-base transition-all duration-300"
 												onClick={() =>
-													setSelectedRestaurant(
+													handleToggleSelectedRestaurant(
 														selectedRestaurant?.id === restaurant.id
 															? null
 															: restaurant,
