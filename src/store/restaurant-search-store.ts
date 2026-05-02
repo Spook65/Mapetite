@@ -50,6 +50,36 @@ export interface Restaurant {
 		open: string;
 		close: string;
 	};
+	photoUrl?: string;
+	photoAttributions?: string[];
+	galleryImageUrls?: string[];
+	galleryPhotoAttributions?: string[][];
+	chef?: {
+		name: string;
+		bio: string;
+		photoUrl?: string;
+		yearsOfExperience?: number;
+		specialties?: string[];
+	};
+	signatureDishes?: Array<{
+		name: string;
+		description: string;
+		price: number;
+		tags?: string[];
+		featured?: boolean;
+	}>;
+	ratingBreakdown?: {
+		5: number;
+		4: number;
+		3: number;
+		2: number;
+		1: number;
+	};
+	phone?: string;
+	website?: string;
+	amenities?: string[];
+	paymentMethods?: string[];
+	source?: string;
 }
 
 /**

@@ -7,6 +7,8 @@ import { useState } from "react";
 interface DetailPhotoCarouselProps {
 	/** Array of image URLs */
 	images?: string[];
+	/** Attribution strings for each image */
+	imageAttributions?: string[][];
 	/** Restaurant name for alt text */
 	restaurantName: string;
 	className?: string;
@@ -14,6 +16,7 @@ interface DetailPhotoCarouselProps {
 
 export function DetailPhotoCarousel({
 	images = [],
+	imageAttributions = [],
 	restaurantName,
 	className,
 }: DetailPhotoCarouselProps) {
@@ -93,6 +96,17 @@ export function DetailPhotoCarousel({
 							{currentIndex + 1} / {totalImages}
 						</span>
 					</div>
+
+					{/* Attribution */}
+					{imageAttributions[currentIndex]?.length ? (
+						<div className="absolute bottom-16 left-4 right-4 md:left-6 md:right-6">
+							<div className="rounded-sm bg-card/90 border border-primary/30 px-3 py-2 shadow-[0_0_12px_oklch(0.55_0.18_240_/_0.18)] backdrop-blur-sm">
+								<p className="text-[10px] md:text-xs text-card-foreground/70 font-serif-elegant">
+									Photo credit: {imageAttributions[currentIndex].join(", ")}
+								</p>
+							</div>
+						</div>
+					) : null}
 				</div>
 
 				{/* Thumbnail Navigation */}

@@ -25,7 +25,8 @@ app.use("/api/restaurants", restaurantRoutes);
 app.use("/health", healthRoutes);
 
 const PORT = Number(env.port || 5000);
+const HOST = env.host || "127.0.0.1";
 
-app.listen(PORT, () => {
-  logger.info("Server started", { port: PORT, nodeEnv: env.nodeEnv });
+app.listen(PORT, HOST, () => {
+  logger.info("Server started", { host: HOST, port: PORT, nodeEnv: env.nodeEnv });
 });

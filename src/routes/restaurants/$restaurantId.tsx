@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/card";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
+import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
@@ -31,7 +32,7 @@ import {
 	Star,
 	Utensils,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/restaurants/$restaurantId")({
@@ -44,6 +45,15 @@ function RestaurantDetailPage() {
 	const navigate = useNavigate();
 	const restaurants = useRestaurantSearchStore((state) => state.restaurants);
 	const [reservationModalOpen, setReservationModalOpen] = useState(false);
+	const [fetchedRestaurant, setFetchedRestaurant] = useState<Restaurant | null>(
+		null,
+	);
+	const [isLoadingRestaurant, setIsLoadingRestaurant] = useState(false);
+	const [restaurantLoadError, setRestaurantLoadError] = useState<string | null>(
+		null,
+	);
+
+	const storeRestaurant = restaurants.find((r) => r.id === restaurantId);
 
 	// API-based favorites using React Query with error handling
 	const { data: favoritesData } = useFavorites();
@@ -72,8 +82,76 @@ function RestaurantDetailPage() {
 			},
 		});
 
-	// Find the restaurant from the store
-	const restaurant = restaurants.find((r) => r.id === restaurantId);
+	useEffect(() => {
+		let cancelled = false;
+		const shouldFetchRemote = restaurantId.startsWith("geoapify:");
+
+		if (storeRestaurant) {
+			setFetchedRestaurant(storeRestaurant);
+			if (!shouldFetchRemote) {
+				setRestaurantLoadError(null);
+				setIsLoadingRestaurant(false);
+				return () => {
+					cancelled = true;
+				};
+			}
+		}
+
+		setIsLoadingRestaurant(shouldFetchRemote || !storeRestaurant);
+		setRestaurantLoadError(null);
+
+		(async () => {
+			try {
+				const restaurantData = await getRestaurantById(restaurantId);
+				if (cancelled) return;
+				setFetchedRestaurant(restaurantData);
+				if (!restaurantData) {
+					setRestaurantLoadError("Restaurant details are not available yet.");
+				}
+			} catch (error) {
+				if (cancelled) return;
+				console.error("Failed to load restaurant details", error);
+				setRestaurantLoadError(
+					"Unable to load this restaurant right now. Please go back and search again.",
+				);
+			} finally {
+				if (!cancelled) {
+					setIsLoadingRestaurant(false);
+				}
+			}
+		})();
+
+		return () => {
+			cancelled = true;
+		};
+	}, [restaurantId, storeRestaurant]);
+
+	// Prefer the fetched detail response when available, otherwise use the store copy.
+	const restaurant = fetchedRestaurant ?? storeRestaurant;
+
+	// If restaurant not found, show loading or error state
+	if (!restaurant && isLoadingRestaurant) {
+		return (
+			<Layout>
+				<div className="container mx-auto px-4 md:px-8 py-8 md:py-16">
+					<Card className="text-center py-16 shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.25),0_8px_24px_black] border-2 border-primary/40 bg-card relative overflow-hidden">
+						<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_8px,oklch(0.55_0.18_240_/_0.15)_8px,oklch(0.55_0.18_240_/_0.15)_9px)] pointer-events-none" />
+						<CardContent className="relative z-10">
+							<div className="mx-auto w-20 h-20 rounded-sm bg-gradient-to-br from-primary/40 to-primary/20 flex items-center justify-center mb-6 border-2 border-primary/50 shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)]">
+								<Utensils className="size-10 text-primary stroke-[2.5] drop-shadow-[0_0_10px_oklch(0.55_0.18_240_/_0.5)] animate-pulse" />
+							</div>
+							<h3 className="text-3xl font-serif-display text-card-foreground mb-3">
+								Loading Restaurant
+							</h3>
+							<p className="text-card-foreground/80 font-serif-elegant text-lg max-w-md mx-auto">
+								Fetching the latest restaurant details.
+							</p>
+						</CardContent>
+					</Card>
+				</div>
+			</Layout>
+		);
+	}
 
 	// If restaurant not found, show error state
 	if (!restaurant) {
@@ -90,8 +168,8 @@ function RestaurantDetailPage() {
 								Restaurant Not Found
 							</h3>
 							<p className="text-card-foreground/80 font-serif-elegant text-lg max-w-md mx-auto mb-6">
-								The restaurant you're looking for could not be found. Please
-								return to the search page.
+								{restaurantLoadError ||
+									"The restaurant you're looking for could not be found. Please return to the search page."}
 							</p>
 							<Button
 								onClick={() => navigate({ to: "/restaurants" })}
@@ -124,8 +202,9 @@ function RestaurantDetailPage() {
 	};
 
 	const openInMaps = (restaurant: Restaurant) => {
-		const address = `${restaurant.address.street}, ${restaurant.address.city}, ${restaurant.address.state} ${restaurant.address.zipCode}`;
-		const encodedAddress = encodeURIComponent(address);
+		const hasCoordinates =
+			Number.isFinite(restaurant.latitude) &&
+			Number.isFinite(restaurant.longitude);
 
 		// Detect platform
 		const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -133,11 +212,17 @@ function RestaurantDetailPage() {
 
 		let mapsUrl = "";
 		if (isIOS) {
-			mapsUrl = `maps://maps.apple.com/?q=${encodedAddress}`;
+			mapsUrl = hasCoordinates
+				? `maps://maps.apple.com/?ll=${restaurant.latitude},${restaurant.longitude}`
+				: `maps://maps.apple.com/?q=${encodeURIComponent(restaurant.name)}`;
 		} else if (isAndroid) {
-			mapsUrl = `geo:0,0?q=${encodedAddress}`;
+			mapsUrl = hasCoordinates
+				? `geo:${restaurant.latitude},${restaurant.longitude}?q=${encodeURIComponent(restaurant.name)}`
+				: `geo:0,0?q=${encodeURIComponent(restaurant.name)}`;
 		} else {
-			mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+			mapsUrl = hasCoordinates
+				? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
+				: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
 		}
 
 		window.open(mapsUrl, "_blank");
@@ -348,17 +433,32 @@ function RestaurantDetailPage() {
 
 						{/* Photo Carousel */}
 						<div className="mb-8 w-full">
-							<DetailPhotoCarousel restaurantName={restaurant.name} />
+							<DetailPhotoCarousel
+								restaurantName={restaurant.name}
+								images={restaurant.galleryImageUrls}
+								imageAttributions={restaurant.galleryPhotoAttributions}
+							/>
 						</div>
 
 						{/* Chef Profile Section */}
 						<div className="mb-8 w-full">
-							<ChefProfileSection />
+							<ChefProfileSection
+								chefName={restaurant.chef?.name}
+								chefBio={restaurant.chef?.bio}
+								profileImage={restaurant.chef?.photoUrl}
+							/>
 						</div>
 
 						{/* Signature Menu */}
 						<div className="mb-8 w-full">
-							<SignatureMenu />
+							<SignatureMenu
+								dishes={restaurant.signatureDishes}
+								pricingNote={
+									restaurant.priceRange != null
+										? `Estimated pricing from $${restaurant.priceRange} to $$$$`
+										: undefined
+								}
+							/>
 						</div>
 
 						{/* Review Summary */}
@@ -366,6 +466,7 @@ function RestaurantDetailPage() {
 							<ReviewSummary
 								overallRating={restaurant.rating}
 								totalReviews={restaurant.reviewCount}
+								ratingBreakdown={restaurant.ratingBreakdown}
 								reviews={restaurant.reviews}
 							/>
 						</div>

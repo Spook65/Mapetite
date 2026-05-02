@@ -8,88 +8,32 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-// Import Routes
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as RestaurantsRouteImport } from './routes/restaurants'
+import { Route as JwtDebugRouteImport } from './routes/jwt-debug'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as RestaurantsRestaurantIdRouteImport } from './routes/restaurants/$restaurantId'
 
-import { Route as rootRoute } from './routes/__root'
-import { Route as RestaurantsImport } from './routes/restaurants'
-import { Route as JwtDebugImport } from './routes/jwt-debug'
-import { Route as IndexImport } from './routes/index'
-import { Route as RestaurantsRestaurantIdImport } from './routes/restaurants/$restaurantId'
-
-// Create/Update Routes
-
-const RestaurantsRoute = RestaurantsImport.update({
+const RestaurantsRoute = RestaurantsRouteImport.update({
   id: '/restaurants',
   path: '/restaurants',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const JwtDebugRoute = JwtDebugImport.update({
+const JwtDebugRoute = JwtDebugRouteImport.update({
   id: '/jwt-debug',
   path: '/jwt-debug',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const IndexRoute = IndexImport.update({
+const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => rootRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-
-const RestaurantsRestaurantIdRoute = RestaurantsRestaurantIdImport.update({
+const RestaurantsRestaurantIdRoute = RestaurantsRestaurantIdRouteImport.update({
   id: '/$restaurantId',
   path: '/$restaurantId',
   getParentRoute: () => RestaurantsRoute,
 } as any)
-
-// Populate the FileRoutesByPath interface
-
-declare module '@tanstack/react-router' {
-  interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexImport
-      parentRoute: typeof rootRoute
-    }
-    '/jwt-debug': {
-      id: '/jwt-debug'
-      path: '/jwt-debug'
-      fullPath: '/jwt-debug'
-      preLoaderRoute: typeof JwtDebugImport
-      parentRoute: typeof rootRoute
-    }
-    '/restaurants': {
-      id: '/restaurants'
-      path: '/restaurants'
-      fullPath: '/restaurants'
-      preLoaderRoute: typeof RestaurantsImport
-      parentRoute: typeof rootRoute
-    }
-    '/restaurants/$restaurantId': {
-      id: '/restaurants/$restaurantId'
-      path: '/$restaurantId'
-      fullPath: '/restaurants/$restaurantId'
-      preLoaderRoute: typeof RestaurantsRestaurantIdImport
-      parentRoute: typeof RestaurantsImport
-    }
-  }
-}
-
-// Create and export the route tree
-
-interface RestaurantsRouteChildren {
-  RestaurantsRestaurantIdRoute: typeof RestaurantsRestaurantIdRoute
-}
-
-const RestaurantsRouteChildren: RestaurantsRouteChildren = {
-  RestaurantsRestaurantIdRoute: RestaurantsRestaurantIdRoute,
-}
-
-const RestaurantsRouteWithChildren = RestaurantsRoute._addFileChildren(
-  RestaurantsRouteChildren,
-)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -97,22 +41,19 @@ export interface FileRoutesByFullPath {
   '/restaurants': typeof RestaurantsRouteWithChildren
   '/restaurants/$restaurantId': typeof RestaurantsRestaurantIdRoute
 }
-
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/jwt-debug': typeof JwtDebugRoute
   '/restaurants': typeof RestaurantsRouteWithChildren
   '/restaurants/$restaurantId': typeof RestaurantsRestaurantIdRoute
 }
-
 export interface FileRoutesById {
-  __root__: typeof rootRoute
+  __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/jwt-debug': typeof JwtDebugRoute
   '/restaurants': typeof RestaurantsRouteWithChildren
   '/restaurants/$restaurantId': typeof RestaurantsRestaurantIdRoute
 }
-
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/jwt-debug' | '/restaurants' | '/restaurants/$restaurantId'
@@ -126,50 +67,62 @@ export interface FileRouteTypes {
     | '/restaurants/$restaurantId'
   fileRoutesById: FileRoutesById
 }
-
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   JwtDebugRoute: typeof JwtDebugRoute
   RestaurantsRoute: typeof RestaurantsRouteWithChildren
 }
 
+declare module '@tanstack/react-router' {
+  interface FileRoutesByPath {
+    '/restaurants': {
+      id: '/restaurants'
+      path: '/restaurants'
+      fullPath: '/restaurants'
+      preLoaderRoute: typeof RestaurantsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jwt-debug': {
+      id: '/jwt-debug'
+      path: '/jwt-debug'
+      fullPath: '/jwt-debug'
+      preLoaderRoute: typeof JwtDebugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/restaurants/$restaurantId': {
+      id: '/restaurants/$restaurantId'
+      path: '/$restaurantId'
+      fullPath: '/restaurants/$restaurantId'
+      preLoaderRoute: typeof RestaurantsRestaurantIdRouteImport
+      parentRoute: typeof RestaurantsRoute
+    }
+  }
+}
+
+interface RestaurantsRouteChildren {
+  RestaurantsRestaurantIdRoute: typeof RestaurantsRestaurantIdRoute
+}
+
+const RestaurantsRouteChildren: RestaurantsRouteChildren = {
+  RestaurantsRestaurantIdRoute: RestaurantsRestaurantIdRoute,
+}
+
+const RestaurantsRouteWithChildren = RestaurantsRoute._addFileChildren(
+  RestaurantsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   JwtDebugRoute: JwtDebugRoute,
   RestaurantsRoute: RestaurantsRouteWithChildren,
 }
-
-export const routeTree = rootRoute
+export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-/* ROUTE_MANIFEST_START
-{
-  "routes": {
-    "__root__": {
-      "filePath": "__root.tsx",
-      "children": [
-        "/",
-        "/jwt-debug",
-        "/restaurants"
-      ]
-    },
-    "/": {
-      "filePath": "index.tsx"
-    },
-    "/jwt-debug": {
-      "filePath": "jwt-debug.tsx"
-    },
-    "/restaurants": {
-      "filePath": "restaurants.tsx",
-      "children": [
-        "/restaurants/$restaurantId"
-      ]
-    },
-    "/restaurants/$restaurantId": {
-      "filePath": "restaurants/$restaurantId.tsx",
-      "parent": "/restaurants"
-    }
-  }
-}
-ROUTE_MANIFEST_END */

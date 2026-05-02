@@ -7,8 +7,15 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 
 const raw = {
   nodeEnv: NODE_ENV,
+  host: process.env.HOST || "127.0.0.1",
   port: process.env.PORT || "5000",
   databaseUrl: process.env.DATABASE_URL,
+  geoapifyApiKey:
+    process.env.GEOAPIFY_API_KEY ||
+    process.env.GEOAPIFY_KEY ||
+    process.env.GOOGLE_PLACES_API_KEY ||
+    process.env.PLACES_API_KEY ||
+    "",
   // Support both historical MONGO_URI and newer MONGODB_URI names.
   mongoUri: process.env.MONGODB_URI || process.env.MONGO_URI || "",
 };
@@ -30,6 +37,12 @@ const validate = () => {
       nodeEnv: raw.nodeEnv,
     });
   }
+
+  if (!raw.geoapifyApiKey) {
+    logger.warn("Geoapify API key not configured; search will fall back to OSM.", {
+      nodeEnv: raw.nodeEnv,
+    });
+  }
 };
 
 validate();
@@ -37,6 +50,3 @@ validate();
 export const env = raw;
 
 export default env;
-
-
-

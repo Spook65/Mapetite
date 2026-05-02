@@ -37,9 +37,9 @@ export default defineConfig({
 		},
 	},
 	server: {
-		host: "0.0.0.0",
+		host: "127.0.0.1",
 		port: 3000,
-		allowedHosts: true, // respond to *any* Host header
+		allowedHosts: ["localhost", "127.0.0.1"],
 		watch: {
 			usePolling: true,
 			interval: 300, // ms; tune if CPU gets high

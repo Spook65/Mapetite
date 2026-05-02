@@ -7,7 +7,7 @@ const RestaurantSchema = new mongoose.Schema({
   cuisine: String,
   address: String,
   priceLevel: Number,
-  googlePlaceId: String,
+  externalPlaceId: String,
 });
 
 export default mongoose.model("Restaurant", RestaurantSchema);

@@ -1,3 +1,7 @@
+import {
+	getRestaurantByIdApi,
+	searchRestaurantsApi,
+} from "@/lib/api/restaurants";
 import { fetchRestaurantsNearby } from "@/lib/api/overpass";
 import {
 	resolveCityLocation as nominatimResolveCity,
@@ -34,41 +38,87 @@ function calculateDistance(
 export async function searchRestaurants(
 	location: LocationState,
 	selectedCategories: string[],
-): Promise<Restaurant[]> {
-	if (!location.latitude || !location.longitude) return [];
+): Promise<{ restaurants: Restaurant[]; location: LocationState | null }> {
+	try {
+		const response = await searchRestaurantsApi({
+			city: location.city,
+			state: location.state,
+			country: location.country,
+			latitude: location.latitude,
+			longitude: location.longitude,
+			categories: selectedCategories,
+		});
 
-	const results = await fetchRestaurantsNearby(
-		location.latitude,
-		location.longitude,
-		3000,
-	);
+		return {
+			restaurants: response.restaurants,
+			location: response.location ?? location,
+		};
+	} catch (error) {
+		console.warn("Backend restaurant search failed; falling back to local OSM.", error);
+		if (location.latitude === undefined || location.longitude === undefined) {
+			const resolved = await nominatimResolveCity(
+				[location.city, location.state, location.country]
+					.filter(Boolean)
+					.join(", "),
+			);
+			if (resolved?.latitude === undefined || resolved?.longitude === undefined) {
+				return { restaurants: [], location: resolved ?? location };
+			}
+			location = resolved;
+		}
 
-	const filtered =
-		selectedCategories.length === 0
-			? results
-			: results.filter((r) =>
-					r.categories.some((cat) =>
-						selectedCategories.some(
-							(sel) =>
-								cat.toLowerCase() === sel.toLowerCase() ||
-								cat.toLowerCase().includes(sel.toLowerCase()),
+		const latitude = location.latitude as number;
+		const longitude = location.longitude as number;
+
+		const results = await fetchRestaurantsNearby(
+			latitude,
+			longitude,
+			3000,
+		);
+
+		const filtered =
+			selectedCategories.length === 0
+				? results
+				: results.filter((r) =>
+						r.categories.some((cat) =>
+							selectedCategories.some(
+								(sel) =>
+									cat.toLowerCase() === sel.toLowerCase() ||
+									cat.toLowerCase().includes(sel.toLowerCase()),
+							),
 						),
-					),
-				);
+					);
 
-	// Add distance from user location if coordinates exist
-	return filtered.map((r) => ({
-		...r,
-		distance:
-			location.latitude && location.longitude
-				? calculateDistance(
-						location.latitude,
-						location.longitude,
-						r.latitude,
-						r.longitude,
-					)
-				: undefined,
-	}));
+		return {
+			restaurants: filtered.map((r) => ({
+				...r,
+				distance:
+					location.latitude !== undefined && location.longitude !== undefined
+						? calculateDistance(
+								location.latitude,
+								location.longitude,
+								r.latitude,
+								r.longitude,
+							)
+						: undefined,
+			})),
+			location,
+		};
+	}
+}
+
+export async function getRestaurantById(
+	restaurantId: string,
+): Promise<Restaurant | null> {
+	try {
+		return await getRestaurantByIdApi(restaurantId);
+	} catch (error) {
+		console.warn(
+			"Backend restaurant detail failed; unable to load restaurant by id.",
+			error,
+		);
+		throw error;
+	}
 }
 
 export async function findLocationForCity(

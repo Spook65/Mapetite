@@ -2,7 +2,6 @@
 // Exists to expose cheap signals for uptime, DB connectivity, and cache state.
 // Does NOT mutate data or depend on Mongo being online; cache issues only warn.
 import express from "express";
-import prisma from "../db/prisma.js";
 import mongoose from "../db/mongo.js";
 import env from "../config/env.js";
 import logger from "../config/logger.js";
@@ -12,23 +11,9 @@ const router = express.Router();
 router.get("/", async (_req, res) => {
   const startedAt = process.uptime();
 
-  const postgres = {
-    status: "unknown",
-  };
-
   const mongo = {
     status: "unknown",
   };
-
-  // Postgres connectivity: cheap SELECT 1. Non-fatal for the process, but clearly surfaced.
-  try {
-    await prisma.$queryRaw`SELECT 1`;
-    postgres.status = "up";
-  } catch (err) {
-    postgres.status = "down";
-    postgres.error = err?.message ?? "unknown error";
-    logger.warn("Postgres health check failed", { message: postgres.error });
-  }
 
   // Mongo connectivity: we only inspect the connection state; no new connections are initiated here.
   try {
@@ -52,12 +37,14 @@ router.get("/", async (_req, res) => {
     status: "ok",
     uptimeSeconds: startedAt,
     nodeEnv: env.nodeEnv,
-    postgres,
     mongo,
+    database: {
+      status: "not_checked",
+      note: "Restaurant search now runs without a required SQL datastore.",
+    },
   });
 });
 
 export default router;
-
 
 

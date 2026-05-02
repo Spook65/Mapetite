@@ -19,10 +19,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { reverseGeocode } from "@/lib/api/nominatim";
-import {
-	resolveCityLocation,
-	searchRestaurants,
-} from "@/lib/search-restaurants";
+import { searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
@@ -51,8 +48,7 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-  } from "@/components/ui/select";
-  
+} from "@/components/ui/select";
 
 // Define search params schema for the route
 type RestaurantsSearch = {
@@ -176,10 +172,15 @@ function App() {
 	useEffect(() => {
 		if (searchCity) {
 			(async () => {
-				const resolved = await resolveCityLocation(searchCity);
-				if (!resolved) return;
-				setLocation(resolved);
-				const results = await searchRestaurants(resolved, []);
+				const requestedLocation = {
+					city: searchCity,
+					state: "",
+					country: "",
+				};
+				setLocation(requestedLocation);
+				const { restaurants: results, location: resolvedLocation } =
+					await searchRestaurants(requestedLocation, []);
+				setLocation(resolvedLocation ?? requestedLocation);
 				setRestaurants(results);
 				setShowFavorites(false);
 			})();
@@ -193,22 +194,9 @@ function App() {
 		}
 		setIsSearching(true);
 		try {
-			const resolved =
-				(location.latitude && location.longitude && location) ||
-				(await resolveCityLocation(
-					location.city,
-					location.state,
-					location.country,
-				));
-			if (!resolved) {
-				toast.error("Could not find that location");
-				return;
-			}
-			setLocation(resolved);
-			const results = await searchRestaurants(
-				resolved,
-				Array.from(selectedCategories),
-			);
+			const { restaurants: results, location: resolvedLocation } =
+				await searchRestaurants(location, Array.from(selectedCategories));
+			setLocation(resolvedLocation ?? location);
 			setRestaurants(results);
 			setShowFavorites(false);
 		} catch (error) {
@@ -237,10 +225,12 @@ function App() {
 							longitude,
 						};
 						setLocation(resolved);
-						const results = await searchRestaurants(
-							resolved,
-							Array.from(selectedCategories),
-						);
+						const { restaurants: results, location: resolvedLocation } =
+							await searchRestaurants(
+								resolved,
+								Array.from(selectedCategories),
+							);
+						setLocation(resolvedLocation ?? resolved);
 						setRestaurants(results);
 						setShowFavorites(false);
 					} catch (error) {
@@ -268,8 +258,9 @@ function App() {
 	}, [toggleFavoriteMutate]);
 
 	const openInMaps = useCallback((restaurant: Restaurant) => {
-		const address = `${restaurant.address.street}, ${restaurant.address.city}, ${restaurant.address.state} ${restaurant.address.zipCode}`;
-		const encodedAddress = encodeURIComponent(address);
+		const hasCoordinates =
+			Number.isFinite(restaurant.latitude) &&
+			Number.isFinite(restaurant.longitude);
 
 		// Detect platform
 		const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -277,11 +268,17 @@ function App() {
 
 		let mapsUrl = "";
 		if (isIOS) {
-			mapsUrl = `maps://maps.apple.com/?q=${encodedAddress}`;
+			mapsUrl = hasCoordinates
+				? `maps://maps.apple.com/?ll=${restaurant.latitude},${restaurant.longitude}`
+				: `maps://maps.apple.com/?q=${encodeURIComponent(restaurant.name)}`;
 		} else if (isAndroid) {
-			mapsUrl = `geo:0,0?q=${encodedAddress}`;
+			mapsUrl = hasCoordinates
+				? `geo:${restaurant.latitude},${restaurant.longitude}?q=${encodeURIComponent(restaurant.name)}`
+				: `geo:0,0?q=${encodeURIComponent(restaurant.name)}`;
 		} else {
-			mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodedAddress}`;
+			mapsUrl = hasCoordinates
+				? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
+				: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
 		}
 
 		window.open(mapsUrl, "_blank");
@@ -1066,11 +1063,27 @@ function App() {
 									{/* Photo Placeholder - Left Side */}
 									<div className="flex-shrink-0 w-full md:w-auto">
 										<div className="w-full md:w-56 lg:w-64 h-48 md:h-56 lg:h-64 rounded-sm border-2 border-primary/40 bg-gradient-to-br from-[oklch(0.92_0.015_70)] to-[oklch(0.88_0.02_65)] shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.2)] flex items-center justify-center relative overflow-hidden group">
-											{/* Decorative pattern overlay */}
-											<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_12px,oklch(0.85_0.02_70_/_0.15)_12px,oklch(0.85_0.02_70_/_0.15)_13px)] pointer-events-none" />
-											{/* Icon placeholder */}
-											<Utensils className="h-16 md:h-20 w-16 md:w-20 text-primary/50 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_10px_oklch(0.55_0.18_240_/_0.3)]" />
+											{restaurant.photoUrl ? (
+												<img
+													src={restaurant.photoUrl}
+													alt={restaurant.name}
+													className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+													referrerPolicy="no-referrer"
+												/>
+											) : (
+												<>
+													{/* Decorative pattern overlay */}
+													<div className="absolute inset-0 opacity-20 bg-[repeating-linear-gradient(45deg,transparent,transparent_12px,oklch(0.85_0.02_70_/_0.15)_12px,oklch(0.85_0.02_70_/_0.15)_13px)] pointer-events-none" />
+													{/* Icon placeholder */}
+													<Utensils className="h-16 md:h-20 w-16 md:w-20 text-primary/50 group-hover:scale-110 transition-transform duration-300 drop-shadow-[0_0_10px_oklch(0.55_0.18_240_/_0.3)]" />
+												</>
+											)}
 										</div>
+										{restaurant.photoAttributions?.length ? (
+											<p className="mt-2 text-[10px] text-card-foreground/50 font-serif-elegant max-w-64">
+												Photo credit: {restaurant.photoAttributions.join(", ")}
+											</p>
+										) : null}
 									</div>
 
 									{/* Main Content - Right Side */}
@@ -1314,17 +1327,30 @@ function App() {
 												<div className="mt-6">
 													<DetailPhotoCarousel
 														restaurantName={restaurant.name}
+														images={restaurant.galleryImageUrls}
+														imageAttributions={restaurant.galleryPhotoAttributions}
 													/>
 												</div>
 
 												{/* Chef Profile Section */}
 												<div className="mt-6">
-													<ChefProfileSection />
+													<ChefProfileSection
+														chefName={restaurant.chef?.name}
+														chefBio={restaurant.chef?.bio}
+														profileImage={restaurant.chef?.photoUrl}
+													/>
 												</div>
 
 												{/* Signature Menu */}
 												<div className="mt-6">
-													<SignatureMenu />
+													<SignatureMenu
+														dishes={restaurant.signatureDishes}
+														pricingNote={
+															restaurant.priceRange != null
+																? `Estimated pricing from $${restaurant.priceRange} to $$$$`
+																: undefined
+														}
+													/>
 												</div>
 
 												{/* Review Summary */}
@@ -1333,6 +1359,7 @@ function App() {
 														<ReviewSummary
 															overallRating={restaurant.rating}
 															totalReviews={restaurant.reviewCount ?? 0}
+															ratingBreakdown={restaurant.ratingBreakdown}
 															reviews={restaurant.reviews}
 														/>
 													</div>
