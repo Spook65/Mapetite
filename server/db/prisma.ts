@@ -4,7 +4,7 @@
 import { PrismaClient } from "@prisma/client";
 
 // Lazy singleton to avoid multiple connections in hot-reload scenarios.
-const globalForPrisma = globalThis as unknown as { prisma?: PrismaClient };
+const globalForPrisma = globalThis as unknown as { prisma?: any };
 
 const prisma =
   globalForPrisma.prisma ??
@@ -17,5 +17,3 @@ if (!globalForPrisma.prisma) {
 }
 
 export default prisma;
-
-

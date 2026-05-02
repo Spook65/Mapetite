@@ -6,7 +6,7 @@ import { listRestaurants } from "../services/restaurantService.js";
 
 const router = express.Router();
 
-router.get("/", async (_req, res) => {
+router.get("/", async (_req: any, res: any) => {
   try {
     const restaurants = await listRestaurants();
     res.json({ restaurants });
@@ -17,5 +17,4 @@ router.get("/", async (_req, res) => {
 });
 
 export default router;
-
 

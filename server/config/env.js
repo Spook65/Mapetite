@@ -11,11 +11,7 @@ const raw = {
   port: process.env.PORT || "5000",
   databaseUrl: process.env.DATABASE_URL,
   geoapifyApiKey:
-    process.env.GEOAPIFY_API_KEY ||
-    process.env.GEOAPIFY_KEY ||
-    process.env.GOOGLE_PLACES_API_KEY ||
-    process.env.PLACES_API_KEY ||
-    "",
+    process.env.GEOAPIFY_API_KEY || "",
   // Support both historical MONGO_URI and newer MONGODB_URI names.
   mongoUri: process.env.MONGODB_URI || process.env.MONGO_URI || "",
 };

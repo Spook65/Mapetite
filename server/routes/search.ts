@@ -5,9 +5,13 @@ import express from "express";
 import { searchAndNormalize } from "../services/searchService.js";
 import { connectMongo } from "../db/mongo.js";
 
+declare const process: {
+  env: Record<string, string | undefined>;
+};
+
 const router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/", async (req: any, res: any) => {
   const { q, location } = req.query as { q?: string; location?: string };
   if (!q || !location) {
     return res.status(400).json({ message: "Missing q or location" });
@@ -25,5 +29,4 @@ router.get("/", async (req, res) => {
 });
 
 export default router;
-
 

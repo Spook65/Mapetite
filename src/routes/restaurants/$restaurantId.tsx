@@ -54,6 +54,8 @@ function RestaurantDetailPage() {
 	);
 
 	const storeRestaurant = restaurants.find((r) => r.id === restaurantId);
+	const restaurantName =
+		fetchedRestaurant?.name ?? storeRestaurant?.name ?? "Restaurant";
 
 	// API-based favorites using React Query with error handling
 	const { data: favoritesData } = useFavorites();
@@ -63,11 +65,11 @@ function RestaurantDetailPage() {
 				// Show success toast based on action
 				if (data.action === "added") {
 					toast.success("Added to favorites", {
-						description: `${restaurant?.name} has been added to your favorites.`,
+						description: `${restaurantName} has been added to your favorites.`,
 					});
 				} else {
 					toast.success("Removed from favorites", {
-						description: `${restaurant?.name} has been removed from your favorites.`,
+						description: `${restaurantName} has been removed from your favorites.`,
 					});
 				}
 			},
