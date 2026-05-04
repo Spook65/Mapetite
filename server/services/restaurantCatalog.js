@@ -1,3 +1,4 @@
+import env from "../config/env.js";
 import {
   getGeoapifyRestaurantById,
   isGeoapifyEnabled,
@@ -7,6 +8,7 @@ import {
 
 const SEARCH_RADIUS_METERS = 3000;
 const SEARCH_CACHE_TTL_MS = 5 * 60 * 1000;
+const BACKEND_BASE_URL = `http://${env.host}:${env.port}`;
 
 const searchCache = new Map();
 const restaurantCache = new Map();
@@ -64,9 +66,49 @@ function buildPhotoUrl(seed, width = 1200, height = 800) {
   return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${height}`;
 }
 
-function buildGalleryImages(seed, count = 6) {
+function buildMapPhotoUrl({
+  latitude,
+  longitude,
+  label,
+  variant = 0,
+  width = 1200,
+  height = 800,
+  style,
+}) {
+  const url = new URL(`${BACKEND_BASE_URL}/api/maps/static`);
+  url.searchParams.set("lat", String(latitude));
+  url.searchParams.set("lon", String(longitude));
+  url.searchParams.set("label", label || "Mapetite");
+  url.searchParams.set("variant", String(variant));
+  url.searchParams.set("width", String(width));
+  url.searchParams.set("height", String(height));
+  url.searchParams.set(
+    "style",
+    style || (variant % 2 === 0 ? "osm-bright" : "toner-grey"),
+  );
+  url.searchParams.set("markerColor", variant % 2 === 0 ? "#0ea5e9" : "#14b8a6");
+  return url.toString();
+}
+
+function buildGalleryImages(seed, count = 6, locationContext = {}, label = "") {
+  const hasCoordinates =
+    Number.isFinite(locationContext.latitude) && Number.isFinite(locationContext.longitude);
+
+  if (!hasCoordinates) {
+    return Array.from({ length: count }, (_, index) =>
+      buildPhotoUrl(`${seed}-${index}`, 1400, 900),
+    );
+  }
+
   return Array.from({ length: count }, (_, index) =>
-    buildPhotoUrl(`${seed}-${index}`, 1400, 900),
+    buildMapPhotoUrl({
+      latitude: locationContext.latitude,
+      longitude: locationContext.longitude,
+      label,
+      variant: index,
+      width: 1400,
+      height: 900,
+    }),
   );
 }
 
@@ -169,21 +211,33 @@ function buildRatingBreakdown(rating, reviewCount) {
   };
 }
 
-function buildChefInfo(categories, restaurantName) {
+function buildChefInfo(categories, restaurantName, locationContext = {}) {
   const cuisine = categories.find((category) => category !== "Restaurant") || "Restaurant";
   const pool = CHEF_BY_CUISINE[cuisine] || [
     "Chef Elena Brooks",
     "Chef Olivia Carter",
     "Chef Daniel Reed",
+    "Chef Nora Patel",
+    "Chef Marcus Lee",
+    "Chef Sofia Alvarez",
   ];
-  const hash = stableHash(restaurantName);
+  const seed = [restaurantName, locationContext.city, locationContext.state, cuisine]
+    .filter(Boolean)
+    .join("|");
+  const hash = stableHash(seed);
   const chefName = pool[hash % pool.length];
+  const philosophyFragments = [
+    "seasonal ingredients with precise, modern technique",
+    "a menu that feels rooted in place and flexible by the day",
+    "warm hospitality balanced with a sharp culinary point of view",
+    "comfortable dishes with polished details and clean flavors",
+  ];
+  const philosophy = philosophyFragments[hash % philosophyFragments.length];
 
   return {
     name: chefName,
     bio:
-      `At ${restaurantName}, ${chefName} leads a kitchen that emphasizes precision, seasonality, and a strong sense of place. ` +
-      `The menu blends classic technique with a modern point of view.`,
+      `At ${restaurantName}${locationContext.city ? ` in ${locationContext.city}` : ""}, ${chefName} leads a kitchen that emphasizes ${philosophy}.`,
     yearsOfExperience: 12 + (hash % 15),
     specialties: categories.slice(0, 3),
   };
@@ -216,9 +270,40 @@ function buildSignatureDishes(categories, restaurantName) {
   return dishes;
 }
 
-function buildReviews(restaurantName, rating, reviewCount) {
-  const templateCount = Math.min(3, REVIEW_TEMPLATES.length);
-  return Array.from({ length: templateCount }, (_, index) => {
+function buildReviews(
+  restaurantName,
+  rating,
+  reviewCount,
+  locationContext = {},
+  categories = [],
+) {
+  const openers = [
+    "Impeccable service and memorable flavors.",
+    "A polished dining room with a confident kitchen.",
+    "Thoughtful plating, great pacing, and a strong wine list.",
+    "The menu feels focused and the quality is consistent.",
+    "A destination worth returning to.",
+    "The room feels lively without losing its calm.",
+  ];
+  const middle = [
+    "The pacing felt deliberate in the best way.",
+    "The cooking had a clear point of view.",
+    "It felt tailored to the neighborhood and the city.",
+    "Every course arrived with good energy and restraint.",
+    "You can tell the team cares about the details.",
+  ];
+  const closers = [
+    "We would happily come back again.",
+    "It left a strong impression.",
+    "Worth planning a second visit.",
+    "An easy recommendation for the area.",
+  ];
+  const seed = [restaurantName, locationContext.city, locationContext.state, categories.join("|")]
+    .filter(Boolean)
+    .join("|");
+
+  return Array.from({ length: Math.min(4, Math.max(3, reviewCount > 80 ? 4 : 3)) }, (_, index) => {
+    const hash = stableHash(`${seed}|review|${index}`);
     const score = Math.max(3.5, Math.min(5, rating - index * 0.2));
     const date = new Date();
     date.setDate(date.getDate() - (index + 1) * 11);
@@ -227,7 +312,7 @@ function buildReviews(restaurantName, rating, reviewCount) {
       id: `${stableHash(restaurantName)}-${index}`,
       author: `Guest ${index + 1}`,
       rating: Number(score.toFixed(1)),
-      comment: REVIEW_TEMPLATES[index],
+      comment: `${openers[hash % openers.length]} ${middle[(hash >> 3) % middle.length]} ${closers[(hash >> 6) % closers.length]}`,
       date: date.toISOString(),
       helpfulCount: Math.max(1, Math.round(reviewCount / (index + 5))),
     };
@@ -305,13 +390,13 @@ function normalizeElement(element, locationContext = {}) {
     description: buildDescription(name, categories, locationContext, tags),
     latitude: lat,
     longitude: lon,
-    reviews: buildReviews(name, rating, reviewCount),
+    reviews: buildReviews(name, rating, reviewCount, locationContext, categories),
     distance,
     isOpenNow: isOpenNow(hours),
     hours,
     photoUrl,
-    galleryImageUrls: buildGalleryImages(id),
-    chef: buildChefInfo(categories, name),
+    galleryImageUrls: buildGalleryImages(id, 6, locationContext, name),
+    chef: buildChefInfo(categories, name, locationContext),
     signatureDishes: buildSignatureDishes(categories, name),
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
     amenities: [
@@ -513,7 +598,7 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
     description: `${categoryLabel} ${noun} is a polished demo restaurant in ${city}. It appears when live provider data is temporarily unavailable.`,
     latitude,
     longitude,
-    reviews: buildReviews(`${seed}-${index}`, rating, reviewCount),
+    reviews: buildReviews(`${seed}-${index}`, rating, reviewCount, locationContext, categories),
     distance:
       typeof locationContext.latitude === "number" &&
       typeof locationContext.longitude === "number"
@@ -524,11 +609,24 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
       open: "11:00 AM",
       close: "10:00 PM",
     },
-    photoUrl: buildPhotoUrl(`demo-${baseSeed}`),
-    galleryImageUrls: buildGalleryImages(`demo-${baseSeed}`),
+    photoUrl: buildMapPhotoUrl({
+      latitude,
+      longitude,
+      label: `${city} ${categoryLabel}`,
+      variant: 0,
+      width: 1200,
+      height: 800,
+      style: "osm-bright",
+    }),
+    galleryImageUrls: buildGalleryImages(
+      `demo-${baseSeed}`,
+      6,
+      locationContext,
+      `${city} ${categoryLabel}`,
+    ),
     photoAttributions: [],
     galleryPhotoAttributions: [],
-    chef: buildChefInfo(categories, `${categoryLabel} ${noun}`),
+    chef: buildChefInfo(categories, `${city} ${categoryLabel} ${noun}`, locationContext),
     signatureDishes: buildSignatureDishes(categories, `${categoryLabel} ${noun}`),
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
     amenities: ["Wi-Fi", "Outdoor Seating"],

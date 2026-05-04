@@ -9,6 +9,7 @@ import { connectMongo } from "./db/mongo.js";
 
 // Routes
 import restaurantRoutes from "./routes/restaurants.js";
+import mapRoutes from "./routes/maps.js";
 import healthRoutes from "./routes/health.js";
 
 dotenv.config();
@@ -22,6 +23,7 @@ app.use(express.json());
 void connectMongo(env.mongoUri);
 
 app.use("/api/restaurants", restaurantRoutes);
+app.use("/api/maps", mapRoutes);
 app.use("/health", healthRoutes);
 
 const PORT = Number(env.port || 5000);
