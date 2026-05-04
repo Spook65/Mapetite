@@ -257,31 +257,14 @@ function App() {
 		toggleFavoriteMutate({ restaurant_id: restaurantId });
 	}, [toggleFavoriteMutate]);
 
-	const openInMaps = useCallback((restaurant: Restaurant) => {
+	const buildDirectionsUrl = useCallback((restaurant: Restaurant) => {
 		const hasCoordinates =
 			Number.isFinite(restaurant.latitude) &&
 			Number.isFinite(restaurant.longitude);
 
-		// Detect platform
-		const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-		const isAndroid = /Android/.test(navigator.userAgent);
-
-		let mapsUrl = "";
-		if (isIOS) {
-			mapsUrl = hasCoordinates
-				? `maps://maps.apple.com/?ll=${restaurant.latitude},${restaurant.longitude}`
-				: `maps://maps.apple.com/?q=${encodeURIComponent(restaurant.name)}`;
-		} else if (isAndroid) {
-			mapsUrl = hasCoordinates
-				? `geo:${restaurant.latitude},${restaurant.longitude}?q=${encodeURIComponent(restaurant.name)}`
-				: `geo:0,0?q=${encodeURIComponent(restaurant.name)}`;
-		} else {
-			mapsUrl = hasCoordinates
-				? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
-				: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
-		}
-
-		window.open(mapsUrl, "_blank");
+		return hasCoordinates
+			? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
+			: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
 	}, []);
 
 	// Memoize handlers that update local state to prevent child re-renders
@@ -1315,12 +1298,18 @@ function App() {
 
 												{/* Map Direction Button */}
 												<Button
+													asChild
 													variant="outline"
 													className="cursor-pointer w-full border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-serif-elegant font-semibold tracking-wide shadow-md py-6"
-													onClick={() => openInMaps(restaurant)}
 												>
-													<MapPin className="size-5 mr-2" />
-													Get Directions
+													<a
+														href={buildDirectionsUrl(restaurant)}
+														target="_blank"
+														rel="noreferrer"
+													>
+														<MapPin className="size-5 mr-2" />
+														Get Directions
+													</a>
 												</Button>
 
 												{/* Photo Carousel */}

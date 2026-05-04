@@ -203,31 +203,14 @@ function RestaurantDetailPage() {
 		toggleFavoriteMutate({ restaurant_id: restaurantId });
 	};
 
-	const openInMaps = (restaurant: Restaurant) => {
+	const buildDirectionsUrl = (restaurant: Restaurant) => {
 		const hasCoordinates =
 			Number.isFinite(restaurant.latitude) &&
 			Number.isFinite(restaurant.longitude);
 
-		// Detect platform
-		const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-		const isAndroid = /Android/.test(navigator.userAgent);
-
-		let mapsUrl = "";
-		if (isIOS) {
-			mapsUrl = hasCoordinates
-				? `maps://maps.apple.com/?ll=${restaurant.latitude},${restaurant.longitude}`
-				: `maps://maps.apple.com/?q=${encodeURIComponent(restaurant.name)}`;
-		} else if (isAndroid) {
-			mapsUrl = hasCoordinates
-				? `geo:${restaurant.latitude},${restaurant.longitude}?q=${encodeURIComponent(restaurant.name)}`
-				: `geo:0,0?q=${encodeURIComponent(restaurant.name)}`;
-		} else {
-			mapsUrl = hasCoordinates
-				? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
-				: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
-		}
-
-		window.open(mapsUrl, "_blank");
+		return hasCoordinates
+			? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
+			: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
 	};
 
 	return (
@@ -388,12 +371,18 @@ function RestaurantDetailPage() {
 								<ArrowRight className="ml-2 h-5 w-5 stroke-[2.5]" />
 							</Button>
 							<Button
+								asChild
 								variant="outline"
 								className="w-full sm:w-auto cursor-pointer border-2 border-primary/40 hover:bg-primary/10 hover:border-primary/60 font-serif-elegant font-semibold tracking-wide shadow-md px-8 py-5 text-base transition-all duration-300"
-								onClick={() => openInMaps(restaurant)}
 							>
-								<Navigation className="mr-2 h-5 w-5" />
-								Get Directions
+								<a
+									href={buildDirectionsUrl(restaurant)}
+									target="_blank"
+									rel="noreferrer"
+								>
+									<Navigation className="mr-2 h-5 w-5" />
+									Get Directions
+								</a>
 							</Button>
 						</div>
 
