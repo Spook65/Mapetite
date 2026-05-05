@@ -32,6 +32,51 @@ function LandingPage() {
 		});
 	};
 
+	const buildCityCardStyle = (cityName: string) => {
+		switch (cityName) {
+			case "Paris":
+				return {
+					backgroundImage:
+						"radial-gradient(circle at 18% 18%, rgba(14, 165, 233, 0.40) 0%, transparent 26%), radial-gradient(circle at 84% 24%, rgba(20, 184, 166, 0.30) 0%, transparent 24%), radial-gradient(circle at 50% 78%, rgba(245, 158, 11, 0.18) 0%, transparent 32%), linear-gradient(135deg, #0f172a 0%, #1e293b 54%, #020617 100%)",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat",
+					backgroundSize: "cover",
+				};
+			case "Tokyo":
+				return {
+					backgroundImage:
+						"radial-gradient(circle at 20% 26%, rgba(244, 63, 94, 0.38) 0%, transparent 24%), radial-gradient(circle at 80% 20%, rgba(34, 211, 238, 0.36) 0%, transparent 22%), radial-gradient(circle at 58% 72%, rgba(168, 85, 247, 0.26) 0%, transparent 30%), linear-gradient(135deg, #111827 0%, #1f2937 52%, #030712 100%)",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat",
+					backgroundSize: "cover",
+				};
+			case "London":
+				return {
+					backgroundImage:
+						"radial-gradient(circle at 18% 22%, rgba(251, 191, 36, 0.30) 0%, transparent 24%), radial-gradient(circle at 78% 30%, rgba(59, 130, 246, 0.32) 0%, transparent 23%), radial-gradient(circle at 50% 78%, rgba(148, 163, 184, 0.18) 0%, transparent 30%), linear-gradient(135deg, #0f172a 0%, #334155 52%, #020617 100%)",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat",
+					backgroundSize: "cover",
+				};
+			case "Dubai":
+				return {
+					backgroundImage:
+						"radial-gradient(circle at 18% 20%, rgba(251, 191, 36, 0.40) 0%, transparent 22%), radial-gradient(circle at 80% 22%, rgba(245, 158, 11, 0.36) 0%, transparent 24%), radial-gradient(circle at 50% 74%, rgba(20, 184, 166, 0.22) 0%, transparent 32%), linear-gradient(135deg, #1e293b 0%, #0f172a 56%, #020617 100%)",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat",
+					backgroundSize: "cover",
+				};
+			default:
+				return {
+					backgroundImage:
+						"radial-gradient(circle at 18% 18%, rgba(14, 165, 233, 0.36) 0%, transparent 24%), radial-gradient(circle at 82% 24%, rgba(20, 184, 166, 0.28) 0%, transparent 22%), linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #020617 100%)",
+					backgroundPosition: "center",
+					backgroundRepeat: "no-repeat",
+					backgroundSize: "cover",
+				};
+		}
+	};
+
 	return (
 		<Layout>
 			<div className="container mx-auto px-4 md:px-8 py-8 md:py-16">
@@ -303,13 +348,10 @@ function LandingPage() {
 									<div className="relative overflow-hidden rounded-sm border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.55_0.18_240_/_0.2),0_6px_20px_black] transition-all duration-300 hover:border-primary hover:shadow-[0_0_35px_oklch(0.55_0.18_240_/_0.4),0_8px_24px_black] hover:scale-[1.02]">
 										{/* Background Image with Dark Overlay */}
 										<div className="relative h-64 overflow-hidden">
-											{/* Background Image */}
+											{/* City vignette */}
 											<div
 												className="absolute inset-0 bg-cover bg-center"
-												style={{
-													backgroundImage:
-														"url('http://googleusercontent.com/image_collection/image_retrieval/1330806874776151130_0')",
-												}}
+												style={buildCityCardStyle("Paris")}
 											/>
 
 											{/* Dark Overlay - Deep Midnight Navy/Black */}
@@ -361,13 +403,10 @@ function LandingPage() {
 									<div className="relative overflow-hidden rounded-sm border-2 border-secondary/40 bg-card shadow-[0_0_25px_oklch(0.65_0.14_195_/_0.2),0_6px_20px_black] transition-all duration-300 hover:border-secondary hover:shadow-[0_0_35px_oklch(0.65_0.14_195_/_0.4),0_8px_24px_black] hover:scale-[1.02]">
 										{/* Background Image with Dark Overlay */}
 										<div className="relative h-64 overflow-hidden">
-											{/* Background Image */}
+											{/* City vignette */}
 											<div
 												className="absolute inset-0 bg-cover bg-center"
-												style={{
-													backgroundImage:
-														"url('http://googleusercontent.com/image_collection/image_retrieval/580180491417338745_0')",
-												}}
+												style={buildCityCardStyle("Tokyo")}
 											/>
 
 											{/* Dark Overlay - Deep Midnight Navy/Black */}
@@ -419,13 +458,10 @@ function LandingPage() {
 									<div className="relative overflow-hidden rounded-sm border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.55_0.18_240_/_0.2),0_6px_20px_black] transition-all duration-300 hover:border-primary hover:shadow-[0_0_35px_oklch(0.55_0.18_240_/_0.4),0_8px_24px_black] hover:scale-[1.02]">
 										{/* Background Image with Dark Overlay */}
 										<div className="relative h-64 overflow-hidden">
-											{/* Placeholder Background Image */}
+											{/* City vignette */}
 											<div
 												className="absolute inset-0 bg-cover bg-center"
-												style={{
-													backgroundImage:
-														"url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&h=600&fit=crop')",
-												}}
+												style={buildCityCardStyle("London")}
 											/>
 
 											{/* Dark Overlay - Deep Midnight Navy/Black */}
@@ -477,13 +513,10 @@ function LandingPage() {
 									<div className="relative overflow-hidden rounded-sm border-2 border-secondary/40 bg-card shadow-[0_0_25px_oklch(0.65_0.14_195_/_0.2),0_6px_20px_black] transition-all duration-300 hover:border-secondary hover:shadow-[0_0_35px_oklch(0.65_0.14_195_/_0.4),0_8px_24px_black] hover:scale-[1.02]">
 										{/* Background Image with Dark Overlay */}
 										<div className="relative h-64 overflow-hidden">
-											{/* Placeholder Background Image */}
+											{/* City vignette */}
 											<div
 												className="absolute inset-0 bg-cover bg-center"
-												style={{
-													backgroundImage:
-														"url('https://images.unsplash.com/photo-1512453979798-5ea266f8880c?w=800&h=600&fit=crop')",
-												}}
+												style={buildCityCardStyle("Dubai")}
 											/>
 
 											{/* Dark Overlay - Deep Midnight Navy/Black */}
