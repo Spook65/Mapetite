@@ -1,6 +1,6 @@
+import "dotenv/config";
 import express from "express";
 import cors from "cors";
-import dotenv from "dotenv";
 
 // Local config + infra
 import env from "./config/env.js";
@@ -11,8 +11,6 @@ import { connectMongo } from "./db/mongo.js";
 import restaurantRoutes from "./routes/restaurants.js";
 import mapRoutes from "./routes/maps.js";
 import healthRoutes from "./routes/health.js";
-
-dotenv.config();
 
 const app = express();
 app.use(cors());
