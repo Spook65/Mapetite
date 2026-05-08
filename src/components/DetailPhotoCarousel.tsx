@@ -9,14 +9,77 @@ interface DetailPhotoCarouselProps {
 	images?: string[];
 	/** Attribution strings for each image */
 	imageAttributions?: string[][];
+	/** Restaurant categories for fallback artwork */
+	categories?: string[];
 	/** Restaurant name for alt text */
 	restaurantName: string;
 	className?: string;
 }
 
+function normalizeText(value: string) {
+	return value.toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+function pickFallbackTheme(categories: string[] = [], restaurantName = "") {
+	const tokens = [...categories, restaurantName].map(normalizeText);
+
+	if (tokens.some((token) => token.includes("ramen") || token.includes("noodle"))) {
+		return { label: "Ramen", emoji: "🍜", colors: ["#0ea5e9", "#14b8a6"] };
+	}
+
+	if (tokens.some((token) => token.includes("burger") || token.includes("fastfood"))) {
+		return { label: "Burger", emoji: "🍔", colors: ["#f97316", "#ef4444"] };
+	}
+
+	if (tokens.some((token) => token.includes("pizza") || token.includes("italian"))) {
+		return { label: "Italian", emoji: "🍕", colors: ["#ef4444", "#f97316"] };
+	}
+
+	if (tokens.some((token) => token.includes("taco") || token.includes("mexican"))) {
+		return { label: "Tacos", emoji: "🌮", colors: ["#f59e0b", "#84cc16"] };
+	}
+
+	if (tokens.some((token) => token.includes("sushi") || token.includes("japanese"))) {
+		return { label: "Sushi", emoji: "🍣", colors: ["#3b82f6", "#06b6d4"] };
+	}
+
+	if (tokens.some((token) => token.includes("vegetarian") || token.includes("healthy"))) {
+		return { label: "Fresh", emoji: "🥗", colors: ["#22c55e", "#14b8a6"] };
+	}
+
+	if (tokens.some((token) => token.includes("cafe") || token.includes("coffee"))) {
+		return { label: "Cafe", emoji: "☕", colors: ["#a16207", "#f59e0b"] };
+	}
+
+	return { label: "Dining", emoji: "🍽️", colors: ["#0ea5e9", "#14b8a6"] };
+}
+
+function buildFallbackArtworkUrl(restaurantName: string, categories: string[] = []) {
+	const theme = pickFallbackTheme(categories, restaurantName);
+	const svg = `
+		<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
+			<defs>
+				<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+					<stop offset="0%" stop-color="${theme.colors[0]}" />
+					<stop offset="100%" stop-color="${theme.colors[1]}" />
+				</linearGradient>
+			</defs>
+			<rect width="1280" height="720" rx="40" fill="url(#bg)" />
+			<circle cx="180" cy="150" r="120" fill="#ffffff" fill-opacity="0.14" />
+			<circle cx="1080" cy="170" r="150" fill="#ffffff" fill-opacity="0.12" />
+			<text x="92" y="250" font-size="150" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif">${theme.emoji}</text>
+			<text x="92" y="600" font-size="62" font-weight="700" font-family="Inter, Arial, sans-serif" fill="#ffffff">No gallery photos yet</text>
+			<text x="92" y="660" font-size="36" font-weight="500" font-family="Inter, Arial, sans-serif" fill="#ffffff" fill-opacity="0.92">${restaurantName} • ${theme.label}</text>
+		</svg>
+	`.trim();
+
+	return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`;
+}
+
 export function DetailPhotoCarousel({
 	images = [],
 	imageAttributions = [],
+	categories = [],
 	restaurantName,
 	className,
 }: DetailPhotoCarouselProps) {
@@ -25,12 +88,7 @@ export function DetailPhotoCarousel({
 	const generatedImages =
 		images.length > 0
 			? images
-			: Array.from({ length: 5 }).map(
-					(_, i) =>
-						`https://picsum.photos/seed/${encodeURIComponent(
-							`${restaurantName}-${i}`,
-						)}/1280/720`,
-				);
+			: [buildFallbackArtworkUrl(restaurantName, categories)];
 
 	const displayImages = generatedImages;
 	const totalImages = displayImages.length;
@@ -60,9 +118,9 @@ export function DetailPhotoCarousel({
 			<div className="relative z-10">
 				{/* Main Image Display Area */}
 				<div className="relative aspect-[16/9] bg-gradient-to-br from-[oklch(0.15_0.04_250)] to-[oklch(0.12_0.045_250)] overflow-hidden">
-					<img
-						src={displayImages[currentIndex]}
-						alt={`${restaurantName} photo ${currentIndex + 1}`}
+						<img
+							src={displayImages[currentIndex]}
+							alt={`${restaurantName} photo ${currentIndex + 1}`}
 						className="absolute inset-0 h-full w-full object-cover"
 						loading="lazy"
 						referrerPolicy="no-referrer"

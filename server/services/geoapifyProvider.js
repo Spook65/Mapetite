@@ -1,9 +1,9 @@
 import env from "../config/env.js";
+import { buildRestaurantArtworkUrl } from "./restaurantMedia.js";
 
 const GEOAPIFY_BASE_URL = "https://api.geoapify.com";
 const GEOAPIFY_SEARCH_TIMEOUT_MS = 12000;
 const GEOAPIFY_DEFAULT_LIMIT = 20;
-const BACKEND_BASE_URL = `http://${env.host}:${env.port}`;
 
 function stableHash(value) {
   return String(value)
@@ -40,56 +40,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
-}
-
-function buildPhotoUrl(seed, width = 1200, height = 800) {
-  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${height}`;
-}
-
-function buildMapPhotoUrl({
-  latitude,
-  longitude,
-  label,
-  variant = 0,
-  width = 1200,
-  height = 800,
-  style,
-}) {
-  const url = new URL(`${BACKEND_BASE_URL}/api/maps/static`);
-  url.searchParams.set("lat", String(latitude));
-  url.searchParams.set("lon", String(longitude));
-  url.searchParams.set("label", label || "Mapetite");
-  url.searchParams.set("variant", String(variant));
-  url.searchParams.set("width", String(width));
-  url.searchParams.set("height", String(height));
-  url.searchParams.set(
-    "style",
-    style || (variant % 2 === 0 ? "osm-bright" : "toner-grey"),
-  );
-  url.searchParams.set("markerColor", variant % 2 === 0 ? "#0ea5e9" : "#14b8a6");
-  return url.toString();
-}
-
-function buildGalleryImages(seed, count = 6, locationContext = {}, label = "") {
-  const hasCoordinates =
-    Number.isFinite(locationContext.latitude) && Number.isFinite(locationContext.longitude);
-
-  if (!hasCoordinates) {
-    return Array.from({ length: count }, (_, index) =>
-      buildPhotoUrl(`${seed}-${index}`, 1400, 900),
-    );
-  }
-
-  return Array.from({ length: count }, (_, index) =>
-    buildMapPhotoUrl({
-      latitude: locationContext.latitude,
-      longitude: locationContext.longitude,
-      label,
-      variant: index,
-      width: 1400,
-      height: 900,
-    }),
-  );
 }
 
 function normalizeAddress(props = {}, fallbackLocation = {}) {
@@ -473,6 +423,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
   const rating = deriveRating(props, placeId);
   const reviewCount = deriveReviewCount(props, placeId);
   const openingHours = parseOpeningHours(props.opening_hours);
+  const reviews = buildReviews(name, rating, reviewCount, locationContext, categories);
   const distance =
     typeof locationContext.latitude === "number" &&
     typeof locationContext.longitude === "number"
@@ -496,7 +447,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     description: buildDescription(name, categories, locationContext, props),
     latitude: lat,
     longitude: lon,
-    reviews: buildReviews(name, rating, reviewCount, locationContext, categories),
+    reviews,
     distance,
     isOpenNow:
       typeof props.open_now === "boolean"
@@ -505,15 +456,12 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
           ? props.is_open_now
           : undefined,
     hours: openingHours,
-    photoUrl: buildMapPhotoUrl({
-      latitude: lat,
-      longitude: lon,
-      label: name,
-      variant: index,
-      width: 1200,
-      height: 800,
+    photoUrl: buildRestaurantArtworkUrl({
+      categories,
+      name,
+      brand: props.brand || "",
     }),
-    galleryImageUrls: buildGalleryImages(placeId, 6, locationContext, name),
+    galleryImageUrls: [],
     photoAttributions: [],
     galleryPhotoAttributions: [],
     chef: buildChefInfo(categories, name, locationContext),

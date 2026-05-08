@@ -1,15 +1,16 @@
-import env from "../config/env.js";
 import {
   getGeoapifyRestaurantById,
   isGeoapifyEnabled,
   resolveGeoapifyLocation,
   searchGeoapifyRestaurants,
 } from "./geoapifyProvider.js";
+import {
+  buildRestaurantArtworkUrl,
+  resolveRestaurantImages,
+} from "./restaurantMedia.js";
 
 const SEARCH_RADIUS_METERS = 3000;
 const SEARCH_CACHE_TTL_MS = 5 * 60 * 1000;
-const BACKEND_BASE_URL = `http://${env.host}:${env.port}`;
-
 const searchCache = new Map();
 const restaurantCache = new Map();
 
@@ -60,56 +61,6 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
-}
-
-function buildPhotoUrl(seed, width = 1200, height = 800) {
-  return `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${height}`;
-}
-
-function buildMapPhotoUrl({
-  latitude,
-  longitude,
-  label,
-  variant = 0,
-  width = 1200,
-  height = 800,
-  style,
-}) {
-  const url = new URL(`${BACKEND_BASE_URL}/api/maps/static`);
-  url.searchParams.set("lat", String(latitude));
-  url.searchParams.set("lon", String(longitude));
-  url.searchParams.set("label", label || "Mapetite");
-  url.searchParams.set("variant", String(variant));
-  url.searchParams.set("width", String(width));
-  url.searchParams.set("height", String(height));
-  url.searchParams.set(
-    "style",
-    style || (variant % 2 === 0 ? "osm-bright" : "toner-grey"),
-  );
-  url.searchParams.set("markerColor", variant % 2 === 0 ? "#0ea5e9" : "#14b8a6");
-  return url.toString();
-}
-
-function buildGalleryImages(seed, count = 6, locationContext = {}, label = "") {
-  const hasCoordinates =
-    Number.isFinite(locationContext.latitude) && Number.isFinite(locationContext.longitude);
-
-  if (!hasCoordinates) {
-    return Array.from({ length: count }, (_, index) =>
-      buildPhotoUrl(`${seed}-${index}`, 1400, 900),
-    );
-  }
-
-  return Array.from({ length: count }, (_, index) =>
-    buildMapPhotoUrl({
-      latitude: locationContext.latitude,
-      longitude: locationContext.longitude,
-      label,
-      variant: index,
-      width: 1400,
-      height: 900,
-    }),
-  );
 }
 
 function parseCategories(tags = {}) {
@@ -368,7 +319,7 @@ function normalizeElement(element, locationContext = {}) {
   const rating = deriveRating(tags, id);
   const reviewCount = deriveReviewCount(tags, id);
   const priceRange = parsePriceRange(tags, categories);
-  const photoUrl = buildPhotoUrl(id);
+  const reviews = buildReviews(name, rating, reviewCount, locationContext, categories);
   const distance =
     locationContext.latitude !== undefined && locationContext.longitude !== undefined
       ? calculateDistance(
@@ -390,12 +341,16 @@ function normalizeElement(element, locationContext = {}) {
     description: buildDescription(name, categories, locationContext, tags),
     latitude: lat,
     longitude: lon,
-    reviews: buildReviews(name, rating, reviewCount, locationContext, categories),
+    reviews,
     distance,
     isOpenNow: isOpenNow(hours),
     hours,
-    photoUrl,
-    galleryImageUrls: buildGalleryImages(id, 6, locationContext, name),
+    photoUrl: buildRestaurantArtworkUrl({
+      categories,
+      name,
+      brand: tags.brand || tags.operator || "",
+    }),
+    galleryImageUrls: [],
     chef: buildChefInfo(categories, name, locationContext),
     signatureDishes: buildSignatureDishes(categories, name),
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
@@ -410,6 +365,7 @@ function normalizeElement(element, locationContext = {}) {
       tags.payment_cards === "yes" ? "Cards" : null,
       tags.payment_diners === "yes" ? "Diners Club" : null,
     ].filter(Boolean),
+    website: tags.website || tags["contact:website"] || tags["website"] || "",
     source: "osm",
   };
 
@@ -581,6 +537,8 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
     ),
   ];
 
+  const reviews = buildReviews(`${seed}-${index}`, rating, reviewCount, locationContext, categories);
+
   return {
     id: `demo:${baseSeed}`,
     name: `${categoryLabel} ${noun}`,
@@ -598,7 +556,7 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
     description: `${categoryLabel} ${noun} is a polished demo restaurant in ${city}. It appears when live provider data is temporarily unavailable.`,
     latitude,
     longitude,
-    reviews: buildReviews(`${seed}-${index}`, rating, reviewCount, locationContext, categories),
+    reviews,
     distance:
       typeof locationContext.latitude === "number" &&
       typeof locationContext.longitude === "number"
@@ -609,21 +567,11 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
       open: "11:00 AM",
       close: "10:00 PM",
     },
-    photoUrl: buildMapPhotoUrl({
-      latitude,
-      longitude,
-      label: `${city} ${categoryLabel}`,
-      variant: 0,
-      width: 1200,
-      height: 800,
-      style: "osm-bright",
+    photoUrl: buildRestaurantArtworkUrl({
+      categories,
+      name: `${city} ${categoryLabel} ${noun}`,
     }),
-    galleryImageUrls: buildGalleryImages(
-      `demo-${baseSeed}`,
-      6,
-      locationContext,
-      `${city} ${categoryLabel}`,
-    ),
+    galleryImageUrls: [],
     photoAttributions: [],
     galleryPhotoAttributions: [],
     chef: buildChefInfo(categories, `${city} ${categoryLabel} ${noun}`, locationContext),
@@ -807,6 +755,24 @@ export async function getRestaurantById(restaurantId) {
   const restaurant = normalizeElement(element, {});
   if (!restaurant) {
     return null;
+  }
+
+  if (restaurant.source !== "demo") {
+    const media = await resolveRestaurantImages({
+      website: restaurant.website,
+      name: restaurant.name,
+      street: restaurant.address?.street,
+      city: restaurant.address?.city,
+      state: restaurant.address?.state,
+      country: restaurant.address?.country,
+      categories: restaurant.categories,
+      placeId: restaurant.id,
+    });
+
+    if (media.length > 0) {
+      restaurant.photoUrl = media[0];
+      restaurant.galleryImageUrls = media;
+    }
   }
 
   rememberRestaurants([restaurant]);

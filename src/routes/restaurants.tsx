@@ -1318,6 +1318,7 @@ function App() {
 														restaurantName={restaurant.name}
 														images={restaurant.galleryImageUrls}
 														imageAttributions={restaurant.galleryPhotoAttributions}
+														categories={restaurant.categories}
 													/>
 												</div>
 
