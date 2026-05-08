@@ -126,6 +126,87 @@ function pickTheme(categories = [], name = "", brand = "") {
   return CUISINE_THEMES.default;
 }
 
+function pickThemeKey(categories = [], name = "", brand = "") {
+  const tokens = [
+    ...categories.map(normalizeText),
+    normalizeText(name),
+    normalizeText(brand),
+  ];
+
+  const checks = [
+    ["ramen", ["ramen", "udon", "soba", "noodle", "noodles"]],
+    ["sushi", ["sushi", "japanese"]],
+    ["burger", ["burger", "mcdonald", "wendys", "wendy", "burgerking", "fastfood"]],
+    ["pizza", ["pizza"]],
+    ["pasta", ["pasta", "italian"]],
+    ["taco", ["taco", "mexican"]],
+    ["chinese", ["chinese", "dumpling", "dimsum", "wok"]],
+    ["indian", ["indian", "curry", "tandoor", "biryani"]],
+    ["vegan", ["vegan"]],
+    ["vegetarian", ["vegetarian"]],
+    ["healthy", ["healthy", "salad", "bowl", "fresh"]],
+    ["bakery", ["bakery", "pastry", "croissant", "bread"]],
+    ["seafood", ["seafood", "fish", "oyster"]],
+    ["cafe", ["cafe", "coffee", "espresso", "latte"]],
+  ];
+
+  for (const [key, needles] of checks) {
+    if (tokens.some((token) => needles.some((needle) => token.includes(needle)))) {
+      return key;
+    }
+  }
+
+  return "default";
+}
+
+function buildCuisineProfile(categories = [], name = "", brand = "") {
+  const themeKey = pickThemeKey(categories, name, brand);
+  const theme = CUISINE_THEMES[themeKey] || CUISINE_THEMES.default;
+
+  const searchTermsByKey = {
+    ramen: ["ramen", "noodles", "udon", "soba", "menu", "gallery"],
+    sushi: ["sushi", "japanese", "menu", "gallery"],
+    burger: ["burger", "fast food", "menu", "gallery", "grill"],
+    pizza: ["pizza", "pizzeria", "menu", "gallery"],
+    pasta: ["pasta", "italian", "menu", "gallery"],
+    taco: ["tacos", "mexican", "menu", "gallery"],
+    chinese: ["chinese", "dumplings", "dim sum", "menu", "gallery"],
+    indian: ["indian", "curry", "menu", "gallery"],
+    vegan: ["vegan", "menu", "gallery"],
+    vegetarian: ["vegetarian", "menu", "gallery"],
+    healthy: ["healthy", "salad", "bowls", "menu", "gallery"],
+    bakery: ["bakery", "pastry", "menu", "gallery"],
+    seafood: ["seafood", "fish", "oyster", "menu", "gallery"],
+    cafe: ["cafe", "coffee", "espresso", "menu", "gallery"],
+    default: ["restaurant", "menu", "gallery"],
+  };
+
+  const pageKeywordsByKey = {
+    ramen: ["ramen", "noodles", "menu", "gallery", "photos", "food", "dining"],
+    sushi: ["sushi", "omakase", "menu", "gallery", "photos", "food", "dining"],
+    burger: ["burger", "fries", "menu", "gallery", "photos", "food", "dining"],
+    pizza: ["pizza", "menu", "gallery", "photos", "food", "dining"],
+    pasta: ["pasta", "menu", "gallery", "photos", "food", "dining"],
+    taco: ["tacos", "menu", "gallery", "photos", "food", "dining"],
+    chinese: ["menu", "gallery", "photos", "food", "dining", "dim sum"],
+    indian: ["menu", "gallery", "photos", "food", "dining", "curry"],
+    vegan: ["menu", "gallery", "photos", "food", "dining", "vegan"],
+    vegetarian: ["menu", "gallery", "photos", "food", "dining", "vegetarian"],
+    healthy: ["menu", "gallery", "photos", "food", "dining", "salad"],
+    bakery: ["menu", "gallery", "photos", "food", "dining", "pastry"],
+    seafood: ["menu", "gallery", "photos", "food", "dining", "seafood"],
+    cafe: ["menu", "gallery", "photos", "food", "dining", "coffee"],
+    default: ["menu", "gallery", "photos", "food", "dining"],
+  };
+
+  return {
+    themeKey,
+    theme,
+    searchTerms: searchTermsByKey[themeKey] || searchTermsByKey.default,
+    pageKeywords: pageKeywordsByKey[themeKey] || pageKeywordsByKey.default,
+  };
+}
+
 function escapeXml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -136,7 +217,8 @@ function escapeXml(value) {
 }
 
 function buildCuisineArtworkUrl({ categories = [], name = "", brand = "" } = {}) {
-  const theme = pickTheme(categories, name, brand);
+  const profile = buildCuisineProfile(categories, name, brand);
+  const theme = profile.theme;
   const hash = stableHash([categories.join("|"), name, brand].filter(Boolean).join("|"));
   const colors = theme.colors;
   const header = titleCase(categories.find((category) => category && category !== "Restaurant") || theme.label);
@@ -240,8 +322,44 @@ function walkJsonForImages(value, output = []) {
   return output;
 }
 
-function extractImagesFromHtml(html, baseUrl) {
+function hasKeywordMatch(value, keywords = []) {
+  const text = String(value || "").toLowerCase();
+  return keywords.some((keyword) => text.includes(String(keyword).toLowerCase()));
+}
+
+function scoreImageCandidate(candidate, profile = {}) {
+  const url = String(candidate.url || "");
+  const alt = String(candidate.alt || "");
+  const title = String(candidate.title || "");
+  const text = `${url} ${alt} ${title}`.toLowerCase();
+  let score = 0;
+
+  if (candidate.sameHost) score += 3;
+  if (candidate.fromMeta) score += 3;
+  if (candidate.fromJsonLd) score += 2;
+  if (hasKeywordMatch(text, profile.searchTerms)) score += 4;
+  if (hasKeywordMatch(text, profile.pageKeywords)) score += 2;
+  if (hasKeywordMatch(text, [profile.theme?.label, profile.themeKey])) score += 2;
+  if (hasKeywordMatch(text, ["hero", "gallery", "food", "dish", "menu", "interior", "dining"])) {
+    score += 1;
+  }
+  if (hasKeywordMatch(text, ["logo", "icon", "favicon", "sprite", "avatar", "placeholder"])) {
+    score -= 100;
+  }
+  if (hasKeywordMatch(text, ["map", "street", "directions", "location"])) {
+    score -= 12;
+  }
+  if (/\.(webp|jpg|jpeg|png)(?:[?#].*)?$/.test(url.toLowerCase())) {
+    score += 1;
+  }
+
+  return score;
+}
+
+function extractImageCandidatesFromHtml(html, baseUrl, profile = {}) {
   const candidates = [];
+  const base = new URL(baseUrl);
+  const origin = base.origin;
 
   const metaPatterns = [
     /<meta[^>]+(?:property|name)=["'](?:og:image:secure_url|og:image|twitter:image:src|twitter:image|image)["'][^>]+content=["']([^"']+)["'][^>]*>/gi,
@@ -249,7 +367,13 @@ function extractImagesFromHtml(html, baseUrl) {
   ];
 
   for (const pattern of metaPatterns) {
-    candidates.push(...collectMatches(pattern, html));
+    for (const match of html.matchAll(pattern)) {
+      candidates.push({
+        url: match[1],
+        fromMeta: true,
+        sameHost: true,
+      });
+    }
   }
 
   const jsonLdMatches = Array.from(
@@ -260,40 +384,71 @@ function extractImagesFromHtml(html, baseUrl) {
   for (const block of jsonLdMatches) {
     try {
       const parsed = JSON.parse(block.replace(/<!--|-->/g, ""));
-      candidates.push(...walkJsonForImages(parsed));
+      for (const image of walkJsonForImages(parsed)) {
+        candidates.push({
+          url: image,
+          fromJsonLd: true,
+        });
+      }
     } catch {
       // Ignore malformed JSON-LD blocks.
     }
   }
 
   const imgPatterns = [
-    /<img[^>]+(?:data-src|data-original|src)=["']([^"']+)["'][^>]*>/gi,
-    /<source[^>]+srcset=["']([^"']+)["'][^>]*>/gi,
+    /<img\b([^>]+)>/gi,
+    /<source\b([^>]+)>/gi,
   ];
 
   for (const pattern of imgPatterns) {
-    const matches = collectMatches(pattern, html);
-    for (const match of matches) {
-      const pick = String(match)
+    for (const match of html.matchAll(pattern)) {
+      const attrs = match[1] || "";
+      const srcMatch =
+        attrs.match(/\b(?:data-src|data-original|src)=["']([^"']+)["']/i) ||
+        attrs.match(/\bsrcset=["']([^"']+)["']/i);
+      if (!srcMatch) continue;
+
+      const pick = String(srcMatch[1])
         .split(",")
         .map((part) => part.trim().split(/\s+/)[0])
         .filter(Boolean)
         .pop();
-      if (pick) candidates.push(pick);
+
+      if (!pick) continue;
+
+      const alt = (attrs.match(/\balt=["']([^"']*)["']/i) || [])[1] || "";
+      const title = (attrs.match(/\btitle=["']([^"']*)["']/i) || [])[1] || "";
+      candidates.push({
+        url: pick,
+        alt,
+        title,
+        sameHost: true,
+      });
     }
   }
 
   const normalized = [];
   for (const candidate of candidates) {
-    const url = normalizeUrl(candidate, baseUrl);
+    const url = normalizeUrl(candidate.url, baseUrl);
     if (!url || !isUsefulImageUrl(url)) continue;
-    if (!normalized.includes(url)) normalized.push(url);
+
+    const parsed = new URL(url);
+    normalized.push({
+      url,
+      alt: candidate.alt || "",
+      title: candidate.title || "",
+      sameHost: candidate.sameHost || parsed.origin === origin,
+      fromMeta: Boolean(candidate.fromMeta),
+      fromJsonLd: Boolean(candidate.fromJsonLd),
+    });
   }
 
-  return normalized;
+  return normalized
+    .map((candidate) => ({ ...candidate, score: scoreImageCandidate(candidate, profile) }))
+    .sort((a, b) => b.score - a.score);
 }
 
-function extractCandidateLinksFromHtml(html, baseUrl) {
+function extractCandidateLinksFromHtml(html, baseUrl, profile = {}) {
   const hrefMatches = Array.from(
     html.matchAll(
       /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi,
@@ -313,7 +468,10 @@ function extractCandidateLinksFromHtml(html, baseUrl) {
       const parsed = new URL(absolute);
       if (parsed.origin !== origin) continue;
       const combined = `${parsed.pathname} ${text}`.toLowerCase();
-      if (keywords.some((keyword) => combined.includes(keyword))) {
+      const matched =
+        keywords.some((keyword) => combined.includes(keyword)) ||
+        profile.pageKeywords.some((keyword) => combined.includes(String(keyword).toLowerCase()));
+      if (matched) {
         candidates.push(absolute);
       }
     } catch {
@@ -384,32 +542,32 @@ async function fetchDirectImageUrl(url) {
   }
 }
 
-async function fetchRestaurantImagesFromPage(pageUrl) {
+async function fetchRestaurantImagesFromPage(pageUrl, profile = buildCuisineProfile()) {
   if (!pageUrl) return [];
 
   const absolute = normalizeUrl(pageUrl);
   if (!absolute) return [];
 
   const directImage = await fetchDirectImageUrl(absolute);
-  if (directImage) {
+  if (directImage && isUsefulImageUrl(directImage)) {
     return [directImage];
   }
 
   const html = await fetchText(absolute);
   if (!html) return [];
 
-  const images = extractImagesFromHtml(html, absolute);
+  const images = extractImagesFromHtml(html, absolute, profile);
   if (images.length > 0) {
-    return images;
+    return images.map((image) => image.url || image).slice(0, MAX_MEDIA_IMAGES);
   }
 
-  const candidateLinks = extractCandidateLinksFromHtml(html, absolute);
+  const candidateLinks = extractCandidateLinksFromHtml(html, absolute, profile);
   for (const link of candidateLinks) {
     const linkedHtml = await fetchText(link);
     if (!linkedHtml) continue;
-    const linkedImages = extractImagesFromHtml(linkedHtml, link);
+    const linkedImages = extractImagesFromHtml(linkedHtml, link, profile);
     if (linkedImages.length > 0) {
-      return linkedImages;
+      return linkedImages.map((image) => image.url || image).slice(0, MAX_MEDIA_IMAGES);
     }
   }
 
@@ -423,8 +581,8 @@ function buildSearchQuery({
   state = "",
   country = "",
   brand = "",
-} = {}) {
-  return [name, brand, street, city, state, country]
+} = {}, profile = {}) {
+  return [name, brand, street, city, state, country, ...(profile.searchTerms || [])]
     .filter(Boolean)
     .join(" ")
     .trim();
@@ -439,6 +597,7 @@ function buildMediaCacheKey(options = {}) {
     options.city || "",
     options.state || "",
     options.country || "",
+    options.themeKey || "",
   ]
     .map((part) => String(part).trim().toLowerCase())
     .join("|");
@@ -476,7 +635,12 @@ export function buildRestaurantArtworkUrl(options = {}) {
 }
 
 export async function resolveRestaurantImages(options = {}) {
-  const cacheKey = buildMediaCacheKey(options);
+  const profile = buildCuisineProfile(
+    options.categories || [],
+    options.name || "",
+    options.brand || "",
+  );
+  const cacheKey = buildMediaCacheKey({ ...options, themeKey: profile.themeKey });
   if (imageCache.has(cacheKey)) {
     return imageCache.get(cacheKey);
   }
@@ -499,7 +663,7 @@ export async function resolveRestaurantImages(options = {}) {
     city,
     state,
     country,
-  });
+  }, profile);
 
   const seeds = [];
   if (website) {
@@ -507,7 +671,9 @@ export async function resolveRestaurantImages(options = {}) {
   }
 
   if (query) {
-    const searchResults = await fetchDuckDuckGoResults(query);
+    const searchResults = await fetchDuckDuckGoResults(
+      `${query} ${profile.searchTerms.join(" ")}`.trim(),
+    );
     seeds.push(...searchResults.slice(0, 3));
   }
 
@@ -521,7 +687,7 @@ export async function resolveRestaurantImages(options = {}) {
   for (const seed of seeds) {
     if (images.length >= MAX_MEDIA_IMAGES) break;
 
-    const pageImages = await fetchRestaurantImagesFromPage(seed);
+    const pageImages = await fetchRestaurantImagesFromPage(seed, profile);
     for (const image of pageImages) {
       if (!image || seen.has(image)) continue;
       seen.add(image);
