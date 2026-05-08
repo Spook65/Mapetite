@@ -597,6 +597,34 @@ function buildSyntheticRestaurantList(params, locationContext, count = 8) {
   );
 }
 
+async function ensureRestaurantMedia(restaurant) {
+  if (!restaurant || restaurant.source === "demo") {
+    return restaurant;
+  }
+
+  if (Array.isArray(restaurant.galleryImageUrls) && restaurant.galleryImageUrls.length > 0) {
+    return restaurant;
+  }
+
+  const media = await resolveRestaurantImages({
+    website: restaurant.website,
+    name: restaurant.name,
+    street: restaurant.address?.street,
+    city: restaurant.address?.city,
+    state: restaurant.address?.state,
+    country: restaurant.address?.country,
+    categories: restaurant.categories,
+    placeId: restaurant.geoapifyPlaceId || restaurant.id,
+  });
+
+  if (media.length > 0) {
+    restaurant.galleryImageUrls = media;
+    restaurant.galleryPhotoAttributions = media.map(() => []);
+  }
+
+  return restaurant;
+}
+
 function rememberRestaurants(restaurants) {
   for (const restaurant of restaurants) {
     restaurantCache.set(restaurant.id, {
@@ -722,7 +750,9 @@ export async function getRestaurantById(restaurantId) {
   const cached = restaurantCache.get(restaurantId);
   if (cached) {
     const { cachedAt, ...rest } = cached;
-    return rest;
+    const enriched = await ensureRestaurantMedia(rest);
+    rememberRestaurants([enriched]);
+    return enriched;
   }
 
   if (restaurantId.startsWith("geoapify:")) {
@@ -730,8 +760,9 @@ export async function getRestaurantById(restaurantId) {
       restaurantId.slice("geoapify:".length),
     );
     if (geoapifyRestaurant) {
-      rememberRestaurants([geoapifyRestaurant]);
-      return geoapifyRestaurant;
+      const enriched = await ensureRestaurantMedia(geoapifyRestaurant);
+      rememberRestaurants([enriched]);
+      return enriched;
     }
   }
 
@@ -757,26 +788,10 @@ export async function getRestaurantById(restaurantId) {
     return null;
   }
 
-  if (restaurant.source !== "demo") {
-    const media = await resolveRestaurantImages({
-      website: restaurant.website,
-      name: restaurant.name,
-      street: restaurant.address?.street,
-      city: restaurant.address?.city,
-      state: restaurant.address?.state,
-      country: restaurant.address?.country,
-      categories: restaurant.categories,
-      placeId: restaurant.id,
-    });
+  const enriched = await ensureRestaurantMedia(restaurant);
 
-    if (media.length > 0) {
-      restaurant.photoUrl = media[0];
-      restaurant.galleryImageUrls = media;
-    }
-  }
-
-  rememberRestaurants([restaurant]);
-  return restaurant;
+  rememberRestaurants([enriched]);
+  return enriched;
 }
 
 export function listKnownRestaurants() {

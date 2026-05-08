@@ -1,5 +1,6 @@
 const IMAGE_TIMEOUT_MS = 6000;
 const MAX_MEDIA_IMAGES = 6;
+const OPENVERSE_BASE_URL = "https://api.openverse.org/v1/images/";
 
 const CUISINE_THEMES = {
   ramen: { label: "Ramen", emoji: "🍜", colors: ["#0ea5e9", "#14b8a6"] },
@@ -356,6 +357,66 @@ function scoreImageCandidate(candidate, profile = {}) {
   return score;
 }
 
+function scoreOpenverseCandidate(candidate, profile = {}, query = "") {
+  const url = String(candidate.url || candidate.thumbnail || "");
+  const title = String(candidate.title || "");
+  const creator = String(candidate.creator || "");
+  const landing = String(candidate.foreignLandingUrl || candidate.foreign_landing_url || "");
+  const description = String(candidate.description || "");
+  const text = `${url} ${title} ${creator} ${landing} ${description}`.toLowerCase();
+  let score = 0;
+
+  if (query && text.includes(query.toLowerCase().replace(/\s+/g, " ").trim())) {
+    score += 8;
+  }
+
+  if (hasKeywordMatch(text, [profile.theme?.label, profile.themeKey])) {
+    score += 3;
+  }
+
+  if (hasKeywordMatch(text, profile.searchTerms)) {
+    score += 4;
+  }
+
+  if (hasKeywordMatch(text, ["restaurant", "dining", "food", "dish", "menu", "interior", "chef"])) {
+    score += 1;
+  }
+
+  if (hasKeywordMatch(text, ["logo", "icon", "favicon", "avatar", "map", "illustration"])) {
+    score -= 100;
+  }
+
+  return score;
+}
+
+function extractOpenverseImageCandidates(payload, profile = {}, query = "") {
+  const results = Array.isArray(payload?.results) ? payload.results : [];
+
+  return results
+    .map((result) => {
+      const url = result?.url || result?.thumbnail || "";
+      if (!url || !isUsefulImageUrl(url)) {
+        return null;
+      }
+
+      const candidate = {
+        url,
+        title: result?.title || "",
+        creator: result?.creator || "",
+        thumbnail: result?.thumbnail || "",
+        foreignLandingUrl: result?.foreign_landing_url || "",
+        description: result?.description || "",
+      };
+
+      return {
+        ...candidate,
+        score: scoreOpenverseCandidate(candidate, profile, query),
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score);
+}
+
 function extractImageCandidatesFromHtml(html, baseUrl, profile = {}) {
   const candidates = [];
   const base = new URL(baseUrl);
@@ -512,6 +573,33 @@ async function fetchText(url) {
   }
 }
 
+async function fetchJson(url, options = {}) {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), IMAGE_TIMEOUT_MS);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+      headers: {
+        "User-Agent": "Mapetite/1.0 (restaurant discovery)",
+        Accept: "application/json",
+        ...(options.headers || {}),
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+
+    return response.json();
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
 async function fetchDirectImageUrl(url) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), IMAGE_TIMEOUT_MS);
@@ -556,7 +644,7 @@ async function fetchRestaurantImagesFromPage(pageUrl, profile = buildCuisineProf
   const html = await fetchText(absolute);
   if (!html) return [];
 
-  const images = extractImagesFromHtml(html, absolute, profile);
+  const images = extractImageCandidatesFromHtml(html, absolute, profile);
   if (images.length > 0) {
     return images.map((image) => image.url || image).slice(0, MAX_MEDIA_IMAGES);
   }
@@ -565,7 +653,7 @@ async function fetchRestaurantImagesFromPage(pageUrl, profile = buildCuisineProf
   for (const link of candidateLinks) {
     const linkedHtml = await fetchText(link);
     if (!linkedHtml) continue;
-    const linkedImages = extractImagesFromHtml(linkedHtml, link, profile);
+    const linkedImages = extractImageCandidatesFromHtml(linkedHtml, link, profile);
     if (linkedImages.length > 0) {
       return linkedImages.map((image) => image.url || image).slice(0, MAX_MEDIA_IMAGES);
     }
@@ -586,6 +674,31 @@ function buildSearchQuery({
     .filter(Boolean)
     .join(" ")
     .trim();
+}
+
+function buildOpenverseQueries(options = {}, profile = buildCuisineProfile()) {
+  const exactName = String(options.name || "").trim();
+  const brand = String(options.brand || "").trim();
+  const street = String(options.street || "").trim();
+  const city = String(options.city || "").trim();
+  const state = String(options.state || "").trim();
+  const country = String(options.country || "").trim();
+  const cuisineTerms = [
+    profile.theme?.label,
+    ...(profile.searchTerms || []),
+  ].filter(Boolean);
+
+  const queries = [
+    [exactName, street, city, state, country].filter(Boolean).join(" "),
+    [exactName, brand, city, state].filter(Boolean).join(" "),
+    [exactName, brand, city, state, ...cuisineTerms].filter(Boolean).join(" "),
+    [exactName, city, state, ...cuisineTerms].filter(Boolean).join(" "),
+    [brand, city, state, ...cuisineTerms].filter(Boolean).join(" "),
+  ]
+    .map((query) => query.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  return [...new Set(queries)];
 }
 
 function buildMediaCacheKey(options = {}) {
@@ -630,6 +743,20 @@ async function fetchDuckDuckGoResults(query) {
     .filter(Boolean);
 }
 
+async function fetchOpenverseImages(query, profile = buildCuisineProfile()) {
+  if (!query) return [];
+
+  const url = new URL(OPENVERSE_BASE_URL);
+  url.searchParams.set("q", query);
+  url.searchParams.set("page_size", "12");
+
+  const payload = await fetchJson(url.toString());
+  if (!payload) return [];
+
+  const candidates = extractOpenverseImageCandidates(payload, profile, query);
+  return candidates.map((candidate) => candidate.url).slice(0, MAX_MEDIA_IMAGES);
+}
+
 export function buildRestaurantArtworkUrl(options = {}) {
   return buildCuisineArtworkUrl(options);
 }
@@ -665,34 +792,62 @@ export async function resolveRestaurantImages(options = {}) {
     country,
   }, profile);
 
-  const seeds = [];
-  if (website) {
-    seeds.push(website);
-  }
-
-  if (query) {
-    const searchResults = await fetchDuckDuckGoResults(
-      `${query} ${profile.searchTerms.join(" ")}`.trim(),
-    );
-    seeds.push(...searchResults.slice(0, 3));
-  }
-
-  if (placeId && website && seeds.length === 0) {
-    seeds.push(website);
-  }
-
   const images = [];
   const seen = new Set();
 
-  for (const seed of seeds) {
+  const openverseQueries = buildOpenverseQueries(
+    {
+      website,
+      name,
+      brand,
+      street,
+      city,
+      state,
+      country,
+      placeId,
+    },
+    profile,
+  );
+
+  for (const openverseQuery of openverseQueries) {
     if (images.length >= MAX_MEDIA_IMAGES) break;
 
-    const pageImages = await fetchRestaurantImagesFromPage(seed, profile);
-    for (const image of pageImages) {
+    const openverseImages = await fetchOpenverseImages(openverseQuery, profile);
+    for (const image of openverseImages) {
       if (!image || seen.has(image)) continue;
       seen.add(image);
       images.push(image);
       if (images.length >= MAX_MEDIA_IMAGES) break;
+    }
+  }
+
+  if (images.length < MAX_MEDIA_IMAGES) {
+    const seeds = [];
+    if (website) {
+      seeds.push(website);
+    }
+
+    if (query) {
+      const searchResults = await fetchDuckDuckGoResults(
+        `${query} ${profile.searchTerms.join(" ")}`.trim(),
+      );
+      seeds.push(...searchResults.slice(0, 3));
+    }
+
+    if (placeId && website && seeds.length === 0) {
+      seeds.push(website);
+    }
+
+    for (const seed of seeds) {
+      if (images.length >= MAX_MEDIA_IMAGES) break;
+
+      const pageImages = await fetchRestaurantImagesFromPage(seed, profile);
+      for (const image of pageImages) {
+        if (!image || seen.has(image)) continue;
+        seen.add(image);
+        images.push(image);
+        if (images.length >= MAX_MEDIA_IMAGES) break;
+      }
     }
   }
 
