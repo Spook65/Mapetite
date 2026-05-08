@@ -157,7 +157,6 @@ export default function DetailPageMock() {
 						totalReviews={restaurantData.reviews.total}
 						ratingBreakdown={restaurantData.reviews.breakdown}
 						reviews={restaurantData.reviews.userReviews}
-						maxReviews={4}
 					/>
 				</div>
 

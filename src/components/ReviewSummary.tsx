@@ -1,8 +1,7 @@
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
-import { MessageCircle, Star, ThumbsUp } from "lucide-react";
+import { MessageCircle, Star } from "lucide-react";
 
 interface UserReview {
 	/** Review ID */
@@ -41,8 +40,6 @@ interface ReviewSummaryProps {
 	ratingBreakdown?: RatingBreakdown;
 	/** Array of user reviews to display */
 	reviews?: UserReview[];
-	/** Maximum number of reviews to display */
-	maxReviews?: number;
 	className?: string;
 }
 
@@ -63,13 +60,8 @@ export function ReviewSummary({
 	overallRating = 0,
 	totalReviews = 0,
 	ratingBreakdown = emptyBreakdown,
-	reviews = [],
-	maxReviews = 4,
 	className,
 }: ReviewSummaryProps) {
-	const displayedReviews = reviews.slice(0, maxReviews);
-	const hasReviews = totalReviews > 0 && reviews.length > 0;
-
 	// Calculate percentage for each rating
 	const getPercentage = (count: number) => {
 		return totalReviews > 0 ? Math.round((count / totalReviews) * 100) : 0;
@@ -172,81 +164,6 @@ export function ReviewSummary({
 					</div>
 				</div>
 
-				{/* Individual Reviews */}
-				<div className="space-y-4">
-					<div className="flex items-center gap-2">
-						<h4 className="text-lg font-serif-display text-card-foreground">
-							Recent Reviews
-						</h4>
-						<Badge
-							variant="secondary"
-							className="font-serif-elegant font-medium px-2 py-0.5 border border-primary/20"
-						>
-							{displayedReviews.length} of {totalReviews}
-						</Badge>
-					</div>
-
-					{hasReviews ? (
-						displayedReviews.map((review) => (
-							<div
-								key={review.id}
-								className="p-5 rounded-sm bg-[oklch(0.96_0.01_75)] border-2 border-primary/30 shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.1)] hover:shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.15)] hover:border-primary/40 transition-all"
-							>
-								{/* Review Header */}
-								<div className="flex flex-wrap items-start justify-between gap-4 mb-3">
-									<div className="flex-1">
-										<div className="flex items-center gap-3 mb-2">
-											<span className="font-serif-elegant font-semibold text-base text-card-foreground">
-												{review.author}
-											</span>
-											<span className="text-xs font-serif-elegant text-card-foreground/60">
-												{new Date(review.date).toLocaleDateString("en-US", {
-													year: "numeric",
-													month: "long",
-													day: "numeric",
-												})}
-											</span>
-										</div>
-										{renderStars(review.rating, "sm")}
-									</div>
-								</div>
-
-								{/* Review Comment */}
-								<p className="text-sm font-serif-elegant text-card-foreground/80 leading-relaxed mb-3">
-									{review.comment}
-								</p>
-
-								{/* Review Footer */}
-								{review.helpfulCount !== undefined && (
-									<div className="flex items-center gap-2 pt-3 border-t border-primary/20">
-										<ThumbsUp className="h-3.5 w-3.5 text-primary/70" />
-										<span className="text-xs font-serif-elegant text-card-foreground/60">
-											{review.helpfulCount}{" "}
-											{review.helpfulCount === 1 ? "person" : "people"} found this
-											helpful
-										</span>
-									</div>
-								)}
-							</div>
-						))
-					) : (
-						<p className="text-sm text-card-foreground/70">
-							No reviews available yet.
-						</p>
-					)}
-				</div>
-
-				{/* View More Reviews CTA */}
-				{reviews.length > maxReviews && (
-					<div className="pt-4 border-t-2 border-primary/30 text-center">
-						<button
-							type="button"
-							className="text-base font-serif-elegant font-semibold text-primary hover:text-secondary transition-colors drop-shadow-[0_0_6px_oklch(0.55_0.18_240_/_0.4)] hover:drop-shadow-[0_0_8px_oklch(0.65_0.14_195_/_0.5)]"
-						>
-							View All {totalReviews} Reviews →
-						</button>
-					</div>
-				)}
 			</CardContent>
 		</Card>
 	);
