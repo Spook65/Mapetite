@@ -8,7 +8,7 @@ const NODE_ENV = process.env.NODE_ENV || "development";
 const raw = {
   nodeEnv: NODE_ENV,
   host: process.env.HOST || "127.0.0.1",
-  port: process.env.PORT || "5000",
+  port: process.env.PORT || "5001",
   databaseUrl: process.env.DATABASE_URL,
   geoapifyApiKey:
     process.env.GEOAPIFY_API_KEY || "",

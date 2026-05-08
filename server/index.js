@@ -24,7 +24,7 @@ app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/maps", mapRoutes);
 app.use("/health", healthRoutes);
 
-const PORT = Number(env.port || 5000);
+const PORT = Number(env.port || 5001);
 const HOST = env.host || "127.0.0.1";
 
 app.listen(PORT, HOST, () => {
