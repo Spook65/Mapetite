@@ -67,9 +67,8 @@ function buildFallbackArtworkUrl(restaurantName: string, categories: string[] = 
 			<rect width="1280" height="720" rx="40" fill="url(#bg)" />
 			<circle cx="180" cy="150" r="120" fill="#ffffff" fill-opacity="0.14" />
 			<circle cx="1080" cy="170" r="150" fill="#ffffff" fill-opacity="0.12" />
-			<text x="92" y="250" font-size="150" font-family="Apple Color Emoji, Segoe UI Emoji, Noto Color Emoji, sans-serif">${theme.emoji}</text>
-			<text x="92" y="600" font-size="62" font-weight="700" font-family="Inter, Arial, sans-serif" fill="#ffffff">No gallery photos yet</text>
-			<text x="92" y="660" font-size="36" font-weight="500" font-family="Inter, Arial, sans-serif" fill="#ffffff" fill-opacity="0.92">${restaurantName} • ${theme.label}</text>
+			<text x="92" y="610" font-size="58" font-weight="700" font-family="Inter, Arial, sans-serif" fill="#ffffff">Gallery unavailable</text>
+			<text x="92" y="670" font-size="34" font-weight="500" font-family="Inter, Arial, sans-serif" fill="#ffffff" fill-opacity="0.92">${restaurantName} • ${theme.label}</text>
 		</svg>
 	`.trim();
 

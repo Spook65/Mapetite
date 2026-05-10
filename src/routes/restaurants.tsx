@@ -1,7 +1,6 @@
 import { ChefProfileSection } from "@/components/ChefProfileSection";
 import { DetailPhotoCarousel } from "@/components/DetailPhotoCarousel";
 import { Layout } from "@/components/Layout";
-import { ReservationModal } from "@/components/ReservationModal";
 import { ReviewSummary } from "@/components/ReviewSummary";
 import { SignatureMenu } from "@/components/SignatureMenu";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +24,6 @@ import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
 import { createFileRoute } from "@tanstack/react-router";
 import {
-	ArrowRight,
 	ArrowUpDown,
 	Clock,
 	DollarSign,
@@ -156,9 +154,6 @@ function App() {
 		useState<Restaurant | null>(null);
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
 	const [isSearching, setIsSearching] = useState(false);
-	const [reservationModalOpen, setReservationModalOpen] = useState(false);
-	const [restaurantToReserve, setRestaurantToReserve] =
-		useState<Restaurant | null>(null);
 
 	const categories = [
 		"Noodles",
@@ -265,12 +260,6 @@ function App() {
 		return hasCoordinates
 			? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
 			: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
-	}, []);
-
-	// Memoize handlers that update local state to prevent child re-renders
-	const handleSetRestaurantToReserve = useCallback((restaurant: Restaurant) => {
-		setRestaurantToReserve(restaurant);
-		setReservationModalOpen(true);
 	}, []);
 
 	const handleToggleSelectedRestaurant = useCallback((restaurant: Restaurant | null) => {
@@ -1173,15 +1162,6 @@ function App() {
 											)}
 
 											{/* Distance */}
-											{restaurant.distance !== undefined && (
-												<>
-													<span className="text-card-foreground/60">•</span>
-													<span className="font-serif-elegant text-card-foreground/80">
-														{restaurant.distance.toFixed(1)} miles away
-													</span>
-												</>
-											)}
-
 											{/* Operating Status */}
 											{restaurant.hours && (
 												<>
@@ -1208,18 +1188,11 @@ function App() {
 											)}
 										</div>
 
-										{/* View Details and Reserve CTA */}
-										<div className="pt-3 flex flex-col sm:flex-row gap-2 md:gap-3">
-											<Button
-												className="w-full sm:w-auto cursor-pointer group bg-gradient-to-r from-primary via-secondary to-primary text-white hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.5)] font-serif-elegant font-semibold tracking-wide shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)] px-6 md:px-8 py-4 md:py-5 text-sm md:text-base transition-all duration-300 border-2 border-primary/60"
-												onClick={() => handleSetRestaurantToReserve(restaurant)}
-											>
-												Make Reservation
-												<ArrowRight className="ml-2 h-5 w-5 stroke-[2.5]" />
-											</Button>
-											<Button
-												variant="outline"
-												className="w-full sm:w-auto cursor-pointer border-2 border-primary/40 hover:bg-[oklch(0.96_0.01_75)] hover:shadow-[0_0_12px_oklch(0.55_0.18_240_/_0.3)] font-serif-elegant font-semibold tracking-wide shadow-md px-6 md:px-8 py-4 md:py-5 text-sm md:text-base transition-all duration-300"
+										{/* View Details CTA */}
+									<div className="pt-3 flex flex-col sm:flex-row gap-2 md:gap-3">
+										<Button
+											variant="outline"
+											className="w-full sm:w-auto cursor-pointer border-2 border-primary/40 hover:bg-[oklch(0.96_0.01_75)] hover:shadow-[0_0_12px_oklch(0.55_0.18_240_/_0.3)] font-serif-elegant font-semibold tracking-wide shadow-md px-6 md:px-8 py-4 md:py-5 text-sm md:text-base transition-all duration-300"
 												onClick={() =>
 													handleToggleSelectedRestaurant(
 														selectedRestaurant?.id === restaurant.id
@@ -1559,12 +1532,6 @@ function App() {
 				</div>
 			</footer>
 
-			{/* Reservation Modal */}
-			<ReservationModal
-				restaurant={restaurantToReserve}
-				open={reservationModalOpen}
-				onOpenChange={setReservationModalOpen}
-			/>
 		</Layout>
 	);
 }
