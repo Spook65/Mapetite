@@ -184,7 +184,15 @@ export const useRestaurantSearchStore = create<RestaurantSearchState>()(
 
 			updateLocation: (partial) =>
 				set((state) => ({
-					location: { ...state.location, ...partial },
+					location: {
+						...state.location,
+						...partial,
+						...(partial.city !== undefined ||
+						partial.state !== undefined ||
+						partial.country !== undefined
+							? { latitude: undefined, longitude: undefined }
+							: {}),
+					},
 				})),
 
 			// Restaurant results

@@ -6,7 +6,7 @@ import {
 } from "./geoapifyProvider.js";
 import {
   buildRestaurantArtworkUrl,
-  resolveRestaurantImages,
+  resolveRestaurantMedia,
 } from "./restaurantMedia.js";
 
 const SEARCH_RADIUS_METERS = 3000;
@@ -606,7 +606,7 @@ async function ensureRestaurantMedia(restaurant) {
     return restaurant;
   }
 
-  const media = await resolveRestaurantImages({
+  const media = await resolveRestaurantMedia({
     website: restaurant.website,
     name: restaurant.name,
     street: restaurant.address?.street,
@@ -617,12 +617,21 @@ async function ensureRestaurantMedia(restaurant) {
     placeId: restaurant.geoapifyPlaceId || restaurant.id,
   });
 
-  if (media.length > 0) {
-    restaurant.galleryImageUrls = media;
-    restaurant.galleryPhotoAttributions = media.map(() => []);
+  if (media.images.length > 0) {
+    restaurant.galleryImageUrls = media.images;
+    restaurant.galleryPhotoAttributions = media.attributions;
+    restaurant.photoUrl = media.images[0];
   }
 
   return restaurant;
+}
+
+async function enrichSearchRestaurants(restaurants = [], limit = 8) {
+  const visibleRestaurants = restaurants.slice(0, limit);
+  const enrichedVisible = await Promise.all(
+    visibleRestaurants.map((restaurant) => ensureRestaurantMedia(restaurant)),
+  );
+  return [...enrichedVisible, ...restaurants.slice(limit)];
 }
 
 function rememberRestaurants(restaurants) {
@@ -678,6 +687,7 @@ export async function searchRestaurants(params = {}) {
     try {
       const payload = await searchGeoapifyRestaurants(params, resolvedLocation);
       if (payload.restaurants.length > 0) {
+        payload.restaurants = await enrichSearchRestaurants(payload.restaurants);
         writeSearchCache(cacheKey, payload);
         rememberRestaurants(payload.restaurants);
         return payload;
@@ -725,6 +735,8 @@ export async function searchRestaurants(params = {}) {
       location: resolvedLocation,
       count: restaurants.length,
     };
+
+    payload.restaurants = await enrichSearchRestaurants(payload.restaurants);
 
     const osmCacheKey = buildSearchCacheKey(params, resolvedLocation, "osm");
     writeSearchCache(osmCacheKey, payload);

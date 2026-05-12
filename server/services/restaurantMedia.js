@@ -1,5 +1,6 @@
 const IMAGE_TIMEOUT_MS = 6000;
 const MAX_MEDIA_IMAGES = 6;
+const WIKIMEDIA_COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php";
 const OPENVERSE_BASE_URL = "https://api.openverse.org/v1/images/";
 
 const CUISINE_THEMES = {
@@ -293,6 +294,15 @@ function collectMatches(regex, text) {
   return Array.from(text.matchAll(regex), (match) => match[1]).filter(Boolean);
 }
 
+function stripHtml(value) {
+  return String(value || "")
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function walkJsonForImages(value, output = []) {
   if (!value) return output;
 
@@ -411,6 +421,70 @@ function extractOpenverseImageCandidates(payload, profile = {}, query = "") {
       return {
         ...candidate,
         score: scoreOpenverseCandidate(candidate, profile, query),
+      };
+    })
+    .filter(Boolean)
+    .sort((a, b) => b.score - a.score);
+}
+
+function scoreWikimediaCandidate(candidate, profile = {}, query = "") {
+  const url = String(candidate.url || candidate.thumbnail || "");
+  const title = String(candidate.title || "");
+  const landing = String(candidate.descriptionUrl || "");
+  const description = String(candidate.description || "");
+  const credit = String(candidate.credit || "");
+  const author = String(candidate.author || "");
+  const text = `${url} ${title} ${landing} ${description} ${credit} ${author}`.toLowerCase();
+  let score = 0;
+
+  if (query && text.includes(query.toLowerCase().replace(/\s+/g, " ").trim())) {
+    score += 8;
+  }
+
+  if (hasKeywordMatch(text, [profile.theme?.label, profile.themeKey])) {
+    score += 3;
+  }
+
+  if (hasKeywordMatch(text, profile.searchTerms)) {
+    score += 4;
+  }
+
+  if (hasKeywordMatch(text, ["restaurant", "dining", "food", "dish", "menu", "interior", "chef"])) {
+    score += 1;
+  }
+
+  if (hasKeywordMatch(text, ["logo", "icon", "favicon", "avatar", "map", "illustration"])) {
+    score -= 100;
+  }
+
+  return score;
+}
+
+function extractWikimediaImageCandidates(payload, profile = {}, query = "") {
+  const pages = Object.values(payload?.query?.pages || {});
+
+  return pages
+    .map((page) => {
+      const imageInfo = Array.isArray(page?.imageinfo) ? page.imageinfo[0] : null;
+      const url = imageInfo?.thumburl || imageInfo?.url || "";
+      if (!url || !isUsefulImageUrl(url)) {
+        return null;
+      }
+
+      const ext = imageInfo?.extmetadata || {};
+      const candidate = {
+        url,
+        title: page?.title || "",
+        descriptionUrl: imageInfo?.descriptionurl || "",
+        description: stripHtml(ext.ImageDescription?.value || ""),
+        credit: stripHtml(ext.Credit?.value || ""),
+        author: stripHtml(ext.Artist?.value || ""),
+        license: stripHtml(ext.LicenseShortName?.value || ""),
+      };
+
+      return {
+        ...candidate,
+        score: scoreWikimediaCandidate(candidate, profile, query),
       };
     })
     .filter(Boolean)
@@ -701,6 +775,32 @@ function buildOpenverseQueries(options = {}, profile = buildCuisineProfile()) {
   return [...new Set(queries)];
 }
 
+function buildWikimediaQueries(options = {}, profile = buildCuisineProfile()) {
+  const exactName = String(options.name || "").trim();
+  const brand = String(options.brand || "").trim();
+  const street = String(options.street || "").trim();
+  const city = String(options.city || "").trim();
+  const state = String(options.state || "").trim();
+  const country = String(options.country || "").trim();
+  const cuisineTerms = [
+    profile.theme?.label,
+    ...(profile.searchTerms || []),
+  ].filter(Boolean);
+
+  const queries = [
+    [exactName, city, state, country].filter(Boolean).join(" "),
+    [exactName, street, city, state].filter(Boolean).join(" "),
+    [exactName, brand, city, state].filter(Boolean).join(" "),
+    [exactName, brand, city, state, ...cuisineTerms].filter(Boolean).join(" "),
+    [exactName, city, state, ...cuisineTerms].filter(Boolean).join(" "),
+    [brand, city, state, ...cuisineTerms].filter(Boolean).join(" "),
+  ]
+    .map((query) => query.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  return [...new Set(queries)];
+}
+
 function buildMediaCacheKey(options = {}) {
   return [
     options.placeId || "",
@@ -757,19 +857,41 @@ async function fetchOpenverseImages(query, profile = buildCuisineProfile()) {
   return candidates.map((candidate) => candidate.url).slice(0, MAX_MEDIA_IMAGES);
 }
 
+async function fetchWikimediaCommonsMedia(query, profile = buildCuisineProfile()) {
+  if (!query) return [];
+
+  const url = new URL(WIKIMEDIA_COMMONS_API_URL);
+  url.searchParams.set("action", "query");
+  url.searchParams.set("generator", "search");
+  url.searchParams.set("gsrsearch", query);
+  url.searchParams.set("gsrnamespace", "6");
+  url.searchParams.set("gsrlimit", "12");
+  url.searchParams.set("prop", "imageinfo");
+  url.searchParams.set("iiprop", "url|extmetadata");
+  url.searchParams.set("iiurlwidth", "1600");
+  url.searchParams.set("format", "json");
+
+  const payload = await fetchJson(url.toString());
+  if (!payload) return [];
+
+  const candidates = extractWikimediaImageCandidates(payload, profile, query);
+  return candidates.slice(0, MAX_MEDIA_IMAGES);
+}
+
 export function buildRestaurantArtworkUrl(options = {}) {
   return buildCuisineArtworkUrl(options);
 }
 
-export async function resolveRestaurantImages(options = {}) {
+export async function resolveRestaurantMedia(options = {}) {
   const profile = buildCuisineProfile(
     options.categories || [],
     options.name || "",
     options.brand || "",
   );
   const cacheKey = buildMediaCacheKey({ ...options, themeKey: profile.themeKey });
-  if (imageCache.has(cacheKey)) {
-    return imageCache.get(cacheKey);
+  const cached = imageCache.get(cacheKey);
+  if (cached) {
+    return cached;
   }
 
   const {
@@ -793,7 +915,18 @@ export async function resolveRestaurantImages(options = {}) {
   }, profile);
 
   const images = [];
+  const attributions = [];
   const seen = new Set();
+
+  const addCandidates = (candidates = []) => {
+    for (const candidate of candidates) {
+      if (images.length >= MAX_MEDIA_IMAGES) break;
+      if (!candidate?.url || seen.has(candidate.url)) continue;
+      seen.add(candidate.url);
+      images.push(candidate.url);
+      attributions.push(candidate.attribution ? [candidate.attribution] : []);
+    }
+  };
 
   const openverseQueries = buildOpenverseQueries(
     {
@@ -809,16 +942,39 @@ export async function resolveRestaurantImages(options = {}) {
     profile,
   );
 
+  const wikimediaQueries = buildWikimediaQueries(
+    {
+      website,
+      name,
+      brand,
+      street,
+      city,
+      state,
+      country,
+      placeId,
+    },
+    profile,
+  );
+
+  for (const wikimediaQuery of wikimediaQueries) {
+    if (images.length >= MAX_MEDIA_IMAGES) break;
+
+    const wikimediaMedia = await fetchWikimediaCommonsMedia(wikimediaQuery, profile);
+    addCandidates(
+      wikimediaMedia.map((candidate) => ({
+        url: candidate.url,
+        attribution: [candidate.author, candidate.license, "Wikimedia Commons"]
+          .filter(Boolean)
+          .join(" · "),
+      })),
+    );
+  }
+
   for (const openverseQuery of openverseQueries) {
     if (images.length >= MAX_MEDIA_IMAGES) break;
 
     const openverseImages = await fetchOpenverseImages(openverseQuery, profile);
-    for (const image of openverseImages) {
-      if (!image || seen.has(image)) continue;
-      seen.add(image);
-      images.push(image);
-      if (images.length >= MAX_MEDIA_IMAGES) break;
-    }
+    addCandidates(openverseImages.map((image) => ({ url: image, attribution: "Openverse" })));
   }
 
   if (images.length < MAX_MEDIA_IMAGES) {
@@ -846,11 +1002,18 @@ export async function resolveRestaurantImages(options = {}) {
         if (!image || seen.has(image)) continue;
         seen.add(image);
         images.push(image);
+        attributions.push([]);
         if (images.length >= MAX_MEDIA_IMAGES) break;
       }
     }
   }
 
-  imageCache.set(cacheKey, images);
-  return images;
+  const media = { images, attributions };
+  imageCache.set(cacheKey, media);
+  return media;
+}
+
+export async function resolveRestaurantImages(options = {}) {
+  const media = await resolveRestaurantMedia(options);
+  return media.images;
 }
