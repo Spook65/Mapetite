@@ -43,87 +43,114 @@ function LandingPage() {
 
 	return (
 		<Layout>
-			<div className="container mx-auto px-4 py-8 md:px-8 md:py-12">
-				<section className="mx-auto max-w-4xl">
-					<h1 className="text-3xl font-semibold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-						Find restaurants without the noise.
-					</h1>
-					<p className="mt-4 max-w-2xl text-base leading-7 text-muted-foreground md:text-lg">
-						Start with a city, state, or country, then narrow the list by what
-						you want to eat.
-					</p>
+			<div className="container mx-auto px-4 py-8 md:px-8 md:py-10">
+				<section className="mx-auto max-w-6xl">
+					<div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+						<div className="pt-1 md:pt-4">
+							<h1 className="max-w-xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+								Find the right restaurant,
+								<span className="block">starting from any place.</span>
+							</h1>
+							<p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
+								Search by city, state, or country, then narrow results by
+								cuisine, rating, and the details that matter.
+							</p>
+
+							<div className="mt-8 grid gap-5 border-t border-border pt-5 sm:grid-cols-3">
+								<div className="space-y-2">
+									<p className="text-sm font-medium text-foreground">Location</p>
+									<p className="text-sm leading-6 text-muted-foreground">
+										Start with a city, state, or country.
+									</p>
+								</div>
+								<div className="space-y-2">
+									<p className="text-sm font-medium text-foreground">Filters</p>
+									<p className="text-sm leading-6 text-muted-foreground">
+										Narrow by cuisine, rating, and more.
+									</p>
+								</div>
+								<div className="space-y-2">
+									<p className="text-sm font-medium text-foreground">Details</p>
+									<p className="text-sm leading-6 text-muted-foreground">
+										Open photos, favorites, and directions.
+									</p>
+								</div>
+							</div>
+						</div>
+
+						<Card className="border-border/80 bg-card shadow-sm">
+							<CardContent className="p-5 md:p-7">
+								<div className="flex items-start gap-4">
+									<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-foreground">
+										<Utensils className="h-5 w-5" />
+									</div>
+									<div className="min-w-0 flex-1">
+										<p className="text-lg font-medium text-foreground">
+											Restaurant search
+										</p>
+										<p className="mt-1 text-sm leading-6 text-muted-foreground">
+											Open the search page with the filters already built into
+											the app.
+										</p>
+									</div>
+								</div>
+
+								<div className="mt-6 space-y-3">
+									<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3.5">
+										<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-primary">
+											<MapPin className="h-4 w-4" />
+										</div>
+										<div>
+											<p className="text-sm font-medium text-foreground">
+												Start with a place
+											</p>
+											<p className="mt-1 text-sm leading-6 text-muted-foreground">
+												City, state, or country.
+											</p>
+										</div>
+									</div>
+									<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3.5">
+										<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-secondary">
+											<Search className="h-4 w-4" />
+										</div>
+										<div>
+											<p className="text-sm font-medium text-foreground">
+												Refine the list
+											</p>
+											<p className="mt-1 text-sm leading-6 text-muted-foreground">
+												Use the filters already in the app.
+											</p>
+										</div>
+									</div>
+									<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3.5">
+										<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-primary">
+											<Star className="h-4 w-4" />
+										</div>
+										<div>
+											<p className="text-sm font-medium text-foreground">
+												View details
+											</p>
+											<p className="mt-1 text-sm leading-6 text-muted-foreground">
+												Open photos, directions, and saved places.
+											</p>
+										</div>
+									</div>
+								</div>
+
+								<div className="mt-6 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
+									<p className="text-sm leading-6 text-muted-foreground">
+										Best started from a city, state, or country.
+									</p>
+									<Button asChild size="lg" className="w-full sm:w-auto">
+										<Link to="/restaurants">Search restaurants</Link>
+									</Button>
+								</div>
+							</CardContent>
+						</Card>
+					</div>
 				</section>
 
 				<section className="mx-auto mt-8 max-w-4xl md:mt-10">
-					<Card className="border-border shadow-none">
-						<CardContent className="p-5 md:p-6">
-							<div className="flex items-start gap-4">
-								<div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-foreground">
-									<Utensils className="h-5 w-5" />
-								</div>
-								<div className="min-w-0 flex-1">
-									<p className="text-lg font-medium text-foreground">
-										Restaurant search
-									</p>
-									<p className="mt-1 text-sm leading-6 text-muted-foreground">
-										Open the search page to filter by location, cuisine, and
-										rating.
-									</p>
-								</div>
-							</div>
-
-							<div className="mt-5 grid gap-3 md:grid-cols-3">
-								<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3">
-									<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-primary">
-										<MapPin className="h-4 w-4" />
-									</div>
-									<div>
-										<p className="text-sm font-medium text-foreground">
-											Start with a place
-										</p>
-										<p className="mt-1 text-sm leading-6 text-muted-foreground">
-											Search by city, state, or country.
-										</p>
-									</div>
-								</div>
-								<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3">
-									<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-secondary">
-										<Search className="h-4 w-4" />
-									</div>
-									<div>
-										<p className="text-sm font-medium text-foreground">
-											Refine the list
-										</p>
-										<p className="mt-1 text-sm leading-6 text-muted-foreground">
-											Narrow results with the filters already in the app.
-										</p>
-									</div>
-								</div>
-								<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3">
-									<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-primary">
-										<Star className="h-4 w-4" />
-									</div>
-									<div>
-										<p className="text-sm font-medium text-foreground">
-											View details
-										</p>
-										<p className="mt-1 text-sm leading-6 text-muted-foreground">
-											Open photos, directions, and saved places.
-										</p>
-									</div>
-								</div>
-							</div>
-
-							<div className="mt-5">
-								<Button asChild size="lg" className="w-full sm:w-auto">
-									<Link to="/restaurants">Search restaurants</Link>
-								</Button>
-							</div>
-						</CardContent>
-					</Card>
-				</section>
-
-				<section className="mx-auto mt-10 max-w-4xl md:mt-12">
 					<div>
 						<h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
 							Browse cities
