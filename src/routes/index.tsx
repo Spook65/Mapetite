@@ -2,7 +2,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { MapPin, Search, Star, Utensils } from "lucide-react";
+import { MapPin, Utensils } from "lucide-react";
 
 export const Route = createFileRoute("/")({
 	component: LandingPage,
@@ -45,106 +45,107 @@ function LandingPage() {
 		<Layout>
 			<div className="container mx-auto px-4 py-8 md:px-8 md:py-10">
 				<section className="mx-auto max-w-6xl">
-					<div className="grid gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+					<div className="grid gap-10 lg:grid-cols-[1.08fr_0.92fr] lg:items-center">
 						<div className="pt-1 md:pt-4">
-							<h1 className="max-w-xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-								Find the right restaurant,
-								<span className="block">starting from any place.</span>
+							<h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-[4.25rem] lg:leading-[0.95]">
+								Discover restaurants worth planning around.
+								<span className="mt-1 block text-foreground/90">
+									Start from any place.
+								</span>
 							</h1>
 							<p className="mt-5 max-w-xl text-base leading-7 text-muted-foreground md:text-lg">
 								Search by city, state, or country, then narrow results by
 								cuisine, rating, and the details that matter.
 							</p>
 
-							<div className="mt-8 grid gap-5 border-t border-border pt-5 sm:grid-cols-3">
-								<div className="space-y-2">
-									<p className="text-sm font-medium text-foreground">Location</p>
-									<p className="text-sm leading-6 text-muted-foreground">
-										Start with a city, state, or country.
-									</p>
-								</div>
-								<div className="space-y-2">
-									<p className="text-sm font-medium text-foreground">Filters</p>
-									<p className="text-sm leading-6 text-muted-foreground">
-										Narrow by cuisine, rating, and more.
-									</p>
-								</div>
-								<div className="space-y-2">
-									<p className="text-sm font-medium text-foreground">Details</p>
-									<p className="text-sm leading-6 text-muted-foreground">
-										Open photos, favorites, and directions.
-									</p>
-								</div>
+							<div className="mt-8 flex items-center gap-3">
+								<div className="h-px w-10 bg-border" />
+								<p className="text-sm leading-6 text-muted-foreground">
+									Start with a city, then refine when the list opens.
+								</p>
+							</div>
+
+							<div className="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-sm text-muted-foreground">
+								<span className="text-foreground">Paris</span>
+								<span>Tokyo</span>
+								<span>London</span>
+								<span>Dubai</span>
 							</div>
 						</div>
 
-						<Card className="border-border/80 bg-card shadow-sm">
+						<Card className="overflow-hidden border-border/80 bg-card shadow-sm">
+							<div className="border-b border-border bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0))] px-5 py-4 md:px-7 md:py-5">
+								<p className="text-sm font-medium text-foreground">
+									Restaurant search
+								</p>
+								<p className="mt-1 text-sm leading-6 text-muted-foreground">
+									Start with a place and move straight into the full search
+									flow.
+								</p>
+							</div>
 							<CardContent className="p-5 md:p-7">
-								<div className="flex items-start gap-4">
-									<div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-foreground">
-										<Utensils className="h-5 w-5" />
-									</div>
-									<div className="min-w-0 flex-1">
-										<p className="text-lg font-medium text-foreground">
-											Restaurant search
-										</p>
-										<p className="mt-1 text-sm leading-6 text-muted-foreground">
-											Open the search page with the filters already built into
-											the app.
-										</p>
+								<div className="rounded-lg border border-border bg-background/60 px-4 py-4">
+									<div className="flex items-start gap-3">
+										<div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-primary">
+											<MapPin className="h-4 w-4" />
+										</div>
+										<div className="min-w-0 flex-1">
+											<p className="text-xs text-muted-foreground">Location</p>
+											<p className="mt-1 text-base font-medium text-foreground">
+												City, state, or country
+											</p>
+										</div>
 									</div>
 								</div>
 
-								<div className="mt-6 space-y-3">
-									<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3.5">
-										<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-primary">
-											<MapPin className="h-4 w-4" />
-										</div>
-										<div>
-											<p className="text-sm font-medium text-foreground">
-												Start with a place
-											</p>
-											<p className="mt-1 text-sm leading-6 text-muted-foreground">
-												City, state, or country.
-											</p>
-										</div>
-									</div>
-									<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3.5">
-										<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-secondary">
-											<Search className="h-4 w-4" />
-										</div>
-										<div>
-											<p className="text-sm font-medium text-foreground">
-												Refine the list
-											</p>
-											<p className="mt-1 text-sm leading-6 text-muted-foreground">
-												Use the filters already in the app.
-											</p>
-										</div>
-									</div>
-									<div className="flex gap-3 rounded-md border border-border bg-background/40 p-3.5">
-										<div className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-border bg-muted/30 text-primary">
-											<Star className="h-4 w-4" />
-										</div>
-										<div>
-											<p className="text-sm font-medium text-foreground">
-												View details
-											</p>
-											<p className="mt-1 text-sm leading-6 text-muted-foreground">
-												Open photos, directions, and saved places.
-											</p>
-										</div>
-									</div>
+								<div className="mt-4 flex flex-wrap gap-2">
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onClick={() => handleCityCardClick("Paris")}
+										className="rounded-md border-border bg-background/60 px-3 font-medium text-foreground shadow-none hover:bg-muted/40"
+									>
+										Paris
+									</Button>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onClick={() => handleCityCardClick("Tokyo")}
+										className="rounded-md border-border bg-background/60 px-3 font-medium text-foreground shadow-none hover:bg-muted/40"
+									>
+										Tokyo
+									</Button>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onClick={() => handleCityCardClick("London")}
+										className="rounded-md border-border bg-background/60 px-3 font-medium text-foreground shadow-none hover:bg-muted/40"
+									>
+										London
+									</Button>
+									<Button
+										type="button"
+										variant="outline"
+										size="sm"
+										onClick={() => handleCityCardClick("Dubai")}
+										className="rounded-md border-border bg-background/60 px-3 font-medium text-foreground shadow-none hover:bg-muted/40"
+									>
+										Dubai
+									</Button>
 								</div>
 
 								<div className="mt-6 flex flex-col gap-3 border-t border-border pt-5 sm:flex-row sm:items-center sm:justify-between">
-									<p className="text-sm leading-6 text-muted-foreground">
-										Best started from a city, state, or country.
+									<p className="max-w-xs text-sm leading-6 text-muted-foreground">
+										Use a city shortcut or jump to the search page when you’re
+										ready.
 									</p>
 									<Button asChild size="lg" className="w-full sm:w-auto">
 										<Link to="/restaurants">Search restaurants</Link>
 									</Button>
-								</div>
+									</div>
 							</CardContent>
 						</Card>
 					</div>
@@ -166,22 +167,15 @@ function LandingPage() {
 								<button
 									type="button"
 									onClick={() => handleCityCardClick(city.name)}
-									className="flex h-full w-full flex-col items-start gap-4 p-4 text-left transition-colors hover:bg-muted/30"
+									className="flex h-full min-h-[10rem] w-full flex-col justify-between gap-4 p-4 text-left transition-colors hover:bg-muted/30"
 								>
-									<div className="flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted/30 text-primary">
-										<MapPin className="h-4 w-4" />
-									</div>
-									<div className="w-full">
+									<div className="space-y-1">
 										<p className="text-base font-medium text-foreground">
 											{city.name}
 										</p>
-										<p className="mt-1 text-sm text-muted-foreground">
-											{city.note}
-										</p>
-										<p className="mt-3 text-sm text-foreground/80">
-											{city.count}
-										</p>
+										<p className="text-sm text-muted-foreground">{city.note}</p>
 									</div>
+									<p className="text-sm text-foreground/80">Open search</p>
 								</button>
 							</Card>
 						))}
