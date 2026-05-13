@@ -37,7 +37,7 @@ import {
 	Utensils,
 	X,
 } from "lucide-react";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { List } from "react-window";
 import { toast } from "sonner";
 import {
@@ -154,6 +154,7 @@ function App() {
 		useState<Restaurant | null>(null);
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
 	const [isSearching, setIsSearching] = useState(false);
+	const activeSearchIdRef = useRef(0);
 
 	const categories = [
 		"Noodles",
@@ -167,14 +168,20 @@ function App() {
 	useEffect(() => {
 		if (searchCity) {
 			(async () => {
+				const searchId = ++activeSearchIdRef.current;
 				const requestedLocation = {
 					city: searchCity,
 					state: "",
 					country: "",
 				};
 				setLocation(requestedLocation);
+				setSelectedRestaurant(null);
+				setRestaurants([]);
 				const { restaurants: results, location: resolvedLocation } =
 					await searchRestaurants(requestedLocation, []);
+				if (searchId !== activeSearchIdRef.current) {
+					return;
+				}
 				setLocation(resolvedLocation ?? requestedLocation);
 				setRestaurants(results);
 				setShowFavorites(false);
@@ -187,10 +194,16 @@ function App() {
 			toast.error("Add a city to search");
 			return;
 		}
+		const searchId = ++activeSearchIdRef.current;
 		setIsSearching(true);
+		setSelectedRestaurant(null);
+		setRestaurants([]);
 		try {
 			const { restaurants: results, location: resolvedLocation } =
 				await searchRestaurants(location, Array.from(selectedCategories));
+			if (searchId !== activeSearchIdRef.current) {
+				return;
+			}
 			setLocation(resolvedLocation ?? location);
 			setRestaurants(results);
 			setShowFavorites(false);
@@ -200,7 +213,9 @@ function App() {
 				description: "Unable to fetch restaurants right now.",
 			});
 		} finally {
-			setIsSearching(false);
+			if (searchId === activeSearchIdRef.current) {
+				setIsSearching(false);
+			}
 		}
 	};
 
@@ -210,6 +225,7 @@ function App() {
 			navigator.geolocation.getCurrentPosition(
 				async (position) => {
 					const { latitude, longitude } = position.coords;
+					const searchId = ++activeSearchIdRef.current;
 					try {
 						const reverse = await reverseGeocode(latitude, longitude);
 						const resolved = {
@@ -220,11 +236,16 @@ function App() {
 							longitude,
 						};
 						setLocation(resolved);
+						setSelectedRestaurant(null);
+						setRestaurants([]);
 						const { restaurants: results, location: resolvedLocation } =
 							await searchRestaurants(
 								resolved,
 								Array.from(selectedCategories),
 							);
+						if (searchId !== activeSearchIdRef.current) {
+							return;
+						}
 						setLocation(resolvedLocation ?? resolved);
 						setRestaurants(results);
 						setShowFavorites(false);
@@ -232,7 +253,9 @@ function App() {
 						console.error("Geolocation search failed", error);
 						toast.error("Unable to get nearby places");
 					} finally {
-						setIsGettingLocation(false);
+						if (searchId === activeSearchIdRef.current) {
+							setIsGettingLocation(false);
+						}
 					}
 				},
 				(error) => {
