@@ -44,27 +44,24 @@ export function FloatingBanner({
 
 	return (
 		<div
-			className={`fixed ${positionClasses[position]} z-50 bg-black text-white px-3 py-1 rounded-full flex items-center space-x-1.5 shadow-lg`}
+			className={`fixed ${positionClasses[position]} z-50 flex items-center gap-2 rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground shadow-none`}
 			role="banner"
 			aria-label="Creao branding banner"
 		>
-			{/* Auth status indicator dot */}
-			<div className="relative">
-				<div
-					className={`h-2 w-2 rounded-full ${getAuthIndicatorClass()} animate-pulse shadow-lg`}
-					aria-label={`Authentication status: ${status}`}
-				/>
-			</div>
+			<div
+				className={`h-2.5 w-2.5 rounded-full ${getAuthIndicatorClass()}`}
+				aria-label={`Authentication status: ${status}`}
+			/>
 
-			<span className="flex items-center space-x-1 text-sm">
+			<span className="flex items-center">
 				<CreaoLogo
-					className="h-2.5 w-auto align-middle fill-current text-white"
+					className="h-3 w-auto align-middle fill-current text-foreground"
 					aria-label="Creao Logo"
 				/>
 			</span>
 			<button
 				type="button"
-				className="ml-2 text-white/80 hover:text-white focus:outline-none focus:ring-2 focus:ring-white/50 rounded"
+				className="ml-1 rounded-md text-muted-foreground transition-colors hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50"
 				onClick={handleClose}
 				aria-label="Close banner"
 			>

@@ -55,22 +55,22 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-md bg-card border-2 border-primary/40 shadow-[0_0_40px_oklch(0.55_0.18_240_/_0.3)]">
+			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
-					<DialogTitle className="text-2xl font-serif-display text-card-foreground">
+					<DialogTitle className="text-xl font-semibold text-foreground">
 						Create Account
 					</DialogTitle>
-					<DialogDescription className="font-serif-elegant text-card-foreground/70">
-						Join Mapetite to discover and save your favorite restaurants
+					<DialogDescription className="text-sm text-muted-foreground">
+						Create an account to save favorites and return to them later.
 					</DialogDescription>
 				</DialogHeader>
 
 				{showSuccess ? (
 					<div className="py-8 text-center">
 						<div className="mb-4 flex justify-center">
-							<div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-[0_0_25px_oklch(0.55_0.18_240_/_0.6)]">
+							<div className="flex h-16 w-16 items-center justify-center rounded-md border border-border bg-background">
 								<svg
-									className="h-8 w-8 text-white"
+									className="h-8 w-8 text-primary"
 									fill="none"
 									stroke="currentColor"
 									viewBox="0 0 24 24"
@@ -87,22 +87,17 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 								</svg>
 							</div>
 						</div>
-						<h3 className="text-xl font-serif-display text-card-foreground mb-2">
+						<h3 className="mb-2 text-lg font-semibold text-foreground">
 							Account Created!
 						</h3>
-						<p className="text-sm font-serif-elegant text-card-foreground/70">
+						<p className="text-sm text-muted-foreground">
 							Welcome to Mapetite
 						</p>
 					</div>
 				) : (
 					<form onSubmit={handleSubmit} className="space-y-4">
 						<div className="space-y-2">
-							<Label
-								htmlFor="name"
-								className="font-serif-elegant text-card-foreground"
-							>
-								Name
-							</Label>
+							<Label htmlFor="name">Name</Label>
 							<Input
 								id="name"
 								type="text"
@@ -110,17 +105,11 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 								value={name}
 								onChange={(e) => setName(e.target.value)}
 								required
-								className="bg-[oklch(0.96_0.008_250)] border-primary/30 focus:border-primary text-card-foreground placeholder:text-card-foreground/50"
 							/>
 						</div>
 
 						<div className="space-y-2">
-							<Label
-								htmlFor="email"
-								className="font-serif-elegant text-card-foreground"
-							>
-								Email
-							</Label>
+							<Label htmlFor="email">Email</Label>
 							<Input
 								id="email"
 								type="email"
@@ -128,17 +117,11 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 								value={email}
 								onChange={(e) => setEmail(e.target.value)}
 								required
-								className="bg-[oklch(0.96_0.008_250)] border-primary/30 focus:border-primary text-card-foreground placeholder:text-card-foreground/50"
 							/>
 						</div>
 
 						<div className="space-y-2">
-							<Label
-								htmlFor="password"
-								className="font-serif-elegant text-card-foreground"
-							>
-								Password
-							</Label>
+							<Label htmlFor="password">Password</Label>
 							<Input
 								id="password"
 								type="password"
@@ -146,13 +129,12 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 								value={password}
 								onChange={(e) => setPassword(e.target.value)}
 								required
-								className="bg-[oklch(0.96_0.008_250)] border-primary/30 focus:border-primary text-card-foreground placeholder:text-card-foreground/50"
 							/>
 						</div>
 
 						{error && (
-							<div className="rounded-sm border border-red-400/50 bg-red-50 p-3">
-								<p className="text-sm font-serif-elegant text-red-800">
+							<div className="rounded-md border border-destructive/30 bg-destructive/10 p-3">
+								<p className="text-sm text-destructive">
 									{error.message}
 								</p>
 							</div>
@@ -161,7 +143,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 						<Button
 							type="submit"
 							disabled={isPending}
-							className="w-full bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_25px_oklch(0.55_0.18_240_/_0.5)] hover:shadow-[0_0_35px_oklch(0.55_0.18_240_/_0.7)] border-2 border-primary/60 font-serif-elegant tracking-wide transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+							className="w-full"
 						>
 							{isPending ? (
 								<>

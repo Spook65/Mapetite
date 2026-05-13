@@ -54,7 +54,6 @@ const emptyBreakdown: RatingBreakdown = {
 
 /**
  * ReviewSummary - Displays rating breakdown and user reviews
- * Features dark theme with light floating card aesthetic and blue/teal accents
  */
 export function ReviewSummary({
 	overallRating = 0,
@@ -99,63 +98,47 @@ export function ReviewSummary({
 	return (
 		<Card
 			className={cn(
-				"border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.55_0.18_240_/_0.2),0_6px_20px_black] hover:shadow-[0_0_35px_oklch(0.55_0.18_240_/_0.3),0_8px_24px_black] transition-all relative overflow-hidden",
+				"border border-border shadow-none",
 				className,
 			)}
 		>
-			{/* Subtle glowing texture overlay */}
-			<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.55_0.18_240_/_0.15)_10px,oklch(0.55_0.18_240_/_0.15)_11px)] pointer-events-none z-0" />
-
-			<CardHeader className="relative z-10">
-				<div className="flex items-center gap-3 mb-2">
-					{/* Ornate icon frame with glow */}
-					<div className="flex h-10 w-10 items-center justify-center rounded-sm bg-gradient-to-br from-primary/40 to-primary/20 border-2 border-primary/50 shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)]">
-						<MessageCircle className="h-5 w-5 text-primary stroke-[2.5] drop-shadow-[0_0_6px_oklch(0.55_0.18_240_/_0.5)]" />
-					</div>
-					<CardTitle className="text-2xl font-serif-display text-card-foreground">
-						Guest Reviews
-					</CardTitle>
-				</div>
+			<CardHeader>
+				<CardTitle className="flex items-center gap-2 text-lg">
+					<MessageCircle className="size-4 text-primary" />
+					Guest reviews
+				</CardTitle>
 			</CardHeader>
 
-			<CardContent className="space-y-6 relative z-10">
-				{/* Overall Rating Summary */}
-				<div className="flex flex-col md:flex-row gap-6 p-6 rounded-sm bg-gradient-to-r from-[oklch(0.96_0.01_75)] to-[oklch(0.95_0.015_80)] border-2 border-secondary/40 shadow-[0_0_20px_oklch(0.65_0.14_195_/_0.2)]">
-					{/* Overall Score */}
-					<div className="flex-shrink-0 text-center md:text-left md:border-r-2 md:border-primary/30 md:pr-6">
-						<div className="flex items-baseline justify-center md:justify-start gap-2 mb-2">
-							<span className="text-5xl font-serif-display font-bold text-secondary drop-shadow-[0_0_12px_oklch(0.65_0.14_195_/_0.5)]">
+			<CardContent className="space-y-5">
+				<div className="grid gap-5 md:grid-cols-[180px_minmax(0,1fr)]">
+					<div className="space-y-2 border-b border-border pb-4 text-center md:border-b-0 md:border-r md:pb-0 md:pr-5 md:text-left">
+						<div className="flex items-baseline justify-center gap-2 md:justify-start">
+							<span className="text-4xl font-semibold tracking-tight text-foreground">
 								{overallRating.toFixed(1)}
 							</span>
-							<span className="text-xl font-serif-elegant text-card-foreground/70">
-								/ 5.0
-							</span>
+							<span className="text-sm text-muted-foreground">/ 5.0</span>
 						</div>
-						{renderStars(overallRating, "lg")}
-						<p className="text-sm font-serif-elegant text-card-foreground/70 mt-3">
+						<div className="flex justify-center md:justify-start">
+							{renderStars(overallRating, "md")}
+						</div>
+						<p className="text-sm text-muted-foreground">
 							Based on {totalReviews.toLocaleString()} reviews
 						</p>
 					</div>
 
-					{/* Rating Breakdown */}
-					<div className="flex-1 space-y-2">
+					<div className="space-y-2">
 						{[5, 4, 3, 2, 1].map((stars) => {
 							const count = ratingBreakdown[stars as keyof RatingBreakdown];
 							const percentage = getPercentage(count);
 
 							return (
 								<div key={stars} className="flex items-center gap-3">
-									<div className="flex items-center gap-1 w-16 flex-shrink-0">
-										<span className="text-sm font-serif-elegant font-semibold text-card-foreground">
-											{stars}
-										</span>
-										<Star className="h-3.5 w-3.5 fill-secondary text-secondary" />
+									<div className="flex w-14 items-center gap-1 text-sm text-foreground">
+										<span>{stars}</span>
+										<Star className="size-3.5 fill-primary text-primary" />
 									</div>
-									<Progress
-										value={percentage}
-										className="h-2 flex-1 bg-[oklch(0.92_0.01_70)]"
-									/>
-									<span className="text-sm font-serif-elegant text-card-foreground/70 w-12 text-right">
+									<Progress value={percentage} className="h-2 flex-1" />
+									<span className="w-10 text-right text-sm text-muted-foreground">
 										{count}
 									</span>
 								</div>
@@ -163,7 +146,6 @@ export function ReviewSummary({
 						})}
 					</div>
 				</div>
-
 			</CardContent>
 		</Card>
 	);

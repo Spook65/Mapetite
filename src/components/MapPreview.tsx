@@ -35,7 +35,7 @@ export function MapPreview({
 	return (
 		<Card
 			className={cn(
-				"overflow-hidden border-2 border-primary/30 shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.15)]",
+				"overflow-hidden border border-border shadow-none",
 				className,
 			)}
 		>
@@ -50,4 +50,3 @@ export function MapPreview({
 		</Card>
 	);
 }
-

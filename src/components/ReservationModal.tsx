@@ -105,12 +105,12 @@ export function ReservationModal({
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
-			<DialogContent className="sm:max-w-[500px] bg-[oklch(0.97_0.008_75)]">
+			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
-					<DialogTitle className="text-2xl font-serif-display text-[oklch(0.2_0.03_145)]">
+					<DialogTitle className="text-xl font-semibold text-foreground">
 						{isSuccess ? "Reservation Confirmed!" : "Reserve Your Table"}
 					</DialogTitle>
-					<DialogDescription className="font-serif-elegant text-[oklch(0.35_0.03_145)]">
+					<DialogDescription className="text-sm text-muted-foreground">
 						{isSuccess
 							? "Your reservation has been successfully confirmed"
 							: `Book your dining experience at ${restaurant.name}`}
@@ -119,25 +119,23 @@ export function ReservationModal({
 
 				{isSuccess && data ? (
 					<div className="py-8 space-y-6">
-						{/* Success Icon */}
 						<div className="flex justify-center">
-							<div className="rounded-full bg-gradient-to-br from-primary via-secondary to-primary p-4 shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)]">
-								<CheckCircle2 className="h-12 w-12 text-white stroke-[2.5]" />
+							<div className="flex h-16 w-16 items-center justify-center rounded-md border border-border bg-background">
+								<CheckCircle2 className="h-10 w-10 text-primary" />
 							</div>
 						</div>
 
-						{/* Confirmation Details */}
 						<div className="space-y-4 text-center">
-							<div className="bg-[oklch(0.96_0.01_75)] border-2 border-primary/40 rounded-md p-6 shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.15)]">
-								<p className="text-sm font-serif-elegant text-[oklch(0.35_0.03_145)] mb-2">
+							<div className="rounded-md border border-border p-6">
+								<p className="mb-2 text-sm text-muted-foreground">
 									Confirmation ID
 								</p>
-								<p className="text-3xl font-serif-display text-primary drop-shadow-[0_0_8px_oklch(0.55_0.18_240_/_0.3)]">
+								<p className="text-2xl font-semibold text-foreground">
 									{data.confirmation_id}
 								</p>
 							</div>
 
-							<div className="space-y-2 text-sm font-serif-elegant text-[oklch(0.35_0.03_145)]">
+							<div className="space-y-2 text-sm text-muted-foreground">
 								<p>
 									<span className="font-semibold">Restaurant:</span>{" "}
 									{restaurant.name}
@@ -156,7 +154,7 @@ export function ReservationModal({
 								</p>
 							</div>
 
-							<p className="text-xs text-[oklch(0.45_0.03_145)] font-serif-elegant pt-4">
+							<p className="pt-4 text-xs text-muted-foreground">
 								A confirmation has been sent. Please save your confirmation ID
 								for your records.
 							</p>
@@ -164,16 +162,15 @@ export function ReservationModal({
 
 						<Button
 							onClick={() => handleOpenChange(false)}
-							className="w-full bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)] border-2 border-primary/60"
+							className="w-full"
 						>
 							Done
 						</Button>
 					</div>
 				) : (
 					<form onSubmit={handleSubmit} className="space-y-6 py-4">
-						{/* Date Picker */}
 						<div className="space-y-2">
-							<Label className="text-base font-semibold text-[oklch(0.2_0.03_145)]">
+							<Label className="text-sm font-medium text-foreground">
 								Select Date
 							</Label>
 							<Popover>
@@ -181,7 +178,7 @@ export function ReservationModal({
 									<Button
 										variant="outline"
 										className={cn(
-											"w-full justify-start text-left font-normal border-2 border-primary/40 hover:border-primary/60",
+											"w-full justify-start text-left font-normal",
 											!date && "text-muted-foreground",
 										)}
 									>
@@ -203,13 +200,12 @@ export function ReservationModal({
 							</Popover>
 						</div>
 
-						{/* Time Selector */}
 						<div className="space-y-2">
-							<Label className="text-base font-semibold text-[oklch(0.2_0.03_145)]">
+							<Label className="text-sm font-medium text-foreground">
 								Select Time
 							</Label>
 							<Select value={time} onValueChange={setTime}>
-								<SelectTrigger className="w-full border-2 border-primary/40 hover:border-primary/60">
+								<SelectTrigger className="w-full">
 									<SelectValue placeholder="Choose a time" />
 								</SelectTrigger>
 								<SelectContent>
@@ -222,13 +218,12 @@ export function ReservationModal({
 							</Select>
 						</div>
 
-						{/* Party Size Selector */}
 						<div className="space-y-2">
-							<Label className="text-base font-semibold text-[oklch(0.2_0.03_145)]">
+							<Label className="text-sm font-medium text-foreground">
 								Party Size
 							</Label>
 							<Select value={partySize} onValueChange={setPartySize}>
-								<SelectTrigger className="w-full border-2 border-primary/40 hover:border-primary/60">
+								<SelectTrigger className="w-full">
 									<SelectValue placeholder="Number of guests" />
 								</SelectTrigger>
 								<SelectContent>
@@ -241,11 +236,10 @@ export function ReservationModal({
 							</Select>
 						</div>
 
-						{/* Submit Button */}
 						<Button
 							type="submit"
 							disabled={!date || !time || !partySize || isPending}
-							className="w-full bg-gradient-to-r from-primary via-secondary to-primary text-white hover:text-[oklch(0.55_0.18_240)] hover:shadow-[0_0_30px_oklch(0.55_0.18_240_/_0.5)] font-serif-elegant font-semibold tracking-wide shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.4)] py-6 text-base transition-all duration-300 border-2 border-primary/60"
+							className="w-full"
 						>
 							{isPending ? "Booking..." : "Confirm Reservation"}
 						</Button>

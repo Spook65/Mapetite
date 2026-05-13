@@ -51,24 +51,19 @@ export function LogInModal({ open, onOpenChange }: LogInModalProps) {
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="sm:max-w-md bg-card border-2 border-primary/40 shadow-[0_0_40px_oklch(0.55_0.18_240_/_0.3)]">
+			<DialogContent className="sm:max-w-md">
 				<DialogHeader>
-					<DialogTitle className="text-2xl font-serif-display text-card-foreground">
+					<DialogTitle className="text-xl font-semibold text-foreground">
 						Welcome Back
 					</DialogTitle>
-					<DialogDescription className="font-serif-elegant text-card-foreground/70">
-						Sign in to access your personalized dining experience
+					<DialogDescription className="text-sm text-muted-foreground">
+						Sign in to access your saved restaurants.
 					</DialogDescription>
 				</DialogHeader>
 
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div className="space-y-2">
-						<Label
-							htmlFor="login-email"
-							className="font-serif-elegant text-card-foreground"
-						>
-							Email
-						</Label>
+						<Label htmlFor="login-email">Email</Label>
 						<Input
 							id="login-email"
 							type="email"
@@ -76,17 +71,11 @@ export function LogInModal({ open, onOpenChange }: LogInModalProps) {
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							required
-							className="bg-[oklch(0.96_0.008_250)] border-primary/30 focus:border-primary text-card-foreground placeholder:text-card-foreground/50"
 						/>
 					</div>
 
 					<div className="space-y-2">
-						<Label
-							htmlFor="login-password"
-							className="font-serif-elegant text-card-foreground"
-						>
-							Password
-						</Label>
+						<Label htmlFor="login-password">Password</Label>
 						<Input
 							id="login-password"
 							type="password"
@@ -94,13 +83,12 @@ export function LogInModal({ open, onOpenChange }: LogInModalProps) {
 							value={password}
 							onChange={(e) => setPassword(e.target.value)}
 							required
-							className="bg-[oklch(0.96_0.008_250)] border-primary/30 focus:border-primary text-card-foreground placeholder:text-card-foreground/50"
 						/>
 					</div>
 
 					{error && (
-						<div className="rounded-sm border border-red-400/50 bg-red-50 p-3">
-							<p className="text-sm font-serif-elegant text-red-800">
+						<div className="rounded-md border border-destructive/30 bg-destructive/10 p-3">
+							<p className="text-sm text-destructive">
 								{error.message}
 							</p>
 						</div>
@@ -109,7 +97,7 @@ export function LogInModal({ open, onOpenChange }: LogInModalProps) {
 					<Button
 						type="submit"
 						disabled={isPending}
-						className="w-full bg-gradient-to-r from-primary via-secondary to-primary text-white shadow-[0_0_25px_oklch(0.55_0.18_240_/_0.5)] hover:shadow-[0_0_35px_oklch(0.55_0.18_240_/_0.7)] border-2 border-primary/60 font-serif-elegant tracking-wide transition-all hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
+						className="w-full"
 					>
 						{isPending ? (
 							<>

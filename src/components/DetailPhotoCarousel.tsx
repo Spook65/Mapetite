@@ -107,79 +107,65 @@ export function DetailPhotoCarousel({
 	return (
 		<Card
 			className={cn(
-				"border-2 border-primary/40 bg-card shadow-[0_0_25px_oklch(0.55_0.18_240_/_0.2),0_6px_20px_black] hover:shadow-[0_0_35px_oklch(0.55_0.18_240_/_0.3),0_8px_24px_black] transition-all relative overflow-hidden",
+				"overflow-hidden border border-border shadow-none",
 				className,
 			)}
 		>
-			{/* Subtle glowing texture overlay */}
-			<div className="absolute inset-0 opacity-5 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,oklch(0.55_0.18_240_/_0.2)_10px,oklch(0.55_0.18_240_/_0.2)_11px)] pointer-events-none z-0" />
-
-			<div className="relative z-10">
-				{/* Main Image Display Area */}
-				<div className="relative aspect-[16/9] bg-gradient-to-br from-[oklch(0.15_0.04_250)] to-[oklch(0.12_0.045_250)] overflow-hidden">
-						<img
-							src={displayImages[currentIndex]}
-							alt={`${restaurantName} photo ${currentIndex + 1}`}
+			<div>
+				<div className="relative aspect-[16/9] overflow-hidden bg-muted">
+					<img
+						src={displayImages[currentIndex]}
+						alt={`${restaurantName} photo ${currentIndex + 1}`}
 						className="absolute inset-0 h-full w-full object-cover"
 						loading="lazy"
 						referrerPolicy="no-referrer"
 					/>
 
-					{/* Navigation Arrows */}
 					{totalImages > 1 && (
 						<>
 							<Button
-								variant="ghost"
+								variant="outline"
 								size="icon"
 								onClick={handlePrevious}
-								className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-sm bg-card/90 border-2 border-primary/40 hover:bg-card hover:border-primary/60 shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.3)] backdrop-blur-sm transition-all"
+								className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/90"
 							>
-								<ChevronLeft className="h-6 w-6 text-primary drop-shadow-[0_0_8px_oklch(0.55_0.18_240_/_0.5)]" />
+								<ChevronLeft className="size-4" />
 							</Button>
 							<Button
-								variant="ghost"
+								variant="outline"
 								size="icon"
 								onClick={handleNext}
-								className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-sm bg-card/90 border-2 border-primary/40 hover:bg-card hover:border-primary/60 shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.3)] backdrop-blur-sm transition-all"
+								className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/90"
 							>
-								<ChevronRight className="h-6 w-6 text-primary drop-shadow-[0_0_8px_oklch(0.55_0.18_240_/_0.5)]" />
+								<ChevronRight className="size-4" />
 							</Button>
 						</>
 					)}
 
-					{/* Image Counter */}
-					<div className="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 rounded-sm bg-card/90 border-2 border-primary/40 shadow-[0_0_20px_oklch(0.55_0.18_240_/_0.3)] backdrop-blur-sm">
-						<span className="text-sm font-serif-elegant font-semibold text-card-foreground">
-							{currentIndex + 1} / {totalImages}
-						</span>
+					<div className="absolute bottom-3 left-3 rounded-md border border-border bg-background px-2 py-1 text-xs text-foreground">
+						{currentIndex + 1} / {totalImages}
 					</div>
 
-					{/* Attribution */}
 					{imageAttributions[currentIndex]?.length ? (
-						<div className="absolute bottom-16 left-4 right-4 md:left-6 md:right-6">
-							<div className="rounded-sm bg-card/90 border border-primary/30 px-3 py-2 shadow-[0_0_12px_oklch(0.55_0.18_240_/_0.18)] backdrop-blur-sm">
-								<p className="text-[10px] md:text-xs text-card-foreground/70 font-serif-elegant">
-									Photo credit: {imageAttributions[currentIndex].join(", ")}
-								</p>
-							</div>
+						<div className="absolute bottom-3 right-3 max-w-[70%] rounded-md border border-border bg-background px-2 py-1 text-[10px] text-muted-foreground">
+							Photo credit: {imageAttributions[currentIndex].join(", ")}
 						</div>
 					) : null}
 				</div>
 
-				{/* Thumbnail Navigation */}
 				{totalImages > 1 && (
-					<div className="p-4 bg-card/50 backdrop-blur-sm border-t-2 border-primary/30">
-						<div className="flex gap-2 overflow-x-auto scrollbar-thin scrollbar-thumb-primary/40 scrollbar-track-transparent pb-2">
+					<div className="border-t border-border p-3">
+						<div className="flex gap-2 overflow-x-auto pb-1">
 							{displayImages.map((img, index) => (
 								<button
 									key={index}
 									type="button"
 									onClick={() => goToSlide(index)}
 									className={cn(
-										"flex-shrink-0 w-20 h-20 rounded-sm border-2 transition-all overflow-hidden bg-gradient-to-br from-[oklch(0.92_0.015_70)] to-[oklch(0.88_0.02_65)] relative group",
+										"h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border transition-colors",
 										currentIndex === index
-											? "border-primary shadow-[0_0_15px_oklch(0.55_0.18_240_/_0.4)] scale-105"
-											: "border-primary/30 hover:border-primary/50 hover:shadow-[0_0_10px_oklch(0.55_0.18_240_/_0.2)]",
+											? "border-primary"
+											: "border-border hover:border-muted-foreground",
 									)}
 								>
 									<img
