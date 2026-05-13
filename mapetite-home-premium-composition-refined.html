@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mapetite Premium Composition Refined</title>
+		<style>
+			:root {
+				--bg: #100d0c;
+				--shell: rgba(25, 19, 17, 0.98);
+				--surface: rgba(255, 255, 255, 0.03);
+				--surface-strong: rgba(255, 255, 255, 0.05);
+				--line: rgba(244, 230, 215, 0.12);
+				--line-strong: rgba(244, 230, 215, 0.18);
+				--text: #f8efe7;
+				--muted: #ccb7a7;
+				--muted-soft: #a58e7b;
+				--accent: #d6a16c;
+				--accent-strong: #e2b37d;
+				--shadow: 0 28px 90px rgba(0, 0, 0, 0.34);
+				--transition: 180ms ease;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				margin: 0;
+				min-height: 100%;
+				background:
+					radial-gradient(circle at 18% 8%, rgba(211, 156, 99, 0.12), transparent 22%),
+					radial-gradient(circle at 82% 14%, rgba(126, 56, 35, 0.1), transparent 18%),
+					linear-gradient(180deg, #120f0e 0%, #0e0c0b 100%);
+				color: var(--text);
+				font-family: "Helvetica Neue", "Nimbus Sans", "Segoe UI", sans-serif;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
+			}
+
+			body {
+				padding: 24px;
+			}
+
+			.page {
+				max-width: 1440px;
+				margin: 0 auto;
+				border: 1px solid var(--line);
+				border-radius: 36px;
+				background:
+					radial-gradient(circle at 17% 20%, rgba(212, 157, 102, 0.16), transparent 24%),
+					radial-gradient(circle at 84% 12%, rgba(148, 65, 42, 0.16), transparent 22%),
+					linear-gradient(180deg, rgba(27, 21, 19, 0.98), rgba(15, 12, 11, 0.99));
+				box-shadow: var(--shadow);
+				overflow: hidden;
+				position: relative;
+			}
+
+			.page::before {
+				content: "";
+				position: absolute;
+				inset: 0;
+				pointer-events: none;
+				background:
+					linear-gradient(90deg, transparent, transparent calc(100% - 1px), rgba(255, 255, 255, 0.04) calc(100% - 1px)),
+					linear-gradient(180deg, transparent, transparent calc(100% - 1px), rgba(255, 255, 255, 0.03) calc(100% - 1px));
+				opacity: 0.18;
+			}
+
+			.topbar {
+				position: relative;
+				z-index: 1;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 16px;
+				padding: 18px 24px;
+				border-bottom: 1px solid rgba(244, 230, 215, 0.08);
+			}
+
+			.brand,
+			.nav,
+			.actions {
+				display: flex;
+				align-items: center;
+			}
+
+			.brand {
+				gap: 12px;
+			}
+
+			.brand-mark {
+				width: 34px;
+				height: 34px;
+				display: grid;
+				place-items: center;
+				border-radius: 10px;
+				border: 1px solid var(--line);
+				background: rgba(255, 255, 255, 0.03);
+				color: var(--accent);
+				font-size: 14px;
+			}
+
+			.brand-copy strong,
+			.brand-copy span {
+				display: block;
+			}
+
+			.brand-copy strong {
+				font-size: 14px;
+				letter-spacing: 0.04em;
+			}
+
+			.brand-copy span {
+				font-size: 12px;
+				color: var(--muted-soft);
+			}
+
+			.nav {
+				gap: 18px;
+				font-size: 13px;
+				color: var(--muted);
+			}
+
+			.nav a {
+				color: inherit;
+				text-decoration: none;
+				transition: color var(--transition);
+			}
+
+			.nav a:hover {
+				color: var(--text);
+			}
+
+			.actions {
+				gap: 10px;
+			}
+
+			.button,
+			.city-chip {
+				font: inherit;
+				cursor: pointer;
+				border: 1px solid transparent;
+				transition:
+					background var(--transition),
+					border-color var(--transition),
+					transform var(--transition),
+					color var(--transition);
+			}
+
+			.button {
+				padding: 11px 16px;
+				border-radius: 999px;
+			}
+
+			.button.ghost {
+				background: transparent;
+				border-color: rgba(244, 230, 215, 0.1);
+				color: var(--muted);
+			}
+
+			.button.ghost:hover {
+				background: rgba(255, 255, 255, 0.03);
+				color: var(--text);
+			}
+
+			.button.primary {
+				background: var(--accent);
+				color: #1d130f;
+				font-weight: 600;
+			}
+
+			.button.primary:hover {
+				background: var(--accent-strong);
+				transform: translateY(-1px);
+			}
+
+			.hero {
+				position: relative;
+				z-index: 1;
+				padding: 30px 24px 22px;
+			}
+
+			.hero-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 0.96fr) minmax(420px, 1.04fr);
+				gap: 26px;
+				align-items: stretch;
+			}
+
+			.hero-copy {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				min-height: 660px;
+			}
+
+			.kicker {
+				margin: 0;
+				font-size: 13px;
+				letter-spacing: 0.08em;
+				color: var(--muted-soft);
+			}
+
+			h1 {
+				margin: 20px 0 0;
+				max-width: 9.5ch;
+				font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+				font-size: clamp(3.8rem, 7vw, 6.8rem);
+				line-height: 0.91;
+				letter-spacing: -0.055em;
+				font-weight: 600;
+			}
+
+			.lead {
+				max-width: 520px;
+				margin: 24px 0 0;
+				font-size: 18px;
+				line-height: 1.72;
+				color: var(--muted);
+			}
+
+			.hero-note {
+				margin-top: 30px;
+				padding-top: 18px;
+				border-top: 1px solid rgba(244, 230, 215, 0.08);
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 12px;
+				font-size: 13px;
+				color: var(--muted);
+			}
+
+			.hero-note p {
+				margin: 0;
+			}
+
+			.search-panel {
+				padding: 20px;
+				border-radius: 30px;
+				border: 1px solid var(--line-strong);
+				background:
+					linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+					rgba(18, 14, 13, 0.7);
+				backdrop-filter: blur(4px);
+			}
+
+			.search-panel-head {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 16px;
+			}
+
+			.search-panel-title {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+			}
+
+			.search-icon {
+				width: 44px;
+				height: 44px;
+				display: grid;
+				place-items: center;
+				border-radius: 14px;
+				border: 1px solid var(--line);
+				background: rgba(255, 255, 255, 0.04);
+				color: var(--accent);
+			}
+
+			.search-panel-title strong,
+			.search-panel-title span {
+				display: block;
+			}
+
+			.search-panel-title strong {
+				font-size: 15px;
+			}
+
+			.search-panel-title span {
+				margin-top: 4px;
+				font-size: 13px;
+				color: var(--muted-soft);
+			}
+
+			.search-row {
+				margin-top: 18px;
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 12px;
+			}
+
+			.search-field {
+				padding: 15px 18px;
+				border-radius: 20px;
+				border: 1px solid rgba(244, 230, 215, 0.1);
+				background: rgba(255, 255, 255, 0.03);
+			}
+
+			.search-field small,
+			.search-field strong {
+				display: block;
+			}
+
+			.search-field small {
+				font-size: 12px;
+				color: var(--muted-soft);
+			}
+
+			.search-field strong {
+				margin-top: 4px;
+				font-size: 16px;
+			}
+
+			.search-cta {
+				padding-inline: 24px;
+				border-radius: 20px;
+			}
+
+			.chip-row {
+				margin-top: 16px;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
+
+			.city-chip {
+				padding: 10px 14px;
+				border-radius: 999px;
+				border-color: rgba(244, 230, 215, 0.1);
+				background: rgba(255, 255, 255, 0.03);
+				color: var(--text);
+			}
+
+			.city-chip:hover,
+			.city-chip.active {
+				background: rgba(214, 161, 108, 0.16);
+				border-color: rgba(214, 161, 108, 0.28);
+				transform: translateY(-1px);
+			}
+
+			.search-foot {
+				margin-top: 16px;
+				padding-top: 14px;
+				border-top: 1px solid rgba(244, 230, 215, 0.08);
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 12px;
+				font-size: 13px;
+				color: var(--muted);
+			}
+
+			.destination-side {
+				display: grid;
+				grid-template-columns: minmax(0, 1.12fr) minmax(230px, 0.88fr);
+				grid-template-rows: minmax(420px, 1fr) auto;
+				gap: 14px;
+				min-height: 660px;
+			}
+
+			.featured {
+				grid-column: 1;
+				grid-row: 1 / span 2;
+				position: relative;
+				overflow: hidden;
+				border-radius: 32px;
+				border: 1px solid rgba(244, 230, 215, 0.12);
+				background:
+					radial-gradient(circle at top, var(--featured-glow, rgba(184, 87, 66, 0.26)), transparent 38%),
+					linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.015)),
+					rgba(27, 21, 19, 0.82);
+				padding: 26px;
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-end;
+				transition:
+					transform var(--transition),
+					border-color var(--transition);
+			}
+
+			.featured:hover,
+			.support-card:hover {
+				transform: translateY(-2px);
+				border-color: rgba(214, 161, 108, 0.22);
+			}
+
+			.featured-copy,
+			.support-card-copy {
+				position: relative;
+				z-index: 1;
+			}
+
+			.featured h2 {
+				margin: 98px 0 0;
+				max-width: 8ch;
+				font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+				font-size: clamp(2.5rem, 4vw, 4rem);
+				line-height: 0.97;
+				letter-spacing: -0.045em;
+				font-weight: 600;
+			}
+
+			.featured .description {
+				margin: 14px 0 0;
+				max-width: 320px;
+				font-size: 14px;
+				line-height: 1.72;
+				color: var(--muted);
+			}
+
+			.support-stack {
+				display: grid;
+				grid-template-rows: repeat(2, minmax(0, 1fr));
+				gap: 14px;
+			}
+
+			.support-wide {
+				grid-column: 2;
+				grid-row: 2;
+			}
+
+			.support-card {
+				border: 1px solid rgba(244, 230, 215, 0.1);
+				border-radius: 24px;
+				background:
+					linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
+					rgba(24, 18, 16, 0.82);
+				padding: 18px;
+				text-align: left;
+				cursor: pointer;
+				transition:
+					transform var(--transition),
+					border-color var(--transition),
+					background var(--transition);
+			}
+
+			.support-card strong {
+				display: block;
+				margin-top: 40px;
+				font-size: 20px;
+				line-height: 1.2;
+				font-weight: 600;
+			}
+
+			.support-card span {
+				display: block;
+				margin-top: 10px;
+				font-size: 13px;
+				line-height: 1.68;
+				color: var(--muted);
+			}
+
+			.city-strip {
+				padding: 0 24px 24px;
+			}
+
+			.city-strip-head {
+				display: flex;
+				align-items: end;
+				justify-content: space-between;
+				gap: 14px;
+				margin-bottom: 14px;
+			}
+
+			.city-strip-head h3,
+			.city-strip-head p {
+				margin: 0;
+			}
+
+			.city-strip-head h3 {
+				font-size: 24px;
+				letter-spacing: -0.03em;
+			}
+
+			.city-strip-head p {
+				font-size: 14px;
+				color: var(--muted-soft);
+			}
+
+			.city-strip-grid {
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				gap: 14px;
+			}
+
+			.city-strip-card {
+				border: 1px solid rgba(244, 230, 215, 0.1);
+				border-radius: 22px;
+				background: rgba(255, 255, 255, 0.025);
+				padding: 18px;
+				min-height: 165px;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				transition:
+					transform var(--transition),
+					border-color var(--transition),
+					background var(--transition);
+			}
+
+			.city-strip-card:hover {
+				transform: translateY(-2px);
+				border-color: rgba(214, 161, 108, 0.2);
+				background: rgba(255, 255, 255, 0.035);
+			}
+
+			.city-strip-card strong,
+			.city-strip-card small,
+			.city-strip-card p {
+				display: block;
+				margin: 0;
+			}
+
+			.city-strip-card strong {
+				font-size: 18px;
+				font-weight: 600;
+			}
+
+			.city-strip-card small {
+				margin-top: 6px;
+				font-size: 13px;
+				color: var(--muted-soft);
+			}
+
+			.city-strip-card p {
+				font-size: 14px;
+				line-height: 1.68;
+				color: var(--muted);
+			}
+
+			.prototype-note {
+				padding: 0 24px 24px;
+				font-size: 12px;
+				color: var(--muted-soft);
+			}
+
+			@media (max-width: 1200px) {
+				.hero-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.hero-copy {
+					min-height: auto;
+				}
+
+				.destination-side {
+					min-height: auto;
+				}
+			}
+
+			@media (max-width: 900px) {
+				body {
+					padding: 16px;
+				}
+
+				.nav {
+					display: none;
+				}
+
+				.search-row,
+				.search-foot,
+				.hero-note,
+				.city-strip-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.destination-side {
+					grid-template-columns: 1fr;
+					grid-template-rows: auto;
+				}
+
+				.featured,
+				.support-wide {
+					grid-column: auto;
+					grid-row: auto;
+				}
+
+				.support-stack {
+					grid-template-rows: auto;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<header class="topbar">
+				<div class="brand">
+					<div class="brand-mark">M</div>
+					<div class="brand-copy">
+						<strong>Mapetite</strong>
+						<span>Premium restaurant discovery</span>
+					</div>
+				</div>
+
+				<nav class="nav">
+					<a href="#hero">Discover</a>
+					<a href="#search">Search</a>
+					<a href="#cities">City starts</a>
+				</nav>
+
+				<div class="actions">
+					<button class="button ghost" type="button">Log in</button>
+					<button class="button primary" type="button">Open search</button>
+				</div>
+			</header>
+
+			<main class="hero" id="hero">
+				<div class="hero-grid">
+					<section class="hero-copy">
+						<div>
+							<p class="kicker">Curated city starts for restaurant search</p>
+							<h1>Discover restaurants worth planning around.</h1>
+							<p class="lead">
+								Start with a city, state, or country, then move into a more
+								focused search for where to go next.
+							</p>
+
+							<div class="hero-note">
+								<p>Search by place.</p>
+								<p>Refine after the list opens.</p>
+								<p>Open details when the choice gets real.</p>
+							</div>
+						</div>
+
+						<div class="search-panel" id="search">
+							<div class="search-panel-head">
+								<div class="search-panel-title">
+									<div class="search-icon" aria-hidden="true">+</div>
+									<div>
+										<strong>Restaurant search</strong>
+										<span>Choose a place to begin</span>
+									</div>
+								</div>
+								<button class="button ghost" type="button">Nearby cities</button>
+							</div>
+
+							<div class="search-row">
+								<div class="search-field">
+									<small>Starting point</small>
+									<strong id="field-label-refined">Tokyo, Japan</strong>
+								</div>
+								<button class="button primary search-cta" type="button">
+									Search restaurants
+								</button>
+							</div>
+
+							<div class="chip-row">
+								<button class="city-chip active" type="button" data-city="tokyo">Tokyo</button>
+								<button class="city-chip" type="button" data-city="paris">Paris</button>
+								<button class="city-chip" type="button" data-city="london">London</button>
+								<button class="city-chip" type="button" data-city="dubai">Dubai</button>
+							</div>
+
+							<div class="search-foot">
+								<div>Use a city shortcut.</div>
+								<div>Continue into the full search flow.</div>
+								<div>Save, compare, and open details later.</div>
+							</div>
+						</div>
+					</section>
+
+					<section class="destination-side">
+						<article class="featured" id="featured-refined">
+							<div class="featured-copy">
+								<p class="kicker" id="featured-kicker-refined">Tokyo</p>
+								<h2 id="featured-title-refined">Omakase, kaiseki, late-night counters</h2>
+								<p class="description" id="featured-description-refined">
+									Begin with Tokyo when you want a tightly curated opening move
+									into restaurant search.
+								</p>
+							</div>
+						</article>
+
+						<div class="support-stack">
+							<button class="support-card" type="button" data-city="paris">
+								<div class="support-card-copy">
+									<p class="kicker">Paris</p>
+									<strong>Long lunches and late wine bars</strong>
+									<span>Bistros, tasting menus, and slower evenings with clearer intent.</span>
+								</div>
+							</button>
+
+							<button class="support-card" type="button" data-city="london">
+								<div class="support-card-copy">
+									<p class="kicker">London</p>
+									<strong>Dining rooms and chef-led menus</strong>
+									<span>Best when you want range, polish, and a broader city search.</span>
+								</div>
+							</button>
+						</div>
+
+						<button class="support-card support-wide" type="button" data-city="dubai">
+							<div class="support-card-copy">
+								<p class="kicker">Dubai</p>
+								<strong>Rooftops, hotel dining, tasting menus</strong>
+								<span>Good for nights out that feel occasion-led from the beginning.</span>
+							</div>
+						</button>
+					</section>
+				</div>
+			</main>
+
+			<section class="city-strip" id="cities">
+				<div class="city-strip-head">
+					<div>
+						<h3>Curated city starts</h3>
+						<p>Choose a destination and move directly into restaurant search.</p>
+					</div>
+					<p>One strong starting point, then refinement inside the product.</p>
+				</div>
+
+				<div class="city-strip-grid">
+					<article class="city-strip-card">
+						<div>
+							<strong>Paris</strong>
+							<small>France</small>
+						</div>
+						<p>Bistros, wine bars, and tasting menus that suit slower evenings.</p>
+					</article>
+					<article class="city-strip-card">
+						<div>
+							<strong>Tokyo</strong>
+							<small>Japan</small>
+						</div>
+						<p>Omakase counters, kaiseki, and dense neighborhoods built for discovery.</p>
+					</article>
+					<article class="city-strip-card">
+						<div>
+							<strong>London</strong>
+							<small>United Kingdom</small>
+						</div>
+						<p>Dining rooms, gastropubs, and chef-led menus across a broader search.</p>
+					</article>
+					<article class="city-strip-card">
+						<div>
+							<strong>Dubai</strong>
+							<small>UAE</small>
+						</div>
+						<p>Hotel dining, rooftops, and tasting menus for more occasion-led plans.</p>
+					</article>
+				</div>
+			</section>
+
+			<div class="prototype-note">
+				Standalone prototype. Refined composition study based on Variant A, with Variant B search clarity and Variant C destination hierarchy.
+			</div>
+		</div>
+
+		<script>
+			const refinedData = {
+				tokyo: {
+					label: "Tokyo, Japan",
+					kicker: "Tokyo",
+					title: "Omakase, kaiseki, late-night counters",
+					description: "Begin with Tokyo when you want a tightly curated opening move into restaurant search.",
+					glow: "rgba(184, 87, 66, 0.26)",
+				},
+				paris: {
+					label: "Paris, France",
+					kicker: "Paris",
+					title: "Long lunches and late wine bars",
+					description: "Use Paris when you want a slower city start with bistros, tasting menus, and wine-led nights.",
+					glow: "rgba(213, 159, 102, 0.2)",
+				},
+				london: {
+					label: "London, United Kingdom",
+					kicker: "London",
+					title: "Dining rooms and chef-led menus",
+					description: "London suits broader search sessions with range, polish, and varied restaurant styles.",
+					glow: "rgba(166, 123, 87, 0.2)",
+				},
+				dubai: {
+					label: "Dubai, UAE",
+					kicker: "Dubai",
+					title: "Rooftops, hotel dining, tasting menus",
+					description: "Start with Dubai for plans that feel more occasion-led from the moment the search begins.",
+					glow: "rgba(204, 156, 98, 0.18)",
+				},
+			};
+
+			const fieldLabel = document.getElementById("field-label-refined");
+			const featured = document.getElementById("featured-refined");
+			const featuredKicker = document.getElementById("featured-kicker-refined");
+			const featuredTitle = document.getElementById("featured-title-refined");
+			const featuredDescription = document.getElementById("featured-description-refined");
+			const chips = document.querySelectorAll(".city-chip");
+			const triggers = document.querySelectorAll("[data-city]");
+
+			function setCity(city) {
+				const data = refinedData[city];
+				if (!data) return;
+				fieldLabel.textContent = data.label;
+				featuredKicker.textContent = data.kicker;
+				featuredTitle.textContent = data.title;
+				featuredDescription.textContent = data.description;
+				featured.style.setProperty("--featured-glow", data.glow);
+				chips.forEach((chip) => chip.classList.toggle("active", chip.dataset.city === city));
+			}
+
+			triggers.forEach((node) => {
+				node.addEventListener("mouseenter", () => setCity(node.dataset.city));
+				node.addEventListener("focus", () => setCity(node.dataset.city));
+				node.addEventListener("click", () => setCity(node.dataset.city));
+			});
+		</script>
+	</body>
+</html>
