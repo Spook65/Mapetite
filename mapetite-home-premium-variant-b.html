@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mapetite Premium Variant B</title>
+		<style>
+			:root {
+				--bg: #100d0c;
+				--shell: #16110f;
+				--surface: rgba(33, 25, 23, 0.9);
+				--line: rgba(245, 232, 220, 0.12);
+				--line-strong: rgba(245, 232, 220, 0.18);
+				--text: #f8efe8;
+				--muted: #ccb8a8;
+				--muted-soft: #a88e7a;
+				--accent: #d6a06d;
+				--accent-strong: #e2b480;
+				--shadow: 0 26px 80px rgba(0, 0, 0, 0.34);
+				--transition: 180ms ease;
+			}
+
+			* { box-sizing: border-box; }
+			html, body {
+				margin: 0;
+				min-height: 100%;
+				background:
+					radial-gradient(circle at 50% 0%, rgba(210, 158, 96, 0.12), transparent 26%),
+					radial-gradient(circle at 80% 18%, rgba(122, 53, 36, 0.1), transparent 16%),
+					linear-gradient(180deg, #120f0e 0%, #0d0b0b 100%);
+				color: var(--text);
+				font-family: "Helvetica Neue", "Nimbus Sans", "Segoe UI", sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
+
+			body { padding: 24px; }
+
+			.page {
+				max-width: 1380px;
+				margin: 0 auto;
+				border: 1px solid var(--line);
+				border-radius: 34px;
+				background:
+					radial-gradient(circle at top, rgba(216, 163, 106, 0.16), transparent 22%),
+					linear-gradient(180deg, rgba(25, 19, 17, 0.97), rgba(15, 12, 11, 0.98));
+				box-shadow: var(--shadow);
+				overflow: hidden;
+			}
+
+			.topbar {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 16px;
+				padding: 18px 24px;
+				border-bottom: 1px solid rgba(245, 232, 220, 0.08);
+			}
+
+			.brand, .nav, .actions { display: flex; align-items: center; }
+			.brand { gap: 12px; }
+			.nav { gap: 18px; color: var(--muted); font-size: 13px; }
+			.actions { gap: 10px; }
+			.nav a {
+				color: inherit;
+				text-decoration: none;
+				transition: color var(--transition);
+			}
+			.nav a:hover { color: var(--text); }
+
+			.mark {
+				width: 34px;
+				height: 34px;
+				display: grid;
+				place-items: center;
+				border-radius: 10px;
+				border: 1px solid var(--line);
+				background: rgba(255, 255, 255, 0.03);
+				color: var(--accent);
+			}
+
+			.brand-copy strong,
+			.brand-copy span { display: block; }
+			.brand-copy strong { font-size: 14px; letter-spacing: 0.04em; }
+			.brand-copy span { font-size: 12px; color: var(--muted-soft); }
+
+			.button,
+			.city-chip {
+				font: inherit;
+				cursor: pointer;
+				border: 1px solid transparent;
+				transition:
+					background var(--transition),
+					border-color var(--transition),
+					transform var(--transition),
+					color var(--transition);
+			}
+
+			.button {
+				padding: 11px 16px;
+				border-radius: 999px;
+			}
+
+			.button.ghost {
+				background: transparent;
+				border-color: rgba(245, 232, 220, 0.1);
+				color: var(--muted);
+			}
+			.button.ghost:hover { background: rgba(255, 255, 255, 0.03); color: var(--text); }
+
+			.button.primary {
+				background: var(--accent);
+				color: #1a120f;
+				font-weight: 600;
+			}
+			.button.primary:hover { background: var(--accent-strong); transform: translateY(-1px); }
+
+			.hero {
+				padding: 42px 24px 24px;
+				text-align: center;
+			}
+
+			.hero p.kicker {
+				margin: 0;
+				font-size: 13px;
+				letter-spacing: 0.08em;
+				color: var(--muted-soft);
+			}
+
+			h1 {
+				margin: 18px auto 0;
+				max-width: 11ch;
+				font-family: "Iowan Old Style", "Palatino Linotype", serif;
+				font-size: clamp(3.4rem, 8vw, 6.4rem);
+				line-height: 0.92;
+				letter-spacing: -0.05em;
+				font-weight: 600;
+			}
+
+			.lead {
+				max-width: 700px;
+				margin: 24px auto 0;
+				font-size: 18px;
+				line-height: 1.72;
+				color: var(--muted);
+			}
+
+			.search-canvas {
+				max-width: 980px;
+				margin: 36px auto 0;
+				padding: 22px;
+				border-radius: 32px;
+				border: 1px solid var(--line-strong);
+				background:
+					linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+					rgba(17, 13, 12, 0.68);
+				backdrop-filter: blur(5px);
+			}
+
+			.search-head {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 14px;
+			}
+
+			.search-badge {
+				width: 44px;
+				height: 44px;
+				display: grid;
+				place-items: center;
+				border-radius: 14px;
+				border: 1px solid var(--line);
+				background: rgba(255, 255, 255, 0.04);
+				color: var(--accent);
+			}
+
+			.search-head-copy strong,
+			.search-head-copy span { display: block; text-align: left; }
+			.search-head-copy strong { font-size: 16px; }
+			.search-head-copy span { margin-top: 4px; font-size: 13px; color: var(--muted-soft); }
+
+			.search-row {
+				margin-top: 18px;
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 12px;
+			}
+
+			.field {
+				padding: 16px 18px;
+				border-radius: 20px;
+				border: 1px solid rgba(245, 232, 220, 0.1);
+				background: rgba(255, 255, 255, 0.03);
+				text-align: left;
+			}
+
+			.field small,
+			.field strong { display: block; }
+			.field small { color: var(--muted-soft); font-size: 12px; }
+			.field strong { margin-top: 4px; font-size: 16px; }
+
+			.search-main-cta {
+				padding-inline: 26px;
+				border-radius: 20px;
+			}
+
+			.city-chip-row {
+				margin-top: 16px;
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 10px;
+			}
+
+			.city-chip {
+				padding: 10px 14px;
+				border-radius: 999px;
+				background: rgba(255, 255, 255, 0.03);
+				border-color: rgba(245, 232, 220, 0.1);
+				color: var(--text);
+			}
+
+			.city-chip:hover,
+			.city-chip.active {
+				background: rgba(214, 160, 109, 0.16);
+				border-color: rgba(214, 160, 109, 0.28);
+				transform: translateY(-1px);
+			}
+
+			.search-copy {
+				margin-top: 16px;
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 12px;
+				font-size: 13px;
+				color: var(--muted);
+			}
+
+			.discovery {
+				max-width: 1100px;
+				margin: 28px auto 0;
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				gap: 14px;
+			}
+
+			.discovery-card {
+				padding: 20px;
+				min-height: 180px;
+				border-radius: 24px;
+				border: 1px solid rgba(245, 232, 220, 0.1);
+				background:
+					radial-gradient(circle at top, var(--glow, rgba(214, 160, 109, 0.12)), transparent 38%),
+					rgba(255, 255, 255, 0.03);
+				text-align: left;
+				transition:
+					transform var(--transition),
+					background var(--transition),
+					border-color var(--transition);
+			}
+
+			.discovery-card:hover {
+				transform: translateY(-2px);
+				border-color: rgba(214, 160, 109, 0.22);
+			}
+
+			.discovery-card p { margin: 0; }
+			.discovery-card .kicker { color: var(--muted-soft); font-size: 13px; }
+			.discovery-card strong {
+				display: block;
+				margin-top: 48px;
+				font-size: 22px;
+				line-height: 1.2;
+				font-weight: 600;
+			}
+			.discovery-card span {
+				display: block;
+				margin-top: 12px;
+				font-size: 14px;
+				line-height: 1.65;
+				color: var(--muted);
+			}
+
+			.prototype-note {
+				padding: 20px 24px 24px;
+				font-size: 12px;
+				color: var(--muted-soft);
+				text-align: center;
+			}
+
+			@media (max-width: 980px) {
+				body { padding: 16px; }
+				.nav { display: none; }
+				.search-row,
+				.discovery,
+				.search-copy { grid-template-columns: 1fr; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<header class="topbar">
+				<div class="brand">
+					<div class="mark">M</div>
+					<div class="brand-copy">
+						<strong>Mapetite</strong>
+						<span>Search-first restaurant discovery</span>
+					</div>
+				</div>
+
+				<nav class="nav">
+					<a href="#hero">Discover</a>
+					<a href="#search">Search</a>
+					<a href="#cities">City starts</a>
+				</nav>
+
+				<div class="actions">
+					<button class="button ghost" type="button">Log in</button>
+					<button class="button primary" type="button">Open search</button>
+				</div>
+			</header>
+
+			<main class="hero" id="hero">
+				<p class="kicker">Start with a place, then move into a more curated search flow</p>
+				<h1>Search for restaurants with a better sense of where you want to go.</h1>
+				<p class="lead">
+					Mapetite begins with the city. Choose a starting point, refine once
+					the list opens, and use the details page when it is time to decide.
+				</p>
+
+				<section class="search-canvas" id="search">
+					<div class="search-head">
+						<div class="search-badge" aria-hidden="true">+</div>
+						<div class="search-head-copy">
+							<strong>Restaurant search</strong>
+							<span>City, state, or country</span>
+						</div>
+					</div>
+
+					<div class="search-row">
+						<div class="field">
+							<small>Starting point</small>
+							<strong id="field-label-b">Paris, France</strong>
+						</div>
+						<button class="button primary search-main-cta" type="button">Search restaurants</button>
+					</div>
+
+					<div class="city-chip-row" id="cities">
+						<button class="city-chip active" type="button" data-city="paris">Paris</button>
+						<button class="city-chip" type="button" data-city="tokyo">Tokyo</button>
+						<button class="city-chip" type="button" data-city="london">London</button>
+						<button class="city-chip" type="button" data-city="dubai">Dubai</button>
+					</div>
+
+					<div class="search-copy">
+						<div>Search by place.</div>
+						<div>Refine with cuisine and rating filters.</div>
+						<div>Open details and favorites when ready.</div>
+					</div>
+				</section>
+
+				<section class="discovery">
+					<article class="discovery-card" data-city="paris" style="--glow: rgba(214, 160, 109, 0.16);">
+						<p class="kicker">Paris</p>
+						<strong>Long lunches and late wine bars</strong>
+						<span>Bistros, tasting menus, and evenings that reward a slower pace.</span>
+					</article>
+					<article class="discovery-card" data-city="tokyo" style="--glow: rgba(183, 84, 62, 0.16);">
+						<p class="kicker">Tokyo</p>
+						<strong>Omakase, kaiseki, late-night counters</strong>
+						<span>Dense neighborhoods, small rooms, and a more compact discovery path.</span>
+					</article>
+					<article class="discovery-card" data-city="london" style="--glow: rgba(161, 119, 84, 0.14);">
+						<p class="kicker">London</p>
+						<strong>Dining rooms and chef-led menus</strong>
+						<span>A strong fit when you want range, polish, and a broad city search.</span>
+					</article>
+					<article class="discovery-card" data-city="dubai" style="--glow: rgba(198, 150, 95, 0.14);">
+						<p class="kicker">Dubai</p>
+						<strong>Rooftops, hotel dining, tasting menus</strong>
+						<span>Good for nights out that feel occasion-led from the start.</span>
+					</article>
+				</section>
+			</main>
+
+			<div class="prototype-note">
+				Standalone prototype. Variant B explores a search-centered canvas with less card clutter.
+			</div>
+		</div>
+
+		<script>
+			const fieldLabelB = document.getElementById("field-label-b");
+			const chipsB = document.querySelectorAll(".city-chip");
+			const cardsB = document.querySelectorAll(".discovery-card");
+			const cityLabelsB = {
+				paris: "Paris, France",
+				tokyo: "Tokyo, Japan",
+				london: "London, United Kingdom",
+				dubai: "Dubai, UAE",
+			};
+
+			function setVariantBCity(city) {
+				fieldLabelB.textContent = cityLabelsB[city];
+				chipsB.forEach((chip) => chip.classList.toggle("active", chip.dataset.city === city));
+			}
+
+			[...chipsB, ...cardsB].forEach((node) => {
+				node.addEventListener("mouseenter", () => setVariantBCity(node.dataset.city));
+				node.addEventListener("focus", () => setVariantBCity(node.dataset.city));
+				node.addEventListener("click", () => setVariantBCity(node.dataset.city));
+			});
+		</script>
+	</body>
+</html>

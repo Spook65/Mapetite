@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mapetite Premium Variant C</title>
+		<style>
+			:root {
+				--bg: #0f0c0b;
+				--panel: rgba(23, 18, 16, 0.96);
+				--surface: rgba(255, 255, 255, 0.03);
+				--line: rgba(242, 228, 214, 0.12);
+				--line-strong: rgba(242, 228, 214, 0.18);
+				--text: #f8efe8;
+				--muted: #c9b6a6;
+				--muted-soft: #a68e7c;
+				--accent: #d5a16c;
+				--accent-strong: #e0b380;
+				--shadow: 0 26px 80px rgba(0, 0, 0, 0.34);
+				--transition: 180ms ease;
+			}
+
+			* { box-sizing: border-box; }
+			html, body {
+				margin: 0;
+				min-height: 100%;
+				background:
+					radial-gradient(circle at 15% 10%, rgba(210, 156, 100, 0.1), transparent 22%),
+					radial-gradient(circle at 80% 0%, rgba(122, 53, 35, 0.1), transparent 18%),
+					linear-gradient(180deg, #120f0f 0%, #0d0b0b 100%);
+				color: var(--text);
+				font-family: "Helvetica Neue", "Nimbus Sans", "Segoe UI", sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
+
+			body { padding: 24px; }
+
+			.page {
+				max-width: 1420px;
+				margin: 0 auto;
+				border: 1px solid var(--line);
+				border-radius: 34px;
+				background:
+					radial-gradient(circle at top, rgba(212, 159, 101, 0.14), transparent 20%),
+					linear-gradient(180deg, rgba(27, 21, 19, 0.98), rgba(14, 12, 11, 0.99));
+				box-shadow: var(--shadow);
+				overflow: hidden;
+			}
+
+			.topbar {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 16px;
+				padding: 18px 24px;
+				border-bottom: 1px solid rgba(242, 228, 214, 0.08);
+			}
+
+			.brand,
+			.nav,
+			.actions {
+				display: flex;
+				align-items: center;
+			}
+
+			.brand { gap: 12px; }
+			.nav { gap: 18px; color: var(--muted); font-size: 13px; }
+			.actions { gap: 10px; }
+			.nav a { color: inherit; text-decoration: none; transition: color var(--transition); }
+			.nav a:hover { color: var(--text); }
+
+			.mark {
+				width: 34px;
+				height: 34px;
+				border-radius: 10px;
+				border: 1px solid var(--line);
+				background: rgba(255, 255, 255, 0.03);
+				display: grid;
+				place-items: center;
+				color: var(--accent);
+			}
+
+			.brand-copy strong,
+			.brand-copy span { display: block; }
+			.brand-copy strong { font-size: 14px; letter-spacing: 0.04em; }
+			.brand-copy span { font-size: 12px; color: var(--muted-soft); }
+
+			.button,
+			.board-button {
+				font: inherit;
+				cursor: pointer;
+				border: 1px solid transparent;
+				transition:
+					background var(--transition),
+					border-color var(--transition),
+					transform var(--transition),
+					color var(--transition);
+			}
+
+			.button {
+				padding: 11px 16px;
+				border-radius: 999px;
+			}
+
+			.button.ghost {
+				background: transparent;
+				border-color: rgba(242, 228, 214, 0.1);
+				color: var(--muted);
+			}
+
+			.button.ghost:hover { background: rgba(255, 255, 255, 0.03); color: var(--text); }
+
+			.button.primary {
+				background: var(--accent);
+				color: #1d140f;
+				font-weight: 600;
+			}
+
+			.button.primary:hover { background: var(--accent-strong); transform: translateY(-1px); }
+
+			.board {
+				padding: 24px;
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				grid-template-rows: 220px 220px 180px;
+				gap: 14px;
+			}
+
+			.hero-copy,
+			.featured,
+			.city-card,
+			.search-anchor {
+				border: 1px solid rgba(242, 228, 214, 0.1);
+				border-radius: 26px;
+				background:
+					linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
+					rgba(21, 16, 15, 0.82);
+				padding: 20px;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.hero-copy {
+				grid-column: 1 / span 2;
+				grid-row: 1 / span 2;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+			}
+
+			.hero-copy p.kicker,
+			.city-card p.kicker,
+			.featured p.kicker {
+				margin: 0;
+				font-size: 13px;
+				color: var(--muted-soft);
+			}
+
+			h1 {
+				margin: 20px 0 0;
+				max-width: 10ch;
+				font-family: "Iowan Old Style", "Palatino Linotype", serif;
+				font-size: clamp(3rem, 6vw, 5.5rem);
+				line-height: 0.92;
+				letter-spacing: -0.05em;
+				font-weight: 600;
+			}
+
+			.hero-copy .lead {
+				margin: 24px 0 0;
+				max-width: 460px;
+				font-size: 17px;
+				line-height: 1.72;
+				color: var(--muted);
+			}
+
+			.hero-copy .foot {
+				margin-top: 32px;
+				padding-top: 16px;
+				border-top: 1px solid rgba(242, 228, 214, 0.08);
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 12px;
+				font-size: 13px;
+				color: var(--muted);
+			}
+
+			.featured {
+				grid-column: 3 / span 2;
+				grid-row: 1 / span 2;
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-end;
+				background:
+					radial-gradient(circle at top, var(--feature-glow, rgba(182, 86, 64, 0.24)), transparent 38%),
+					linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.015)),
+					rgba(21, 16, 15, 0.82);
+			}
+
+			.featured h2 {
+				margin: 80px 0 0;
+				max-width: 8ch;
+				font-family: "Iowan Old Style", "Palatino Linotype", serif;
+				font-size: clamp(2.4rem, 4vw, 3.8rem);
+				line-height: 0.96;
+				letter-spacing: -0.04em;
+				font-weight: 600;
+			}
+
+			.featured .description {
+				margin-top: 14px;
+				max-width: 300px;
+				font-size: 14px;
+				line-height: 1.72;
+				color: var(--muted);
+			}
+
+			.search-anchor {
+				grid-column: 1 / span 2;
+				grid-row: 3;
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				background:
+					linear-gradient(180deg, rgba(216, 161, 104, 0.08), rgba(255, 255, 255, 0.015)),
+					rgba(21, 16, 15, 0.88);
+			}
+
+			.search-anchor-head {
+				display: flex;
+				align-items: center;
+				gap: 14px;
+			}
+
+			.search-mark {
+				width: 42px;
+				height: 42px;
+				display: grid;
+				place-items: center;
+				border-radius: 14px;
+				border: 1px solid var(--line);
+				background: rgba(255, 255, 255, 0.04);
+				color: var(--accent);
+			}
+
+			.search-copy strong,
+			.search-copy span { display: block; }
+			.search-copy strong { font-size: 15px; }
+			.search-copy span { margin-top: 4px; font-size: 13px; color: var(--muted-soft); }
+
+			.search-actions {
+				margin-top: 18px;
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.board-button {
+				padding: 10px 14px;
+				border-radius: 999px;
+				background: rgba(255, 255, 255, 0.03);
+				border-color: rgba(242, 228, 214, 0.1);
+				color: var(--text);
+			}
+
+			.board-button:hover,
+			.board-button.active {
+				background: rgba(213, 161, 108, 0.16);
+				border-color: rgba(213, 161, 108, 0.26);
+				transform: translateY(-1px);
+			}
+
+			.search-row {
+				margin-top: 14px;
+				display: grid;
+				grid-template-columns: 1fr auto;
+				gap: 12px;
+				align-items: stretch;
+			}
+
+			.search-field {
+				padding: 14px 16px;
+				border-radius: 18px;
+				border: 1px solid rgba(242, 228, 214, 0.1);
+				background: rgba(255, 255, 255, 0.03);
+			}
+
+			.search-field small,
+			.search-field strong { display: block; }
+			.search-field small { color: var(--muted-soft); font-size: 12px; }
+			.search-field strong { margin-top: 4px; font-size: 16px; }
+
+			.city-card {
+				display: flex;
+				flex-direction: column;
+				justify-content: flex-end;
+				text-align: left;
+				transition:
+					transform var(--transition),
+					background var(--transition),
+					border-color var(--transition);
+				cursor: pointer;
+			}
+
+			.city-card:hover,
+			.featured:hover {
+				transform: translateY(-2px);
+				border-color: rgba(213, 161, 108, 0.22);
+			}
+
+			.city-card strong {
+				display: block;
+				margin-top: 42px;
+				font-size: 20px;
+				line-height: 1.2;
+				font-weight: 600;
+			}
+
+			.city-card span {
+				display: block;
+				margin-top: 10px;
+				font-size: 13px;
+				line-height: 1.65;
+				color: var(--muted);
+			}
+
+			.city-card.paris { grid-column: 3; grid-row: 3; }
+			.city-card.london { grid-column: 4; grid-row: 3; }
+
+			.note {
+				padding: 0 24px 24px;
+				font-size: 12px;
+				color: var(--muted-soft);
+			}
+
+			@media (max-width: 1120px) {
+				.board {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+					grid-template-rows: auto;
+				}
+
+				.hero-copy,
+				.featured,
+				.search-anchor,
+				.city-card.paris,
+				.city-card.london {
+					grid-column: auto;
+					grid-row: auto;
+				}
+
+				.hero-copy .foot,
+				.search-row { grid-template-columns: 1fr; }
+			}
+
+			@media (max-width: 760px) {
+				body { padding: 16px; }
+				.nav { display: none; }
+				.board { grid-template-columns: 1fr; padding: 18px; }
+				.actions { width: 100%; justify-content: flex-end; }
+				.hero-copy .foot { grid-template-columns: 1fr; }
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page">
+			<header class="topbar">
+				<div class="brand">
+					<div class="mark">M</div>
+					<div class="brand-copy">
+						<strong>Mapetite</strong>
+						<span>Destination board prototype</span>
+					</div>
+				</div>
+
+				<nav class="nav">
+					<a href="#board">Discover</a>
+					<a href="#search">Search</a>
+					<a href="#cities">Cities</a>
+				</nav>
+
+				<div class="actions">
+					<button class="button ghost" type="button">Log in</button>
+					<button class="button primary" type="button">Open search</button>
+				</div>
+			</header>
+
+			<main class="board" id="board">
+				<section class="hero-copy">
+					<div>
+						<p class="kicker">A curated board for restaurant discovery</p>
+						<h1>Choose a city, then search with better intent.</h1>
+						<p class="lead">
+							Mapetite works best when the starting point is clear. Begin with a
+							city, refine after the list opens, and use details when the choice gets real.
+						</p>
+					</div>
+
+					<div class="foot">
+						<div>Search by place.</div>
+						<div>Use filters when the list opens.</div>
+						<div>Open details to decide where to go.</div>
+					</div>
+				</section>
+
+				<article class="featured" id="featured-c">
+					<p class="kicker" id="featured-kicker-c">Tokyo</p>
+					<h2 id="featured-title-c">Omakase, kaiseki, late-night counters</h2>
+					<p class="description" id="featured-description-c">
+						Begin with Tokyo when you want a tightly curated opening move into restaurant search.
+					</p>
+				</article>
+
+				<section class="search-anchor" id="search">
+					<div>
+						<div class="search-anchor-head">
+							<div class="search-mark" aria-hidden="true">+</div>
+							<div class="search-copy">
+								<strong>Restaurant search</strong>
+								<span>City, state, or country</span>
+							</div>
+						</div>
+
+						<div class="search-actions" id="cities">
+							<button class="board-button" type="button" data-city="paris">Paris</button>
+							<button class="board-button active" type="button" data-city="tokyo">Tokyo</button>
+							<button class="board-button" type="button" data-city="london">London</button>
+							<button class="board-button" type="button" data-city="dubai">Dubai</button>
+						</div>
+					</div>
+
+					<div class="search-row">
+						<div class="search-field">
+							<small>Starting point</small>
+							<strong id="field-label-c">Tokyo, Japan</strong>
+						</div>
+						<button class="button primary" type="button">Search restaurants</button>
+					</div>
+				</section>
+
+				<button class="city-card paris" type="button" data-city="paris">
+					<p class="kicker">Paris</p>
+					<strong>Long lunches and late wine bars</strong>
+					<span>Bistros, tasting menus, and evenings that slow the pace of the search.</span>
+				</button>
+
+				<button class="city-card london" type="button" data-city="london">
+					<p class="kicker">London</p>
+					<strong>Dining rooms and chef-led menus</strong>
+					<span>A strong fit when you want range and a broader city search.</span>
+				</button>
+			</main>
+
+			<div class="note">
+				Standalone prototype. Variant C explores the strictest grid and the strongest destination-board framing.
+			</div>
+		</div>
+
+		<script>
+			const variantCData = {
+				tokyo: {
+					label: "Tokyo, Japan",
+					kicker: "Tokyo",
+					title: "Omakase, kaiseki, late-night counters",
+					description: "Begin with Tokyo when you want a tightly curated opening move into restaurant search.",
+					glow: "rgba(182, 86, 64, 0.24)",
+				},
+				paris: {
+					label: "Paris, France",
+					kicker: "Paris",
+					title: "Long lunches and late wine bars",
+					description: "Use Paris when you want a slower city start with bistros, tasting menus, and wine-led nights.",
+					glow: "rgba(214, 160, 109, 0.18)",
+				},
+				london: {
+					label: "London, United Kingdom",
+					kicker: "London",
+					title: "Dining rooms and chef-led menus",
+					description: "London suits broader search sessions with range, polish, and varied restaurant styles.",
+					glow: "rgba(168, 126, 89, 0.18)",
+				},
+				dubai: {
+					label: "Dubai, UAE",
+					kicker: "Dubai",
+					title: "Rooftops, hotel dining, tasting menus",
+					description: "Start with Dubai for plans that feel more occasion-led from the moment the search begins.",
+					glow: "rgba(204, 156, 98, 0.16)",
+				},
+			};
+
+			const fieldLabelC = document.getElementById("field-label-c");
+			const featuredC = document.getElementById("featured-c");
+			const kickerC = document.getElementById("featured-kicker-c");
+			const titleC = document.getElementById("featured-title-c");
+			const descriptionC = document.getElementById("featured-description-c");
+			const buttonsC = document.querySelectorAll("[data-city]");
+
+			function setVariantCCity(city) {
+				const data = variantCData[city];
+				if (!data) return;
+				fieldLabelC.textContent = data.label;
+				kickerC.textContent = data.kicker;
+				titleC.textContent = data.title;
+				descriptionC.textContent = data.description;
+				featuredC.style.setProperty("--feature-glow", data.glow);
+				document.querySelectorAll(".board-button").forEach((button) => {
+					button.classList.toggle("active", button.dataset.city === city);
+				});
+			}
+
+			buttonsC.forEach((node) => {
+				node.addEventListener("mouseenter", () => setVariantCCity(node.dataset.city));
+				node.addEventListener("focus", () => setVariantCCity(node.dataset.city));
+				node.addEventListener("click", () => setVariantCCity(node.dataset.city));
+			});
+		</script>
+	</body>
+</html>
