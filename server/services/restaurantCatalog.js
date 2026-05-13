@@ -63,6 +63,14 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
+function hasFiniteCoordinates(location = {}) {
+  return (
+    Number.isFinite(location.latitude) &&
+    Number.isFinite(location.longitude) &&
+    !(location.latitude === 0 && location.longitude === 0)
+  );
+}
+
 function parseCategories(tags = {}) {
   const categories = [];
   const cuisine = tags.cuisine || tags["cuisine:en"];
@@ -308,7 +316,7 @@ function normalizeElement(element, locationContext = {}) {
   const lat = element.lat ?? element.center?.lat;
   const lon = element.lon ?? element.center?.lon;
 
-  if (lat === undefined || lon === undefined) {
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
     return null;
   }
 
@@ -321,7 +329,7 @@ function normalizeElement(element, locationContext = {}) {
   const priceRange = parsePriceRange(tags, categories);
   const reviews = buildReviews(name, rating, reviewCount, locationContext, categories);
   const distance =
-    locationContext.latitude !== undefined && locationContext.longitude !== undefined
+    hasFiniteCoordinates(locationContext)
       ? calculateDistance(
           locationContext.latitude,
           locationContext.longitude,
@@ -373,10 +381,7 @@ function normalizeElement(element, locationContext = {}) {
 }
 
 async function resolveLocation(locationInput = {}) {
-  if (
-    typeof locationInput.latitude === "number" &&
-    typeof locationInput.longitude === "number"
-  ) {
+  if (hasFiniteCoordinates(locationInput)) {
     return {
       city: locationInput.city || "",
       state: locationInput.state || "",
@@ -419,6 +424,12 @@ async function resolveLocation(locationInput = {}) {
   if (!result) return null;
 
   const address = result.address || {};
+  const latitude = Number(result.lat);
+  const longitude = Number(result.lon);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+    return null;
+  }
+
   return {
     city:
       address.city ||
@@ -429,8 +440,8 @@ async function resolveLocation(locationInput = {}) {
       "",
     state: address.state || locationInput.state || "",
     country: address.country || locationInput.country || "",
-    latitude: Number(result.lat),
-    longitude: Number(result.lon),
+    latitude,
+    longitude,
   };
 }
 

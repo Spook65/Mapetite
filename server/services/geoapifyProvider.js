@@ -406,6 +406,14 @@ function buildDescription(name, categories, locationContext = {}, props = {}) {
   ).trim();
 }
 
+function hasFiniteCoordinates(location = {}) {
+  return (
+    Number.isFinite(location.latitude) &&
+    Number.isFinite(location.longitude) &&
+    !(location.latitude === 0 && location.longitude === 0)
+  );
+}
+
 function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories = [], index = 0) {
   const props = feature?.properties || {};
   const geometry = feature?.geometry || {};
@@ -425,8 +433,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
   const openingHours = parseOpeningHours(props.opening_hours);
   const reviews = buildReviews(name, rating, reviewCount, locationContext, categories);
   const distance =
-    typeof locationContext.latitude === "number" &&
-    typeof locationContext.longitude === "number"
+    hasFiniteCoordinates(locationContext)
       ? calculateDistance(
           locationContext.latitude,
           locationContext.longitude,
@@ -497,10 +504,7 @@ export function isGeoapifyEnabled() {
 }
 
 export async function resolveGeoapifyLocation(locationInput = {}) {
-  if (
-    typeof locationInput.latitude === "number" &&
-    typeof locationInput.longitude === "number"
-  ) {
+  if (hasFiniteCoordinates(locationInput)) {
     return {
       city: locationInput.city || "",
       state: locationInput.state || "",
@@ -522,6 +526,12 @@ export async function resolveGeoapifyLocation(locationInput = {}) {
     const result = Array.isArray(data?.results) ? data.results[0] : null;
     if (!result) return null;
 
+    const latitude = Number(result.lat);
+    const longitude = Number(result.lon);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      return null;
+    }
+
     return {
       city:
         result.city ||
@@ -530,8 +540,8 @@ export async function resolveGeoapifyLocation(locationInput = {}) {
         "",
       state: result.state || locationInput.state || "",
       country: result.country || locationInput.country || "",
-      latitude: Number(result.lat),
-      longitude: Number(result.lon),
+      latitude,
+      longitude,
       placeId: result.place_id || result.placeId || undefined,
     };
   } catch (error) {
@@ -558,14 +568,17 @@ export async function searchGeoapifyRestaurants(params = {}, locationContext = {
 
   if (locationContext.placeId) {
     url.searchParams.set("filter", `place:${locationContext.placeId}`);
-  } else if (
-    typeof locationContext.latitude === "number" &&
-    typeof locationContext.longitude === "number"
-  ) {
+  } else if (hasFiniteCoordinates(locationContext)) {
     url.searchParams.set(
       "filter",
       `circle:${locationContext.longitude},${locationContext.latitude},${params.radiusMeters || 3000}`,
     );
+  } else {
+    return {
+      restaurants: [],
+      location: locationContext,
+      count: 0,
+    };
   }
 
   const data = await fetchGeoapifyPlaces(url);
