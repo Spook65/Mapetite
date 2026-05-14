@@ -23,6 +23,7 @@
 				--shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
 				--radius: 12px;
 				--section-width: min(1240px, calc(100vw - 64px));
+				--header-offset: 96px;
 			}
 
 			* {
@@ -64,6 +65,12 @@
 				font: inherit;
 			}
 
+			a:focus-visible,
+			button:focus-visible {
+				outline: 2px solid rgba(212, 154, 102, 0.9);
+				outline-offset: 3px;
+			}
+
 			.page-shell {
 				position: relative;
 				overflow: hidden;
@@ -74,7 +81,7 @@
 				top: 0;
 				z-index: 20;
 				backdrop-filter: blur(10px);
-				background: rgba(21, 17, 14, 0.72);
+				background: rgba(21, 17, 14, 0.82);
 				border-bottom: 1px solid rgba(255, 234, 214, 0.06);
 			}
 
@@ -121,7 +128,7 @@
 			.nav-actions a {
 				font-size: 14px;
 				color: var(--text-soft);
-				transition: color 150ms ease, opacity 150ms ease;
+				transition: color 150ms ease, opacity 150ms ease, background-color 150ms ease, border-color 150ms ease;
 			}
 
 			.nav-links a:hover,
@@ -138,7 +145,7 @@
 			}
 
 			.hero {
-				padding: 80px 0 28px;
+				padding: 92px 0 44px;
 			}
 
 			.hero-inner {
@@ -172,15 +179,15 @@
 			}
 
 			.hero-copy p.lead {
-				margin: 22px 0 0;
-				max-width: 560px;
+				margin: 20px 0 0;
+				max-width: 600px;
 				font-size: 18px;
 				line-height: 1.65;
 				color: var(--text-soft);
 			}
 
 			.hero-actions {
-				margin-top: 28px;
+				margin-top: 34px;
 				display: flex;
 				align-items: center;
 				gap: 14px;
@@ -260,13 +267,39 @@
 			}
 
 			.search-band {
-				padding: 28px 0 52px;
+				padding: 24px 0 72px;
+				scroll-margin-top: var(--header-offset);
+			}
+
+			.search-band-copy {
+				width: var(--section-width);
+				margin: 0 auto 18px;
+				display: grid;
+				grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+				gap: 32px;
+				align-items: end;
+			}
+
+			.search-band-copy h2 {
+				margin: 0;
+				font-size: clamp(32px, 3vw, 42px);
+				line-height: 1.03;
+				letter-spacing: -0.05em;
+				font-weight: 610;
+			}
+
+			.search-band-copy p {
+				margin: 0;
+				max-width: 520px;
+				font-size: 15px;
+				line-height: 1.65;
+				color: var(--text-soft);
 			}
 
 			.search-band-inner {
 				width: var(--section-width);
 				margin: 0 auto;
-				padding: 22px 24px;
+				padding: 24px 24px;
 				display: grid;
 				grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr) auto;
 				gap: 18px;
@@ -309,7 +342,7 @@
 
 			.search-band-meta {
 				width: var(--section-width);
-				margin: 18px auto 0;
+				margin: 16px auto 0;
 				display: flex;
 				align-items: center;
 				justify-content: space-between;
@@ -327,7 +360,7 @@
 				display: inline-flex;
 				align-items: center;
 				gap: 10px;
-				padding: 10px 14px;
+				padding: 10px 16px;
 				border-radius: 999px;
 				border: 1px solid rgba(255, 234, 214, 0.1);
 				color: var(--text-soft);
@@ -342,7 +375,7 @@
 			}
 
 			.section {
-				padding: 68px 0;
+				padding: 78px 0;
 			}
 
 			.section-inner {
@@ -429,18 +462,20 @@
 				background: rgba(255, 248, 242, 0.03);
 				border: 1px solid rgba(255, 234, 214, 0.08);
 				border-radius: 10px;
-				transition: background-color 150ms ease, border-color 150ms ease;
+				transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
 			}
 
 			.discovery-card:hover {
 				background: rgba(255, 248, 242, 0.05);
 				border-color: rgba(255, 234, 214, 0.14);
+				transform: translateY(-1px);
 			}
 
 			.city-section {
 				border-top: 1px solid rgba(255, 234, 214, 0.06);
 				border-bottom: 1px solid rgba(255, 234, 214, 0.06);
 				background: rgba(255, 248, 242, 0.02);
+				scroll-margin-top: var(--header-offset);
 			}
 
 			.city-strip {
@@ -478,13 +513,14 @@
 				background: rgba(255, 248, 242, 0.04);
 				color: inherit;
 				cursor: pointer;
-				transition: background-color 150ms ease, border-color 150ms ease;
+				transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
 			}
 
 			.city-dock button:hover,
 			.city-dock button.active {
 				background: rgba(212, 154, 102, 0.12);
 				border-color: rgba(212, 154, 102, 0.26);
+				transform: translateY(-1px);
 			}
 
 			.city-dock strong {
@@ -516,6 +552,13 @@
 				background: linear-gradient(180deg, rgba(255, 248, 242, 0.04), rgba(255, 248, 242, 0.02));
 				border: 1px solid rgba(255, 234, 214, 0.08);
 				border-radius: 12px;
+				transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+			}
+
+			.journey-card:hover {
+				border-color: rgba(255, 234, 214, 0.14);
+				background: linear-gradient(180deg, rgba(255, 248, 242, 0.05), rgba(255, 248, 242, 0.025));
+				transform: translateY(-1px);
 			}
 
 			.journey-tag {
@@ -571,8 +614,33 @@
 				color: rgba(243, 232, 221, 0.4);
 			}
 
+			#preview,
+			#experience {
+				scroll-margin-top: var(--header-offset);
+			}
+
+			@media (max-width: 1240px) {
+				.hero-inner {
+					gap: 36px;
+				}
+
+				.search-band-copy {
+					grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+				}
+
+				.search-band-inner {
+					grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+				}
+
+				.search-band-inner .button.primary {
+					grid-column: 1 / -1;
+					width: 100%;
+				}
+			}
+
 			@media (max-width: 1100px) {
 				.hero-inner,
+				.search-band-copy,
 				.section-head,
 				.discovery-grid,
 				.city-strip {
@@ -604,6 +672,7 @@
 			@media (max-width: 760px) {
 				:root {
 					--section-width: min(100vw - 32px, 1240px);
+					--header-offset: 84px;
 				}
 
 				.topbar {
@@ -620,7 +689,7 @@
 				}
 
 				.hero {
-					padding-top: 56px;
+					padding-top: 60px;
 				}
 
 				.hero-ribbon {
@@ -703,6 +772,13 @@
 			</section>
 
 			<section class="search-band" id="search">
+				<div class="search-band-copy">
+					<h2>Start with a place, then open the restaurant list.</h2>
+					<p>
+						The search dock stays simple on purpose: choose a city start, keep the CTA visible,
+						and move into the shortlist before adding more decision-making.
+					</p>
+				</div>
 				<div class="search-band-inner">
 					<div class="search-field">
 						<div class="search-label">Starting point</div>
@@ -719,6 +795,38 @@
 				<div class="search-band-meta">
 					<p>City shortcuts live just below, so the search band stays easy to scan.</p>
 					<a class="band-link" href="#cities">Browse city starts</a>
+				</div>
+			</section>
+
+			<section class="section city-section" id="cities">
+				<div class="section-inner">
+					<div class="city-strip">
+						<div class="city-copy">
+							<h2>City starts that change the tone of the search.</h2>
+							<p>
+								Pick a destination once. Let the page adapt around that choice instead of
+								repeating the same city in multiple card grids.
+							</p>
+						</div>
+						<div class="city-dock" id="city-dock">
+							<button class="active" type="button" data-city="tokyo">
+								<strong>Tokyo</strong>
+								<span>Sharper shortlist, quieter counters, late decisions.</span>
+							</button>
+							<button type="button" data-city="paris">
+								<strong>Paris</strong>
+								<span>Slower city start with bistros, tasting menus, and wine.</span>
+							</button>
+							<button type="button" data-city="london">
+								<strong>London</strong>
+								<span>Broader range when variety matters more than a single mood.</span>
+							</button>
+							<button type="button" data-city="dubai">
+								<strong>Dubai</strong>
+								<span>Occasion-led search with polished rooms and late plans.</span>
+							</button>
+						</div>
+					</div>
 				</div>
 			</section>
 
@@ -773,38 +881,6 @@
 									sit close enough to make the decision easy.
 								</p>
 							</article>
-						</div>
-					</div>
-				</div>
-			</section>
-
-			<section class="section city-section" id="cities">
-				<div class="section-inner">
-					<div class="city-strip">
-						<div class="city-copy">
-							<h2>City starts that change the tone of the search.</h2>
-							<p>
-								Pick a destination once. Let the page adapt around that choice instead of
-								repeating the same city in multiple card grids.
-							</p>
-						</div>
-						<div class="city-dock" id="city-dock">
-							<button class="active" type="button" data-city="tokyo">
-								<strong>Tokyo</strong>
-								<span>Sharper shortlist, quieter counters, late decisions.</span>
-							</button>
-							<button type="button" data-city="paris">
-								<strong>Paris</strong>
-								<span>Slower city start with bistros, tasting menus, and wine.</span>
-							</button>
-							<button type="button" data-city="london">
-								<strong>London</strong>
-								<span>Broader range when variety matters more than a single mood.</span>
-							</button>
-							<button type="button" data-city="dubai">
-								<strong>Dubai</strong>
-								<span>Occasion-led search with polished rooms and late plans.</span>
-							</button>
 						</div>
 					</div>
 				</div>
