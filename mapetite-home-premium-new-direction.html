@@ -32,6 +32,7 @@
 
 			html {
 				scroll-behavior: smooth;
+				scroll-padding-top: var(--header-offset);
 			}
 
 			body {
@@ -308,6 +309,10 @@
 				border: 1px solid rgba(255, 234, 214, 0.09);
 				border-radius: 14px;
 				box-shadow: var(--shadow);
+			}
+
+			.search-band-inner .button.primary {
+				min-width: 216px;
 			}
 
 			.search-field {
@@ -615,6 +620,7 @@
 			}
 
 			#preview,
+			#city-starts,
 			#experience {
 				scroll-margin-top: var(--header-offset);
 			}
@@ -718,14 +724,14 @@
 						<span>Mapetite</span>
 					</div>
 					<nav class="nav-links">
-						<a href="#intro">Discover</a>
-						<a href="#search">Search</a>
-						<a href="#preview">Preview</a>
-						<a href="#experience">Experience</a>
+						<a href="#intro" data-scroll-target="intro">Discover</a>
+						<a href="#search" data-scroll-target="search">Search</a>
+						<a href="#city-starts" data-scroll-target="city-starts">City starts</a>
+						<a href="#experience" data-scroll-target="experience">Experience</a>
 					</nav>
 					<div class="nav-actions">
-						<a href="#">Log in</a>
-						<a class="open-link" href="#search">Open search</a>
+						<a href="#" data-app-action="login">Log in</a>
+						<a class="open-link" href="#search" data-app-action="search-restaurants">Open search</a>
 					</div>
 				</div>
 			</header>
@@ -740,8 +746,8 @@
 							shortlist, and open restaurant details only when the choice gets real.
 						</p>
 						<div class="hero-actions">
-							<a class="button primary" href="#search">Search restaurants</a>
-							<a class="button secondary" href="#preview">See the discovery flow</a>
+							<a class="button primary" href="#search" data-app-action="search-restaurants">Search restaurants</a>
+							<a class="button secondary" href="#city-starts" data-scroll-target="city-starts">Browse city starts</a>
 						</div>
 					</div>
 
@@ -790,15 +796,15 @@
 						<div class="search-value">Restaurant discovery</div>
 						<div class="search-subvalue">Open the list first, refine once the options are visible.</div>
 					</div>
-					<a class="button primary" href="#preview">Search restaurants</a>
+					<a class="button primary" href="#preview" data-app-action="search-restaurants">Search restaurants</a>
 				</div>
 				<div class="search-band-meta">
-					<p>City shortcuts live just below, so the search band stays easy to scan.</p>
-					<a class="band-link" href="#cities">Browse city starts</a>
+					<p>Search stays primary. City starts and the shortlist preview sit one step below.</p>
+					<a class="band-link" href="#preview" data-scroll-target="preview">Preview the shortlist flow</a>
 				</div>
 			</section>
 
-			<section class="section city-section" id="cities">
+			<section class="section city-section" id="city-starts">
 				<div class="section-inner">
 					<div class="city-strip">
 						<div class="city-copy">
@@ -809,19 +815,19 @@
 							</p>
 						</div>
 						<div class="city-dock" id="city-dock">
-							<button class="active" type="button" data-city="tokyo">
+							<button class="active" type="button" data-city="tokyo" data-app-action="city-shortcut">
 								<strong>Tokyo</strong>
 								<span>Sharper shortlist, quieter counters, late decisions.</span>
 							</button>
-							<button type="button" data-city="paris">
+							<button type="button" data-city="paris" data-app-action="city-shortcut">
 								<strong>Paris</strong>
 								<span>Slower city start with bistros, tasting menus, and wine.</span>
 							</button>
-							<button type="button" data-city="london">
+							<button type="button" data-city="london" data-app-action="city-shortcut">
 								<strong>London</strong>
 								<span>Broader range when variety matters more than a single mood.</span>
 							</button>
-							<button type="button" data-city="dubai">
+							<button type="button" data-city="dubai" data-app-action="city-shortcut">
 								<strong>Dubai</strong>
 								<span>Occasion-led search with polished rooms and late plans.</span>
 							</button>
@@ -941,7 +947,7 @@
 						The homepage stays clear, the search stays primary, and the deeper product moments
 						have room to arrive later.
 					</p>
-					<a class="button primary" href="#search">Search restaurants</a>
+					<a class="button primary" href="#search" data-app-action="search-restaurants">Search restaurants</a>
 				</div>
 			</section>
 
