@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mapetite Premium New Direction Prototype</title>
+		<style>
+			:root {
+				color-scheme: dark;
+				--bg: #15110e;
+				--bg-soft: #1b1612;
+				--panel: #211a15;
+				--panel-2: #2a211a;
+				--panel-3: #31261d;
+				--line: rgba(255, 234, 214, 0.1);
+				--line-strong: rgba(255, 234, 214, 0.18);
+				--text: #f3e8dd;
+				--text-soft: rgba(243, 232, 221, 0.72);
+				--text-faint: rgba(243, 232, 221, 0.52);
+				--accent: #d49a66;
+				--accent-2: #b56f45;
+				--accent-soft: rgba(212, 154, 102, 0.16);
+				--shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+				--radius: 12px;
+				--section-width: min(1240px, calc(100vw - 64px));
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html {
+				scroll-behavior: smooth;
+			}
+
+			body {
+				margin: 0;
+				font-family: "SF Pro Display", "Helvetica Neue", Helvetica, sans-serif;
+				background:
+					radial-gradient(circle at top center, rgba(181, 111, 69, 0.14), transparent 28%),
+					linear-gradient(180deg, #18120f 0%, #130f0d 52%, #120e0c 100%);
+				color: var(--text);
+			}
+
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				background-image:
+					linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+				background-size: 100% 140px, 140px 100%;
+				mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.45), transparent 84%);
+				opacity: 0.26;
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+
+			button {
+				font: inherit;
+			}
+
+			.page-shell {
+				position: relative;
+				overflow: hidden;
+			}
+
+			.site-header {
+				position: sticky;
+				top: 0;
+				z-index: 20;
+				backdrop-filter: blur(10px);
+				background: rgba(21, 17, 14, 0.72);
+				border-bottom: 1px solid rgba(255, 234, 214, 0.06);
+			}
+
+			.topbar {
+				width: var(--section-width);
+				margin: 0 auto;
+				min-height: 76px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 24px;
+			}
+
+			.brand {
+				display: inline-flex;
+				align-items: center;
+				gap: 12px;
+				font-size: 14px;
+				font-weight: 600;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+			}
+
+			.brand-mark {
+				width: 34px;
+				height: 34px;
+				border-radius: 10px;
+				display: grid;
+				place-items: center;
+				background: linear-gradient(180deg, rgba(212, 154, 102, 0.22), rgba(181, 111, 69, 0.1));
+				border: 1px solid rgba(212, 154, 102, 0.24);
+				color: #f8e5d2;
+				font-size: 15px;
+			}
+
+			.nav-links,
+			.nav-actions {
+				display: flex;
+				align-items: center;
+				gap: 18px;
+			}
+
+			.nav-links a,
+			.nav-actions a {
+				font-size: 14px;
+				color: var(--text-soft);
+				transition: color 150ms ease, opacity 150ms ease;
+			}
+
+			.nav-links a:hover,
+			.nav-actions a:hover {
+				color: var(--text);
+			}
+
+			.nav-actions .open-link {
+				padding: 10px 16px;
+				border-radius: 10px;
+				background: rgba(255, 244, 234, 0.06);
+				border: 1px solid rgba(255, 234, 214, 0.1);
+				color: var(--text);
+			}
+
+			.hero {
+				padding: 80px 0 28px;
+			}
+
+			.hero-inner {
+				width: var(--section-width);
+				margin: 0 auto;
+				display: grid;
+				grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+				gap: 48px;
+				align-items: end;
+			}
+
+			.hero-copy {
+				max-width: 720px;
+			}
+
+			.kicker {
+				margin: 0 0 18px;
+				font-size: 12px;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+				color: rgba(243, 232, 221, 0.56);
+			}
+
+			h1 {
+				margin: 0;
+				max-width: 10ch;
+				font-size: clamp(56px, 6.5vw, 84px);
+				line-height: 0.95;
+				letter-spacing: -0.06em;
+				font-weight: 640;
+			}
+
+			.hero-copy p.lead {
+				margin: 22px 0 0;
+				max-width: 560px;
+				font-size: 18px;
+				line-height: 1.65;
+				color: var(--text-soft);
+			}
+
+			.hero-actions {
+				margin-top: 28px;
+				display: flex;
+				align-items: center;
+				gap: 14px;
+				flex-wrap: wrap;
+			}
+
+			.button {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				min-height: 50px;
+				padding: 0 22px;
+				border-radius: 10px;
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+			}
+
+			.button.primary {
+				background: var(--accent);
+				color: #20140d;
+				font-weight: 650;
+			}
+
+			.button.primary:hover {
+				background: #dea878;
+			}
+
+			.button.secondary {
+				background: transparent;
+				border-color: rgba(255, 234, 214, 0.14);
+				color: var(--text);
+			}
+
+			.button.secondary:hover {
+				background: rgba(255, 244, 234, 0.05);
+			}
+
+			.hero-aside {
+				display: grid;
+				gap: 12px;
+				align-self: center;
+			}
+
+			.hero-ribbon {
+				display: grid;
+				grid-template-columns: 80px 1fr;
+				gap: 18px;
+				padding: 20px 0;
+				border-top: 1px solid var(--line);
+			}
+
+			.hero-ribbon:last-child {
+				border-bottom: 1px solid var(--line);
+			}
+
+			.hero-ribbon span {
+				font-size: 12px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: rgba(243, 232, 221, 0.48);
+			}
+
+			.hero-ribbon strong {
+				display: block;
+				font-size: 20px;
+				font-weight: 580;
+				letter-spacing: -0.03em;
+			}
+
+			.hero-ribbon p {
+				margin: 6px 0 0;
+				font-size: 15px;
+				line-height: 1.55;
+				color: var(--text-soft);
+			}
+
+			.search-band {
+				padding: 28px 0 52px;
+			}
+
+			.search-band-inner {
+				width: var(--section-width);
+				margin: 0 auto;
+				padding: 22px 24px;
+				display: grid;
+				grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr) auto;
+				gap: 18px;
+				align-items: center;
+				background: rgba(34, 27, 22, 0.76);
+				border: 1px solid rgba(255, 234, 214, 0.09);
+				border-radius: 14px;
+				box-shadow: var(--shadow);
+			}
+
+			.search-field {
+				display: grid;
+				gap: 8px;
+				padding-right: 18px;
+				border-right: 1px solid rgba(255, 234, 214, 0.08);
+			}
+
+			.search-field:last-of-type {
+				border-right: 0;
+				padding-right: 0;
+			}
+
+			.search-label {
+				font-size: 12px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: rgba(243, 232, 221, 0.5);
+			}
+
+			.search-value {
+				font-size: 18px;
+				font-weight: 580;
+				letter-spacing: -0.02em;
+			}
+
+			.search-subvalue {
+				font-size: 14px;
+				color: var(--text-soft);
+			}
+
+			.search-band-meta {
+				width: var(--section-width);
+				margin: 18px auto 0;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 24px;
+				flex-wrap: wrap;
+			}
+
+			.search-band-meta p {
+				margin: 0;
+				font-size: 14px;
+				color: var(--text-faint);
+			}
+
+			.band-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				padding: 10px 14px;
+				border-radius: 999px;
+				border: 1px solid rgba(255, 234, 214, 0.1);
+				color: var(--text-soft);
+				background: rgba(255, 244, 234, 0.03);
+				transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+			}
+
+			.band-link:hover {
+				background: rgba(255, 244, 234, 0.06);
+				border-color: rgba(255, 234, 214, 0.16);
+				color: var(--text);
+			}
+
+			.section {
+				padding: 68px 0;
+			}
+
+			.section-inner {
+				width: var(--section-width);
+				margin: 0 auto;
+			}
+
+			.section-head {
+				display: grid;
+				grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr);
+				gap: 32px;
+				align-items: end;
+				margin-bottom: 28px;
+			}
+
+			.section-head h2 {
+				margin: 0;
+				font-size: clamp(34px, 4vw, 48px);
+				line-height: 1.02;
+				letter-spacing: -0.05em;
+				font-weight: 620;
+			}
+
+			.section-head p {
+				margin: 0;
+				font-size: 16px;
+				line-height: 1.65;
+				color: var(--text-soft);
+			}
+
+			.discovery-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+				gap: 22px;
+			}
+
+			.discovery-feature {
+				min-height: 340px;
+				padding: 28px;
+				display: grid;
+				align-content: space-between;
+				background:
+					linear-gradient(180deg, rgba(255, 248, 242, 0.02), rgba(255, 248, 242, 0.01)),
+					linear-gradient(135deg, rgba(212, 154, 102, 0.16), rgba(181, 111, 69, 0.04) 46%, rgba(0, 0, 0, 0) 100%);
+				border: 1px solid rgba(255, 234, 214, 0.08);
+				border-radius: var(--radius);
+			}
+
+			.discovery-feature .eyebrow,
+			.discovery-card .eyebrow,
+			.journey-card .eyebrow {
+				font-size: 12px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: rgba(243, 232, 221, 0.52);
+			}
+
+			.discovery-feature h3,
+			.discovery-card h3,
+			.journey-card h3 {
+				margin: 0;
+				font-size: 32px;
+				line-height: 1.08;
+				letter-spacing: -0.04em;
+				font-weight: 600;
+			}
+
+			.discovery-feature p,
+			.discovery-card p,
+			.journey-card p {
+				margin: 10px 0 0;
+				font-size: 15px;
+				line-height: 1.65;
+				color: var(--text-soft);
+			}
+
+			.discovery-list {
+				display: grid;
+				gap: 18px;
+			}
+
+			.discovery-card {
+				padding: 22px;
+				background: rgba(255, 248, 242, 0.03);
+				border: 1px solid rgba(255, 234, 214, 0.08);
+				border-radius: 10px;
+				transition: background-color 150ms ease, border-color 150ms ease;
+			}
+
+			.discovery-card:hover {
+				background: rgba(255, 248, 242, 0.05);
+				border-color: rgba(255, 234, 214, 0.14);
+			}
+
+			.city-section {
+				border-top: 1px solid rgba(255, 234, 214, 0.06);
+				border-bottom: 1px solid rgba(255, 234, 214, 0.06);
+				background: rgba(255, 248, 242, 0.02);
+			}
+
+			.city-strip {
+				display: grid;
+				grid-template-columns: minmax(220px, 0.55fr) minmax(0, 1.45fr);
+				gap: 28px;
+				align-items: center;
+			}
+
+			.city-copy h2 {
+				margin: 0;
+				font-size: 28px;
+				letter-spacing: -0.04em;
+				font-weight: 600;
+			}
+
+			.city-copy p {
+				margin: 10px 0 0;
+				font-size: 15px;
+				line-height: 1.65;
+				color: var(--text-soft);
+			}
+
+			.city-dock {
+				display: grid;
+				grid-template-columns: repeat(4, minmax(0, 1fr));
+				gap: 14px;
+			}
+
+			.city-dock button {
+				padding: 18px 16px;
+				text-align: left;
+				border-radius: 10px;
+				border: 1px solid rgba(255, 234, 214, 0.09);
+				background: rgba(255, 248, 242, 0.04);
+				color: inherit;
+				cursor: pointer;
+				transition: background-color 150ms ease, border-color 150ms ease;
+			}
+
+			.city-dock button:hover,
+			.city-dock button.active {
+				background: rgba(212, 154, 102, 0.12);
+				border-color: rgba(212, 154, 102, 0.26);
+			}
+
+			.city-dock strong {
+				display: block;
+				font-size: 18px;
+				font-weight: 600;
+				letter-spacing: -0.03em;
+			}
+
+			.city-dock span {
+				display: block;
+				margin-top: 6px;
+				font-size: 13px;
+				line-height: 1.5;
+				color: var(--text-soft);
+			}
+
+			.journey-grid {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 18px;
+			}
+
+			.journey-card {
+				padding: 24px;
+				min-height: 220px;
+				display: grid;
+				align-content: space-between;
+				background: linear-gradient(180deg, rgba(255, 248, 242, 0.04), rgba(255, 248, 242, 0.02));
+				border: 1px solid rgba(255, 234, 214, 0.08);
+				border-radius: 12px;
+			}
+
+			.journey-tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 13px;
+				color: rgba(243, 232, 221, 0.68);
+			}
+
+			.journey-dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 999px;
+				background: var(--accent);
+			}
+
+			.final-cta {
+				padding: 88px 0 100px;
+			}
+
+			.final-cta-inner {
+				width: min(900px, calc(100vw - 64px));
+				margin: 0 auto;
+				text-align: center;
+			}
+
+			.final-cta h2 {
+				margin: 0;
+				font-size: clamp(38px, 4.2vw, 58px);
+				line-height: 1.02;
+				letter-spacing: -0.05em;
+				font-weight: 620;
+			}
+
+			.final-cta p {
+				margin: 18px auto 0;
+				max-width: 620px;
+				font-size: 17px;
+				line-height: 1.7;
+				color: var(--text-soft);
+			}
+
+			.final-cta .button {
+				margin-top: 28px;
+			}
+
+			.note {
+				width: min(900px, calc(100vw - 64px));
+				margin: 0 auto 40px;
+				text-align: center;
+				font-size: 13px;
+				color: rgba(243, 232, 221, 0.4);
+			}
+
+			@media (max-width: 1100px) {
+				.hero-inner,
+				.section-head,
+				.discovery-grid,
+				.city-strip {
+					grid-template-columns: 1fr;
+				}
+
+				.search-band-inner {
+					grid-template-columns: 1fr;
+				}
+
+				.search-field {
+					padding-right: 0;
+					padding-bottom: 16px;
+					border-right: 0;
+					border-bottom: 1px solid rgba(255, 234, 214, 0.08);
+				}
+
+				.search-field:last-of-type {
+					padding-bottom: 0;
+					border-bottom: 0;
+				}
+
+				.city-dock,
+				.journey-grid {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
+
+			@media (max-width: 760px) {
+				:root {
+					--section-width: min(100vw - 32px, 1240px);
+				}
+
+				.topbar {
+					min-height: 72px;
+				}
+
+				.nav-links {
+					display: none;
+				}
+
+				h1 {
+					font-size: clamp(42px, 12vw, 64px);
+					max-width: 11ch;
+				}
+
+				.hero {
+					padding-top: 56px;
+				}
+
+				.hero-ribbon {
+					grid-template-columns: 1fr;
+					gap: 8px;
+				}
+
+				.city-dock,
+				.journey-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.section,
+				.final-cta {
+					padding: 56px 0;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page-shell">
+			<header class="site-header">
+				<div class="topbar">
+					<div class="brand">
+						<div class="brand-mark">M</div>
+						<span>Mapetite</span>
+					</div>
+					<nav class="nav-links">
+						<a href="#intro">Discover</a>
+						<a href="#search">Search</a>
+						<a href="#preview">Preview</a>
+						<a href="#experience">Experience</a>
+					</nav>
+					<div class="nav-actions">
+						<a href="#">Log in</a>
+						<a class="open-link" href="#search">Open search</a>
+					</div>
+				</div>
+			</header>
+
+			<section class="hero" id="intro">
+				<div class="hero-inner">
+					<div class="hero-copy">
+						<p class="kicker">Restaurant discovery with a clearer starting point</p>
+						<h1>Search with a city in mind, not a dashboard to decode.</h1>
+						<p class="lead">
+							Mapetite helps you begin with place, move quickly through the
+							shortlist, and open restaurant details only when the choice gets real.
+						</p>
+						<div class="hero-actions">
+							<a class="button primary" href="#search">Search restaurants</a>
+							<a class="button secondary" href="#preview">See the discovery flow</a>
+						</div>
+					</div>
+
+					<div class="hero-aside" aria-label="Mapetite product flow preview">
+						<div class="hero-ribbon">
+							<span>Choose</span>
+							<div>
+								<strong>Start with a city that fits the night.</strong>
+								<p>Pick a place, not a dense filter panel, then let the list do the work.</p>
+							</div>
+						</div>
+						<div class="hero-ribbon">
+							<span>Refine</span>
+							<div>
+								<strong>Trim the shortlist once restaurants are visible.</strong>
+								<p>Ratings, price, cuisine, and neighborhood become useful after the search opens.</p>
+							</div>
+						</div>
+						<div class="hero-ribbon">
+							<span>Decide</span>
+							<div>
+								<strong>Open details when the choice actually matters.</strong>
+								<p>Photos, saved places, directions, and side-by-side comparison come later.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="search-band" id="search">
+				<div class="search-band-inner">
+					<div class="search-field">
+						<div class="search-label">Starting point</div>
+						<div class="search-value" id="search-city-label">Tokyo, Japan</div>
+						<div class="search-subvalue">Best when the night starts with a tighter shortlist.</div>
+					</div>
+					<div class="search-field">
+						<div class="search-label">Search mode</div>
+						<div class="search-value">Restaurant discovery</div>
+						<div class="search-subvalue">Open the list first, refine once the options are visible.</div>
+					</div>
+					<a class="button primary" href="#preview">Search restaurants</a>
+				</div>
+				<div class="search-band-meta">
+					<p>City shortcuts live just below, so the search band stays easy to scan.</p>
+					<a class="band-link" href="#cities">Browse city starts</a>
+				</div>
+			</section>
+
+			<section class="section" id="preview">
+				<div class="section-inner">
+					<div class="section-head">
+						<h2>What the search opens once you pick the right starting point.</h2>
+						<p>
+							This section stays focused on the product journey instead of repeating city cards.
+							It shows how Mapetite moves from place, to list, to decision.
+						</p>
+					</div>
+
+					<div class="discovery-grid">
+						<article class="discovery-feature">
+							<div>
+								<div class="eyebrow">Preview flow</div>
+								<h3 id="feature-title">Tokyo for quieter counters and strong late options.</h3>
+								<p id="feature-copy">
+									Begin with Tokyo when you want a controlled starting point: omakase,
+									ramen counters, hidden bars, and a shortlist that tightens quickly.
+								</p>
+							</div>
+							<p>
+								The first interaction is place-led. After that, the restaurant list, filters,
+								and detail pages do the heavy lifting.
+							</p>
+						</article>
+
+						<div class="discovery-list">
+							<article class="discovery-card">
+								<div class="eyebrow">Neighborhood search</div>
+								<h3>Move from broad city intent into more local choices.</h3>
+								<p>
+									Start with a city, then narrow by cuisine, price, or rating only after you
+									have restaurants worth comparing.
+								</p>
+							</article>
+							<article class="discovery-card">
+								<div class="eyebrow">Save and compare</div>
+								<h3>Keep finalists visible instead of memorizing the list.</h3>
+								<p>
+									Favorites, detail overlays, and side-by-side review should feel like the
+									next step, not a second app.
+								</p>
+							</article>
+							<article class="discovery-card">
+								<div class="eyebrow">Directions when ready</div>
+								<h3>Shift from discovery to action without losing context.</h3>
+								<p>
+									Once a restaurant earns attention, details, media, and directions should
+									sit close enough to make the decision easy.
+								</p>
+							</article>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="section city-section" id="cities">
+				<div class="section-inner">
+					<div class="city-strip">
+						<div class="city-copy">
+							<h2>City starts that change the tone of the search.</h2>
+							<p>
+								Pick a destination once. Let the page adapt around that choice instead of
+								repeating the same city in multiple card grids.
+							</p>
+						</div>
+						<div class="city-dock" id="city-dock">
+							<button class="active" type="button" data-city="tokyo">
+								<strong>Tokyo</strong>
+								<span>Sharper shortlist, quieter counters, late decisions.</span>
+							</button>
+							<button type="button" data-city="paris">
+								<strong>Paris</strong>
+								<span>Slower city start with bistros, tasting menus, and wine.</span>
+							</button>
+							<button type="button" data-city="london">
+								<strong>London</strong>
+								<span>Broader range when variety matters more than a single mood.</span>
+							</button>
+							<button type="button" data-city="dubai">
+								<strong>Dubai</strong>
+								<span>Occasion-led search with polished rooms and late plans.</span>
+							</button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="section" id="experience">
+				<div class="section-inner">
+					<div class="section-head">
+						<h2>Make room for the product to deepen after the first search.</h2>
+						<p>
+							Instead of stuffing every feature into the hero, this layout leaves space for the
+							parts that matter later: details, favorites, directions, and comparison.
+						</p>
+					</div>
+
+					<div class="journey-grid">
+						<article class="journey-card">
+							<div>
+								<div class="eyebrow">Open details</div>
+								<h3>Restaurant pages stay close to the shortlist.</h3>
+								<p>
+									Users should move from discovery to deeper reading without feeling like they
+									left the search flow.
+								</p>
+							</div>
+							<div class="journey-tag"><span class="journey-dot"></span> Photos, menus, media, story</div>
+						</article>
+						<article class="journey-card">
+							<div>
+								<div class="eyebrow">Save favorites</div>
+								<h3>Shortlists should support return visits and easier comparison.</h3>
+								<p>
+									Saved places work best when they feel like a natural extension of the list,
+									not a detached panel.
+								</p>
+							</div>
+							<div class="journey-tag"><span class="journey-dot"></span> Shortlist, compare, revisit</div>
+						</article>
+						<article class="journey-card">
+							<div>
+								<div class="eyebrow">Get directions</div>
+								<h3>Action should happen at the moment the restaurant feels right.</h3>
+								<p>
+									Once the choice becomes real, directions and booking-adjacent actions should
+									be one clean step away.
+								</p>
+							</div>
+							<div class="journey-tag"><span class="journey-dot"></span> Route, timing, next move</div>
+						</article>
+					</div>
+				</div>
+			</section>
+
+			<section class="final-cta">
+				<div class="final-cta-inner">
+					<h2>Start with a city, then let the restaurants earn the rest of your attention.</h2>
+					<p>
+						The homepage stays clear, the search stays primary, and the deeper product moments
+						have room to arrive later.
+					</p>
+					<a class="button primary" href="#search">Search restaurants</a>
+				</div>
+			</section>
+
+			<p class="note">
+				Standalone prototype. New direction study using a cinematic search dock and section-led product flow.
+			</p>
+		</div>
+
+		<script>
+			const cityData = {
+				tokyo: {
+					label: "Tokyo, Japan",
+					subvalue: "Best when the night starts with a tighter shortlist.",
+					title: "Tokyo for quieter counters and strong late options.",
+					copy:
+						"Begin with Tokyo when you want a controlled starting point: omakase, ramen counters, hidden bars, and a shortlist that tightens quickly.",
+				},
+				paris: {
+					label: "Paris, France",
+					subvalue: "Best when the plan wants a slower, more wine-led pace.",
+					title: "Paris for bistros, tasting menus, and slower evening plans.",
+					copy:
+						"Use Paris when the search should lean into neighborhood dining rooms, longer meals, and places that feel worth dressing for.",
+				},
+				london: {
+					label: "London, United Kingdom",
+					subvalue: "Best when range and variety matter more than one mood.",
+					title: "London for range, polish, and a broader city search.",
+					copy:
+						"Start with London when you want more search breadth at once: modern tasting rooms, classic dining, and flexible neighborhood options.",
+				},
+				dubai: {
+					label: "Dubai, UAE",
+					subvalue: "Best when the night needs stronger occasion energy.",
+					title: "Dubai for polished rooms and occasion-led restaurant plans.",
+					copy:
+						"Choose Dubai when the shortlist should open into bolder interiors, stronger arrival moments, and restaurants that feel built for the evening.",
+				},
+			};
+
+			const searchCityLabel = document.getElementById("search-city-label");
+			const featureTitle = document.getElementById("feature-title");
+			const featureCopy = document.getElementById("feature-copy");
+			const dockButtons = document.querySelectorAll("#city-dock button");
+
+			function setCity(city) {
+				const data = cityData[city];
+				searchCityLabel.textContent = data.label;
+				document.querySelector(".search-field .search-subvalue").textContent = data.subvalue;
+				featureTitle.textContent = data.title;
+				featureCopy.textContent = data.copy;
+				dockButtons.forEach((button) => button.classList.toggle("active", button.dataset.city === city));
+			}
+
+			dockButtons.forEach((node) => {
+				node.addEventListener("mouseenter", () => setCity(node.dataset.city));
+				node.addEventListener("focus", () => setCity(node.dataset.city));
+				node.addEventListener("click", () => setCity(node.dataset.city));
+			});
+		</script>
+	</body>
+</html>
