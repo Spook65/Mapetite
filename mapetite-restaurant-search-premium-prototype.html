@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mapetite Premium Restaurant Search Prototype</title>
+		<style>
+			:root {
+				color-scheme: dark;
+				--bg: #15110e;
+				--bg-2: #1b1511;
+				--surface: rgba(36, 29, 23, 0.84);
+				--surface-soft: rgba(255, 248, 242, 0.035);
+				--surface-strong: rgba(255, 248, 242, 0.055);
+				--line: rgba(255, 236, 220, 0.1);
+				--line-strong: rgba(255, 236, 220, 0.18);
+				--text: #f5e9de;
+				--text-soft: rgba(245, 233, 222, 0.74);
+				--text-faint: rgba(245, 233, 222, 0.48);
+				--accent: #d59a68;
+				--accent-strong: #b46c43;
+				--accent-soft: rgba(213, 154, 104, 0.14);
+				--shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+				--radius: 12px;
+				--section-width: min(1360px, calc(100vw - 56px));
+				--header-offset: 90px;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html {
+				scroll-behavior: smooth;
+				scroll-padding-top: var(--header-offset);
+			}
+
+			body {
+				margin: 0;
+				font-family: "SF Pro Display", "Helvetica Neue", Helvetica, sans-serif;
+				background:
+					radial-gradient(circle at top center, rgba(180, 108, 67, 0.16), transparent 24%),
+					linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
+				color: var(--text);
+			}
+
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				background-image:
+					linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+				background-size: 100% 140px, 140px 100%;
+				mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.48), transparent 84%);
+				opacity: 0.24;
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+
+			button,
+			input,
+			select {
+				font: inherit;
+			}
+
+			a:focus-visible,
+			button:focus-visible,
+			input:focus-visible,
+			select:focus-visible {
+				outline: 2px solid rgba(213, 154, 104, 0.92);
+				outline-offset: 3px;
+			}
+
+			.page-shell {
+				position: relative;
+				overflow-x: clip;
+			}
+
+			.site-header {
+				position: sticky;
+				top: 0;
+				z-index: 40;
+				backdrop-filter: blur(10px);
+				background: rgba(21, 17, 14, 0.82);
+				border-bottom: 1px solid rgba(255, 236, 220, 0.06);
+			}
+
+			.topbar,
+			.search-page {
+				width: var(--section-width);
+				margin: 0 auto;
+			}
+
+			.topbar {
+				min-height: 68px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 24px;
+			}
+
+			.brand {
+				display: inline-flex;
+				align-items: center;
+				gap: 12px;
+				font-size: 14px;
+				font-weight: 600;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+			}
+
+			.brand-mark {
+				width: 34px;
+				height: 34px;
+				border-radius: 10px;
+				display: grid;
+				place-items: center;
+				border: 1px solid rgba(213, 154, 104, 0.24);
+				background: linear-gradient(180deg, rgba(213, 154, 104, 0.2), rgba(180, 108, 67, 0.08));
+				color: #f7e7d6;
+				font-size: 15px;
+			}
+
+			.topbar-links,
+			.topbar-actions {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+			}
+
+			.topbar-links a,
+			.topbar-actions a {
+				font-size: 14px;
+				color: var(--text-soft);
+				transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+			}
+
+			.topbar-links a:hover,
+			.topbar-actions a:hover {
+				color: var(--text);
+			}
+
+			.topbar-actions .primary-link {
+				padding: 10px 14px;
+				border-radius: 10px;
+				background: rgba(213, 154, 104, 0.14);
+				border: 1px solid rgba(213, 154, 104, 0.24);
+				color: var(--text);
+			}
+
+			.search-page {
+				padding: 34px 0 88px;
+			}
+
+			.page-intro {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 28px;
+				align-items: end;
+				margin-bottom: 24px;
+			}
+
+			.label {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 12px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: rgba(245, 233, 222, 0.56);
+			}
+
+			.label::before {
+				content: "";
+				width: 28px;
+				height: 1px;
+				background: rgba(213, 154, 104, 0.58);
+			}
+
+			h1 {
+				margin: 16px 0 0;
+				font-size: clamp(42px, 5vw, 68px);
+				line-height: 0.96;
+				letter-spacing: -0.06em;
+				font-weight: 640;
+				max-width: 10ch;
+			}
+
+			.page-intro p {
+				margin: 16px 0 0;
+				max-width: 560px;
+				font-size: 17px;
+				line-height: 1.65;
+				color: var(--text-soft);
+			}
+
+			.intro-note {
+				padding: 14px 16px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.03);
+				max-width: 280px;
+				font-size: 13px;
+				line-height: 1.55;
+				color: var(--text-faint);
+			}
+
+			.panel {
+				background: var(--surface);
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				border-radius: 14px;
+				box-shadow: var(--shadow);
+			}
+
+			.search-header {
+				padding: 24px;
+				display: grid;
+				gap: 18px;
+			}
+
+			.search-head-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 18px;
+				flex-wrap: wrap;
+			}
+
+			.search-head-row strong {
+				font-size: 24px;
+				letter-spacing: -0.04em;
+				font-weight: 620;
+			}
+
+			.search-head-row span {
+				font-size: 14px;
+				color: var(--text-soft);
+			}
+
+			.search-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 0.8fr) auto auto;
+				gap: 14px;
+				align-items: end;
+			}
+
+			.field {
+				display: grid;
+				gap: 8px;
+			}
+
+			.field label {
+				font-size: 12px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: rgba(245, 233, 222, 0.48);
+			}
+
+			.field input,
+			.field select {
+				min-height: 52px;
+				padding: 0 14px;
+				border-radius: 10px;
+				border: 1px solid rgba(255, 236, 220, 0.1);
+				background: rgba(255, 248, 242, 0.04);
+				color: var(--text);
+			}
+
+			.button {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				min-height: 52px;
+				padding: 0 18px;
+				border-radius: 10px;
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+				white-space: nowrap;
+			}
+
+			.button:hover {
+				transform: translateY(-1px);
+			}
+
+			.button.primary {
+				background: var(--accent);
+				color: #20140d;
+				font-weight: 650;
+			}
+
+			.button.primary:hover {
+				background: #e0ab7c;
+			}
+
+			.button.secondary {
+				background: rgba(255, 248, 242, 0.03);
+				border-color: rgba(255, 236, 220, 0.12);
+				color: var(--text);
+			}
+
+			.button.secondary:hover {
+				background: rgba(255, 248, 242, 0.06);
+			}
+
+			.filter-toolbar {
+				margin-top: 18px;
+				padding: 18px 20px;
+				display: grid;
+				grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+				gap: 18px;
+				align-items: center;
+			}
+
+			.filter-group {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
+
+			.filter-pill,
+			.toggle-pill {
+				padding: 10px 14px;
+				border-radius: 999px;
+				border: 1px solid rgba(255, 236, 220, 0.12);
+				background: rgba(255, 248, 242, 0.03);
+				color: var(--text-soft);
+				cursor: pointer;
+				transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+			}
+
+			.filter-pill:hover,
+			.filter-pill.active,
+			.toggle-pill:hover,
+			.toggle-pill.active {
+				background: rgba(213, 154, 104, 0.12);
+				border-color: rgba(213, 154, 104, 0.24);
+				color: var(--text);
+				transform: translateY(-1px);
+			}
+
+			.filter-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				justify-content: flex-end;
+			}
+
+			.sort-select {
+				min-height: 42px;
+				padding: 0 12px;
+				border-radius: 10px;
+				border: 1px solid rgba(255, 236, 220, 0.1);
+				background: rgba(255, 248, 242, 0.04);
+				color: var(--text);
+			}
+
+			.results-layout {
+				margin-top: 22px;
+				display: grid;
+				grid-template-columns: minmax(0, 1.15fr) minmax(320px, 0.85fr);
+				gap: 22px;
+				align-items: start;
+			}
+
+			.results-column {
+				display: grid;
+				gap: 16px;
+			}
+
+			.results-head {
+				padding: 18px 20px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+
+			.results-head strong {
+				font-size: 22px;
+				letter-spacing: -0.04em;
+				font-weight: 620;
+			}
+
+			.results-head span {
+				font-size: 14px;
+				color: var(--text-soft);
+			}
+
+			.result-card {
+				width: 100%;
+				padding: 18px;
+				text-align: left;
+				display: grid;
+				grid-template-columns: 172px minmax(0, 1fr) auto;
+				gap: 16px;
+				align-items: stretch;
+				border-radius: 14px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: var(--surface);
+				color: inherit;
+				cursor: pointer;
+				transition: background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+			}
+
+			.result-card:hover,
+			.result-card.active {
+				background: rgba(255, 248, 242, 0.05);
+				border-color: rgba(213, 154, 104, 0.24);
+				transform: translateY(-1px);
+			}
+
+			.result-media {
+				border-radius: 12px;
+				background:
+					linear-gradient(180deg, rgba(255, 248, 242, 0.05), rgba(255, 248, 242, 0.02)),
+					linear-gradient(135deg, rgba(213, 154, 104, 0.18), rgba(180, 108, 67, 0.04) 44%, transparent 100%);
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				min-height: 132px;
+				display: grid;
+				align-content: end;
+				padding: 14px;
+			}
+
+			.result-media span {
+				font-size: 12px;
+				color: rgba(245, 233, 222, 0.66);
+			}
+
+			.result-copy {
+				display: grid;
+				gap: 10px;
+			}
+
+			.result-meta-top {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+
+			.result-copy h3 {
+				margin: 0;
+				font-size: 26px;
+				letter-spacing: -0.04em;
+				font-weight: 620;
+			}
+
+			.rating-chip {
+				padding: 8px 12px;
+				border-radius: 999px;
+				border: 1px solid rgba(255, 236, 220, 0.1);
+				background: rgba(255, 248, 242, 0.03);
+				font-size: 13px;
+				color: var(--text-soft);
+			}
+
+			.result-copy p {
+				margin: 0;
+				font-size: 15px;
+				line-height: 1.6;
+				color: var(--text-soft);
+			}
+
+			.result-tags {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
+
+			.result-actions {
+				display: flex;
+				flex-direction: column;
+				justify-content: space-between;
+				align-items: flex-end;
+				gap: 12px;
+				min-width: 120px;
+			}
+
+			.preview-action {
+				padding: 9px 12px;
+				border-radius: 999px;
+				border: 1px solid rgba(255, 236, 220, 0.1);
+				background: rgba(255, 248, 242, 0.03);
+				color: var(--text-soft);
+				font-size: 13px;
+			}
+
+			.detail-panel {
+				position: sticky;
+				top: calc(var(--header-offset) + 18px);
+				padding: 22px;
+				display: grid;
+				gap: 18px;
+			}
+
+			.detail-top {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+
+			.detail-top span {
+				font-size: 12px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: rgba(245, 233, 222, 0.5);
+			}
+
+			.detail-image {
+				height: 220px;
+				border-radius: 14px;
+				background:
+					linear-gradient(180deg, rgba(255, 248, 242, 0.05), rgba(255, 248, 242, 0.02)),
+					linear-gradient(135deg, rgba(213, 154, 104, 0.18), rgba(180, 108, 67, 0.04) 42%, transparent 100%);
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				display: grid;
+				align-content: end;
+				padding: 16px;
+			}
+
+			.detail-image span {
+				font-size: 13px;
+				color: rgba(245, 233, 222, 0.68);
+			}
+
+			.detail-title {
+				margin: 0;
+				font-size: 34px;
+				line-height: 1.02;
+				letter-spacing: -0.05em;
+				font-weight: 620;
+			}
+
+			.detail-copy {
+				font-size: 15px;
+				line-height: 1.68;
+				color: var(--text-soft);
+			}
+
+			.detail-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
+
+			.meta-pill {
+				padding: 8px 12px;
+				border-radius: 999px;
+				border: 1px solid rgba(255, 236, 220, 0.1);
+				background: rgba(255, 248, 242, 0.03);
+				font-size: 13px;
+				color: var(--text-soft);
+			}
+
+			.detail-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
+
+			.detail-actions .button {
+				min-height: 46px;
+			}
+
+			.detail-aside {
+				padding-top: 14px;
+				border-top: 1px solid rgba(255, 236, 220, 0.08);
+				display: grid;
+				gap: 10px;
+			}
+
+			.detail-aside strong {
+				font-size: 15px;
+				letter-spacing: -0.02em;
+				font-weight: 580;
+			}
+
+			.detail-aside p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+			}
+
+			.state-strip {
+				margin-top: 26px;
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 16px;
+			}
+
+			.state-card {
+				padding: 18px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.03);
+				display: grid;
+				gap: 12px;
+			}
+
+			.state-card strong {
+				font-size: 16px;
+				letter-spacing: -0.03em;
+				font-weight: 580;
+			}
+
+			.state-card p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+			}
+
+			.loading-lines,
+			.empty-stack,
+			.error-stack {
+				display: grid;
+				gap: 8px;
+			}
+
+			.loading-line,
+			.empty-chip,
+			.error-chip {
+				min-height: 14px;
+				border-radius: 999px;
+				background: rgba(255, 248, 242, 0.08);
+			}
+
+			.loading-line.short {
+				width: 58%;
+			}
+
+			.empty-chip {
+				background: rgba(255, 248, 242, 0.05);
+			}
+
+			.error-chip {
+				background: rgba(180, 108, 67, 0.18);
+			}
+
+			@media (max-width: 1260px) {
+				.search-grid {
+					grid-template-columns: 1fr 1fr;
+				}
+
+				.search-grid .button {
+					width: 100%;
+				}
+
+				.results-layout {
+					grid-template-columns: 1fr;
+				}
+
+				.detail-panel {
+					position: static;
+				}
+			}
+
+			@media (max-width: 980px) {
+				.page-intro,
+				.filter-toolbar {
+					grid-template-columns: 1fr;
+				}
+
+				.filter-actions {
+					justify-content: flex-start;
+				}
+
+				.result-card {
+					grid-template-columns: 1fr;
+				}
+
+				.result-actions {
+					flex-direction: row;
+					justify-content: flex-start;
+					align-items: center;
+					min-width: 0;
+				}
+
+				.state-strip {
+					grid-template-columns: 1fr;
+				}
+			}
+
+			@media (max-width: 760px) {
+				:root {
+					--section-width: min(100vw - 32px, 1360px);
+					--header-offset: 82px;
+				}
+
+				.topbar {
+					min-height: 72px;
+				}
+
+				.topbar-links {
+					display: none;
+				}
+
+				.search-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.page-intro {
+					margin-bottom: 18px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page-shell">
+			<header class="site-header">
+				<div class="topbar">
+					<div class="brand">
+						<div class="brand-mark">M</div>
+						<span>Mapetite</span>
+					</div>
+					<nav class="topbar-links">
+						<a href="#" data-app-action="back-to-discover">Back to landing</a>
+						<a href="#" data-app-action="search-restaurants">Open search</a>
+						<a href="#" data-app-action="favorites">Saved places</a>
+					</nav>
+					<div class="topbar-actions">
+						<a href="#" data-app-action="login">Log in</a>
+						<a class="primary-link" href="#" data-app-action="search-restaurants">Search restaurants</a>
+					</div>
+				</div>
+			</header>
+
+			<main class="search-page">
+				<section class="page-intro">
+					<div>
+						<div class="label">Restaurant search</div>
+						<h1>Choose a place, then browse with less noise.</h1>
+						<p>
+							Start with city, state, or country. Refine once the restaurants are visible.
+							Keep the list close while you open details, save favorites, or get directions.
+						</p>
+					</div>
+					<div class="intro-note">Prototype for the full search destination that follows the landing page.</div>
+				</section>
+
+				<section class="search-header panel">
+					<div class="search-head-row">
+						<div>
+							<strong>Find restaurants by place</strong>
+							<span>City, state, country, then refine when the list opens.</span>
+						</div>
+					</div>
+					<div class="search-grid">
+						<div class="field">
+							<label for="city">City</label>
+							<input id="city" type="text" value="Tokyo" />
+						</div>
+						<div class="field">
+							<label for="state">State / Province</label>
+							<input id="state" type="text" placeholder="Optional" />
+						</div>
+						<div class="field">
+							<label for="country">Country</label>
+							<input id="country" type="text" value="Japan" />
+						</div>
+						<button class="button secondary" type="button" data-app-action="use-my-location">Use My Location</button>
+						<button class="button primary" type="button" data-app-action="search-restaurants">Search</button>
+					</div>
+				</section>
+
+				<section class="filter-toolbar panel">
+					<div class="filter-group">
+						<button class="filter-pill active" type="button">Japanese</button>
+						<button class="filter-pill" type="button">Tasting menu</button>
+						<button class="filter-pill" type="button">4.5+</button>
+						<button class="filter-pill" type="button">$$$</button>
+						<button class="filter-pill" type="button">Late night</button>
+					</div>
+					<div class="filter-actions">
+						<select class="sort-select" aria-label="Sort results">
+							<option>Sort: Best match</option>
+							<option>Highest rated</option>
+							<option>Closest first</option>
+							<option>Most saved</option>
+						</select>
+						<button class="toggle-pill" type="button">Favorites only</button>
+					</div>
+				</section>
+
+				<section class="results-layout">
+					<div class="results-column">
+						<div class="results-head panel">
+							<strong>Tokyo results</strong>
+							<span>18 places worth opening first</span>
+						</div>
+
+						<button class="result-card active" type="button" data-result="0">
+							<div class="result-media">
+								<span>Counter view · evening service</span>
+							</div>
+							<div class="result-copy">
+								<div class="result-meta-top">
+									<h3>Omakase Kuro</h3>
+									<div class="rating-chip">4.8 rating</div>
+								</div>
+								<p>Omakase · Shinjuku</p>
+								<p>Quiet counter seating, late reservations, and a stronger first pick for a tighter shortlist.</p>
+								<div class="result-tags">
+									<div class="meta-pill">$$$$</div>
+									<div class="meta-pill">Counter dining</div>
+									<div class="meta-pill">Open until 11:30 PM</div>
+								</div>
+							</div>
+							<div class="result-actions">
+								<div class="preview-action">View details</div>
+								<div class="preview-action">Save</div>
+								<div class="preview-action">Directions</div>
+							</div>
+						</button>
+
+						<button class="result-card" type="button" data-result="1">
+							<div class="result-media">
+								<span>Open kitchen · broth bar</span>
+							</div>
+							<div class="result-copy">
+								<div class="result-meta-top">
+									<h3>Shio Atelier</h3>
+									<div class="rating-chip">4.6 rating</div>
+								</div>
+								<p>Ramen · Nakameguro</p>
+								<p>Focused menu, faster pacing, and a simpler stop when the plan wants precision without ceremony.</p>
+								<div class="result-tags">
+									<div class="meta-pill">$$</div>
+									<div class="meta-pill">Ramen</div>
+									<div class="meta-pill">Walk-ins likely</div>
+								</div>
+							</div>
+							<div class="result-actions">
+								<div class="preview-action">View details</div>
+								<div class="preview-action">Save</div>
+								<div class="preview-action">Directions</div>
+							</div>
+						</button>
+
+						<button class="result-card" type="button" data-result="2">
+							<div class="result-media">
+								<span>Charcoal grill · shared plates</span>
+							</div>
+							<div class="result-copy">
+								<div class="result-meta-top">
+									<h3>Midnight Coal</h3>
+									<div class="rating-chip">4.7 rating</div>
+								</div>
+								<p>Izakaya · Ebisu</p>
+								<p>Late charcoal plates, stronger energy, and a room that works well for a longer night.</p>
+								<div class="result-tags">
+									<div class="meta-pill">$$$</div>
+									<div class="meta-pill">Izakaya</div>
+									<div class="meta-pill">Late-night</div>
+								</div>
+							</div>
+							<div class="result-actions">
+								<div class="preview-action">View details</div>
+								<div class="preview-action">Save</div>
+								<div class="preview-action">Directions</div>
+							</div>
+						</button>
+
+						<button class="result-card" type="button" data-result="3">
+							<div class="result-media">
+								<span>Natural wine shelf · quiet room</span>
+							</div>
+							<div class="result-copy">
+								<div class="result-meta-top">
+									<h3>Cellar Hikari</h3>
+									<div class="rating-chip">4.5 rating</div>
+								</div>
+								<p>Wine bar · Daikanyama</p>
+								<p>Smaller plates, slower pacing, and an easier second stop once the shortlist starts to narrow.</p>
+								<div class="result-tags">
+									<div class="meta-pill">$$$</div>
+									<div class="meta-pill">Wine bar</div>
+									<div class="meta-pill">Reservations recommended</div>
+								</div>
+							</div>
+							<div class="result-actions">
+								<div class="preview-action">View details</div>
+								<div class="preview-action">Save</div>
+								<div class="preview-action">Directions</div>
+							</div>
+						</button>
+					</div>
+
+					<aside class="detail-panel panel">
+						<div class="detail-top">
+							<div>
+								<span>Selected restaurant</span>
+								<h2 class="detail-title" id="detail-title">Omakase Kuro</h2>
+							</div>
+							<div class="rating-chip" id="detail-rating">4.8 rating</div>
+						</div>
+						<div class="detail-image">
+							<span id="detail-image-label">Counter seating · evening service</span>
+						</div>
+						<div class="detail-copy" id="detail-copy">
+							Quiet counter service, a slower omakase pacing, and a strong fit when the night wants one confident decision instead of a broad browse.
+						</div>
+						<div class="detail-meta" id="detail-meta">
+							<div class="meta-pill">Omakase</div>
+							<div class="meta-pill">Shinjuku</div>
+							<div class="meta-pill">$$$$</div>
+							<div class="meta-pill">Open until 11:30 PM</div>
+						</div>
+						<div class="detail-actions">
+							<button class="button primary" type="button" data-app-action="detail-view">View details</button>
+							<button class="button secondary" type="button" data-app-action="favorite">Save favorite</button>
+							<button class="button secondary" type="button" data-app-action="directions">Directions</button>
+						</div>
+						<div class="detail-aside">
+							<strong id="detail-address">1-8 Shinjuku, Tokyo</strong>
+							<p id="detail-note">A strong first pick when the shortlist should stay small and the restaurant should carry the night on its own.</p>
+						</div>
+					</aside>
+				</section>
+
+				<section class="state-strip">
+					<div class="state-card">
+						<strong>Loading</strong>
+						<div class="loading-lines">
+							<div class="loading-line"></div>
+							<div class="loading-line short"></div>
+							<div class="loading-line"></div>
+						</div>
+						<p>Use a quiet skeleton while the restaurant list and preview panel are still arriving.</p>
+					</div>
+					<div class="state-card">
+						<strong>No results</strong>
+						<div class="empty-stack">
+							<div class="empty-chip"></div>
+							<div class="empty-chip"></div>
+						</div>
+						<p>Offer one clear next move: adjust city, loosen filters, or try a broader category.</p>
+					</div>
+					<div class="state-card">
+						<strong>Location unavailable</strong>
+						<div class="error-stack">
+							<div class="error-chip"></div>
+							<div class="error-chip"></div>
+						</div>
+						<p>Let users keep searching manually when location access is off or unavailable.</p>
+					</div>
+				</section>
+			</main>
+		</div>
+
+		<script>
+			const restaurantData = [
+				{
+					name: "Omakase Kuro",
+					rating: "4.8 rating",
+					image: "Counter seating · evening service",
+					copy:
+						"Quiet counter service, a slower omakase pacing, and a strong fit when the night wants one confident decision instead of a broad browse.",
+					meta: ["Omakase", "Shinjuku", "$$$$", "Open until 11:30 PM"],
+					address: "1-8 Shinjuku, Tokyo",
+					note:
+						"A strong first pick when the shortlist should stay small and the restaurant should carry the night on its own.",
+				},
+				{
+					name: "Shio Atelier",
+					rating: "4.6 rating",
+					image: "Broth bar · open kitchen",
+					copy:
+						"Focused menu, warmer pacing, and an easier decision when the shortlist needs something sharper and simpler.",
+					meta: ["Ramen", "Nakameguro", "$$", "Walk-ins likely"],
+					address: "4-12 Nakameguro, Tokyo",
+					note:
+						"A better fit when the plan wants precision, less ceremony, and a faster table once the list opens.",
+				},
+				{
+					name: "Midnight Coal",
+					rating: "4.7 rating",
+					image: "Charcoal grill · late service",
+					copy:
+						"Shared plates, stronger late energy, and a room that works best when the shortlist should open into a longer night.",
+					meta: ["Izakaya", "Ebisu", "$$$", "Late-night"],
+					address: "2-4 Ebisu, Tokyo",
+					note:
+						"Best when the night needs more movement, more conversation, and a restaurant that still feels worth opening in detail.",
+				},
+				{
+					name: "Cellar Hikari",
+					rating: "4.5 rating",
+					image: "Natural wine shelf · quieter room",
+					copy:
+						"Smaller plates, slower pacing, and a softer second stop once the shortlist shifts toward wine and conversation.",
+					meta: ["Wine bar", "Daikanyama", "$$$", "Reservations recommended"],
+					address: "7-9 Daikanyama, Tokyo",
+					note:
+						"Useful when the shortlist starts leaning away from a full dinner and toward a quieter finish.",
+				},
+			];
+
+			const cards = document.querySelectorAll(".result-card");
+			const detailTitle = document.getElementById("detail-title");
+			const detailRating = document.getElementById("detail-rating");
+			const detailImageLabel = document.getElementById("detail-image-label");
+			const detailCopy = document.getElementById("detail-copy");
+			const detailMeta = document.getElementById("detail-meta");
+			const detailAddress = document.getElementById("detail-address");
+			const detailNote = document.getElementById("detail-note");
+
+			function setSelectedResult(index) {
+				const data = restaurantData[index];
+				detailTitle.textContent = data.name;
+				detailRating.textContent = data.rating;
+				detailImageLabel.textContent = data.image;
+				detailCopy.textContent = data.copy;
+				detailMeta.innerHTML = data.meta.map((item) => `<div class="meta-pill">${item}</div>`).join("");
+				detailAddress.textContent = data.address;
+				detailNote.textContent = data.note;
+				cards.forEach((card) => card.classList.toggle("active", Number(card.dataset.result) === index));
+			}
+
+			cards.forEach((card) => {
+				card.addEventListener("click", () => setSelectedResult(Number(card.dataset.result)));
+			});
+		</script>
+	</body>
+</html>
