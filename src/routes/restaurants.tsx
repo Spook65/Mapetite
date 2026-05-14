@@ -1,8 +1,4 @@
-import { ChefProfileSection } from "@/components/ChefProfileSection";
-import { DetailPhotoCarousel } from "@/components/DetailPhotoCarousel";
 import { Layout } from "@/components/Layout";
-import { ReviewSummary } from "@/components/ReviewSummary";
-import { SignatureMenu } from "@/components/SignatureMenu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +18,7 @@ import { searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
 	Clock,
 	DollarSign,
@@ -62,6 +58,7 @@ export const Route = createFileRoute("/restaurants")({
 
 function App() {
 	const { city: searchCity } = Route.useSearch();
+	const navigate = useNavigate();
 
 	// Global state from Zustand store
 	const location = useRestaurantSearchStore((state) => state.location);
@@ -287,6 +284,16 @@ function App() {
 		setSelectedRestaurant(restaurant);
 	}, []);
 
+	const handleViewDetails = useCallback(
+		(restaurantId: string) => {
+			navigate({
+				to: "/restaurants/$restaurantId",
+				params: { restaurantId },
+			});
+		},
+		[navigate],
+	);
+
 	// Memoize favorite IDs Set to avoid recreating on every render.
 	// Only recomputes when favoritesData?.favorites array reference changes.
 	const favoriteIds = useMemo(
@@ -421,6 +428,43 @@ function App() {
 			.map((word) => word[0]?.toUpperCase() + word.slice(1))
 			.join(" ");
 	};
+
+	const getPreviewImage = (restaurant: Restaurant) =>
+		restaurant.photoUrl ?? restaurant.galleryImageUrls?.[0] ?? null;
+
+	const getLocationLabel = (restaurant: Restaurant) => {
+		const parts = [
+			restaurant.address.street,
+			restaurant.address.city,
+			restaurant.address.state,
+		].filter(Boolean);
+
+		return parts.join(", ");
+	};
+
+	const getRestaurantSummary = (restaurant: Restaurant) => {
+		const summary = restaurant.description?.trim();
+		if (!summary) return "Open the full detail page for the full writeup, reviews, and media.";
+		if (summary.length <= 180) return summary;
+		return `${summary.slice(0, 177).trimEnd()}...`;
+	};
+
+	useEffect(() => {
+		if (displayedRestaurants.length === 0) {
+			if (selectedRestaurant) {
+				setSelectedRestaurant(null);
+			}
+			return;
+		}
+
+		const selectedStillVisible = selectedRestaurant
+			? displayedRestaurants.some((restaurant) => restaurant.id === selectedRestaurant.id)
+			: false;
+
+		if (!selectedStillVisible) {
+			setSelectedRestaurant(displayedRestaurants[0]);
+		}
+	}, [displayedRestaurants, selectedRestaurant]);
 
 	return (
 		<Layout>
@@ -858,240 +902,302 @@ function App() {
 				)}
 
 				{restaurants.length > 0 && displayedRestaurants.length > 0 && (
-					<div className="space-y-4">
-						{displayedRestaurants.map((restaurant) => (
-							<Card key={restaurant.id} className="border border-border">
-								<CardContent className="p-4 md:p-5">
-									<div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
-										<div className="overflow-hidden rounded-md border border-border bg-muted">
-											<div className="aspect-[4/3] w-full">
-												{restaurant.photoUrl ? (
-													<img
-														src={restaurant.photoUrl}
-														alt={restaurant.name}
-														className="h-full w-full object-cover"
-														referrerPolicy="no-referrer"
-													/>
-												) : (
-													<div className="flex h-full w-full items-center justify-center">
-														<Utensils className="size-8 text-muted-foreground" />
-													</div>
-												)}
-											</div>
-										</div>
+					<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+						<div className="space-y-4">
+							{displayedRestaurants.map((restaurant) => {
+								const displayCategory = getDisplayCategory(restaurant);
+								const isSelected = selectedRestaurant?.id === restaurant.id;
+								const previewImage = getPreviewImage(restaurant);
 
-										<div className="space-y-3">
-											<div className="flex items-start justify-between gap-3">
-												<div className="space-y-1">
-													<h3 className="text-lg font-semibold tracking-tight text-foreground">
-														{restaurant.name}
-													</h3>
-													<div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-														<span>
-															{restaurant.address.city}, {restaurant.address.state}
-														</span>
-														{(() => {
-															const displayCategory = getDisplayCategory(restaurant);
-															return displayCategory ? (
-																<Badge variant="outline">{displayCategory}</Badge>
-															) : null;
-														})()}
-													</div>
-												</div>
-
-												<Button
-													size="icon"
-													variant={
-														favoriteIds.has(restaurant.id) ? "default" : "outline"
-													}
-													onClick={() => toggleFavorite(restaurant.id)}
-													disabled={isTogglingFavorite}
+								return (
+									<Card
+										key={restaurant.id}
+										className={cn(
+											"border border-border transition-colors",
+											isSelected && "border-primary/50 bg-muted/20",
+										)}
+									>
+										<CardContent className="p-4 md:p-5">
+											<div className="grid gap-4 md:grid-cols-[180px_minmax(0,1fr)]">
+												<button
+													type="button"
+													onClick={() => handleToggleSelectedRestaurant(restaurant)}
+													className="overflow-hidden rounded-md border border-border bg-muted text-left transition-colors hover:border-primary/40"
 												>
-													<Heart
-														className={cn(
-															"size-4",
-															favoriteIds.has(restaurant.id) && "fill-current",
+													<div className="aspect-[4/3] w-full">
+														{previewImage ? (
+															<img
+																src={previewImage}
+																alt={restaurant.name}
+																className="h-full w-full object-cover"
+																referrerPolicy="no-referrer"
+															/>
+														) : (
+															<div className="flex h-full w-full flex-col items-center justify-center gap-2 bg-[linear-gradient(180deg,rgba(157,100,55,0.2),rgba(24,20,18,0.3))] px-4 text-center">
+																<div className="flex size-10 items-center justify-center rounded-md border border-border/70 bg-background/70 text-sm font-semibold text-foreground">
+																	{restaurant.name.charAt(0)}
+																</div>
+																<p className="text-xs uppercase tracking-[0.14em] text-muted-foreground">
+																	{displayCategory ?? "Restaurant"}
+																</p>
+															</div>
 														)}
-													/>
-												</Button>
-											</div>
+													</div>
+												</button>
 
-											{restaurant.rating != null && (
-												<div className="flex flex-wrap items-center gap-2">
-													<div className="flex items-center gap-0.5">
-														{[...Array(5)].map((_, i) => (
-															<Star
-																key={`star-${restaurant.id}-${i}`}
+												<div className="space-y-4">
+													<div className="flex items-start justify-between gap-3">
+														<button
+															type="button"
+															onClick={() => handleToggleSelectedRestaurant(restaurant)}
+															className="space-y-1 text-left"
+														>
+															<h3 className="text-lg font-semibold tracking-tight text-foreground">
+																{restaurant.name}
+															</h3>
+															<div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+																<span>{getLocationLabel(restaurant)}</span>
+																{displayCategory ? (
+																	<Badge variant="outline">{displayCategory}</Badge>
+																) : null}
+															</div>
+														</button>
+
+														<Button
+															size="icon"
+															variant={
+																favoriteIds.has(restaurant.id) ? "default" : "outline"
+															}
+															onClick={() => toggleFavorite(restaurant.id)}
+															disabled={isTogglingFavorite}
+														>
+															<Heart
 																className={cn(
 																	"size-4",
-																	i < Math.floor(restaurant.rating)
-																		? "fill-primary text-primary"
-																		: i < restaurant.rating
-																			? "fill-primary/50 text-primary"
-																			: "fill-muted text-muted-foreground",
+																	favoriteIds.has(restaurant.id) && "fill-current",
 																)}
 															/>
-														))}
-													</div>
-													<span className="text-sm font-medium text-foreground">
-														{restaurant.rating.toFixed(1)}
-													</span>
-													{restaurant.reviewCount != null && (
-														<span className="text-sm text-muted-foreground">
-															({restaurant.reviewCount} reviews)
-														</span>
-													)}
-												</div>
-											)}
-
-											<p className="text-sm leading-relaxed text-muted-foreground">
-												{restaurant.description}
-											</p>
-
-											<div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-												{restaurant.priceRange != null && (
-													<div className="flex items-center gap-1">
-														<DollarSign className="size-4 text-primary" />
-														<span>{"$".repeat(restaurant.priceRange)} Pricing</span>
-													</div>
-												)}
-												{restaurant.hours && (
-													<div className="flex items-center gap-2">
-														<Clock className="size-4 text-primary" />
-														<span>
-															{restaurant.hours.open} - {restaurant.hours.close}
-														</span>
-														<Badge
-															variant={
-																restaurant.isOpenNow ? "default" : "secondary"
-															}
-														>
-															{restaurant.isOpenNow ? "Open now" : "Closed"}
-														</Badge>
-													</div>
-												)}
-											</div>
-
-											<div className="flex flex-wrap gap-2">
-												<Button
-													variant="outline"
-													onClick={() =>
-														handleToggleSelectedRestaurant(
-															selectedRestaurant?.id === restaurant.id
-																? null
-																: restaurant,
-														)
-													}
-												>
-													{selectedRestaurant?.id === restaurant.id
-														? "Hide details"
-														: "View details"}
-												</Button>
-											</div>
-
-											{selectedRestaurant?.id === restaurant.id && (
-												<div className="space-y-5 border-t border-border pt-4">
-													<div className="space-y-1">
-														<p className="text-sm font-medium text-foreground">
-															Full address
-														</p>
-														<p className="text-sm leading-relaxed text-muted-foreground">
-															{restaurant.address.street}
-															<br />
-															{restaurant.address.city}, {restaurant.address.state}{" "}
-															{restaurant.address.zipCode}
-															<br />
-															{restaurant.address.country}
-														</p>
+														</Button>
 													</div>
 
-													<div className="space-y-3">
-														<p className="text-sm font-medium text-foreground">
-															Recent reviews
-														</p>
-														<div className="space-y-3">
-															{restaurant.reviews.map((review) => (
-																<div
-																	key={review.id}
-																	className="rounded-md border border-border px-3 py-3"
-																>
-																	<div className="mb-2 flex flex-wrap items-center gap-2 text-sm">
-																		<span className="font-medium text-foreground">
-																			{review.author}
-																		</span>
-																		<div className="flex items-center gap-0.5">
-																			{[...Array(5)].map((_, i) => (
-																				<Star
-																					key={`review-star-${review.id}-${i}`}
-																					className={cn(
-																						"size-3.5",
-																						i < Math.floor(review.rating)
-																							? "fill-primary text-primary"
-																							: "fill-muted text-muted-foreground",
-																					)}
-																				/>
-																			))}
-																		</div>
-																		<span className="text-muted-foreground">
-																			{review.date}
-																		</span>
-																	</div>
-																	<p className="text-sm leading-relaxed text-muted-foreground">
-																		{review.comment}
-																	</p>
-																</div>
-															))}
+													{restaurant.rating != null && (
+														<div className="flex flex-wrap items-center gap-2">
+															<div className="flex items-center gap-0.5">
+																{[...Array(5)].map((_, i) => (
+																	<Star
+																		key={`star-${restaurant.id}-${i}`}
+																		className={cn(
+																			"size-4",
+																			i < Math.floor(restaurant.rating)
+																				? "fill-primary text-primary"
+																				: i < restaurant.rating
+																					? "fill-primary/50 text-primary"
+																					: "fill-muted text-muted-foreground",
+																		)}
+																	/>
+																))}
+															</div>
+															<span className="text-sm font-medium text-foreground">
+																{restaurant.rating.toFixed(1)}
+															</span>
+															{restaurant.reviewCount != null && (
+																<span className="text-sm text-muted-foreground">
+																	({restaurant.reviewCount} reviews)
+																</span>
+															)}
 														</div>
+													)}
+
+													<p className="text-sm leading-relaxed text-muted-foreground">
+														{getRestaurantSummary(restaurant)}
+													</p>
+
+													<div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
+														{restaurant.priceRange != null && (
+															<div className="flex items-center gap-1">
+																<DollarSign className="size-4 text-primary" />
+																<span>{"$".repeat(restaurant.priceRange)}</span>
+															</div>
+														)}
+														{restaurant.hours && (
+															<div className="flex items-center gap-2">
+																<Clock className="size-4 text-primary" />
+																<span>
+																	{restaurant.hours.open} - {restaurant.hours.close}
+																</span>
+																<Badge
+																	variant={
+																		restaurant.isOpenNow ? "default" : "secondary"
+																	}
+																>
+																	{restaurant.isOpenNow ? "Open now" : "Closed"}
+																</Badge>
+															</div>
+														)}
 													</div>
 
-													<div className="flex flex-col gap-2 sm:flex-row">
-														<Button asChild variant="outline" className="w-full">
+													<div className="flex flex-wrap items-center gap-2">
+														<Button onClick={() => handleViewDetails(restaurant.id)}>
+															View details
+														</Button>
+														<Button
+															variant="ghost"
+															onClick={() => handleToggleSelectedRestaurant(restaurant)}
+														>
+															{isSelected ? "Selected" : "Preview"}
+														</Button>
+														<Button asChild variant="ghost">
 															<a
 																href={buildDirectionsUrl(restaurant)}
 																target="_blank"
 																rel="noreferrer"
 															>
 																<MapPin className="mr-2 size-4" />
-																Get directions
+																Directions
 															</a>
 														</Button>
 													</div>
+												</div>
+											</div>
+										</CardContent>
+									</Card>
+								);
+							})}
+						</div>
 
-													<DetailPhotoCarousel
-														restaurantName={restaurant.name}
-														images={restaurant.galleryImageUrls}
-														imageAttributions={restaurant.galleryPhotoAttributions}
-														categories={restaurant.categories}
+						{selectedRestaurant && (
+							<aside className="xl:sticky xl:top-24">
+								<Card className="border border-border">
+									<CardHeader className="space-y-4">
+										<div className="space-y-1">
+											<CardDescription>Selected restaurant</CardDescription>
+											<CardTitle className="text-xl">
+												{selectedRestaurant.name}
+											</CardTitle>
+										</div>
+
+										<div className="overflow-hidden rounded-md border border-border bg-muted">
+											<div className="aspect-[4/3] w-full">
+												{getPreviewImage(selectedRestaurant) ? (
+													<img
+														src={getPreviewImage(selectedRestaurant) ?? ""}
+														alt={selectedRestaurant.name}
+														className="h-full w-full object-cover"
+														referrerPolicy="no-referrer"
 													/>
+												) : (
+													<div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[linear-gradient(180deg,rgba(157,100,55,0.24),rgba(24,20,18,0.28))] px-5 text-center">
+														<div className="flex size-12 items-center justify-center rounded-md border border-border/70 bg-background/75 text-base font-semibold text-foreground">
+															{selectedRestaurant.name.charAt(0)}
+														</div>
+														<div className="space-y-1">
+															<p className="text-sm font-medium text-foreground">
+																{getDisplayCategory(selectedRestaurant) ?? "Restaurant"}
+															</p>
+															<p className="text-xs text-muted-foreground">
+																{selectedRestaurant.address.city},{" "}
+																{selectedRestaurant.address.state}
+															</p>
+														</div>
+													</div>
+												)}
+											</div>
+										</div>
+									</CardHeader>
 
-													<ChefProfileSection
-														chefName={restaurant.chef?.name}
-														chefBio={restaurant.chef?.bio}
-														profileImage={restaurant.chef?.photoUrl}
-													/>
+									<CardContent className="space-y-4">
+										<div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+											<div className="flex items-center gap-1">
+												<Star className="size-4 fill-primary text-primary" />
+												<span className="font-medium text-foreground">
+													{selectedRestaurant.rating.toFixed(1)}
+												</span>
+												<span>({selectedRestaurant.reviewCount} reviews)</span>
+											</div>
+											{getDisplayCategory(selectedRestaurant) ? (
+												<Badge variant="outline">
+													{getDisplayCategory(selectedRestaurant)}
+												</Badge>
+											) : null}
+										</div>
 
-													<SignatureMenu
-														dishes={restaurant.signatureDishes}
-														pricingNote={
-															restaurant.priceRange != null
-																? `Estimated pricing from $${restaurant.priceRange} to $$$$`
-																: undefined
+										<p className="text-sm leading-relaxed text-muted-foreground">
+											{selectedRestaurant.description}
+										</p>
+
+										<div className="space-y-2 rounded-md border border-border bg-muted/30 p-3">
+											<div className="flex items-start gap-2 text-sm text-muted-foreground">
+												<MapPin className="mt-0.5 size-4 text-primary" />
+												<div>
+													<p className="font-medium text-foreground">
+														{selectedRestaurant.address.street}
+													</p>
+													<p>
+														{selectedRestaurant.address.city},{" "}
+														{selectedRestaurant.address.state}{" "}
+														{selectedRestaurant.address.zipCode}
+													</p>
+													<p>{selectedRestaurant.address.country}</p>
+												</div>
+											</div>
+
+											{selectedRestaurant.hours && (
+												<div className="flex items-center gap-2 text-sm text-muted-foreground">
+													<Clock className="size-4 text-primary" />
+													<span>
+														{selectedRestaurant.hours.open} -{" "}
+														{selectedRestaurant.hours.close}
+													</span>
+													<Badge
+														variant={
+															selectedRestaurant.isOpenNow ? "default" : "secondary"
 														}
-													/>
-
-													<ReviewSummary
-														overallRating={restaurant.rating}
-														totalReviews={restaurant.reviewCount}
-														ratingBreakdown={restaurant.ratingBreakdown}
-														reviews={restaurant.reviews}
-													/>
+													>
+														{selectedRestaurant.isOpenNow ? "Open now" : "Closed"}
+													</Badge>
 												</div>
 											)}
 										</div>
-									</div>
-								</CardContent>
-							</Card>
-						))}
+
+										<div className="flex flex-col gap-2">
+											<Button onClick={() => handleViewDetails(selectedRestaurant.id)}>
+												View details
+											</Button>
+											<div className="flex gap-2">
+												<Button
+													variant={
+														favoriteIds.has(selectedRestaurant.id)
+															? "default"
+															: "outline"
+													}
+													className="flex-1"
+													onClick={() => toggleFavorite(selectedRestaurant.id)}
+													disabled={isTogglingFavorite}
+												>
+													<Heart
+														className={cn(
+															"mr-2 size-4",
+															favoriteIds.has(selectedRestaurant.id) && "fill-current",
+														)}
+													/>
+													Save
+												</Button>
+												<Button asChild variant="outline" className="flex-1">
+													<a
+														href={buildDirectionsUrl(selectedRestaurant)}
+														target="_blank"
+														rel="noreferrer"
+													>
+														<Navigation className="mr-2 size-4" />
+														Directions
+													</a>
+												</Button>
+											</div>
+										</div>
+									</CardContent>
+								</Card>
+							</aside>
+						)}
 					</div>
 				)}
 
