@@ -1,0 +1,1342 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mapetite Premium Restaurant Detail Polished</title>
+		<style>
+			:root {
+				color-scheme: dark;
+				--bg: #15110e;
+				--bg-2: #1b1511;
+				--surface: rgba(36, 29, 23, 0.86);
+				--surface-soft: rgba(255, 248, 242, 0.035);
+				--surface-strong: rgba(255, 248, 242, 0.055);
+				--line: rgba(255, 236, 220, 0.1);
+				--line-strong: rgba(255, 236, 220, 0.18);
+				--text: #f5e9de;
+				--text-soft: rgba(245, 233, 222, 0.74);
+				--text-faint: rgba(245, 233, 222, 0.48);
+				--accent: #d59a68;
+				--accent-strong: #b46c43;
+				--accent-soft: rgba(213, 154, 104, 0.14);
+				--shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+				--radius: 12px;
+				--page-width: min(1360px, calc(100vw - 56px));
+				--header-offset: 82px;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html {
+				scroll-behavior: smooth;
+				scroll-padding-top: var(--header-offset);
+			}
+
+			body {
+				margin: 0;
+				font-family: "SF Pro Display", "Helvetica Neue", Helvetica, sans-serif;
+				background:
+					radial-gradient(circle at top center, rgba(180, 108, 67, 0.16), transparent 24%),
+					linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
+				color: var(--text);
+			}
+
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				background-image:
+					linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+				background-size: 100% 140px, 140px 100%;
+				mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent 84%);
+				opacity: 0.24;
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+
+			button {
+				font: inherit;
+			}
+
+			a:focus-visible,
+			button:focus-visible {
+				outline: 2px solid rgba(213, 154, 104, 0.92);
+				outline-offset: 3px;
+			}
+
+			.page-shell {
+				position: relative;
+				overflow-x: clip;
+			}
+
+			.site-header {
+				position: sticky;
+				top: 0;
+				z-index: 40;
+				backdrop-filter: blur(10px);
+				background: rgba(21, 17, 14, 0.82);
+				border-bottom: 1px solid rgba(255, 236, 220, 0.06);
+			}
+
+			.topbar,
+			.detail-page {
+				width: var(--page-width);
+				margin: 0 auto;
+			}
+
+			.topbar {
+				min-height: 68px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 24px;
+			}
+
+			.brand {
+				display: inline-flex;
+				align-items: center;
+				gap: 12px;
+				font-size: 14px;
+				font-weight: 600;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+			}
+
+			.brand-mark {
+				width: 34px;
+				height: 34px;
+				border-radius: 10px;
+				display: grid;
+				place-items: center;
+				border: 1px solid rgba(213, 154, 104, 0.24);
+				background: linear-gradient(180deg, rgba(213, 154, 104, 0.2), rgba(180, 108, 67, 0.08));
+				color: #f7e7d6;
+				font-size: 15px;
+			}
+
+			.topbar-links,
+			.topbar-actions {
+				display: flex;
+				align-items: center;
+				gap: 16px;
+			}
+
+			.topbar-links a,
+			.topbar-actions a,
+			.topbar-actions button {
+				font-size: 14px;
+				color: var(--text-soft);
+				background: none;
+				border: 0;
+				padding: 0;
+				cursor: pointer;
+				transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease;
+			}
+
+			.topbar-links a:hover,
+			.topbar-actions a:hover,
+			.topbar-actions button:hover {
+				color: var(--text);
+			}
+
+			.topbar-actions .primary-link {
+				padding: 10px 14px;
+				border-radius: 10px;
+				background: rgba(213, 154, 104, 0.14);
+				border: 1px solid rgba(213, 154, 104, 0.24);
+				color: var(--text);
+			}
+
+			.detail-page {
+				padding: 24px 0 88px;
+				display: grid;
+				gap: 24px;
+			}
+
+			.breadcrumb-row {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 16px;
+				flex-wrap: wrap;
+			}
+
+			.back-link {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 14px;
+				color: var(--text-soft);
+			}
+
+			.back-link:hover {
+				color: var(--text);
+			}
+
+			.page-note {
+				font-size: 13px;
+				color: var(--text-faint);
+			}
+
+			.panel {
+				background: var(--surface);
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				border-radius: 14px;
+				box-shadow: var(--shadow);
+			}
+
+			.hero-panel {
+				padding: 24px;
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				gap: 22px;
+				align-items: start;
+			}
+
+			.hero-copy {
+				display: grid;
+				gap: 14px;
+			}
+
+			.label {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 12px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: rgba(245, 233, 222, 0.56);
+			}
+
+			.label::before {
+				content: "";
+				width: 28px;
+				height: 1px;
+				background: rgba(213, 154, 104, 0.58);
+			}
+
+			h1 {
+				margin: 0;
+				font-size: clamp(34px, 4vw, 52px);
+				line-height: 1;
+				letter-spacing: -0.06em;
+				font-weight: 640;
+				max-width: 10ch;
+			}
+
+			.hero-subtext {
+				max-width: 620px;
+				font-size: 15px;
+				line-height: 1.7;
+				color: var(--text-soft);
+			}
+
+			.hero-meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+				align-items: center;
+			}
+
+			.meta-chip,
+			.tag {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				padding: 10px 12px;
+				border-radius: 999px;
+				border: 1px solid rgba(255, 236, 220, 0.1);
+				background: rgba(255, 248, 242, 0.03);
+				font-size: 13px;
+				color: var(--text-soft);
+			}
+
+			.meta-chip strong {
+				color: var(--text);
+				font-weight: 620;
+			}
+
+			.tag {
+				padding: 8px 11px;
+			}
+
+			.tag.active {
+				background: rgba(213, 154, 104, 0.12);
+				border-color: rgba(213, 154, 104, 0.24);
+				color: var(--text);
+			}
+
+			.hero-actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 12px;
+				align-items: center;
+			}
+
+			.button {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 10px;
+				min-height: 48px;
+				padding: 0 18px;
+				border-radius: 10px;
+				border: 1px solid transparent;
+				cursor: pointer;
+				transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease, transform 150ms ease;
+				white-space: nowrap;
+			}
+
+			.button:hover {
+				transform: translateY(-1px);
+			}
+
+			.button.primary {
+				background: var(--accent);
+				color: #20140d;
+				font-weight: 650;
+			}
+
+			.button.primary:hover {
+				background: #e0ab7c;
+			}
+
+			.button.secondary {
+				background: rgba(255, 248, 242, 0.025);
+				border-color: rgba(255, 236, 220, 0.1);
+				color: var(--text-soft);
+			}
+
+			.button.secondary:hover {
+				background: rgba(255, 248, 242, 0.06);
+				color: var(--text);
+			}
+
+			.button.ghost {
+				min-height: 42px;
+				padding: 0 14px;
+				background: rgba(255, 248, 242, 0.02);
+				border-color: rgba(255, 236, 220, 0.1);
+				color: var(--text-soft);
+			}
+
+			.button.ghost:hover {
+				color: var(--text);
+				background: rgba(255, 248, 242, 0.05);
+			}
+
+			.hero-side {
+				min-width: 260px;
+				padding: 18px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.025);
+				display: grid;
+				gap: 12px;
+			}
+
+			.hero-side small {
+				font-size: 12px;
+				letter-spacing: 0.14em;
+				text-transform: uppercase;
+				color: rgba(245, 233, 222, 0.46);
+			}
+
+			.hero-side strong {
+				font-size: 18px;
+				letter-spacing: -0.03em;
+				font-weight: 620;
+			}
+
+			.hero-side p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+			}
+
+			.hero-side .inline-list {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+
+			.content-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) 320px;
+				gap: 22px;
+				align-items: start;
+			}
+
+			.main-column {
+				display: grid;
+				gap: 22px;
+			}
+
+			.section-panel {
+				padding: 22px;
+				display: grid;
+				gap: 18px;
+			}
+
+			.section-heading {
+				display: flex;
+				align-items: end;
+				justify-content: space-between;
+				gap: 14px;
+				flex-wrap: wrap;
+			}
+
+			.section-heading h2 {
+				margin: 0;
+				font-size: 24px;
+				letter-spacing: -0.04em;
+				font-weight: 620;
+			}
+
+			.section-heading p {
+				margin: 6px 0 0;
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+				max-width: 620px;
+			}
+
+			.gallery-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 1.25fr) 172px;
+				gap: 14px;
+			}
+
+			.hero-media {
+				min-height: 420px;
+				border-radius: 14px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background:
+					linear-gradient(180deg, rgba(255, 248, 242, 0.04), rgba(255, 248, 242, 0.02)),
+					linear-gradient(145deg, rgba(213, 154, 104, 0.26), rgba(180, 108, 67, 0.08) 38%, rgba(17, 13, 11, 0.2) 100%);
+				padding: 22px;
+				display: grid;
+				grid-template-rows: auto 1fr auto;
+				gap: 14px;
+				overflow: hidden;
+			}
+
+			.hero-media .media-badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 8px;
+				padding: 8px 10px;
+				border-radius: 999px;
+				width: fit-content;
+				background: rgba(17, 13, 11, 0.28);
+				border: 1px solid rgba(255, 236, 220, 0.12);
+				font-size: 12px;
+				color: rgba(255, 244, 236, 0.78);
+			}
+
+			.media-copy {
+				align-self: end;
+				display: grid;
+				gap: 10px;
+				max-width: 420px;
+			}
+
+			.media-copy strong {
+				font-size: 34px;
+				letter-spacing: -0.05em;
+				line-height: 0.98;
+				font-weight: 630;
+				color: rgba(255, 248, 242, 0.96);
+			}
+
+			.media-copy p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 1.65;
+				color: rgba(255, 240, 232, 0.76);
+			}
+
+			.media-footer {
+				display: flex;
+				justify-content: space-between;
+				gap: 12px;
+				flex-wrap: wrap;
+				font-size: 13px;
+				color: rgba(255, 240, 232, 0.68);
+			}
+
+			.gallery-thumbs {
+				display: grid;
+				gap: 12px;
+			}
+
+			.thumb-button {
+				width: 100%;
+				text-align: left;
+				padding: 14px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background:
+					linear-gradient(180deg, rgba(255, 248, 242, 0.04), rgba(255, 248, 242, 0.02)),
+					linear-gradient(145deg, rgba(213, 154, 104, 0.18), rgba(180, 108, 67, 0.04));
+				color: inherit;
+				cursor: pointer;
+				transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+				display: grid;
+				gap: 8px;
+			}
+
+			.thumb-button:hover,
+			.thumb-button.active {
+				border-color: rgba(213, 154, 104, 0.3);
+				transform: translateY(-1px);
+			}
+
+			.thumb-art {
+				min-height: 82px;
+				border-radius: 10px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background:
+					linear-gradient(180deg, rgba(255, 248, 242, 0.05), rgba(255, 248, 242, 0.02)),
+					linear-gradient(135deg, rgba(213, 154, 104, 0.22), rgba(180, 108, 67, 0.06) 50%, rgba(17, 13, 11, 0.16) 100%);
+			}
+
+			.thumb-button strong {
+				font-size: 15px;
+				font-weight: 600;
+			}
+
+			.thumb-button span {
+				font-size: 13px;
+				color: var(--text-soft);
+			}
+
+			.context-grid {
+				display: grid;
+				grid-template-columns: repeat(2, minmax(0, 1fr));
+				gap: 18px;
+			}
+
+			.info-block {
+				padding: 16px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.025);
+				display: grid;
+				gap: 8px;
+			}
+
+			.info-block small {
+				font-size: 12px;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: rgba(245, 233, 222, 0.46);
+			}
+
+			.info-block strong {
+				font-size: 16px;
+				font-weight: 600;
+				color: var(--text);
+			}
+
+			.info-block p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+			}
+
+			.review-layout {
+				display: grid;
+				grid-template-columns: 240px minmax(0, 1fr);
+				gap: 18px;
+				align-items: start;
+			}
+
+			.review-summary {
+				padding: 18px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.025);
+				display: grid;
+				gap: 10px;
+			}
+
+			.review-summary strong {
+				font-size: 46px;
+				letter-spacing: -0.06em;
+				line-height: 0.95;
+			}
+
+			.review-summary p,
+			.review-summary span {
+				font-size: 14px;
+				color: var(--text-soft);
+			}
+
+			.rating-bars {
+				display: grid;
+				gap: 8px;
+			}
+
+			.rating-row {
+				display: grid;
+				grid-template-columns: 32px minmax(0, 1fr) 42px;
+				gap: 10px;
+				align-items: center;
+				font-size: 13px;
+				color: var(--text-soft);
+			}
+
+			.rating-track {
+				height: 8px;
+				border-radius: 999px;
+				background: rgba(255, 248, 242, 0.06);
+				overflow: hidden;
+			}
+
+			.rating-fill {
+				height: 100%;
+				border-radius: inherit;
+				background: linear-gradient(90deg, rgba(213, 154, 104, 0.9), rgba(180, 108, 67, 0.82));
+			}
+
+			.review-list {
+				display: grid;
+				gap: 12px;
+			}
+
+			.review-card {
+				padding: 16px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.025);
+				display: grid;
+				gap: 10px;
+			}
+
+			.review-top {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+
+			.review-top strong {
+				font-size: 15px;
+				font-weight: 600;
+			}
+
+			.review-top span,
+			.review-card p {
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+				margin: 0;
+			}
+
+			.map-grid {
+				display: grid;
+				grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+				gap: 16px;
+				align-items: stretch;
+			}
+
+			.map-canvas {
+				min-height: 280px;
+				border-radius: 14px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background:
+					linear-gradient(180deg, rgba(255, 248, 242, 0.03), rgba(255, 248, 242, 0.015)),
+					linear-gradient(90deg, rgba(255, 236, 220, 0.035) 1px, transparent 1px),
+					linear-gradient(rgba(255, 236, 220, 0.03) 1px, transparent 1px),
+					radial-gradient(circle at 60% 45%, rgba(213, 154, 104, 0.24), transparent 14%);
+				background-size: auto, 72px 72px, 72px 72px, auto;
+				display: grid;
+				place-items: center;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.map-canvas::after {
+				content: "";
+				position: absolute;
+				width: 18px;
+				height: 18px;
+				border-radius: 999px;
+				background: var(--accent);
+				box-shadow: 0 0 0 8px rgba(213, 154, 104, 0.16);
+			}
+
+			.map-copy {
+				padding: 18px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.025);
+				display: grid;
+				gap: 12px;
+				align-content: start;
+			}
+
+			.map-copy strong {
+				font-size: 18px;
+				letter-spacing: -0.03em;
+				font-weight: 620;
+			}
+
+			.map-copy p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+			}
+
+			.similar-row {
+				display: grid;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				gap: 14px;
+			}
+
+			.similar-card {
+				padding: 16px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.025);
+				display: grid;
+				gap: 8px;
+				transition: border-color 150ms ease, background-color 150ms ease, transform 150ms ease;
+			}
+
+			.similar-card:hover {
+				border-color: rgba(213, 154, 104, 0.26);
+				background: rgba(255, 248, 242, 0.045);
+				transform: translateY(-1px);
+			}
+
+			.similar-card strong {
+				font-size: 17px;
+				letter-spacing: -0.03em;
+			}
+
+			.similar-card p,
+			.similar-card span {
+				margin: 0;
+				font-size: 13px;
+				line-height: 1.55;
+				color: var(--text-soft);
+			}
+
+			.decision-panel {
+				position: sticky;
+				top: calc(var(--header-offset) + 12px);
+				padding: 20px;
+				display: grid;
+				gap: 16px;
+				align-self: start;
+			}
+
+			.decision-panel h3 {
+				margin: 0;
+				font-size: 20px;
+				letter-spacing: -0.04em;
+				font-weight: 620;
+			}
+
+			.decision-panel p {
+				margin: 0;
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+			}
+
+			.decision-meta {
+				display: grid;
+				gap: 10px;
+				padding: 14px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.025);
+			}
+
+			.decision-row {
+				display: flex;
+				align-items: start;
+				justify-content: space-between;
+				gap: 12px;
+				font-size: 14px;
+				color: var(--text-soft);
+			}
+
+			.decision-row strong {
+				color: var(--text);
+				font-size: 13px;
+				letter-spacing: 0.1em;
+				text-transform: uppercase;
+				font-weight: 580;
+			}
+
+			.decision-actions {
+				display: grid;
+				gap: 10px;
+			}
+
+			.decision-actions .button {
+				width: 100%;
+			}
+
+			.support-note {
+				padding: 14px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 236, 220, 0.08);
+				background: rgba(255, 248, 242, 0.025);
+			}
+
+			.support-note small {
+				display: block;
+				margin-bottom: 6px;
+				font-size: 12px;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: rgba(245, 233, 222, 0.46);
+			}
+
+			.support-note p {
+				margin: 0;
+				font-size: 13px;
+				line-height: 1.55;
+				color: var(--text-soft);
+			}
+
+			.final-panel {
+				padding: 24px;
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 16px;
+				flex-wrap: wrap;
+			}
+
+			.final-panel strong {
+				font-size: 22px;
+				letter-spacing: -0.04em;
+				font-weight: 620;
+			}
+
+			.final-panel p {
+				margin: 6px 0 0;
+				font-size: 14px;
+				line-height: 1.6;
+				color: var(--text-soft);
+				max-width: 540px;
+			}
+
+			@media (max-width: 1180px) {
+				.content-grid,
+				.map-grid,
+				.review-layout {
+					grid-template-columns: 1fr;
+				}
+
+				.gallery-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.gallery-thumbs {
+					grid-template-columns: repeat(4, minmax(0, 1fr));
+				}
+
+				.decision-panel {
+					position: static;
+				}
+			}
+
+			@media (max-width: 900px) {
+				.hero-panel,
+				hero-actions {
+					grid-template-columns: 1fr;
+				}
+
+				.hero-panel {
+					grid-template-columns: 1fr;
+				}
+
+				.hero-side {
+					min-width: 0;
+				}
+
+				.context-grid,
+				.similar-row {
+					grid-template-columns: 1fr;
+				}
+
+				.gallery-thumbs {
+					grid-template-columns: 1fr 1fr;
+				}
+			}
+
+			@media (max-width: 720px) {
+				:root {
+					--page-width: min(100vw - 28px, 100%);
+					--header-offset: 74px;
+				}
+
+				.topbar,
+				hero-actions,
+				.final-panel {
+					gap: 12px;
+				}
+
+				.topbar {
+					min-height: 60px;
+					flex-wrap: wrap;
+					padding: 10px 0;
+				}
+
+				.topbar-links {
+					order: 3;
+					width: 100%;
+					flex-wrap: wrap;
+				}
+
+				.hero-panel,
+				.section-panel,
+				.decision-panel,
+				.final-panel {
+					padding: 18px;
+				}
+
+				.hero-meta,
+				hero-actions {
+					flex-direction: column;
+					align-items: stretch;
+				}
+
+				.hero-actions .button,
+				.final-panel .button {
+					width: 100%;
+				}
+
+				.gallery-thumbs {
+					grid-template-columns: 1fr;
+				}
+
+				.hero-media {
+					min-height: 320px;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="page-shell">
+			<header class="site-header">
+				<div class="topbar">
+					<a href="mapetite-home-premium-navigation-clarified.html" class="brand">
+						<span class="brand-mark">M</span>
+						<span>Mapetite</span>
+					</a>
+
+					<nav class="topbar-links" aria-label="Primary">
+						<a href="mapetite-home-premium-navigation-clarified.html">Home</a>
+						<a href="mapetite-restaurant-search-premium-polished.html">Search</a>
+						<a href="#reviews">Reviews</a>
+						<a href="#location">Location</a>
+					</nav>
+
+					<div class="topbar-actions">
+						<a href="mapetite-restaurant-search-premium-polished.html" class="primary-link">Back to results</a>
+					</div>
+				</div>
+			</header>
+
+			<main class="detail-page">
+				<div class="breadcrumb-row">
+					<a class="back-link" href="mapetite-restaurant-search-premium-polished.html">
+						<span aria-hidden="true">←</span>
+						<span>Back to shortlist</span>
+					</a>
+					<p class="page-note">Compare the room, the route, and the reviews before you commit.</p>
+				</div>
+
+				<section class="panel hero-panel">
+					<div class="hero-copy">
+						<span class="label">Restaurant detail</span>
+						<h1>Maison Ember</h1>
+						<p class="hero-subtext">
+							A quiet dining room built around open-fire cooking, late-night service,
+							and a menu that leans warm, savory, and ingredient-first.
+						</p>
+
+						<div class="hero-meta">
+							<span class="meta-chip"><strong>4.8</strong> 326 reviews</span>
+							<span class="meta-chip">French • Grill</span>
+							<span class="meta-chip">Soho, London</span>
+							<span class="meta-chip">$$$</span>
+							<span class="meta-chip"><strong>Open now</strong> until 11:30 PM</span>
+						</div>
+
+						<div class="hero-actions">
+							<a class="button primary" href="#location">Get directions</a>
+							<button class="button secondary" type="button" id="save-main">Save</button>
+							<a class="button ghost" href="mapetite-restaurant-search-premium-polished.html">Back to results</a>
+						</div>
+					</div>
+
+					<aside class="hero-side">
+						<small>Decision cues</small>
+						<strong>Easy to compare, strong enough to commit.</strong>
+						<p>
+							Photo coverage, tonight’s hours, address, and review confidence stay visible
+							without turning the page into a dashboard.
+						</p>
+						<div class="inline-list">
+							<span class="tag active">Nearby map</span>
+							<span class="tag">Review summary</span>
+							<span class="tag">Back to shortlist</span>
+						</div>
+					</aside>
+				</section>
+
+				<div class="content-grid">
+					<div class="main-column">
+						<section class="panel section-panel" id="gallery">
+							<div class="section-heading">
+								<div>
+									<h2>Gallery</h2>
+									<p>Use the space, plating, and pace of service to decide whether it matches the night you have in mind.</p>
+								</div>
+							</div>
+
+							<div class="gallery-grid">
+								<div class="hero-media" id="hero-media">
+									<span class="media-badge" id="media-badge">Dining room</span>
+									<div class="media-copy">
+										<strong id="media-title">Low light, open flame, and a room built for long dinners.</strong>
+										<p id="media-copy">
+											Even without live photos, the fallback stays intentional: atmosphere first, useful cues second.
+										</p>
+									</div>
+									<div class="media-footer">
+										<span id="media-foot-left">Best for evenings and small groups</span>
+										<span id="media-foot-right">Gallery fallback active</span>
+									</div>
+								</div>
+
+								<div class="gallery-thumbs" role="list" aria-label="Gallery views">
+									<button
+										type="button"
+										class="thumb-button active"
+										data-view="dining"
+										data-badge="Dining room"
+										data-title="Low light, open flame, and a room built for long dinners."
+										data-copy="The main room leans intimate rather than busy, with enough distance between tables to keep the meal relaxed."
+										data-left="Best for evenings and small groups"
+										data-right="Gallery fallback active"
+									>
+										<div class="thumb-art"></div>
+										<strong>Dining room</strong>
+										<span>What the night feels like once you’re seated.</span>
+									</button>
+									<button
+										type="button"
+										class="thumb-button"
+										data-view="counter"
+										data-badge="Open kitchen"
+										data-title="A front-row view of the fire, plating, and pace of service."
+										data-copy="The kitchen stays visible from the counter seats, which makes the room feel active without turning it into a performance."
+										data-left="Best for solo dinners or pairs"
+										data-right="Counter seating available"
+									>
+										<div class="thumb-art"></div>
+										<strong>Open kitchen</strong>
+										<span>Useful if you care about the energy of the room.</span>
+									</button>
+									<button
+										type="button"
+										class="thumb-button"
+										data-view="plate"
+										data-badge="Signature plates"
+										data-title="The menu lands somewhere between precise and generous."
+										data-copy="Expect warm sauces, restrained plating, and dishes that read clearly even from a small preview."
+										data-left="Wood-fired trout, charred leeks, brown butter"
+										data-right="Seasonal menu rotates nightly"
+									>
+										<div class="thumb-art"></div>
+										<strong>Signature plates</strong>
+										<span>Enough detail to understand the food before committing.</span>
+									</button>
+									<button
+										type="button"
+										class="thumb-button"
+										data-view="fallback"
+										data-badge="No live photo"
+										data-title="Missing media should still feel polished, not broken."
+										data-copy="If the API has no images, the product can still show cuisine, neighborhood, and atmosphere with a designed fallback."
+										data-left="Cuisine and neighborhood stay visible"
+										data-right="No external image required"
+									>
+										<div class="thumb-art"></div>
+										<strong>Fallback state</strong>
+										<span>A polished fallback for places without live media.</span>
+									</button>
+								</div>
+							</div>
+						</section>
+
+						<section class="panel section-panel" id="context">
+							<div class="section-heading">
+								<div>
+									<h2>Restaurant context</h2>
+									<p>Keep the details useful: where it is, how it’s priced, when it’s open, and what makes it worth opening the route for.</p>
+								</div>
+							</div>
+
+							<div class="context-grid">
+								<div class="info-block">
+									<small>Address</small>
+									<strong>14 Dean Street, Soho, London W1D 3RW</strong>
+									<p>Five minutes from Tottenham Court Road, tucked just off the louder dinner streets.</p>
+								</div>
+								<div class="info-block">
+									<small>Kitchen</small>
+									<strong>French grill with wood-fired seafood and vegetable plates</strong>
+									<p>Good when you want a meal that feels celebratory without tipping into formal tasting-menu territory.</p>
+								</div>
+								<div class="info-block">
+									<small>Hours</small>
+									<strong>Open now • 5:30 PM to 11:30 PM</strong>
+									<p>Late seating still feels intentional here, so it works for after-theatre dinners or unhurried weekday plans.</p>
+								</div>
+								<div class="info-block">
+									<small>Price</small>
+									<strong>$$$ • mains from £24 to £42</strong>
+									<p>The spend sits in special-night territory, but the room still feels approachable enough for a last-minute plan.</p>
+								</div>
+							</div>
+
+							<div class="hero-meta">
+								<span class="tag active">French grill</span>
+								<span class="tag">Late dinner</span>
+								<span class="tag">Counter seating</span>
+								<span class="tag">Open kitchen</span>
+								<span class="tag">Date night</span>
+							</div>
+						</section>
+
+						<section class="panel section-panel" id="reviews">
+							<div class="section-heading">
+								<div>
+									<h2>Reviews and confidence</h2>
+									<p>A quick signal of whether this place is merely interesting or consistently worth the trip.</p>
+								</div>
+							</div>
+
+							<div class="review-layout">
+								<div class="review-summary">
+									<strong>4.8</strong>
+									<span>326 ratings</span>
+									<p>Most guests mention room mood, consistency, and the kitchen pace more than novelty.</p>
+									<div class="rating-bars">
+										<div class="rating-row">
+											<span>5</span>
+											<div class="rating-track"><div class="rating-fill" style="width: 78%"></div></div>
+											<span>78%</span>
+										</div>
+										<div class="rating-row">
+											<span>4</span>
+											<div class="rating-track"><div class="rating-fill" style="width: 16%"></div></div>
+											<span>16%</span>
+										</div>
+										<div class="rating-row">
+											<span>3</span>
+											<div class="rating-track"><div class="rating-fill" style="width: 4%"></div></div>
+											<span>4%</span>
+										</div>
+										<div class="rating-row">
+											<span>2</span>
+											<div class="rating-track"><div class="rating-fill" style="width: 1.5%"></div></div>
+											<span>1%</span>
+										</div>
+										<div class="rating-row">
+											<span>1</span>
+											<div class="rating-track"><div class="rating-fill" style="width: 0.5%"></div></div>
+											<span>1%</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="review-list">
+									<article class="review-card">
+										<div class="review-top">
+											<strong>Nina C.</strong>
+											<span>Visited last week</span>
+										</div>
+										<p>The room feels calm even when it’s full. Service stayed sharp, and the wood-fired trout was the reason we’d come back.</p>
+									</article>
+									<article class="review-card">
+										<div class="review-top">
+											<strong>Marcus T.</strong>
+											<span>Date night pick</span>
+										</div>
+										<p>Good if you want a place that still feels intimate at 9:30. Expensive, but the pacing and warmth make it feel worth it.</p>
+									</article>
+									<article class="review-card">
+										<div class="review-top">
+											<strong>Leila W.</strong>
+											<span>After theatre</span>
+										</div>
+										<p>The menu is focused, not huge. That made ordering easier, and the staff were direct in a useful way when we asked what travels best across the table.</p>
+									</article>
+								</div>
+							</div>
+						</section>
+
+						<section class="panel section-panel" id="location">
+							<div class="section-heading">
+								<div>
+									<h2>Location and route</h2>
+									<p>Leave with the exact address, a grounded location preview, and a clear next action.</p>
+								</div>
+							</div>
+
+							<div class="map-grid">
+								<div class="map-canvas" aria-label="Map preview placeholder"></div>
+								<div class="map-copy">
+									<strong>14 Dean Street, Soho, London W1D 3RW</strong>
+									<p>Closest stations: Tottenham Court Road and Leicester Square. Easy to fold into a central London evening without adding a long walk.</p>
+									<div class="hero-meta">
+										<span class="tag active">6 min from Tottenham Court Road</span>
+										<span class="tag">Street-level entrance</span>
+									</div>
+									<a class="button secondary" href="#action-panel">Check route details</a>
+								</div>
+							</div>
+						</section>
+
+						<section class="panel section-panel" id="nearby">
+							<div class="section-heading">
+								<div>
+									<h2>Nearby alternatives</h2>
+									<p>Useful when this place feels close but not final. Keep the user anchored to the shortlist instead of starting over.</p>
+								</div>
+							</div>
+
+							<div class="similar-row">
+								<a class="similar-card" href="mapetite-restaurant-search-premium-polished.html">
+									<strong>Brass Alley</strong>
+									<span>2 min away • Modern European</span>
+									<p>Good fallback when you want the same part of Soho with a slightly louder room.</p>
+								</a>
+								<a class="similar-card" href="mapetite-restaurant-search-premium-polished.html">
+									<strong>Night Oven</strong>
+									<span>7 min away • Seasonal grill</span>
+									<p>Leans more casual, but keeps the late-dinner energy and open-kitchen feel.</p>
+								</a>
+								<a class="similar-card" href="mapetite-restaurant-search-premium-polished.html">
+									<strong>Back to shortlist</strong>
+									<span>Return to results</span>
+									<p>Go back to compare rating, price, and location without losing the search context.</p>
+								</a>
+							</div>
+						</section>
+					</div>
+
+					<aside class="panel decision-panel" id="action-panel">
+						<h3>Ready to decide?</h3>
+						<p>Keep the actions close to the facts you need most: where it is, whether it’s open, and how to get back if you want another option.</p>
+
+						<div class="decision-meta">
+							<div class="decision-row">
+								<strong>Tonight</strong>
+								<span>Open until 11:30 PM</span>
+							</div>
+							<div class="decision-row">
+								<strong>Address</strong>
+								<span>14 Dean Street, Soho</span>
+							</div>
+							<div class="decision-row">
+								<strong>Price</strong>
+								<span>$$$</span>
+							</div>
+							<div class="decision-row">
+								<strong>Support</strong>
+								<span>Website / Call only if the real data supports it</span>
+							</div>
+						</div>
+
+						<div class="decision-actions">
+							<a class="button primary" href="#location">Get directions</a>
+							<button class="button secondary" type="button" id="save-side">Save</button>
+							<a class="button ghost" href="mapetite-restaurant-search-premium-polished.html">Back to results</a>
+						</div>
+
+						<div class="support-note">
+							<small>Before you go</small>
+							<p>
+								Website and call details can sit here when the restaurant source supports them.
+							</p>
+						</div>
+					</aside>
+				</div>
+
+				<section class="panel final-panel">
+					<div>
+						<strong>Keep searching if the fit is close, not final.</strong>
+						<p>The detail page helps you commit with confidence, but it should still leave the route back to the shortlist clear and easy.</p>
+					</div>
+					<a class="button primary" href="mapetite-restaurant-search-premium-polished.html">Back to search results</a>
+				</section>
+			</main>
+		</div>
+
+		<script>
+			const thumbButtons = document.querySelectorAll(".thumb-button");
+			const mediaBadge = document.getElementById("media-badge");
+			const mediaTitle = document.getElementById("media-title");
+			const mediaCopy = document.getElementById("media-copy");
+			const mediaFootLeft = document.getElementById("media-foot-left");
+			const mediaFootRight = document.getElementById("media-foot-right");
+
+			for (const button of thumbButtons) {
+				button.addEventListener("click", () => {
+					for (const item of thumbButtons) item.classList.remove("active");
+					button.classList.add("active");
+					mediaBadge.textContent = button.dataset.badge;
+					mediaTitle.textContent = button.dataset.title;
+					mediaCopy.textContent = button.dataset.copy;
+					mediaFootLeft.textContent = button.dataset.left;
+					mediaFootRight.textContent = button.dataset.right;
+				});
+			}
+
+			const saveButtons = [document.getElementById("save-main"), document.getElementById("save-side")];
+			let saved = false;
+
+			function syncSaveButtons() {
+				for (const button of saveButtons) {
+					if (!button) continue;
+					button.textContent = saved ? "Saved" : "Save";
+					button.classList.toggle("secondary", !saved);
+					button.classList.toggle("primary", saved);
+				}
+			}
+
+			for (const button of saveButtons) {
+				if (!button) continue;
+				button.addEventListener("click", () => {
+					saved = !saved;
+					syncSaveButtons();
+				});
+			}
+		</script>
+	</body>
+</html>
