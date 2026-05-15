@@ -62,7 +62,6 @@ export const Route = createFileRoute("/restaurants")({
 });
 
 function App() {
-	const { city: searchCity } = Route.useSearch();
 	const pathname = useRouterState({
 		select: (state) => state.location.pathname,
 	});
@@ -74,6 +73,12 @@ function App() {
 	if (isDetailRouteActive) {
 		return <Outlet />;
 	}
+
+	return <RestaurantSearchPage />;
+}
+
+function RestaurantSearchPage() {
+	const { city: searchCity } = Route.useSearch();
 
 	// Global state from Zustand store
 	const location = useRestaurantSearchStore((state) => state.location);
