@@ -898,8 +898,8 @@ function RestaurantDetailPage() {
 								</section>
 							</div>
 
-							<aside className="xl:sticky xl:top-20">
-								<div className="mapetite-panel grid gap-5 p-5 md:p-6">
+							<aside className="xl:self-start">
+								<div className="mapetite-panel grid gap-5 p-5 md:p-6 xl:sticky xl:top-24">
 									<h3 className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 										Ready to decide?
 									</h3>
