@@ -1,8 +1,4 @@
-import { ChefProfileSection } from "@/components/ChefProfileSection";
-import { DetailPhotoCarousel } from "@/components/DetailPhotoCarousel";
 import { Layout } from "@/components/Layout";
-import { ReviewSummary } from "@/components/ReviewSummary";
-import { SignatureMenu } from "@/components/SignatureMenu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,7 +18,7 @@ import { searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import {
 	Clock,
 	DollarSign,
@@ -148,8 +144,6 @@ function App() {
 		});
 
 	// Local component state (not persisted)
-	const [selectedRestaurant, setSelectedRestaurant] =
-		useState<Restaurant | null>(null);
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
 	const [isSearching, setIsSearching] = useState(false);
 	const activeSearchIdRef = useRef(0);
@@ -173,7 +167,6 @@ function App() {
 					country: "",
 				};
 				setLocation(requestedLocation);
-				setSelectedRestaurant(null);
 				setRestaurants([]);
 				const { restaurants: results, location: resolvedLocation } =
 					await searchRestaurants(requestedLocation, []);
@@ -194,7 +187,6 @@ function App() {
 		}
 		const searchId = ++activeSearchIdRef.current;
 		setIsSearching(true);
-		setSelectedRestaurant(null);
 		setRestaurants([]);
 		try {
 			const { restaurants: results, location: resolvedLocation } =
@@ -234,7 +226,6 @@ function App() {
 							longitude,
 						};
 						setLocation(resolved);
-						setSelectedRestaurant(null);
 						setRestaurants([]);
 						const { restaurants: results, location: resolvedLocation } =
 							await searchRestaurants(
@@ -281,10 +272,6 @@ function App() {
 		return hasCoordinates
 			? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
 			: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
-	}, []);
-
-	const handleToggleSelectedRestaurant = useCallback((restaurant: Restaurant | null) => {
-		setSelectedRestaurant(restaurant);
 	}, []);
 
 	// Memoize favorite IDs Set to avoid recreating on every render.
@@ -973,120 +960,26 @@ function App() {
 											</div>
 
 											<div className="flex flex-wrap gap-2">
-												<Button
-													variant="outline"
-													onClick={() =>
-														handleToggleSelectedRestaurant(
-															selectedRestaurant?.id === restaurant.id
-																? null
-																: restaurant,
-														)
-													}
-												>
-													{selectedRestaurant?.id === restaurant.id
-														? "Hide details"
-														: "View details"}
+												<Button asChild variant="outline">
+													<Link
+														to="/restaurants/$restaurantId"
+														params={{ restaurantId: restaurant.id }}
+														onClick={() => {
+															console.log(
+																"[ViewDetails] clicked restaurant:",
+																restaurant.id,
+																restaurant.name,
+															);
+															console.log(
+																"[ViewDetails] navigating to detail route:",
+																`/restaurants/${restaurant.id}`,
+															);
+														}}
+													>
+														View details
+													</Link>
 												</Button>
 											</div>
-
-											{selectedRestaurant?.id === restaurant.id && (
-												<div className="space-y-5 border-t border-border pt-4">
-													<div className="space-y-1">
-														<p className="text-sm font-medium text-foreground">
-															Full address
-														</p>
-														<p className="text-sm leading-relaxed text-muted-foreground">
-															{restaurant.address.street}
-															<br />
-															{restaurant.address.city}, {restaurant.address.state}{" "}
-															{restaurant.address.zipCode}
-															<br />
-															{restaurant.address.country}
-														</p>
-													</div>
-
-													<div className="space-y-3">
-														<p className="text-sm font-medium text-foreground">
-															Recent reviews
-														</p>
-														<div className="space-y-3">
-															{restaurant.reviews.map((review) => (
-																<div
-																	key={review.id}
-																	className="rounded-md border border-border px-3 py-3"
-																>
-																	<div className="mb-2 flex flex-wrap items-center gap-2 text-sm">
-																		<span className="font-medium text-foreground">
-																			{review.author}
-																		</span>
-																		<div className="flex items-center gap-0.5">
-																			{[...Array(5)].map((_, i) => (
-																				<Star
-																					key={`review-star-${review.id}-${i}`}
-																					className={cn(
-																						"size-3.5",
-																						i < Math.floor(review.rating)
-																							? "fill-primary text-primary"
-																							: "fill-muted text-muted-foreground",
-																					)}
-																				/>
-																			))}
-																		</div>
-																		<span className="text-muted-foreground">
-																			{review.date}
-																		</span>
-																	</div>
-																	<p className="text-sm leading-relaxed text-muted-foreground">
-																		{review.comment}
-																	</p>
-																</div>
-															))}
-														</div>
-													</div>
-
-													<div className="flex flex-col gap-2 sm:flex-row">
-														<Button asChild variant="outline" className="w-full">
-															<a
-																href={buildDirectionsUrl(restaurant)}
-																target="_blank"
-																rel="noreferrer"
-															>
-																<MapPin className="mr-2 size-4" />
-																Get directions
-															</a>
-														</Button>
-													</div>
-
-													<DetailPhotoCarousel
-														restaurantName={restaurant.name}
-														images={restaurant.galleryImageUrls}
-														imageAttributions={restaurant.galleryPhotoAttributions}
-														categories={restaurant.categories}
-													/>
-
-													<ChefProfileSection
-														chefName={restaurant.chef?.name}
-														chefBio={restaurant.chef?.bio}
-														profileImage={restaurant.chef?.photoUrl}
-													/>
-
-													<SignatureMenu
-														dishes={restaurant.signatureDishes}
-														pricingNote={
-															restaurant.priceRange != null
-																? `Estimated pricing from $${restaurant.priceRange} to $$$$`
-																: undefined
-														}
-													/>
-
-													<ReviewSummary
-														overallRating={restaurant.rating}
-														totalReviews={restaurant.reviewCount}
-														ratingBreakdown={restaurant.ratingBreakdown}
-														reviews={restaurant.reviews}
-													/>
-												</div>
-											)}
 										</div>
 									</div>
 								</CardContent>
