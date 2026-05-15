@@ -545,7 +545,7 @@ function RestaurantDetailPage() {
 							</div>
 						</section>
 
-						<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+						<div className="grid gap-6 min-[1181px]:grid-cols-[minmax(0,1fr)_320px] min-[1181px]:items-start">
 							<div className="grid gap-6">
 								<section id="gallery" className="mapetite-panel grid gap-[18px] p-[22px]">
 									<div className="flex flex-wrap items-end justify-between gap-4">
@@ -882,23 +882,9 @@ function RestaurantDetailPage() {
 									</div>
 								</section>
 
-								<section className="mapetite-panel flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between md:p-6">
-									<div>
-										<strong className="block text-lg font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
-											Keep searching if the fit is close, not final.
-										</strong>
-										<p className="mapetite-muted-copy mt-2 max-w-2xl text-sm leading-6">
-											The detail page should help you commit with confidence, while
-											keeping the route back to the shortlist clear and easy.
-										</p>
-									</div>
-									<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
-										<Link to="/restaurants">Back to search results</Link>
-									</Button>
-								</section>
 							</div>
 
-							<aside className="xl:sticky xl:top-24 xl:self-start">
+							<aside className="min-[1181px]:sticky min-[1181px]:top-[94px] min-[1181px]:self-start">
 								<div className="mapetite-panel grid gap-5 p-5 md:p-6">
 									<h3 className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 										Ready to decide?
@@ -1011,6 +997,21 @@ function RestaurantDetailPage() {
 								</div>
 							</aside>
 						</div>
+
+						<section className="mapetite-panel flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between md:p-6">
+							<div>
+								<strong className="block text-lg font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
+									Keep searching if the fit is close, not final.
+								</strong>
+								<p className="mapetite-muted-copy mt-2 max-w-2xl text-sm leading-6">
+									The detail page should help you commit with confidence, while
+									keeping the route back to the shortlist clear and easy.
+								</p>
+							</div>
+							<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
+								<Link to="/restaurants">Back to search results</Link>
+							</Button>
+						</section>
 					</main>
 				</div>
 			</div>
