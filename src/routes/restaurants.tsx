@@ -18,7 +18,12 @@ import { searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	Outlet,
+	useRouterState,
+} from "@tanstack/react-router";
 import {
 	Clock,
 	DollarSign,
@@ -58,6 +63,17 @@ export const Route = createFileRoute("/restaurants")({
 
 function App() {
 	const { city: searchCity } = Route.useSearch();
+	const pathname = useRouterState({
+		select: (state) => state.location.pathname,
+	});
+	const isDetailRouteActive =
+		pathname.startsWith("/restaurants/") && pathname !== "/restaurants";
+
+	// The detail route is nested under /restaurants, so the parent route needs
+	// to yield to its child route when a restaurant id is active.
+	if (isDetailRouteActive) {
+		return <Outlet />;
+	}
 
 	// Global state from Zustand store
 	const location = useRestaurantSearchStore((state) => state.location);
@@ -964,17 +980,6 @@ function App() {
 													<Link
 														to="/restaurants/$restaurantId"
 														params={{ restaurantId: restaurant.id }}
-														onClick={() => {
-															console.log(
-																"[ViewDetails] clicked restaurant:",
-																restaurant.id,
-																restaurant.name,
-															);
-															console.log(
-																"[ViewDetails] navigating to detail route:",
-																`/restaurants/${restaurant.id}`,
-															);
-														}}
 													>
 														View details
 													</Link>

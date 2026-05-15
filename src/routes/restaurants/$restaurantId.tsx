@@ -98,8 +98,6 @@ function RestaurantDetailPage() {
 	const restaurantName =
 		fetchedRestaurant?.name ?? storeRestaurant?.name ?? "Restaurant";
 
-	console.log("[DetailRoute] restaurantId param:", restaurantId);
-
 	const { data: favoritesData } = useFavorites();
 	const { mutate: toggleFavoriteMutate, isPending: isTogglingFavorite } =
 		useToggleFavorite({
@@ -173,7 +171,6 @@ function RestaurantDetailPage() {
 	}, [restaurantId]);
 
 	const restaurant = fetchedRestaurant ?? storeRestaurant;
-	console.log("[DetailRoute] found restaurant:", restaurant?.id, restaurant?.name);
 	const favoriteIds = useMemo(
 		() => new Set(favoritesData?.favorites ?? []),
 		[favoritesData?.favorites],
