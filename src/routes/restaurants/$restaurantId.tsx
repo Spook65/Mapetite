@@ -1,5 +1,4 @@
 import { Layout } from "@/components/Layout";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
@@ -7,14 +6,11 @@ import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import {
 	ArrowLeft,
-	Clock,
-	DollarSign,
 	ExternalLink,
 	Heart,
-	MapPin,
 	Navigation,
 	Phone,
 	Star,
@@ -268,8 +264,6 @@ function RestaurantDetailPage() {
 	const hasPhone = !!restaurant.phone;
 	const hasAmenities = !!restaurant.amenities?.length;
 	const hasPaymentMethods = !!restaurant.paymentMethods?.length;
-	const selectedImage = galleryImages[selectedImageIndex] ?? null;
-	const selectedImageAttribution = galleryAttributions[selectedImageIndex] ?? [];
 	const ratingBreakdownRows = hasRatingBreakdown
 		? ([5, 4, 3, 2, 1] as const).map((score) => ({
 				score,
@@ -280,100 +274,212 @@ function RestaurantDetailPage() {
 		(total, row) => total + row.count,
 		0,
 	);
+	const galleryViewBlueprints = [
+		{
+			badge: "Dining room",
+			label: "Dining room",
+			title: `A closer look at ${restaurant.name} before you commit.`,
+			copy:
+				restaurant.description ||
+				"Keep the room, the route, and the shortlist context visible even when live media is limited.",
+			left:
+				locationLine || restaurant.categories[0] || "Restaurant detail",
+			right: galleryImages.length > 0 ? "Gallery view active" : "Gallery fallback active",
+			summary: "What the room feels like once you're seated.",
+		},
+		{
+			badge: "Open kitchen",
+			label: "Open kitchen",
+			title: "A steadier read on pace, service, and the room around the table.",
+			copy:
+				restaurant.description ||
+				"Even a smaller set of photos should help the page feel grounded rather than empty.",
+			left:
+				restaurant.categories.slice(0, 2).join(" • ") ||
+				restaurant.categories[0] ||
+				"Restaurant detail",
+			right: hasHours
+				? `${restaurant.isOpenNow ? "Open now" : "Closed"}${
+						restaurant.hours?.close ? ` until ${restaurant.hours.close}` : ""
+					}`
+				: "Hours vary",
+			summary: "Useful when the energy of the room matters.",
+		},
+		{
+			badge: "Signature plates",
+			label: "Signature plates",
+			title: "Enough detail to understand the food before opening the route.",
+			copy:
+				priceRangeLabel
+					? `${priceRangeLabel} pricing with ${restaurant.categories.join(" • ")} at the center of the meal.`
+					: `A clearer read on ${restaurant.categories.join(" • ")} before deciding.`,
+			left:
+				priceRangeLabel
+					? `${priceRangeLabel} pricing`
+					: restaurant.categories[0] || "Restaurant detail",
+			right:
+				restaurant.reviewCount > 0
+					? `${restaurant.reviewCount.toLocaleString()} reviews`
+					: "Review data limited",
+			summary: "A quick food cue before the final call.",
+		},
+		{
+			badge: "Fallback state",
+			label: "Fallback state",
+			title: "Missing media should still feel polished, not broken.",
+			copy:
+				"When the source has fewer images, the page can still rely on address, reviews, and route context to help you decide.",
+			left:
+				hasMapCoordinates
+					? "Map preview available"
+					: locationLine || "Address stays visible",
+			right:
+				selectedImageIndex === 3 || galleryImages.length === 0
+					? "No external image required"
+					: "Fallback available",
+			summary: "A designed fallback for restaurants without full photo coverage.",
+		},
+	] as const;
+	const galleryViews =
+		galleryImages.length > 0
+			? galleryImages.map((image, index) => ({
+					...galleryViewBlueprints[
+						Math.min(index, galleryViewBlueprints.length - 1)
+					],
+					image,
+					attribution: galleryAttributions[index] ?? [],
+			  }))
+			: galleryViewBlueprints.map((view) => ({
+					...view,
+					image: null,
+					attribution: [] as string[],
+			  }));
+	const activeGalleryView =
+		galleryViews[
+			Math.min(selectedImageIndex, Math.max(galleryViews.length - 1, 0))
+		] ?? galleryViews[0];
+	const contextTags = [
+		...restaurant.categories.slice(0, 3),
+		hasHours ? (restaurant.isOpenNow ? "Open now" : "Hours vary") : null,
+		locationLine || null,
+		...(restaurant.amenities?.slice(0, 2) ?? []),
+	].filter(Boolean) as string[];
+	const reviewSummaryCopy = hasReviews
+		? "Use recent reviews and the overall rating together before you commit."
+		: "Rating data is available, even if written reviews are limited for this restaurant.";
 
 	return (
 		<Layout>
 			<div className="mapetite-page-shell min-h-full">
-				<div className="mapetite-container px-4 py-6 md:px-6 md:py-8">
-					<div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-						<button
-							type="button"
-							onClick={() => navigate({ to: "/restaurants" })}
-							className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
-						>
-							<ArrowLeft className="size-4" />
-							Back to search
-						</button>
-						<div className="mapetite-faint-copy text-sm">Restaurant detail</div>
-					</div>
+				<div className="mapetite-container px-4 py-4 md:px-6 md:py-6">
+					<header className="sticky top-4 z-20 rounded-[14px] border border-[rgba(255,236,220,0.06)] bg-[rgba(21,17,14,0.82)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur">
+						<div className="flex min-h-[68px] flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-5">
+							<Link
+								to="/"
+								className="inline-flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--mapetite-text)]"
+							>
+								<span className="grid size-[34px] place-items-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[15px] text-[#f7e7d6]">
+									M
+								</span>
+								<span>Mapetite</span>
+							</Link>
 
-					<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
-						<div className="space-y-6">
-							<section className="mapetite-panel p-5 md:p-7">
-								<div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-									<div className="space-y-4">
-										<div className="mapetite-eyebrow">Full restaurant view</div>
-										<div>
-											<h1 className="max-w-[11ch] text-4xl font-semibold tracking-[-0.06em] text-[var(--mapetite-text)] md:text-5xl lg:text-[3.6rem] lg:leading-[0.96]">
-												{restaurant.name}
-											</h1>
-											<p className="mapetite-muted-copy mt-4 max-w-3xl text-base leading-8 md:text-lg">
-												{restaurant.description}
-											</p>
-										</div>
+							<nav className="flex flex-wrap items-center gap-4 text-sm text-[var(--mapetite-text-soft)]">
+								<Link to="/" className="transition-colors hover:text-[var(--mapetite-text)]">
+									Home
+								</Link>
+								<Link
+									to="/restaurants"
+									className="transition-colors hover:text-[var(--mapetite-text)]"
+								>
+									Search
+								</Link>
+								<a
+									href="#reviews"
+									className="transition-colors hover:text-[var(--mapetite-text)]"
+								>
+									Reviews
+								</a>
+								<a
+									href="#location"
+									className="transition-colors hover:text-[var(--mapetite-text)]"
+								>
+									Location
+								</a>
+							</nav>
 
-										<div className="flex flex-wrap items-center gap-2">
-											<div className="inline-flex items-center gap-2 rounded-full border border-[var(--mapetite-border)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--mapetite-text-soft)]">
-												<Star className="size-4 fill-[var(--mapetite-accent)] text-[var(--mapetite-accent)]" />
-												<strong className="font-medium text-[var(--mapetite-text)]">
-													{restaurant.rating.toFixed(1)}
-												</strong>
-												<span>({restaurant.reviewCount} reviews)</span>
-											</div>
+							<Button asChild className="mapetite-accent-button rounded-[10px] px-4">
+								<Link to="/restaurants">Back to results</Link>
+							</Button>
+						</div>
+					</header>
 
-											{locationLine ? (
-												<div className="inline-flex items-center gap-2 rounded-full border border-[var(--mapetite-border)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--mapetite-text-soft)]">
-													<MapPin className="size-4 text-[var(--mapetite-accent)]" />
-													<span>{locationLine}</span>
-												</div>
-											) : null}
+					<main className="grid gap-6 py-6 md:py-8">
+						<div className="flex flex-wrap items-center justify-between gap-4">
+							<button
+								type="button"
+								onClick={() => navigate({ to: "/restaurants" })}
+								className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+							>
+								<ArrowLeft className="size-4" />
+								Back to shortlist
+							</button>
+							<p className="mapetite-faint-copy text-sm">
+								Compare the room, the route, and the reviews before you commit.
+							</p>
+						</div>
 
-											{priceRangeLabel ? (
-												<div className="inline-flex items-center gap-2 rounded-full border border-[var(--mapetite-border)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--mapetite-text-soft)]">
-													<DollarSign className="size-4 text-[var(--mapetite-accent)]" />
-													<span>{priceRangeLabel}</span>
-												</div>
-											) : null}
-
-											{hasHours ? (
-												<div className="inline-flex items-center gap-2 rounded-full border border-[var(--mapetite-border)] bg-white/[0.03] px-3 py-2 text-sm text-[var(--mapetite-text-soft)]">
-													<Clock className="size-4 text-[var(--mapetite-accent)]" />
-													<span>
-														{restaurant.hours?.open} - {restaurant.hours?.close}
-													</span>
-													<span
-														className={cn(
-															"rounded-full px-2 py-0.5 text-xs",
-															restaurant.isOpenNow
-																? "bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]"
-																: "bg-white/[0.05] text-[var(--mapetite-text-soft)]",
-														)}
-													>
-														{restaurant.isOpenNow ? "Open now" : "Closed"}
-													</span>
-												</div>
-											) : null}
-										</div>
-
-										<div className="flex flex-wrap gap-2">
-											{restaurant.categories.map((category) => (
-												<Badge
-													key={category}
-													variant="outline"
-													className="border-[var(--mapetite-border)] bg-white/[0.03] text-[var(--mapetite-text-soft)]"
-												>
-													{category}
-												</Badge>
-											))}
-										</div>
+						<section className="mapetite-panel p-6 md:p-7">
+							<div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
+								<div className="grid gap-4">
+									<div className="mapetite-eyebrow">Restaurant detail</div>
+									<div>
+										<h1 className="max-w-[10ch] text-[clamp(34px,4vw,52px)] font-semibold leading-none tracking-[-0.06em] text-[var(--mapetite-text)]">
+											{restaurant.name}
+										</h1>
+										<p className="mapetite-muted-copy mt-4 max-w-[620px] text-[15px] leading-7">
+											{restaurant.description}
+										</p>
 									</div>
 
-									<div className="flex flex-col gap-3 lg:min-w-[220px]">
-										<Button
-											asChild
-											size="lg"
-											className="mapetite-accent-button rounded-[10px] px-5"
-										>
+									<div className="flex flex-wrap items-center gap-2.5">
+										<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+											<strong className="font-semibold text-[var(--mapetite-text)]">
+												{restaurant.rating.toFixed(1)}
+											</strong>
+											<span>{restaurant.reviewCount} reviews</span>
+										</div>
+										{restaurant.categories.length > 0 ? (
+											<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+												<span>{restaurant.categories.join(" • ")}</span>
+											</div>
+										) : null}
+										{locationLine ? (
+											<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+												<span>{locationLine}</span>
+											</div>
+										) : null}
+										{priceRangeLabel ? (
+											<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+												<span>{priceRangeLabel}</span>
+											</div>
+										) : null}
+										{hasHours ? (
+											<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+												<strong className="font-semibold text-[var(--mapetite-text)]">
+													{restaurant.isOpenNow ? "Open now" : "Closed"}
+												</strong>
+												<span>
+													{restaurant.hours?.close
+														? `until ${restaurant.hours.close}`
+														: `${restaurant.hours?.open} - ${restaurant.hours?.close}`}
+												</span>
+											</div>
+										) : null}
+									</div>
+
+									<div className="flex flex-wrap gap-3">
+										<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
 											<a href={directionsUrl} target="_blank" rel="noreferrer">
 												<Navigation className="mr-2 size-4" />
 												Get directions
@@ -387,283 +493,297 @@ function RestaurantDetailPage() {
 											className="mapetite-quiet-button rounded-[10px] px-5"
 										>
 											<Heart
-												className={cn(
-													"mr-2 size-4",
-													isFavorite && "fill-current",
-												)}
+												className={cn("mr-2 size-4", isFavorite && "fill-current")}
 											/>
-											Save
+											{isFavorite ? "Saved" : "Save"}
 										</Button>
 										<Button
 											type="button"
 											variant="ghost"
 											onClick={() => navigate({ to: "/restaurants" })}
-											className="justify-start rounded-[10px] px-1 text-[var(--mapetite-text-soft)] hover:text-[var(--mapetite-text)]"
+											className="rounded-[10px] border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-4 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)]"
 										>
 											<ArrowLeft className="mr-2 size-4" />
-											Back to search
+											Back to results
 										</Button>
 									</div>
 								</div>
-							</section>
 
-							<section className="space-y-6">
-								<div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)]">
-									<div className="mapetite-panel overflow-hidden p-4 md:p-5">
-										<div className="grid gap-4 lg:grid-cols-[minmax(0,1.2fr)_172px]">
-											<div
-												className={cn(
-													"relative min-h-[360px] overflow-hidden rounded-[14px] border border-[var(--mapetite-border)] p-5 md:min-h-[420px]",
-													selectedImage
-														? "bg-black/10"
-														: "mapetite-media-fallback",
-												)}
-											>
-												{selectedImage ? (
-													<img
-														src={selectedImage}
-														alt={`${restaurant.name} photo ${selectedImageIndex + 1}`}
-														className="absolute inset-0 h-full w-full object-cover"
-														loading="lazy"
-														referrerPolicy="no-referrer"
-													/>
-												) : null}
-												<div className="relative z-10 flex h-full flex-col justify-between">
-													<div className="inline-flex w-fit items-center gap-2 rounded-full border border-[var(--mapetite-border)] bg-black/30 px-3 py-1.5 text-xs text-[var(--mapetite-text-soft)] backdrop-blur">
-														{selectedImage ? "Gallery" : "Room preview"}
-													</div>
-													<div className="max-w-md">
-														<strong className="block text-3xl font-semibold tracking-[-0.05em] text-[var(--mapetite-text)] md:text-[2.1rem]">
-															{selectedImage ? restaurant.name : "The room, the route, and the final call."}
-														</strong>
-														<p className="mt-3 text-sm leading-7 text-[var(--mapetite-text-soft)]">
-															{selectedImage
-																? restaurant.description
-																: "When photos are limited, the address, route, and shortlist context still stay clear enough to decide."}
-														</p>
-													</div>
-													<div className="flex flex-wrap items-center justify-between gap-3 text-xs text-[var(--mapetite-text-faint)]">
-														<span>
-															{selectedImage
-																? `${selectedImageIndex + 1} of ${galleryImages.length}`
-																: `${restaurant.categories[0] ?? "Restaurant"} · ${locationLine}`}
-														</span>
-														{selectedImageAttribution.length > 0 ? (
-															<span>
-																Photo credit: {selectedImageAttribution.join(", ")}
-															</span>
-														) : null}
-													</div>
-												</div>
-											</div>
+								<aside className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-[18px]">
+									<small className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.46)]">
+										Decision cues
+									</small>
+									<strong className="text-lg font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
+										Easy to compare, strong enough to commit.
+									</strong>
+									<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+										Photo coverage, tonight&apos;s hours, address, and review
+										confidence stay visible without turning the page into a dashboard.
+									</p>
+									<div className="flex flex-wrap gap-2">
+										{[
+											hasMapCoordinates ? "Nearby map" : null,
+											hasReviews || hasRatingBreakdown ? "Review summary" : null,
+											"Back to shortlist",
+										]
+											.filter(Boolean)
+											.map((tag, index) => (
+												<span
+													key={tag}
+													className={cn(
+														"inline-flex items-center rounded-full border px-[11px] py-2 text-[13px]",
+														index === 0
+															? "border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]"
+															: "border-[rgba(255,236,220,0.1)] bg-white/[0.03] text-[var(--mapetite-text-soft)]",
+													)}
+												>
+													{tag}
+												</span>
+											))}
+									</div>
+								</aside>
+							</div>
+						</section>
 
-											<div className="grid gap-3">
-												{galleryImages.length > 0 ? (
-													galleryImages.map((image, index) => (
-														<button
-															key={`${image}-${index}`}
-															type="button"
-															onClick={() => setSelectedImageIndex(index)}
-															className={cn(
-																"grid gap-2 rounded-[12px] border p-3 text-left transition-all hover:-translate-y-0.5",
-																selectedImageIndex === index
-																	? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)]"
-																	: "border-[var(--mapetite-border)] bg-white/[0.03]",
-															)}
-														>
-															<div className="overflow-hidden rounded-[10px] border border-[var(--mapetite-border)] bg-black/10">
-																<img
-																	src={image}
-																	alt={`${restaurant.name} thumbnail ${index + 1}`}
-																	className="aspect-[4/3] w-full object-cover"
-																	loading="lazy"
-																	referrerPolicy="no-referrer"
-																/>
-															</div>
-															<strong className="text-sm font-medium text-[var(--mapetite-text)]">
-																{index === 0
-																	? "Main room"
-																	: index === 1
-																		? "Service and seating"
-																		: "Dining atmosphere"}
-															</strong>
-															<span className="text-xs text-[var(--mapetite-text-soft)]">
-																{restaurant.categories[0] ?? "Restaurant"} · {locationLine}
-															</span>
-														</button>
-													))
-												) : (
-													<div className="grid gap-3">
-														{[
-															"Dining room",
-															"Service and seating",
-															"Address and route",
-														].map((label) => (
-															<div
-																key={label}
-																className="rounded-[12px] border border-[var(--mapetite-border)] bg-white/[0.03] p-3"
-															>
-																<div className="mapetite-media-fallback min-h-[82px] rounded-[10px]" />
-																<strong className="mt-3 block text-sm font-medium text-[var(--mapetite-text)]">
-																	{label}
-																</strong>
-																<span className="mt-1 block text-xs text-[var(--mapetite-text-soft)]">
-																	{restaurant.categories[0] ?? "Restaurant"} · {locationLine}
-																</span>
-															</div>
-														))}
-													</div>
-												)}
-											</div>
+						<div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_320px] xl:items-start">
+							<div className="grid gap-6">
+								<section id="gallery" className="mapetite-panel grid gap-[18px] p-[22px]">
+									<div className="flex flex-wrap items-end justify-between gap-4">
+										<div>
+											<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+												Gallery
+											</h2>
+											<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
+												Use the space, plating, and pace of service to decide whether it
+												matches the night you have in mind.
+											</p>
 										</div>
 									</div>
 
-									<div className="mapetite-panel p-5 md:p-6">
-										<div className="mapetite-eyebrow">Restaurant context</div>
-										<div className="mt-5 space-y-5">
-											<div>
-												<p className="text-sm font-medium text-[var(--mapetite-text)]">
-													Address
-												</p>
-												<p className="mapetite-muted-copy mt-2 text-sm leading-7">
-													{fullAddress}
-												</p>
-											</div>
-
-											<div className="grid gap-3 sm:grid-cols-2">
-												<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-													<p className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-														Cuisine
-													</p>
-													<p className="mt-2 text-sm font-medium leading-6 text-[var(--mapetite-text)]">
-														{restaurant.categories.join(" · ")}
-													</p>
-												</div>
-												<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-													<p className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-														Price
-													</p>
-													<p className="mt-2 text-sm font-medium leading-6 text-[var(--mapetite-text)]">
-														{priceRangeLabel ? `${priceRangeLabel} pricing` : "Pricing varies"}
-													</p>
-												</div>
-											</div>
-
-											{hasHours ? (
-												<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-													<p className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-														Hours
-													</p>
-													<div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-[var(--mapetite-text-soft)]">
-														<Clock className="size-4 text-[var(--mapetite-accent)]" />
-														<span>
-															{restaurant.hours?.open} - {restaurant.hours?.close}
-														</span>
-														<span
-															className={cn(
-																"rounded-full px-2 py-0.5 text-xs",
-																restaurant.isOpenNow
-																	? "bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]"
-																	: "bg-white/[0.05] text-[var(--mapetite-text-soft)]",
-															)}
-														>
-															{restaurant.isOpenNow ? "Open now" : "Closed"}
-														</span>
-													</div>
-												</div>
+									<div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_172px]">
+										<div
+											className={cn(
+												"relative grid min-h-[420px] grid-rows-[auto_1fr_auto] gap-[14px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] p-[22px]",
+												activeGalleryView.image
+													? "bg-black/10"
+													: "bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.26),rgba(180,108,67,0.08)_38%,rgba(17,13,11,0.2)_100%)]",
+											)}
+										>
+											{activeGalleryView.image ? (
+												<img
+													src={activeGalleryView.image}
+													alt={`${restaurant.name} view ${selectedImageIndex + 1}`}
+													className="absolute inset-0 h-full w-full object-cover"
+													loading="lazy"
+													referrerPolicy="no-referrer"
+												/>
 											) : null}
 
-											{(hasAmenities || hasPaymentMethods) && (
-												<div className="grid gap-3 sm:grid-cols-2">
-													{hasAmenities ? (
-														<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-															<p className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-																Amenities
-															</p>
-															<p className="mt-2 text-sm leading-7 text-[var(--mapetite-text-soft)]">
-																{restaurant.amenities?.join(" · ")}
-															</p>
-														</div>
-													) : null}
-													{hasPaymentMethods ? (
-														<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-															<p className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-																Payments
-															</p>
-															<p className="mt-2 text-sm leading-7 text-[var(--mapetite-text-soft)]">
-																{restaurant.paymentMethods?.join(" · ")}
-															</p>
-														</div>
-													) : null}
-												</div>
-											)}
+											<div className="relative z-10 inline-flex w-fit items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-black/30 px-[10px] py-2 text-xs text-[rgba(255,244,236,0.78)] backdrop-blur">
+												{activeGalleryView.badge}
+											</div>
+											<div className="relative z-10 grid max-w-[420px] gap-[10px] self-end">
+												<strong className="text-[34px] font-semibold leading-[0.98] tracking-[-0.05em] text-[rgba(255,248,242,0.96)]">
+													{activeGalleryView.title}
+												</strong>
+												<p className="text-sm leading-[1.65] text-[rgba(255,240,232,0.76)]">
+													{activeGalleryView.copy}
+												</p>
+											</div>
+											<div className="relative z-10 flex flex-wrap items-center justify-between gap-3 text-[13px] text-[rgba(255,240,232,0.68)]">
+												<span>{activeGalleryView.left}</span>
+												<span>
+													{activeGalleryView.attribution.length > 0
+														? `Photo credit: ${activeGalleryView.attribution.join(", ")}`
+														: activeGalleryView.right}
+												</span>
+											</div>
+										</div>
+
+										<div className="grid gap-3">
+											{galleryViews.map((view, index) => (
+												<button
+													key={`${view.label}-${index}`}
+													type="button"
+													onClick={() => setSelectedImageIndex(index)}
+													className={cn(
+														"grid gap-2 rounded-[12px] border p-[14px] text-left transition-all hover:-translate-y-0.5",
+														selectedImageIndex === index
+															? "border-[rgba(213,154,104,0.3)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]"
+															: "border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]",
+													)}
+												>
+													<div className="overflow-hidden rounded-[10px] border border-[rgba(255,236,220,0.08)]">
+														{view.image ? (
+															<img
+																src={view.image}
+																alt={`${restaurant.name} thumbnail ${index + 1}`}
+																className="aspect-[4/3] w-full object-cover"
+																loading="lazy"
+																referrerPolicy="no-referrer"
+															/>
+														) : (
+															<div className="min-h-[82px] bg-[linear-gradient(180deg,rgba(255,248,242,0.05),rgba(255,248,242,0.02)),linear-gradient(135deg,rgba(213,154,104,0.22),rgba(180,108,67,0.06)_50%,rgba(17,13,11,0.16)_100%)]" />
+														)}
+													</div>
+													<strong className="text-[15px] font-semibold text-[var(--mapetite-text)]">
+														{view.label}
+													</strong>
+													<span className="text-[13px] text-[var(--mapetite-text-soft)]">
+														{view.summary}
+													</span>
+												</button>
+											))}
 										</div>
 									</div>
-								</div>
+								</section>
 
-								{(hasReviews || hasRatingBreakdown) && (
-									<section className="mapetite-panel p-5 md:p-6">
-										<div className="flex flex-wrap items-end justify-between gap-4">
-											<div>
-												<div className="mapetite-eyebrow">Reviews and confidence</div>
-												<h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-													See how the room holds up before you go.
-												</h2>
-												<p className="mapetite-muted-copy mt-3 max-w-2xl text-sm leading-7">
-													Use the overall rating, review tone, and recent comments to
-													get confidence before you commit.
-												</p>
-											</div>
+								<section id="context" className="mapetite-panel grid gap-[18px] p-[22px]">
+									<div>
+										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											Restaurant context
+										</h2>
+										<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
+											Keep the details useful: where it is, how it&apos;s priced, when
+											it&apos;s open, and what makes it worth opening the route for.
+										</p>
+									</div>
+
+									<div className="grid gap-[18px] md:grid-cols-2">
+										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+											<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
+												Address
+											</small>
+											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
+												{fullAddress}
+											</strong>
+											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+												{locationLine
+													? `Close enough to keep ${locationLine} in the plan without losing the search context.`
+													: "Keep the full address close before opening the route."}
+											</p>
+										</div>
+										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+											<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
+												Kitchen
+											</small>
+											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
+												{restaurant.categories.join(" • ")}
+											</strong>
+											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+												{restaurant.description}
+											</p>
+										</div>
+										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+											<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
+												Hours
+											</small>
+											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
+												{hasHours
+													? `${restaurant.isOpenNow ? "Open now" : "Hours listed"} • ${restaurant.hours?.open} - ${restaurant.hours?.close}`
+													: "Hours not listed"}
+											</strong>
+											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+												{hasHours
+													? "Use the current hours as one more signal before you leave the shortlist."
+													: "Open status is not available for this restaurant right now."}
+											</p>
+										</div>
+										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+											<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
+												Price
+											</small>
+											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
+												{priceRangeLabel ? `${priceRangeLabel} pricing` : "Pricing varies"}
+											</strong>
+											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+												{priceRangeLabel
+													? "A quick spend check before you commit to the route."
+													: "Use the rest of the detail signals to decide whether the place still fits."}
+											</p>
+										</div>
+									</div>
+
+									{contextTags.length > 0 ? (
+										<div className="flex flex-wrap gap-2">
+											{contextTags.map((tag, index) => (
+												<span
+													key={`${tag}-${index}`}
+													className={cn(
+														"inline-flex items-center gap-2 rounded-full border px-[11px] py-2 text-[13px]",
+														index === 0
+															? "border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]"
+															: "border-[rgba(255,236,220,0.1)] bg-white/[0.03] text-[var(--mapetite-text-soft)]",
+													)}
+												>
+													{tag}
+												</span>
+											))}
+										</div>
+									) : null}
+								</section>
+
+								<section id="reviews" className="mapetite-panel grid gap-[18px] p-[22px]">
+									<div>
+										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											Reviews and confidence
+										</h2>
+										<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
+											{reviewSummaryCopy}
+										</p>
+									</div>
+
+									<div className="grid gap-[18px] lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
+										<div className="grid gap-[10px] rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-[18px]">
+											<strong className="text-[46px] font-semibold leading-[0.95] tracking-[-0.06em] text-[var(--mapetite-text)]">
+												{restaurant.rating.toFixed(1)}
+											</strong>
+											<span className="text-sm text-[var(--mapetite-text-soft)]">
+												{restaurant.reviewCount.toLocaleString()} ratings
+											</span>
+											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+												{reviewSummaryCopy}
+											</p>
+											{totalBreakdownCount > 0 ? (
+												<div className="grid gap-2">
+													{ratingBreakdownRows.map((row) => {
+														const width =
+															totalBreakdownCount > 0
+																? `${(row.count / totalBreakdownCount) * 100}%`
+																: "0%";
+
+														return (
+															<div
+																key={row.score}
+																className="grid grid-cols-[32px_minmax(0,1fr)_42px] items-center gap-[10px] text-[13px] text-[var(--mapetite-text-soft)]"
+															>
+																<span>{row.score}</span>
+																<div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
+																	<div
+																		className="h-full rounded-full bg-[linear-gradient(90deg,rgba(213,154,104,0.9),rgba(180,108,67,0.82))]"
+																		style={{ width }}
+																	/>
+																</div>
+																<span>{row.count}</span>
+															</div>
+														);
+													})}
+												</div>
+											) : null}
 										</div>
 
-										<div className="mt-6 grid gap-5 lg:grid-cols-[240px_minmax(0,1fr)]">
-											<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-white/[0.03] p-5">
-												<strong className="block text-5xl font-semibold tracking-[-0.06em] text-[var(--mapetite-text)]">
-													{restaurant.rating.toFixed(1)}
-												</strong>
-												<p className="mt-2 text-sm text-[var(--mapetite-text-soft)]">
-													Based on {restaurant.reviewCount.toLocaleString()} reviews
-												</p>
-
-												{totalBreakdownCount > 0 ? (
-													<div className="mt-5 space-y-2">
-														{ratingBreakdownRows.map((row) => {
-															const width =
-																totalBreakdownCount > 0
-																	? `${(row.count / totalBreakdownCount) * 100}%`
-																	: "0%";
-
-															return (
-																<div
-																	key={row.score}
-																	className="grid grid-cols-[28px_minmax(0,1fr)_40px] items-center gap-2 text-xs text-[var(--mapetite-text-soft)]"
-																>
-																	<span>{row.score}★</span>
-																	<div className="h-2 overflow-hidden rounded-full bg-white/[0.06]">
-																		<div
-																			className="h-full rounded-full bg-[linear-gradient(90deg,rgba(213,154,104,0.92),rgba(180,108,67,0.82))]"
-																			style={{ width }}
-																		/>
-																	</div>
-																	<span>{row.count}</span>
-																</div>
-															);
-														})}
-													</div>
-												) : null}
-											</div>
-
-											{hasReviews ? (
-												<div className="space-y-3">
-													{restaurant.reviews.map((review) => (
-														<div
-															key={review.id}
-															className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4"
-														>
-															<div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
-																<span className="font-medium text-[var(--mapetite-text)]">
+										{hasReviews ? (
+											<div className="grid gap-3">
+												{restaurant.reviews.map((review) => (
+													<article
+														key={review.id}
+														className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4"
+													>
+														<div className="flex flex-wrap items-center justify-between gap-2">
+															<div className="flex flex-wrap items-center gap-2 text-sm">
+																<strong className="text-[var(--mapetite-text)]">
 																	{review.author}
-																</span>
+																</strong>
 																<div className="flex items-center gap-0.5">
 																	{[...Array(5)].map((_, i) => (
 																		<Star
@@ -677,155 +797,160 @@ function RestaurantDetailPage() {
 																		/>
 																	))}
 																</div>
-																<span className="mapetite-faint-copy">
-																	{review.date}
-																</span>
 															</div>
-															<p className="mapetite-muted-copy text-sm leading-7">
-																{review.comment}
-															</p>
+															<span className="text-sm text-[var(--mapetite-text-faint)]">
+																{review.date}
+															</span>
 														</div>
-													))}
-												</div>
-											) : (
-												<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-5">
-													<p className="mapetite-muted-copy text-sm leading-7">
-														Rating data is available, but there are no written reviews to
-														show for this restaurant yet.
-													</p>
-												</div>
-											)}
-										</div>
-									</section>
-								)}
-
-								<section className="mapetite-panel p-5 md:p-6">
-									<div className="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(300px,1.1fr)]">
-										<div className="space-y-4">
-											<div className="mapetite-eyebrow">Location and route</div>
-											<h2 className="text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-												Know the room. Know the route.
-											</h2>
-											<p className="mapetite-muted-copy text-base leading-7">
-												Keep the address, route, and final decision close once the
-												restaurant feels worth the trip.
-											</p>
-
-											<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-												<p className="text-sm font-medium text-[var(--mapetite-text)]">
-													{restaurant.name}
-												</p>
-												<p className="mapetite-muted-copy mt-2 text-sm leading-7">
-													{fullAddress}
+														<p className="text-sm leading-7 text-[var(--mapetite-text-soft)]">
+															{review.comment}
+														</p>
+													</article>
+												))}
+											</div>
+										) : (
+											<div className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+												<p className="text-sm leading-7 text-[var(--mapetite-text-soft)]">
+													Written reviews are limited for this restaurant right now, but
+													the overall rating still gives you a quick confidence signal.
 												</p>
 											</div>
-
-											<div className="flex flex-wrap gap-3">
-												<Button
-													asChild
-													className="mapetite-accent-button rounded-[10px] px-5"
-												>
-													<a href={directionsUrl} target="_blank" rel="noreferrer">
-														<Navigation className="mr-2 size-4" />
-														Get directions
-													</a>
-												</Button>
-												<Button
-													type="button"
-													variant="outline"
-													onClick={() => navigate({ to: "/restaurants" })}
-													className="mapetite-quiet-button rounded-[10px] px-5"
-												>
-													<ArrowLeft className="mr-2 size-4" />
-													Back to search
-												</Button>
-											</div>
-										</div>
-
-										<div>
-											{hasMapCoordinates ? (
-												<div className="mapetite-panel overflow-hidden border-[var(--mapetite-border)] bg-transparent">
-													<iframe
-														title="Map preview"
-														src={buildMapEmbedUrl(restaurant)}
-														className="h-[320px] w-full"
-														loading="lazy"
-														referrerPolicy="no-referrer"
-													/>
-												</div>
-											) : (
-												<div className="mapetite-media-fallback flex min-h-[320px] items-end rounded-[14px] p-5">
-													<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-														Use directions to open the route with the current restaurant
-														location.
-													</p>
-												</div>
-											)}
-										</div>
+										)}
 									</div>
 								</section>
-							</section>
-						</div>
 
-						<aside className="xl:sticky xl:top-20">
-							<div className="mapetite-panel p-5 md:p-6">
-								<div className="mapetite-eyebrow">Ready to decide?</div>
-								<div className="mt-5 space-y-5">
+								<section id="location" className="mapetite-panel grid gap-[18px] p-[22px]">
 									<div>
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-											{restaurant.name}
+											Location and route
 										</h2>
-										<p className="mapetite-muted-copy mt-2 text-sm leading-6">
-											{locationLine}
+										<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
+											Leave with the exact address, a grounded location preview, and a
+											clear next action.
 										</p>
 									</div>
 
-									<div className="space-y-3">
-										<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-											<span className="mapetite-faint-copy block text-xs uppercase tracking-[0.14em]">
-												Rating
-											</span>
-											<div className="mt-2 flex items-center gap-2 text-sm">
-												<Star className="size-4 fill-[var(--mapetite-accent)] text-[var(--mapetite-accent)]" />
-												<strong className="text-[var(--mapetite-text)]">
-													{restaurant.rating.toFixed(1)}
-												</strong>
-												<span className="text-[var(--mapetite-text-soft)]">
-													({restaurant.reviewCount} reviews)
-												</span>
-											</div>
+									<div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)] lg:items-start">
+										<div className="overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] bg-black/10">
+											{hasMapCoordinates ? (
+												<iframe
+													title="Map preview"
+													src={buildMapEmbedUrl(restaurant)}
+													className="h-[320px] w-full"
+													loading="lazy"
+													referrerPolicy="no-referrer"
+												/>
+											) : (
+												<div className="flex min-h-[320px] items-end bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.26),rgba(180,108,67,0.08)_38%,rgba(17,13,11,0.2)_100%)] p-5">
+													<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+														Use directions to open the route even when a full map preview
+														isn&apos;t available for this restaurant.
+													</p>
+												</div>
+											)}
 										</div>
 
-										<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-											<span className="mapetite-faint-copy block text-xs uppercase tracking-[0.14em]">
-												Address
-											</span>
-											<p className="mt-2 text-sm leading-6 text-[var(--mapetite-text-soft)]">
+										<div className="grid gap-4">
+											<strong className="text-lg font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
 												{fullAddress}
+											</strong>
+											<p className="text-sm leading-7 text-[var(--mapetite-text-soft)]">
+												Keep the address, route, and final decision close once the
+												restaurant feels worth the trip.
 											</p>
-										</div>
-
-										{hasHours ? (
-											<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-												<span className="mapetite-faint-copy block text-xs uppercase tracking-[0.14em]">
-													Hours
-												</span>
-												<p className="mt-2 text-sm leading-6 text-[var(--mapetite-text-soft)]">
-													{restaurant.hours?.open} - {restaurant.hours?.close}
-												</p>
-												<p className="mt-1 text-sm text-[var(--mapetite-text)]">
-													{restaurant.isOpenNow ? "Open now" : "Currently closed"}
-												</p>
+											<div className="flex flex-wrap gap-2">
+												{[
+													hasMapCoordinates ? "Map preview available" : null,
+													locationLine || null,
+												]
+													.filter(Boolean)
+													.map((tag) => (
+														<span
+															key={tag}
+															className="inline-flex items-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] px-[11px] py-2 text-[13px] text-[var(--mapetite-text)]"
+														>
+															{tag}
+														</span>
+													))}
 											</div>
-										) : null}
+											<Button asChild className="mapetite-quiet-button w-fit rounded-[10px] px-5">
+												<a href={directionsUrl} target="_blank" rel="noreferrer">
+													Check route details
+												</a>
+											</Button>
+										</div>
+									</div>
+								</section>
+
+								<section className="mapetite-panel flex flex-col gap-4 p-5 md:flex-row md:items-center md:justify-between md:p-6">
+									<div>
+										<strong className="block text-lg font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
+											Keep searching if the fit is close, not final.
+										</strong>
+										<p className="mapetite-muted-copy mt-2 max-w-2xl text-sm leading-6">
+											The detail page should help you commit with confidence, while
+											keeping the route back to the shortlist clear and easy.
+										</p>
+									</div>
+									<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
+										<Link to="/restaurants">Back to search results</Link>
+									</Button>
+								</section>
+							</div>
+
+							<aside className="xl:sticky xl:top-20">
+								<div className="mapetite-panel grid gap-5 p-5 md:p-6">
+									<h3 className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+										Ready to decide?
+									</h3>
+									<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+										Keep the actions close to the facts you need most: where it is,
+										whether it&apos;s open, and how to get back if you want another
+										option.
+									</p>
+
+									<div className="grid gap-3">
+										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
+											<strong className="text-sm text-[var(--mapetite-text)]">Tonight</strong>
+											<span className="text-sm text-[var(--mapetite-text-soft)]">
+												{hasHours
+													? `${restaurant.isOpenNow ? "Open" : "Closed"}${
+															restaurant.hours?.close
+																? ` until ${restaurant.hours.close}`
+																: ""
+														}`
+													: "Hours vary"}
+											</span>
+										</div>
+										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
+											<strong className="text-sm text-[var(--mapetite-text)]">Address</strong>
+											<span className="text-right text-sm text-[var(--mapetite-text-soft)]">
+												{restaurant.address.street || locationLine}
+											</span>
+										</div>
+										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
+											<strong className="text-sm text-[var(--mapetite-text)]">Price</strong>
+											<span className="text-sm text-[var(--mapetite-text-soft)]">
+												{priceRangeLabel || "Varies"}
+											</span>
+										</div>
+										{(hasWebsite || hasPhone) && (
+											<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
+												<strong className="text-sm text-[var(--mapetite-text)]">Support</strong>
+												<span className="text-right text-sm text-[var(--mapetite-text-soft)]">
+													{[
+														hasWebsite ? "Website" : null,
+														hasPhone ? "Call" : null,
+													]
+														.filter(Boolean)
+														.join(" / ")}
+												</span>
+											</div>
+										)}
 									</div>
 
-									<div className="flex flex-col gap-3">
-										<Button
-											asChild
-											size="lg"
-											className="mapetite-accent-button rounded-[10px] px-5"
-										>
+									<div className="grid gap-3">
+										<Button asChild size="lg" className="mapetite-accent-button rounded-[10px] px-5">
 											<a href={directionsUrl} target="_blank" rel="noreferrer">
 												<Navigation className="mr-2 size-4" />
 												Get directions
@@ -839,52 +964,54 @@ function RestaurantDetailPage() {
 											className="mapetite-quiet-button rounded-[10px] px-5"
 										>
 											<Heart
-												className={cn(
-													"mr-2 size-4",
-													isFavorite && "fill-current",
-												)}
+												className={cn("mr-2 size-4", isFavorite && "fill-current")}
 											/>
-											Save
+											{isFavorite ? "Saved" : "Save"}
 										</Button>
 										<Button
 											type="button"
 											variant="ghost"
 											onClick={() => navigate({ to: "/restaurants" })}
-											className="justify-start rounded-[10px] px-1 text-[var(--mapetite-text-soft)] hover:text-[var(--mapetite-text)]"
+											className="rounded-[10px] border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-4 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)]"
 										>
 											<ArrowLeft className="mr-2 size-4" />
-											Back to search
+											Back to results
 										</Button>
 									</div>
 
 									{(hasWebsite || hasPhone) && (
-										<div className="space-y-2 border-t border-[var(--mapetite-border)] pt-4">
-											{hasWebsite ? (
-												<a
-													href={restaurant.website}
-													target="_blank"
-													rel="noreferrer"
-													className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
-												>
-													<ExternalLink className="size-4" />
-													Website
-												</a>
-											) : null}
-											{hasPhone ? (
-												<a
-													href={`tel:${restaurant.phone}`}
-													className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
-												>
-													<Phone className="size-4" />
-													{restaurant.phone}
-												</a>
-											) : null}
+										<div className="border-t border-[rgba(255,236,220,0.08)] pt-4">
+											<small className="block text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.46)]">
+												Before you go
+											</small>
+											<div className="mt-3 grid gap-2">
+												{hasWebsite ? (
+													<a
+														href={restaurant.website}
+														target="_blank"
+														rel="noreferrer"
+														className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+													>
+														<ExternalLink className="size-4" />
+														Website
+													</a>
+												) : null}
+												{hasPhone ? (
+													<a
+														href={`tel:${restaurant.phone}`}
+														className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+													>
+														<Phone className="size-4" />
+														{restaurant.phone}
+													</a>
+												) : null}
+											</div>
 										</div>
 									)}
 								</div>
-							</div>
-						</aside>
-					</div>
+							</aside>
+						</div>
+					</main>
 				</div>
 			</div>
 		</Layout>
