@@ -58,14 +58,14 @@ export function Layout({ children }: LayoutProps) {
 
 	const navItems = [
 		{ path: "/", label: "Home", icon: Home },
-		{ path: "/restaurants", label: "Restaurants", icon: Utensils },
+		{ path: "/restaurants", label: "Search", icon: Utensils },
 	];
 	const currentSectionLabel =
 		location.pathname === "/"
 			? "Home"
 			: location.pathname.startsWith("/restaurants/")
-				? "Restaurant detail"
-				: "Restaurant search";
+				? "Detail"
+				: "Search";
 
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -79,28 +79,28 @@ export function Layout({ children }: LayoutProps) {
 				>
 					{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
 					<aside
-						className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-border bg-sidebar"
+						className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="flex h-full flex-col">
-							<div className="flex items-center justify-between border-b border-border p-4">
+							<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] p-4">
 								<div className="flex items-center gap-3">
-									<div className="flex size-9 items-center justify-center rounded-md border border-border bg-background">
-										<Utensils className="size-4 text-primary" />
+									<div className="flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
+										<span className="text-sm font-semibold">M</span>
 									</div>
 									<div>
-										<h2 className="text-sm font-semibold text-sidebar-foreground">
+										<h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--mapetite-text)]">
 											Mapetite
 										</h2>
-										<p className="text-xs text-sidebar-foreground/70">
-											Menu
+										<p className="text-xs text-[var(--mapetite-text-faint)]">
+											{currentSectionLabel}
 										</p>
 									</div>
 								</div>
 								<button
 									type="button"
 									onClick={closeMobileMenu}
-									className="inline-flex size-9 items-center justify-center rounded-md border border-border bg-background text-sidebar-foreground transition-colors hover:bg-muted"
+									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
 								>
 									<X className="size-4" />
 								</button>
@@ -118,10 +118,10 @@ export function Layout({ children }: LayoutProps) {
 												to={item.path}
 												onClick={closeMobileMenu}
 												className={cn(
-													"flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+													"flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm transition-colors",
 													isActive
-														? "bg-sidebar-accent text-sidebar-accent-foreground"
-														: "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+														? "border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+														: "text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]",
 												)}
 											>
 												<Icon className="size-4" />
@@ -131,14 +131,14 @@ export function Layout({ children }: LayoutProps) {
 									})}
 								</div>
 
-								<div className="mt-6 space-y-2 border-t border-border pt-4">
+								<div className="mt-6 space-y-2 border-t border-[var(--mapetite-border)] pt-4">
 									{isAuthenticated ? (
 										<>
-											<div className="rounded-md border border-border bg-background p-3">
-												<p className="text-xs text-muted-foreground">
+											<div className="rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] p-3">
+												<p className="text-xs text-[var(--mapetite-text-faint)]">
 													Signed in as
 												</p>
-												<p className="mt-1 text-sm font-medium text-foreground">
+												<p className="mt-1 text-sm font-medium text-[var(--mapetite-text)]">
 													{firstName}
 												</p>
 											</div>
@@ -148,7 +148,7 @@ export function Layout({ children }: LayoutProps) {
 													logout();
 												}}
 												variant="outline"
-												className="w-full"
+												className="mapetite-quiet-button w-full rounded-[10px]"
 											>
 												<LogOut className="mr-2 size-4" />
 												Log Out
@@ -162,7 +162,7 @@ export function Layout({ children }: LayoutProps) {
 													setIsLogInOpen(true);
 												}}
 												variant="outline"
-												className="w-full"
+												className="mapetite-quiet-button w-full rounded-[10px]"
 											>
 												<LogIn className="mr-2 size-4" />
 												Log In
@@ -172,7 +172,7 @@ export function Layout({ children }: LayoutProps) {
 													closeMobileMenu();
 													setIsSignUpOpen(true);
 												}}
-												className="w-full"
+												className="mapetite-accent-button w-full rounded-[10px] text-[#20140d]"
 											>
 												<UserPlus className="mr-2 size-4" />
 												Sign Up
@@ -187,24 +187,22 @@ export function Layout({ children }: LayoutProps) {
 			)}
 
 			<div className="flex min-w-0 flex-1 flex-col bg-background">
-				<header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-sm">
-					<div className="flex h-14 items-center justify-between px-4 md:px-6">
-						<div className="flex min-w-0 items-center gap-4">
-							<Link to="/" className="flex items-center gap-3">
-								<div className="flex size-10 items-center justify-center rounded-md border border-border bg-background">
-									<Utensils className="size-5 text-primary" />
-								</div>
-								<div className="min-w-0">
-									<h1 className="truncate text-base font-semibold tracking-tight text-foreground">
-										Mapetite
-									</h1>
-									<p className="truncate text-sm text-muted-foreground">
-										{currentSectionLabel}
-									</p>
-								</div>
-							</Link>
+				<header className="sticky top-0 z-10 border-b border-[rgba(255,236,220,0.06)] bg-[rgba(21,17,14,0.82)] backdrop-blur-sm">
+					<div className="mapetite-container px-4 py-3 md:px-6">
+						<div className="mapetite-panel-soft flex min-h-[68px] items-center justify-between gap-4 px-5 py-3">
+							<div className="flex min-w-0 items-center gap-6">
+								<Link to="/" className="flex min-w-0 items-center gap-3">
+									<div className="flex size-[34px] items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
+										<span className="text-[15px] font-semibold">M</span>
+									</div>
+									<div className="min-w-0">
+										<h1 className="truncate text-sm font-semibold uppercase tracking-[0.08em] text-[var(--mapetite-text)]">
+											Mapetite
+										</h1>
+									</div>
+								</Link>
 
-							<nav className="hidden items-center gap-1 md:flex">
+								<nav className="hidden items-center gap-[18px] md:flex">
 								{navItems.map((item) => {
 									const Icon = item.icon;
 									const isActive =
@@ -218,41 +216,46 @@ export function Layout({ children }: LayoutProps) {
 											key={item.path}
 											to={item.path}
 											className={cn(
-												"flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+												"flex items-center gap-2 text-sm transition-colors",
 												isActive
-													? "bg-muted text-foreground"
-													: "text-muted-foreground hover:bg-muted hover:text-foreground",
+													? "text-[var(--mapetite-text)]"
+													: "text-[var(--mapetite-text-soft)] hover:text-[var(--mapetite-text)]",
 											)}
 										>
-											<Icon className="size-4" />
+											<Icon className="size-4 opacity-80" />
 											<span>{item.label}</span>
 										</Link>
 									);
 								})}
-							</nav>
-						</div>
+								</nav>
+							</div>
 
-						<div className="flex items-center gap-2">
-							<div className="hidden items-center gap-2 md:flex">
+							<div className="flex items-center gap-2">
+								<div className="hidden items-center gap-2 md:flex">
 								{isAuthenticated ? (
 									<>
-										<span className="text-sm text-muted-foreground">
+										<span className="text-sm text-[var(--mapetite-text-soft)]">
 											{firstName}
 										</span>
 										<button
 											type="button"
 											onClick={() => {
 												console.log(
-													"Profile icon clicked - future feature: upload profile picture",
-												);
-											}}
-											className="inline-flex size-9 items-center justify-center rounded-md border border-border bg-background text-sm font-medium text-foreground"
+												"Profile icon clicked - future feature: upload profile picture",
+											);
+										}}
+											className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]"
 											aria-label="User profile"
 											title="Click to change profile picture (coming soon)"
 										>
 											{userInitials}
 										</button>
-										<Button onClick={logout} variant="outline" size="sm">
+										<Button
+											onClick={logout}
+											variant="outline"
+											size="sm"
+											className="mapetite-quiet-button rounded-[10px]"
+										>
 											<LogOut className="mr-2 size-4" />
 											Log Out
 										</Button>
@@ -261,28 +264,32 @@ export function Layout({ children }: LayoutProps) {
 									<>
 										<Button
 											onClick={() => setIsLogInOpen(true)}
-											variant="outline"
 											size="sm"
+											variant="ghost"
+											className="text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
 										>
-											<LogIn className="mr-2 size-4" />
 											Log In
 										</Button>
-										<Button onClick={() => setIsSignUpOpen(true)} size="sm">
-											<UserPlus className="mr-2 size-4" />
+										<Button
+											onClick={() => setIsSignUpOpen(true)}
+											size="sm"
+											className="mapetite-quiet-button rounded-[10px]"
+										>
 											Sign Up
 										</Button>
 									</>
 								)}
-							</div>
+								</div>
 
-							<button
-								type="button"
-								onClick={() => setIsMobileMenuOpen(true)}
-								className="inline-flex size-9 items-center justify-center rounded-md border border-border bg-background text-foreground md:hidden"
-								aria-label="Open menu"
-							>
-								<Menu className="size-4" />
-							</button>
+								<button
+									type="button"
+									onClick={() => setIsMobileMenuOpen(true)}
+									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] md:hidden"
+									aria-label="Open menu"
+								>
+									<Menu className="size-4" />
+								</button>
+							</div>
 						</div>
 					</div>
 				</header>
