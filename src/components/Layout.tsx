@@ -70,7 +70,7 @@ export function Layout({ children }: LayoutProps) {
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
 	return (
-		<div className="flex min-h-screen w-full overflow-x-clip bg-background text-foreground">
+		<div className="flex min-h-screen w-full overflow-x-clip bg-[var(--mapetite-bg)] text-[var(--mapetite-text)]">
 			{isMobileMenuOpen && (
 				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
 				<div
@@ -86,10 +86,10 @@ export function Layout({ children }: LayoutProps) {
 							<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] p-4">
 								<div className="flex items-center gap-3">
 									<div className="flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
-										<span className="text-sm font-semibold">M</span>
+										<Utensils className="size-4" />
 									</div>
 									<div>
-										<h2 className="text-sm font-semibold uppercase tracking-[0.08em] text-[var(--mapetite-text)]">
+										<h2 className="text-sm font-medium text-[var(--mapetite-text)]">
 											Mapetite
 										</h2>
 										<p className="text-xs text-[var(--mapetite-text-faint)]">
@@ -186,25 +186,24 @@ export function Layout({ children }: LayoutProps) {
 				</div>
 			)}
 
-			<div className="flex min-w-0 flex-1 flex-col bg-background">
-				<header className="sticky top-0 z-10 border-b border-[rgba(255,236,220,0.06)] bg-[rgba(21,17,14,0.82)] backdrop-blur-sm">
-					<div className="mapetite-container px-4 py-3 md:px-6">
-						<div className="mapetite-panel-soft flex min-h-[68px] items-center justify-between gap-4 px-5 py-3">
+			<div className="flex min-w-0 flex-1 flex-col">
+				<header className="sticky top-0 z-10">
+					<div className="mapetite-container px-4 pt-4 pb-2 md:px-6 md:pt-6 md:pb-3">
+						<div className="mapetite-panel-soft flex min-h-[68px] items-center justify-between gap-4 px-5 py-3 shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur">
 							<div className="flex min-w-0 items-center gap-6">
 								<Link to="/" className="flex min-w-0 items-center gap-3">
 									<div className="flex size-[34px] items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
-										<span className="text-[15px] font-semibold">M</span>
+										<Utensils className="size-4" />
 									</div>
 									<div className="min-w-0">
-										<h1 className="truncate text-sm font-semibold uppercase tracking-[0.08em] text-[var(--mapetite-text)]">
+										<h1 className="truncate text-sm font-medium text-[var(--mapetite-text)]">
 											Mapetite
 										</h1>
 									</div>
 								</Link>
 
-								<nav className="hidden items-center gap-[18px] md:flex">
+								<nav className="hidden items-center gap-5 md:flex">
 								{navItems.map((item) => {
-									const Icon = item.icon;
 									const isActive =
 										item.path === "/"
 											? location.pathname === item.path
@@ -216,13 +215,12 @@ export function Layout({ children }: LayoutProps) {
 											key={item.path}
 											to={item.path}
 											className={cn(
-												"flex items-center gap-2 text-sm transition-colors",
+												"text-sm transition-colors",
 												isActive
 													? "text-[var(--mapetite-text)]"
 													: "text-[var(--mapetite-text-soft)] hover:text-[var(--mapetite-text)]",
 											)}
 										>
-											<Icon className="size-4 opacity-80" />
 											<span>{item.label}</span>
 										</Link>
 									);
@@ -266,14 +264,14 @@ export function Layout({ children }: LayoutProps) {
 											onClick={() => setIsLogInOpen(true)}
 											size="sm"
 											variant="ghost"
-											className="text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
+											className="rounded-[10px] text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
 										>
 											Log In
 										</Button>
 										<Button
 											onClick={() => setIsSignUpOpen(true)}
 											size="sm"
-											className="mapetite-quiet-button rounded-[10px]"
+											className="mapetite-accent-button rounded-[10px] px-4 text-[#20140d]"
 										>
 											Sign Up
 										</Button>
