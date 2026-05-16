@@ -372,48 +372,6 @@ function RestaurantDetailPage() {
 		<Layout>
 			<div className="mapetite-page-shell min-h-full">
 				<div className="mapetite-container px-4 py-4 md:px-6 md:py-6">
-					<header className="sticky top-4 z-20 rounded-[14px] border border-[rgba(255,236,220,0.06)] bg-[rgba(21,17,14,0.82)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur">
-						<div className="flex min-h-[68px] flex-wrap items-center justify-between gap-4 px-4 py-3 md:px-5">
-							<Link
-								to="/"
-								className="inline-flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.08em] text-[var(--mapetite-text)]"
-							>
-								<span className="grid size-[34px] place-items-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[15px] text-[#f7e7d6]">
-									M
-								</span>
-								<span>Mapetite</span>
-							</Link>
-
-							<nav className="flex flex-wrap items-center gap-4 text-sm text-[var(--mapetite-text-soft)]">
-								<Link to="/" className="transition-colors hover:text-[var(--mapetite-text)]">
-									Home
-								</Link>
-								<Link
-									to="/restaurants"
-									className="transition-colors hover:text-[var(--mapetite-text)]"
-								>
-									Search
-								</Link>
-								<a
-									href="#reviews"
-									className="transition-colors hover:text-[var(--mapetite-text)]"
-								>
-									Reviews
-								</a>
-								<a
-									href="#location"
-									className="transition-colors hover:text-[var(--mapetite-text)]"
-								>
-									Location
-								</a>
-							</nav>
-
-							<Button asChild className="mapetite-accent-button rounded-[10px] px-4">
-								<Link to="/restaurants">Back to results</Link>
-							</Button>
-						</div>
-					</header>
-
 					<main className="grid gap-6 py-6 md:py-8">
 						<div className="flex flex-wrap items-center justify-between gap-4">
 							<button
