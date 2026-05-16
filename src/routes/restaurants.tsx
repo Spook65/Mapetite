@@ -1473,6 +1473,51 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
+					<section className="mt-6 grid gap-4 min-[981px]:grid-cols-3">
+						<div className="mapetite-panel-soft grid gap-4 px-5 py-5">
+							<strong className="text-[16px] font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
+								Loading
+							</strong>
+							<div className="grid gap-2">
+								<div className="h-3 w-full rounded-full bg-[rgba(255,248,242,0.08)]" />
+								<div className="h-3 w-[72%] rounded-full bg-[rgba(255,248,242,0.08)]" />
+								<div className="h-3 w-[88%] rounded-full bg-[rgba(255,248,242,0.08)]" />
+							</div>
+							<p className="mapetite-muted-copy text-[14px] leading-6">
+								Keep refresh states quiet while the list and selected preview
+								reload.
+							</p>
+						</div>
+
+						<div className="mapetite-panel-soft grid gap-4 px-5 py-5">
+							<strong className="text-[16px] font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
+								No results
+							</strong>
+							<div className="flex flex-wrap gap-2">
+								<div className="h-8 w-24 rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)]" />
+								<div className="h-8 w-32 rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)]" />
+							</div>
+							<p className="mapetite-muted-copy text-[14px] leading-6">
+								When the shortlist closes too tightly, guide the next move back
+								to filters or a broader place search.
+							</p>
+						</div>
+
+						<div className="mapetite-panel-soft grid gap-4 px-5 py-5">
+							<strong className="text-[16px] font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
+								Location unavailable
+							</strong>
+							<div className="flex flex-wrap gap-2">
+								<div className="h-8 w-28 rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)]" />
+								<div className="h-8 w-24 rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)]" />
+							</div>
+							<p className="mapetite-muted-copy text-[14px] leading-6">
+								Manual city, state, and country search stays available when
+								location access is off or unavailable.
+							</p>
+						</div>
+					</section>
+
 					{isSearching && (
 						<section className="mt-6 grid gap-4">
 							<div className="mapetite-panel grid gap-3 px-6 py-5">
