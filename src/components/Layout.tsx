@@ -9,7 +9,6 @@ import {
 	LogIn,
 	LogOut,
 	Menu,
-	Search,
 	UserPlus,
 	Utensils,
 	X,
@@ -61,63 +60,17 @@ export function Layout({ children }: LayoutProps) {
 		{ path: "/", label: "Home", icon: Home },
 		{ path: "/restaurants", label: "Restaurants", icon: Utensils },
 	];
+	const currentSectionLabel =
+		location.pathname === "/"
+			? "Home"
+			: location.pathname.startsWith("/restaurants/")
+				? "Restaurant detail"
+				: "Restaurant search";
 
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
 	return (
 		<div className="flex min-h-screen w-full overflow-x-hidden bg-background text-foreground">
-			<aside className="hidden w-[256px] flex-shrink-0 border-r border-border bg-sidebar md:flex">
-				<div className="flex h-full w-full flex-col">
-					<div className="border-b border-border p-6">
-						<Link to="/" className="flex items-center gap-3">
-							<div className="flex size-10 items-center justify-center rounded-md border border-border bg-background">
-								<Utensils className="size-5 text-primary" />
-							</div>
-							<div>
-								<h1 className="text-base font-semibold tracking-tight text-sidebar-foreground">
-									Mapetite
-								</h1>
-								<p className="text-sm text-sidebar-foreground/70">
-									Restaurant search
-								</p>
-							</div>
-						</Link>
-					</div>
-
-					<nav className="flex-1 px-3 py-4">
-						<div className="space-y-1">
-							{navItems.map((item) => {
-								const Icon = item.icon;
-								const isActive = location.pathname === item.path;
-
-								return (
-									<Link
-										key={item.path}
-										to={item.path}
-										className={cn(
-											"flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
-											isActive
-												? "bg-sidebar-accent text-sidebar-accent-foreground"
-												: "text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
-										)}
-									>
-										<Icon className="size-4" />
-										<span>{item.label}</span>
-									</Link>
-								);
-							})}
-						</div>
-					</nav>
-
-					<div className="border-t border-border p-6">
-						<div className="space-y-1 text-sm text-sidebar-foreground/70">
-							<p>Find places by city, state, or country.</p>
-							<p>Favorites and filters stay in the current session.</p>
-						</div>
-					</div>
-				</div>
-			</aside>
-
 			{isMobileMenuOpen && (
 				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
 				<div
@@ -236,11 +189,47 @@ export function Layout({ children }: LayoutProps) {
 			<div className="flex min-w-0 flex-1 flex-col bg-background">
 				<header className="sticky top-0 z-10 border-b border-border bg-background/95 backdrop-blur-sm">
 					<div className="flex h-14 items-center justify-between px-4 md:px-6">
-						<div className="flex items-center gap-2">
-							<Search className="size-4 text-muted-foreground" />
-							<span className="text-sm text-foreground">
-								{location.pathname === "/" ? "Home" : "Restaurant search"}
-							</span>
+						<div className="flex min-w-0 items-center gap-4">
+							<Link to="/" className="flex items-center gap-3">
+								<div className="flex size-10 items-center justify-center rounded-md border border-border bg-background">
+									<Utensils className="size-5 text-primary" />
+								</div>
+								<div className="min-w-0">
+									<h1 className="truncate text-base font-semibold tracking-tight text-foreground">
+										Mapetite
+									</h1>
+									<p className="truncate text-sm text-muted-foreground">
+										{currentSectionLabel}
+									</p>
+								</div>
+							</Link>
+
+							<nav className="hidden items-center gap-1 md:flex">
+								{navItems.map((item) => {
+									const Icon = item.icon;
+									const isActive =
+										item.path === "/"
+											? location.pathname === item.path
+											: location.pathname === item.path ||
+												location.pathname.startsWith("/restaurants/");
+
+									return (
+										<Link
+											key={item.path}
+											to={item.path}
+											className={cn(
+												"flex items-center gap-2 rounded-md px-3 py-2 text-sm transition-colors",
+												isActive
+													? "bg-muted text-foreground"
+													: "text-muted-foreground hover:bg-muted hover:text-foreground",
+											)}
+										>
+											<Icon className="size-4" />
+											<span>{item.label}</span>
+										</Link>
+									);
+								})}
+							</nav>
 						</div>
 
 						<div className="flex items-center gap-2">
