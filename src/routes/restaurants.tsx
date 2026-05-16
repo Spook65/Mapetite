@@ -564,7 +564,7 @@ function RestaurantSearchPage() {
 							</div>
 						</div>
 
-						<div className="grid gap-3 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
+						<div className="grid gap-3 min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
 							<div className="grid gap-2">
 								<Label
 									htmlFor="city"
@@ -617,7 +617,7 @@ function RestaurantSearchPage() {
 								type="button"
 								onClick={handleSearch}
 								disabled={isSearching}
-								className="mapetite-accent-button h-[52px] rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none"
+								className="mapetite-accent-button h-[52px] self-end rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none"
 							>
 								<Search className="mr-2 size-4" />
 								{isSearching ? "Searching..." : "Search restaurants"}
@@ -628,7 +628,7 @@ function RestaurantSearchPage() {
 								variant="outline"
 								onClick={handleGetCurrentLocation}
 								disabled={isGettingLocation}
-								className="mapetite-quiet-button h-[52px] rounded-[10px] px-5 text-[15px] shadow-none"
+								className="mapetite-quiet-button h-[52px] self-end rounded-[10px] px-5 text-[15px] shadow-none"
 							>
 								<Navigation className="mr-2 size-4" />
 								{isGettingLocation ? "Locating..." : "Use My Location"}
@@ -780,6 +780,7 @@ function RestaurantSearchPage() {
 											min={0}
 											max={5}
 											step={0.5}
+											className="[&_[data-slot=slider-range]]:bg-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:border-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:bg-[#20140d] [&_[data-slot=slider-thumb]]:shadow-none [&_[data-slot=slider-thumb]]:hover:ring-[rgba(213,154,104,0.22)] [&_[data-slot=slider-thumb]]:focus-visible:ring-[rgba(213,154,104,0.32)] [&_[data-slot=slider-track]]:bg-[rgba(255,248,242,0.08)]"
 										/>
 									</div>
 
@@ -930,6 +931,7 @@ function RestaurantSearchPage() {
 											min={0}
 											max={5}
 											step={0.5}
+											className="[&_[data-slot=slider-range]]:bg-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:border-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:bg-[#20140d] [&_[data-slot=slider-thumb]]:shadow-none [&_[data-slot=slider-thumb]]:hover:ring-[rgba(213,154,104,0.22)] [&_[data-slot=slider-thumb]]:focus-visible:ring-[rgba(213,154,104,0.32)] [&_[data-slot=slider-track]]:bg-[rgba(255,248,242,0.08)]"
 										/>
 									</div>
 
@@ -1290,7 +1292,7 @@ function RestaurantSearchPage() {
 							</div>
 
 							{displayedRestaurants.length > 0 && (
-								<aside className="mapetite-panel grid gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:self-start">
+								<aside className="mapetite-panel grid h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:self-start">
 									<div className="flex flex-wrap items-center justify-between gap-3">
 										<span className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.5)]">
 											Selected restaurant

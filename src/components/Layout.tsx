@@ -70,7 +70,7 @@ export function Layout({ children }: LayoutProps) {
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
 	return (
-		<div className="flex min-h-screen w-full overflow-x-hidden bg-background text-foreground">
+		<div className="flex min-h-screen w-full overflow-x-clip bg-background text-foreground">
 			{isMobileMenuOpen && (
 				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
 				<div
