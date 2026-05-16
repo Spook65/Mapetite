@@ -181,6 +181,17 @@ code {
 	}
 
 	/* Mapetite premium utilities: opt-in only for later route integration */
+	.mapetite-canvas-bg {
+		background:
+			radial-gradient(
+				circle at top center,
+				rgba(180, 108, 67, 0.16),
+				transparent 24%
+			),
+			linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
+		color: var(--mapetite-text);
+	}
+
 	.mapetite-page-shell {
 		background:
 			radial-gradient(
