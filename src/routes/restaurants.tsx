@@ -1,13 +1,5 @@
 import { Layout } from "@/components/Layout";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -26,10 +18,9 @@ import {
 } from "@tanstack/react-router";
 import {
 	Clock,
-	DollarSign,
 	Filter,
 	Heart,
-	MapPin,
+	MapPinned,
 	Navigation,
 	Search,
 	SlidersHorizontal,
@@ -78,6 +69,46 @@ function App() {
 	}
 
 	return <RestaurantSearchPage />;
+}
+
+function getPreviewImage(restaurant: Restaurant) {
+	return restaurant.photoUrl ?? restaurant.galleryImageUrls?.[0] ?? null;
+}
+
+function getRestaurantInitials(restaurant: Restaurant) {
+	return restaurant.name
+		.split(/\s+/)
+		.filter(Boolean)
+		.slice(0, 2)
+		.map((part) => part.charAt(0).toUpperCase())
+		.join("") || "MP";
+}
+
+function getLocationHint(restaurant: Restaurant) {
+	const cityState = [restaurant.address.city, restaurant.address.state]
+		.filter(Boolean)
+		.join(", ");
+	if (cityState) return cityState;
+	return restaurant.address.street || restaurant.address.country || "Location set in details";
+}
+
+function getFullAddressLine(restaurant: Restaurant) {
+	return [
+		restaurant.address.street,
+		[restaurant.address.city, restaurant.address.state, restaurant.address.zipCode]
+			.filter(Boolean)
+			.join(" "),
+		restaurant.address.country,
+	]
+		.filter(Boolean)
+		.join(", ");
+}
+
+function truncateCopy(copy: string | undefined, maxLength: number, fallback: string) {
+	const value = copy?.trim();
+	if (!value) return fallback;
+	if (value.length <= maxLength) return value;
+	return `${value.slice(0, maxLength - 1).trimEnd()}…`;
 }
 
 function RestaurantSearchPage() {
@@ -172,6 +203,9 @@ function RestaurantSearchPage() {
 	const [isSearching, setIsSearching] = useState(false);
 	const [visibleResultsCount, setVisibleResultsCount] = useState(
 		INITIAL_VISIBLE_RESULTS,
+	);
+	const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(
+		null,
 	);
 	const activeSearchIdRef = useRef(0);
 
@@ -385,6 +419,17 @@ function RestaurantSearchPage() {
 		showFavorites,
 	]);
 
+	useEffect(() => {
+		if (
+			selectedRestaurantId &&
+			!displayedRestaurants.some(
+				(restaurant) => restaurant.id === selectedRestaurantId,
+			)
+		) {
+			setSelectedRestaurantId(null);
+		}
+	}, [displayedRestaurants, selectedRestaurantId]);
+
 	const visibleRestaurants = useMemo(
 		() => displayedRestaurants.slice(0, visibleResultsCount),
 		[displayedRestaurants, visibleResultsCount],
@@ -463,276 +508,256 @@ function RestaurantSearchPage() {
 	const matchingResultsCount = displayedRestaurants.length;
 	const shownResultsCount = visibleRestaurants.length;
 	const hasMoreResults = shownResultsCount < matchingResultsCount;
+	const selectedRestaurant = useMemo(
+		() =>
+			selectedRestaurantId
+				? displayedRestaurants.find(
+						(restaurant) => restaurant.id === selectedRestaurantId,
+					) ?? restaurants.find((restaurant) => restaurant.id === selectedRestaurantId) ??
+					null
+				: null,
+		[selectedRestaurantId, displayedRestaurants, restaurants],
+	);
+	const hasActiveFilters =
+		selectedCategories.size > 0 ||
+		priceFilter.length < 4 ||
+		minRating > 0 ||
+		openNowOnly;
+	const resultHeading = showFavorites
+		? "Saved restaurants"
+		: location.city
+			? `${location.city} results`
+			: location.country
+				? `${location.country} results`
+				: "Search results";
+
+	const handleSelectRestaurant = useCallback((restaurantId: string) => {
+		setSelectedRestaurantId(restaurantId);
+	}, []);
 
 	return (
 		<Layout>
-			<div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-6 md:px-6 md:py-8">
-				<section className="space-y-2">
-					<h1 className="text-2xl font-semibold tracking-tight text-foreground md:text-3xl">
-						Restaurant search
-					</h1>
-					<p className="max-w-2xl text-sm text-muted-foreground">
-						Search by city, then narrow results with cuisine, price, rating, and
-						open-now filters.
-					</p>
-				</section>
+			<div className="mapetite-page-shell min-h-full">
+				<div className="mapetite-container px-4 py-6 md:px-6 md:py-8">
+					<section className="mb-4 grid gap-5">
+						<div>
+							<div className="mapetite-eyebrow">Restaurant search</div>
+							<h1 className="mt-3 max-w-[11ch] text-[clamp(2.25rem,4.6vw,3.5rem)] font-semibold leading-[0.98] tracking-[-0.06em] text-[var(--mapetite-text)]">
+								Choose a place, then browse with less noise.
+							</h1>
+							<p className="mapetite-muted-copy mt-3 max-w-[620px] text-[15px] leading-7">
+								Start with city, state, or country. Refine after the list opens,
+								then keep one selected restaurant visible while you compare.
+							</p>
+						</div>
+					</section>
 
-				<Card className="border border-border">
-					<CardHeader>
-						<CardTitle className="text-lg">Search</CardTitle>
-						<CardDescription>
-							Enter a location and choose any categories you want included.
-						</CardDescription>
-					</CardHeader>
-					<CardContent className="space-y-5">
-						<div className="grid gap-4 md:grid-cols-3">
-							<div className="space-y-2">
-								<Label htmlFor="country">Country</Label>
-								<Input
-									id="country"
-									placeholder="Optional"
-									value={location.country}
-									onChange={(e) => updateLocation({ country: e.target.value })}
-								/>
+					<section className="mapetite-panel mb-4 grid gap-4 p-5 md:p-6">
+						<div className="flex flex-wrap items-end justify-between gap-4">
+							<div>
+								<strong className="text-[21px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+									Find restaurants by place
+								</strong>
+								<p className="mapetite-muted-copy mt-2 text-sm">
+									City, state, country, then refine once restaurants are visible.
+								</p>
 							</div>
+						</div>
 
-							<div className="space-y-2">
-								<Label htmlFor="state">State or province</Label>
-								<Input
-									id="state"
-									placeholder="State or province"
-									value={location.state}
-									onChange={(e) => updateLocation({ state: e.target.value })}
-								/>
-							</div>
-
-							<div className="space-y-2">
-								<Label htmlFor="city">City</Label>
+						<div className="grid gap-3 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
+							<div className="grid gap-2">
+								<Label
+									htmlFor="city"
+									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+								>
+									City
+								</Label>
 								<Input
 									id="city"
 									placeholder="Paris, Tokyo, Chicago"
 									value={location.city}
 									onChange={(e) => updateLocation({ city: e.target.value })}
+									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-[var(--mapetite-text)] placeholder:text-[var(--mapetite-text-faint)]"
 								/>
 							</div>
-						</div>
 
-						<div className="flex flex-col gap-3 sm:flex-row">
+							<div className="grid gap-2">
+								<Label
+									htmlFor="state"
+									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+								>
+									State / Province
+								</Label>
+								<Input
+									id="state"
+									placeholder="Optional"
+									value={location.state}
+									onChange={(e) => updateLocation({ state: e.target.value })}
+									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-[var(--mapetite-text)] placeholder:text-[var(--mapetite-text-faint)]"
+								/>
+							</div>
+
+							<div className="grid gap-2">
+								<Label
+									htmlFor="country"
+									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+								>
+									Country
+								</Label>
+								<Input
+									id="country"
+									placeholder="Optional"
+									value={location.country}
+									onChange={(e) => updateLocation({ country: e.target.value })}
+									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-[var(--mapetite-text)] placeholder:text-[var(--mapetite-text-faint)]"
+								/>
+							</div>
+
 							<Button
+								type="button"
 								onClick={handleSearch}
-								size="lg"
 								disabled={isSearching}
-								className="w-full sm:w-auto"
+								className="mapetite-accent-button h-[52px] rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none"
 							>
 								<Search className="mr-2 size-4" />
 								{isSearching ? "Searching..." : "Search restaurants"}
 							</Button>
+
 							<Button
+								type="button"
 								variant="outline"
-								size="lg"
 								onClick={handleGetCurrentLocation}
 								disabled={isGettingLocation}
-								className="w-full sm:w-auto"
+								className="mapetite-quiet-button h-[52px] rounded-[10px] px-5 text-[15px] shadow-none"
 							>
 								<Navigation className="mr-2 size-4" />
-								{isGettingLocation ? "Locating..." : "Use my location"}
+								{isGettingLocation ? "Locating..." : "Use My Location"}
 							</Button>
 						</div>
-					</CardContent>
-				</Card>
+					</section>
 
-				<Card className="border border-border">
-					<CardHeader>
-						<CardTitle className="flex items-center gap-2 text-lg">
-							<Filter className="size-4 text-primary" />
-							Categories
-						</CardTitle>
-						<CardDescription>
-							Choose one or more categories to include in the search.
-						</CardDescription>
-					</CardHeader>
-					<CardContent>
-						<div className="flex flex-wrap gap-2">
-							{categories.map((category) => (
-								<Badge
-									key={category}
-									variant={
-										selectedCategories.has(category) ? "default" : "outline"
-									}
-									className="cursor-pointer px-3 py-1.5"
-									onClick={() => toggleCategory(category)}
-								>
-									{category}
-								</Badge>
-							))}
-						</div>
-					</CardContent>
-				</Card>
-
-				{restaurants.length > 0 && (
-					<div className="md:hidden">
-						<Button
-							onClick={() => setShowMobileFilters(true)}
-							variant="outline"
-							className="w-full"
-						>
-							<SlidersHorizontal className="mr-2 size-4" />
-							Filters and sort
-						</Button>
-					</div>
-				)}
-
-				{showMobileFilters && (
-					// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
-					<div
-						className="fixed inset-0 z-50 bg-black/50 md:hidden"
-						onClick={() => setShowMobileFilters(false)}
-					>
-						{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
-						<div
-							className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-border bg-background"
-							onClick={(e) => e.stopPropagation()}
-						>
-							<div className="flex items-center justify-between border-b border-border px-4 py-4">
-								<div>
-									<h2 className="text-base font-semibold text-foreground">
-										Filters and sort
-									</h2>
-									<p className="text-sm text-muted-foreground">
-										Adjust price, rating, and ordering.
-									</p>
-								</div>
-								<button
-									type="button"
-									onClick={() => setShowMobileFilters(false)}
-									className="inline-flex size-9 items-center justify-center rounded-md border border-border bg-background text-foreground transition-colors hover:bg-muted"
-								>
-									<X className="size-4" />
-								</button>
+					<section className="mapetite-panel-soft mb-4 grid gap-4 p-4 md:p-5">
+						<div className="grid gap-3 min-[981px]:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] min-[981px]:items-center">
+							<div className="flex flex-wrap gap-2">
+								{categories.map((category) => {
+									const isActive = selectedCategories.has(category);
+									return (
+										<button
+											key={category}
+											type="button"
+											onClick={() => toggleCategory(category)}
+											className={cn(
+												"rounded-full border px-4 py-2 text-sm transition-colors",
+												isActive
+													? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+													: "border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.02)] text-[rgba(245,233,222,0.62)] hover:border-[rgba(255,236,220,0.18)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]",
+											)}
+										>
+											{category}
+										</button>
+									);
+								})}
 							</div>
-							<div className="space-y-5 px-4 py-4">
-								<div className="space-y-3">
-									<Label>Price range</Label>
-									<div className="flex flex-wrap gap-2">
-										{[1, 2, 3, 4].map((price) => (
-											<Button
-												key={price}
-												variant={
-													priceFilter.includes(price) ? "default" : "outline"
-												}
-												size="sm"
-												onClick={() => togglePriceFilter(price)}
-											>
-												{"$".repeat(price)}
-											</Button>
-										))}
-									</div>
-								</div>
 
-								<div className="space-y-3">
-									<div className="flex items-center justify-between">
-										<Label>Minimum rating</Label>
-										<span className="text-sm text-muted-foreground">
-											{minRating === 0 ? "Any" : `${minRating.toFixed(1)}+`}
-										</span>
-									</div>
-									<Slider
-										value={[minRating]}
-										onValueChange={(values) => setMinRating(values[0])}
-										min={0}
-										max={5}
-										step={0.5}
+							<div className="flex flex-wrap items-center justify-start gap-3 min-[981px]:justify-end">
+								<Select
+									value={sortBy}
+									onValueChange={(value) =>
+										setSortBy(
+											value as "distance" | "rating" | "reviews" | "none",
+										)
+									}
+								>
+									<SelectTrigger className="h-10 min-w-[190px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
+										<SelectValue />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectItem value="none">Sort: Best match</SelectItem>
+										<SelectItem value="rating">Sort: Highest rated</SelectItem>
+										<SelectItem value="distance">Sort: Closest first</SelectItem>
+										<SelectItem value="reviews">Sort: Most reviews</SelectItem>
+									</SelectContent>
+								</Select>
+
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => setShowFavorites(!showFavorites)}
+									className={cn(
+										"rounded-full px-4 shadow-none",
+										showFavorites
+											? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+											: "mapetite-quiet-button",
+									)}
+								>
+									<Heart
+										className={cn("mr-2 size-4", showFavorites && "fill-current")}
 									/>
-								</div>
+									{showFavorites ? "Viewing favorites" : "Favorites only"}
+								</Button>
 
-								<div className="space-y-3">
-									<Label>Sort by</Label>
-									<Select
-										value={sortBy}
-										onValueChange={(value) =>
-											setSortBy(
-												value as "distance" | "rating" | "reviews" | "none",
-											)
-										}
+								{restaurants.length > 0 && (
+									<Button
+										type="button"
+										variant="outline"
+										onClick={() => setShowMobileFilters(true)}
+										className="mapetite-quiet-button rounded-full px-4 shadow-none md:hidden"
 									>
-										<SelectTrigger>
-											<SelectValue />
-										</SelectTrigger>
-										<SelectContent>
-											<SelectItem value="none">Default</SelectItem>
-											<SelectItem value="distance">Distance</SelectItem>
-											<SelectItem value="rating">Rating</SelectItem>
-											<SelectItem value="reviews">Most reviews</SelectItem>
-										</SelectContent>
-									</Select>
-								</div>
+										<SlidersHorizontal className="mr-2 size-4" />
+										Filters
+									</Button>
+								)}
+							</div>
+						</div>
+					</section>
 
-								<div className="flex items-center justify-between gap-4">
-									<div className="space-y-1">
-										<Label>Open now</Label>
-										<p className="text-sm text-muted-foreground">
-											Show only restaurants currently open.
+					{showMobileFilters && (
+						// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
+						<div
+							className="fixed inset-0 z-50 bg-black/50 md:hidden"
+							onClick={() => setShowMobileFilters(false)}
+						>
+							{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
+							<div
+								className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
+								onClick={(e) => e.stopPropagation()}
+							>
+								<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] px-4 py-4">
+									<div>
+										<h2 className="text-base font-semibold text-[var(--mapetite-text)]">
+											Filters and sort
+										</h2>
+										<p className="mapetite-muted-copy text-sm">
+											Adjust price, rating, and ordering.
 										</p>
 									</div>
-									<Switch
-										checked={openNowOnly}
-										onCheckedChange={setOpenNowOnly}
-									/>
-								</div>
-
-								<div className="flex gap-2 border-t border-border pt-4">
-									<Button
-										variant="outline"
-										className="flex-1"
-										onClick={clearAllFilters}
+									<button
+										type="button"
+										onClick={() => setShowMobileFilters(false)}
+										className="inline-flex size-9 items-center justify-center rounded-md border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
 									>
-										Clear filters
-									</Button>
-									<Button className="flex-1" onClick={() => setShowMobileFilters(false)}>
-										Apply
-									</Button>
+										<X className="size-4" />
+									</button>
 								</div>
-							</div>
-						</div>
-					</div>
-				)}
 
-				{restaurants.length > 0 && (
-					<Card className="hidden border border-border md:block">
-						<CardHeader>
-							<div className="flex items-center justify-between gap-4">
-								<div>
-									<CardTitle className="flex items-center gap-2 text-lg">
-										<SlidersHorizontal className="size-4 text-primary" />
-										Refine search
-									</CardTitle>
-									<CardDescription>
-										Filter by price, rating, distance, and open status.
-									</CardDescription>
-								</div>
-								<Button
-									variant="outline"
-									size="sm"
-									onClick={() => setShowRefinements(!showRefinements)}
-								>
-									{showRefinements ? "Hide" : "Show"}
-								</Button>
-							</div>
-						</CardHeader>
-						{showRefinements && (
-							<CardContent className="space-y-5">
-								<div className="grid gap-5 lg:grid-cols-2">
+								<div className="space-y-5 px-4 py-4">
 									<div className="space-y-3">
-										<Label>Price range</Label>
+										<Label className="text-[var(--mapetite-text)]">
+											Price range
+										</Label>
 										<div className="grid grid-cols-4 gap-2">
 											{[1, 2, 3, 4].map((price) => (
 												<Button
 													key={price}
-													variant={
-														priceFilter.includes(price) ? "default" : "outline"
-													}
-													size="sm"
+													type="button"
+													variant="outline"
 													onClick={() => togglePriceFilter(price)}
+													className={cn(
+														"rounded-full shadow-none",
+														priceFilter.includes(price)
+															? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+															: "mapetite-quiet-button",
+													)}
 												>
 													{"$".repeat(price)}
 												</Button>
@@ -741,7 +766,27 @@ function RestaurantSearchPage() {
 									</div>
 
 									<div className="space-y-3">
-										<Label>Sort by</Label>
+										<div className="flex items-center justify-between">
+											<Label className="text-[var(--mapetite-text)]">
+												Minimum rating
+											</Label>
+											<span className="mapetite-muted-copy text-sm">
+												{minRating === 0 ? "Any" : `${minRating.toFixed(1)}+`}
+											</span>
+										</div>
+										<Slider
+											value={[minRating]}
+											onValueChange={(values) => setMinRating(values[0])}
+											min={0}
+											max={5}
+											step={0.5}
+										/>
+									</div>
+
+									<div className="space-y-3">
+										<Label className="text-[var(--mapetite-text)]">
+											Sort by
+										</Label>
 										<Select
 											value={sortBy}
 											onValueChange={(value) =>
@@ -750,364 +795,745 @@ function RestaurantSearchPage() {
 												)
 											}
 										>
-											<SelectTrigger>
+											<SelectTrigger className="h-11 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem value="none">Default</SelectItem>
-												<SelectItem value="distance">Distance</SelectItem>
-												<SelectItem value="rating">Rating</SelectItem>
-												<SelectItem value="reviews">Most reviews</SelectItem>
+												<SelectItem value="none">Sort: Best match</SelectItem>
+												<SelectItem value="distance">Sort: Closest first</SelectItem>
+												<SelectItem value="rating">Sort: Highest rated</SelectItem>
+												<SelectItem value="reviews">Sort: Most reviews</SelectItem>
 											</SelectContent>
 										</Select>
 									</div>
-								</div>
 
-								<div className="space-y-3">
-									<div className="flex items-center justify-between">
-										<Label>Minimum rating</Label>
-										<span className="text-sm text-muted-foreground">
-											{minRating === 0 ? "Any" : `${minRating.toFixed(1)}+`}
-										</span>
+									<div className="flex items-center justify-between gap-4">
+										<div className="space-y-1">
+											<Label className="text-[var(--mapetite-text)]">
+												Open now
+											</Label>
+											<p className="mapetite-muted-copy text-sm">
+												Show only restaurants currently open.
+											</p>
+										</div>
+										<Switch
+											checked={openNowOnly}
+											onCheckedChange={setOpenNowOnly}
+										/>
 									</div>
-									<Slider
-										value={[minRating]}
-										onValueChange={(values) => setMinRating(values[0])}
-										min={0}
-										max={5}
-										step={0.5}
-									/>
-								</div>
 
-								<div className="flex items-center justify-between gap-4">
-									<div className="space-y-1">
-										<Label>Open now</Label>
-										<p className="text-sm text-muted-foreground">
-											Show only restaurants currently open.
-										</p>
+									<div className="flex gap-2 border-t border-[var(--mapetite-border)] pt-4">
+										<Button
+											type="button"
+											variant="outline"
+											className="mapetite-quiet-button flex-1 shadow-none"
+											onClick={clearAllFilters}
+										>
+											Clear filters
+										</Button>
+										<Button
+											type="button"
+											className="mapetite-accent-button flex-1 shadow-none"
+											onClick={() => setShowMobileFilters(false)}
+										>
+											Apply
+										</Button>
 									</div>
-									<Switch
-										checked={openNowOnly}
-										onCheckedChange={setOpenNowOnly}
-									/>
 								</div>
-
-								<div className="flex justify-end border-t border-border pt-4">
-									<Button variant="outline" onClick={clearAllFilters}>
-										Clear filters
-									</Button>
-								</div>
-							</CardContent>
-						)}
-					</Card>
-				)}
-
-				{restaurants.length > 0 && (
-					<div className="space-y-4">
-						<div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-							<div>
-								<h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
-									{showFavorites
-										? `Favorites (${matchingResultsCount.toLocaleString()})`
-										: `${totalResultsCount.toLocaleString()} results found`}
-								</h2>
-								<p className="mt-1 text-sm text-muted-foreground">
-									{showFavorites
-										? hasMoreResults
-											? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} favorite matches`
-											: `${matchingResultsCount.toLocaleString()} favorite matches`
-										: matchingResultsCount !== totalResultsCount
-											? hasMoreResults
-												? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} matching restaurants • ${totalResultsCount.toLocaleString()} results found`
-												: `${matchingResultsCount.toLocaleString()} matching restaurants • ${totalResultsCount.toLocaleString()} results found`
-											: hasMoreResults
-												? `Showing ${shownResultsCount.toLocaleString()} of ${totalResultsCount.toLocaleString()}`
-												: `${totalResultsCount.toLocaleString()} ready to browse`}
-								</p>
 							</div>
-							<Button
-								variant={showFavorites ? "default" : "outline"}
-								onClick={() => setShowFavorites(!showFavorites)}
-							>
-								<Heart
-									className={cn("mr-2 size-4", showFavorites && "fill-current")}
-								/>
-								{showFavorites ? "View all" : "View favorites"}
-							</Button>
 						</div>
+					)}
 
-						{(selectedCategories.size > 0 ||
-							priceFilter.length < 4 ||
-							minRating > 0 ||
-							openNowOnly) && (
-							<div className="rounded-lg border border-border bg-card p-4">
-								<div className="flex flex-wrap items-center gap-2">
-									<span className="text-sm font-medium text-foreground">
-										Active filters
-									</span>
-
-									{Array.from(selectedCategories).map((category) => (
-										<Badge
-											key={category}
-											variant="outline"
-											className="cursor-pointer"
-											onClick={() => toggleCategory(category)}
-										>
-											{category}
-											<X className="size-3" />
-										</Badge>
-									))}
-
-									{priceFilter.length < 4 && (
-										<Badge
-											variant="outline"
-											className="cursor-pointer"
-											onClick={() => setPriceFilter([1, 2, 3, 4])}
-										>
-											{"$".repeat(priceFilter.length || 0) || "Any price"}
-											<X className="size-3" />
-										</Badge>
-									)}
-
-									{minRating > 0 && (
-										<Badge
-											variant="outline"
-											className="cursor-pointer"
-											onClick={() => setMinRating(0)}
-										>
-											<Star className="size-3 fill-current" />
-											{minRating.toFixed(1)}+
-											<X className="size-3" />
-										</Badge>
-									)}
-
-									{openNowOnly && (
-										<Badge
-											variant="outline"
-											className="cursor-pointer"
-											onClick={() => setOpenNowOnly(false)}
-										>
-											<Clock className="size-3" />
-											Open now
-											<X className="size-3" />
-										</Badge>
-									)}
-
-									<Button
-										variant="ghost"
-										size="sm"
-										onClick={clearAllFilters}
-										className="ml-auto"
-									>
-										Clear all
-									</Button>
+					{restaurants.length > 0 && (
+						<section className="mapetite-panel mb-4 hidden p-5 md:grid md:gap-5">
+							<div className="flex flex-wrap items-center justify-between gap-4">
+								<div>
+									<div className="mapetite-eyebrow">Refine search</div>
+									<p className="mapetite-muted-copy mt-3 text-sm">
+										Filter by price, rating, distance, and open status.
+									</p>
 								</div>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => setShowRefinements(!showRefinements)}
+									className="mapetite-quiet-button rounded-full px-4 shadow-none"
+								>
+									{showRefinements ? "Hide" : "Show"}
+								</Button>
 							</div>
-						)}
-					</div>
-				)}
 
-				{restaurants.length > 0 && displayedRestaurants.length > 0 && (
-					<div className="space-y-4">
-						{visibleRestaurants.map((restaurant) => (
-							<Card key={restaurant.id} className="border border-border">
-								<CardContent className="p-4 md:p-5">
-									<div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
-										<div className="overflow-hidden rounded-md border border-border bg-muted">
-											<div className="aspect-[4/3] w-full">
-												{restaurant.photoUrl ? (
-													<img
-														src={restaurant.photoUrl}
-														alt={restaurant.name}
-														className="h-full w-full object-cover"
-														referrerPolicy="no-referrer"
-													/>
-												) : (
-													<div className="flex h-full w-full items-center justify-center">
-														<Utensils className="size-8 text-muted-foreground" />
-													</div>
-												)}
+							{showRefinements && (
+								<div className="grid gap-5">
+									<div className="grid gap-5 lg:grid-cols-2">
+										<div className="grid gap-3">
+											<Label className="text-[var(--mapetite-text)]">
+												Price range
+											</Label>
+											<div className="grid grid-cols-4 gap-2">
+												{[1, 2, 3, 4].map((price) => (
+													<Button
+														key={price}
+														type="button"
+														variant="outline"
+														onClick={() => togglePriceFilter(price)}
+														className={cn(
+															"rounded-full shadow-none",
+															priceFilter.includes(price)
+																? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+																: "mapetite-quiet-button",
+														)}
+													>
+														{"$".repeat(price)}
+													</Button>
+												))}
 											</div>
 										</div>
 
-										<div className="space-y-3">
-											<div className="flex items-start justify-between gap-3">
-												<div className="space-y-1">
-													<h3 className="text-lg font-semibold tracking-tight text-foreground">
-														{restaurant.name}
-													</h3>
-													<div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
-														<span>
-															{restaurant.address.city}, {restaurant.address.state}
-														</span>
-														{(() => {
-															const displayCategory = getDisplayCategory(restaurant);
-															return displayCategory ? (
-																<Badge variant="outline">{displayCategory}</Badge>
-															) : null;
-														})()}
-													</div>
-												</div>
+										<div className="grid gap-3">
+											<Label className="text-[var(--mapetite-text)]">
+												Sort by
+											</Label>
+											<Select
+												value={sortBy}
+												onValueChange={(value) =>
+													setSortBy(
+														value as "distance" | "rating" | "reviews" | "none",
+													)
+												}
+											>
+												<SelectTrigger className="h-11 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
+													<SelectValue />
+												</SelectTrigger>
+												<SelectContent>
+													<SelectItem value="none">Sort: Best match</SelectItem>
+													<SelectItem value="distance">Sort: Closest first</SelectItem>
+													<SelectItem value="rating">Sort: Highest rated</SelectItem>
+													<SelectItem value="reviews">Sort: Most reviews</SelectItem>
+												</SelectContent>
+											</Select>
+										</div>
+									</div>
 
-												<Button
-													size="icon"
-													variant={
-														favoriteIds.has(restaurant.id) ? "default" : "outline"
+									<div className="grid gap-3">
+										<div className="flex items-center justify-between">
+											<Label className="text-[var(--mapetite-text)]">
+												Minimum rating
+											</Label>
+											<span className="mapetite-muted-copy text-sm">
+												{minRating === 0 ? "Any" : `${minRating.toFixed(1)}+`}
+											</span>
+										</div>
+										<Slider
+											value={[minRating]}
+											onValueChange={(values) => setMinRating(values[0])}
+											min={0}
+											max={5}
+											step={0.5}
+										/>
+									</div>
+
+									<div className="flex items-center justify-between gap-4">
+										<div className="space-y-1">
+											<Label className="text-[var(--mapetite-text)]">
+												Open now
+											</Label>
+											<p className="mapetite-muted-copy text-sm">
+												Show only restaurants currently open.
+											</p>
+										</div>
+										<Switch
+											checked={openNowOnly}
+											onCheckedChange={setOpenNowOnly}
+										/>
+									</div>
+
+									<div className="flex justify-end border-t border-[var(--mapetite-border)] pt-4">
+										<Button
+											type="button"
+											variant="outline"
+											onClick={clearAllFilters}
+											className="mapetite-quiet-button rounded-full px-4 shadow-none"
+										>
+											Clear filters
+										</Button>
+									</div>
+								</div>
+							)}
+						</section>
+					)}
+
+					{restaurants.length > 0 && (
+						<section className="grid gap-6 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] min-[1261px]:items-start">
+							<div className="grid gap-4">
+								<div className="mapetite-panel flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+									<div>
+										<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											{resultHeading}
+										</strong>
+										<p className="mapetite-muted-copy mt-1 text-sm">
+											{showFavorites
+												? hasMoreResults
+													? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} favorite matches`
+													: `${matchingResultsCount.toLocaleString()} favorite matches`
+												: matchingResultsCount !== totalResultsCount
+													? hasMoreResults
+														? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} matching restaurants • ${totalResultsCount.toLocaleString()} results found`
+														: `${matchingResultsCount.toLocaleString()} matching restaurants • ${totalResultsCount.toLocaleString()} results found`
+													: hasMoreResults
+														? `Showing ${shownResultsCount.toLocaleString()} of ${totalResultsCount.toLocaleString()}`
+														: `${totalResultsCount.toLocaleString()} ready to browse`}
+										</p>
+									</div>
+									<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+										{matchingResultsCount.toLocaleString()} matching
+									</span>
+								</div>
+
+								{hasActiveFilters && (
+									<div className="mapetite-panel-soft flex flex-wrap items-center gap-2 px-4 py-4">
+										<span className="text-sm font-medium text-[var(--mapetite-text)]">
+											Active filters
+										</span>
+
+										{Array.from(selectedCategories).map((category) => (
+											<button
+												key={category}
+												type="button"
+												onClick={() => toggleCategory(category)}
+												className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+											>
+												{category}
+												<X className="size-3" />
+											</button>
+										))}
+
+										{priceFilter.length < 4 && (
+											<button
+												type="button"
+												onClick={() => setPriceFilter([1, 2, 3, 4])}
+												className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+											>
+												{"$".repeat(priceFilter.length || 0) || "Any price"}
+												<X className="size-3" />
+											</button>
+										)}
+
+										{minRating > 0 && (
+											<button
+												type="button"
+												onClick={() => setMinRating(0)}
+												className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+											>
+												<Star className="size-3 fill-current" />
+												{minRating.toFixed(1)}+
+												<X className="size-3" />
+											</button>
+										)}
+
+										{openNowOnly && (
+											<button
+												type="button"
+												onClick={() => setOpenNowOnly(false)}
+												className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+											>
+												<Clock className="size-3" />
+												Open now
+												<X className="size-3" />
+											</button>
+										)}
+
+										<Button
+											type="button"
+											variant="ghost"
+											onClick={clearAllFilters}
+											className="ml-auto rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											Clear all
+										</Button>
+									</div>
+								)}
+
+								{displayedRestaurants.length > 0 &&
+									visibleRestaurants.map((restaurant) => {
+										const displayCategory = getDisplayCategory(restaurant);
+										const previewImage = getPreviewImage(restaurant);
+										const isSelected = selectedRestaurantId === restaurant.id;
+										const priceLabel = restaurant.priceRange
+											? "$".repeat(restaurant.priceRange)
+											: null;
+										const openLabel = restaurant.hours
+											? restaurant.isOpenNow
+												? `Open until ${restaurant.hours.close}`
+												: `Hours ${restaurant.hours.open} - ${restaurant.hours.close}`
+											: null;
+										const summary = truncateCopy(
+											restaurant.description,
+											110,
+											"Restaurant discovered from your current search. Open the detail page once it feels worth the trip.",
+										);
+
+										return (
+											<article
+												key={restaurant.id}
+												role="button"
+												tabIndex={0}
+												onClick={() => handleSelectRestaurant(restaurant.id)}
+												onKeyDown={(event) => {
+													if (event.key === "Enter" || event.key === " ") {
+														event.preventDefault();
+														handleSelectRestaurant(restaurant.id);
 													}
-													onClick={() => toggleFavorite(restaurant.id)}
-													disabled={isTogglingFavorite}
-												>
-													<Heart
-														className={cn(
-															"size-4",
-															favoriteIds.has(restaurant.id) && "fill-current",
-														)}
-													/>
-												</Button>
-											</div>
-
-											{restaurant.rating != null && (
-												<div className="flex flex-wrap items-center gap-2">
-													<div className="flex items-center gap-0.5">
-														{[...Array(5)].map((_, i) => (
-															<Star
-																key={`star-${restaurant.id}-${i}`}
-																className={cn(
-																	"size-4",
-																	i < Math.floor(restaurant.rating)
-																		? "fill-primary text-primary"
-																		: i < restaurant.rating
-																			? "fill-primary/50 text-primary"
-																			: "fill-muted text-muted-foreground",
-																)}
+												}}
+												className={cn(
+													"grid gap-4 rounded-[14px] border p-4 text-left transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)] min-[981px]:grid-cols-[172px_minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:p-[18px]",
+													isSelected
+														? "border-[rgba(213,154,104,0.24)] bg-[rgba(255,248,242,0.05)] shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
+														: "border-[rgba(255,236,220,0.08)] bg-[var(--mapetite-surface)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:border-[rgba(213,154,104,0.24)] hover:bg-[rgba(255,248,242,0.05)] hover:-translate-y-[1px]",
+												)}
+											>
+												<div className="grid min-h-[132px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[12px] border border-[rgba(255,236,220,0.08)]">
+													{previewImage ? (
+														<div className="relative h-full min-h-[132px]">
+															<img
+																src={previewImage}
+																alt={restaurant.name}
+																className="absolute inset-0 h-full w-full object-cover"
+																referrerPolicy="no-referrer"
 															/>
-														))}
-													</div>
-													<span className="text-sm font-medium text-foreground">
-														{restaurant.rating.toFixed(1)}
-													</span>
-													{restaurant.reviewCount != null && (
-														<span className="text-sm text-muted-foreground">
-															({restaurant.reviewCount} reviews)
-														</span>
+															<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(19,15,13,0.08),rgba(19,15,13,0.74))]" />
+															<div className="relative grid h-full grid-rows-[auto_1fr_auto] p-[14px]">
+																<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[rgba(255,244,236,0.92)]">
+																	{getRestaurantInitials(restaurant)}
+																</strong>
+																<div />
+																<span className="text-[12px] text-[rgba(245,233,222,0.72)]">
+																	{displayCategory
+																		? `${displayCategory} · ${getLocationHint(restaurant)}`
+																		: getLocationHint(restaurant)}
+																</span>
+															</div>
+														</div>
+													) : (
+														<div className="mapetite-media-fallback grid h-full min-h-[132px] grid-rows-[auto_1fr_auto] p-[14px]">
+															<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[rgba(255,244,236,0.92)]">
+																{getRestaurantInitials(restaurant)}
+															</strong>
+															<div />
+															<span className="text-[12px] text-[rgba(245,233,222,0.68)]">
+																{displayCategory
+																	? `${displayCategory} · ${getLocationHint(restaurant)}`
+																	: getLocationHint(restaurant)}
+															</span>
+														</div>
 													)}
 												</div>
-											)}
 
-											<p className="text-sm leading-relaxed text-muted-foreground">
-												{restaurant.description}
-											</p>
+												<div className="grid gap-[10px]">
+													<div className="flex flex-wrap items-center justify-between gap-3">
+														<div>
+															<h3 className="m-0 text-[clamp(1.8rem,2.2vw,2rem)] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+																{restaurant.name}
+															</h3>
+															<p className="mapetite-muted-copy mt-2 text-[15px]">
+																{displayCategory
+																	? `${displayCategory} · ${getLocationHint(restaurant)}`
+																	: getLocationHint(restaurant)}
+															</p>
+														</div>
 
-											<div className="flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-												{restaurant.priceRange != null && (
-													<div className="flex items-center gap-1">
-														<DollarSign className="size-4 text-primary" />
-														<span>{"$".repeat(restaurant.priceRange)} Pricing</span>
-													</div>
-												)}
-												{restaurant.hours && (
-													<div className="flex items-center gap-2">
-														<Clock className="size-4 text-primary" />
-														<span>
-															{restaurant.hours.open} - {restaurant.hours.close}
+														<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+															{restaurant.rating != null
+																? `${restaurant.rating.toFixed(1)} rating`
+																: restaurant.reviewCount
+																	? `${restaurant.reviewCount} reviews`
+																	: "New listing"}
 														</span>
-														<Badge
-															variant={
-																restaurant.isOpenNow ? "default" : "secondary"
-															}
+													</div>
+
+													<p className="m-0 text-[15px] leading-[1.6] text-[var(--mapetite-text-soft)]">
+														{summary}
+													</p>
+
+													<div className="flex flex-wrap gap-2">
+														{priceLabel ? (
+															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+																{priceLabel}
+															</span>
+														) : null}
+														{displayCategory ? (
+															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+																{displayCategory}
+															</span>
+														) : null}
+														{openLabel ? (
+															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+																{openLabel}
+															</span>
+														) : null}
+														{restaurant.reviewCount != null ? (
+															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+																{restaurant.reviewCount.toLocaleString()} reviews
+															</span>
+														) : null}
+													</div>
+												</div>
+
+												<div className="grid content-start gap-2 min-[981px]:min-w-[120px] min-[981px]:justify-items-end">
+													<Button
+														asChild
+														className="mapetite-accent-button h-11 rounded-full px-4 text-[15px] font-semibold text-[#20140d] shadow-none"
+														onClick={(event) => event.stopPropagation()}
+													>
+														<Link
+															to="/restaurants/$restaurantId"
+															params={{ restaurantId: restaurant.id }}
 														>
-															{restaurant.isOpenNow ? "Open now" : "Closed"}
-														</Badge>
+															View details
+														</Link>
+													</Button>
+
+													<Button
+														type="button"
+														variant="outline"
+														onClick={(event) => {
+															event.stopPropagation();
+															toggleFavorite(restaurant.id);
+														}}
+														disabled={isTogglingFavorite}
+														className={cn(
+															"mapetite-quiet-button h-11 rounded-full px-4 shadow-none",
+															favoriteIds.has(restaurant.id) &&
+																"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+														)}
+													>
+														<Heart
+															className={cn(
+																"mr-2 size-4",
+																favoriteIds.has(restaurant.id) && "fill-current",
+															)}
+														/>
+														{favoriteIds.has(restaurant.id) ? "Saved" : "Save"}
+													</Button>
+
+													<Button
+														asChild
+														variant="outline"
+														className="mapetite-quiet-button h-11 rounded-full px-4 shadow-none"
+														onClick={(event) => event.stopPropagation()}
+													>
+														<a
+															href={buildDirectionsUrl(restaurant)}
+															target="_blank"
+															rel="noreferrer"
+														>
+															Directions
+														</a>
+													</Button>
+
+													{isSelected ? (
+														<span className="rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3 py-2 text-[13px] text-[var(--mapetite-text)]">
+															Previewing
+														</span>
+													) : null}
+												</div>
+											</article>
+										);
+									})}
+
+								{displayedRestaurants.length > 0 && (
+									<div className="flex flex-col items-center gap-3 pt-2">
+										{hasMoreResults ? (
+											<Button
+												type="button"
+												variant="outline"
+												onClick={handleShowMoreResults}
+												className="mapetite-quiet-button rounded-full px-5 shadow-none"
+											>
+												Show more restaurants
+											</Button>
+										) : matchingResultsCount > INITIAL_VISIBLE_RESULTS ? (
+											<p className="mapetite-muted-copy text-sm">
+												You&apos;ve reached the end of these results.
+											</p>
+										) : null}
+									</div>
+								)}
+
+								{restaurants.length > 0 &&
+									displayedRestaurants.length === 0 &&
+									!showFavorites && (
+										<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+											<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
+												<Filter className="size-5" />
+											</div>
+											<div>
+												<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+													No matches for the current filters
+												</h3>
+												<p className="mapetite-muted-copy mt-2 text-sm">
+													Adjust the filters above or clear them to widen the search.
+												</p>
+											</div>
+											<div>
+												<Button
+													type="button"
+													variant="outline"
+													onClick={clearAllFilters}
+													className="mapetite-quiet-button rounded-full px-5 shadow-none"
+												>
+													Clear filters
+												</Button>
+											</div>
+										</div>
+									)}
+							</div>
+
+							{displayedRestaurants.length > 0 && (
+								<aside className="mapetite-panel grid gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:self-start">
+									<div className="flex flex-wrap items-center justify-between gap-3">
+										<span className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.5)]">
+											Selected restaurant
+										</span>
+										{selectedRestaurant?.rating != null ? (
+											<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+												{selectedRestaurant.rating.toFixed(1)} rating
+											</span>
+										) : null}
+									</div>
+
+									{selectedRestaurant ? (
+										<>
+											<h2 className="m-0 text-[34px] font-semibold leading-[1.02] tracking-[-0.05em] text-[var(--mapetite-text)]">
+												{selectedRestaurant.name}
+											</h2>
+
+											<div className="grid h-[220px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)]">
+												{getPreviewImage(selectedRestaurant) ? (
+													<div className="relative h-full">
+														<img
+															src={getPreviewImage(selectedRestaurant) ?? ""}
+															alt={selectedRestaurant.name}
+															className="absolute inset-0 h-full w-full object-cover"
+															referrerPolicy="no-referrer"
+														/>
+														<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(19,15,13,0.08),rgba(19,15,13,0.68))]" />
+														<div className="relative grid h-full grid-rows-[auto_1fr_auto] p-4">
+															<strong className="text-[28px] font-semibold tracking-[-0.05em] text-[rgba(255,244,236,0.92)]">
+																{getRestaurantInitials(selectedRestaurant)}
+															</strong>
+															<div />
+															<span className="text-[13px] text-[rgba(245,233,222,0.68)]">
+																{getDisplayCategory(selectedRestaurant)
+																	? `${getDisplayCategory(selectedRestaurant)} · ${getLocationHint(selectedRestaurant)}`
+																	: getLocationHint(selectedRestaurant)}
+															</span>
+														</div>
+													</div>
+												) : (
+													<div className="mapetite-media-fallback grid h-full grid-rows-[auto_1fr_auto] p-4">
+														<strong className="text-[28px] font-semibold tracking-[-0.05em] text-[rgba(255,244,236,0.92)]">
+															{getRestaurantInitials(selectedRestaurant)}
+														</strong>
+														<div />
+														<span className="text-[13px] text-[rgba(245,233,222,0.68)]">
+															{getDisplayCategory(selectedRestaurant)
+																? `${getDisplayCategory(selectedRestaurant)} · ${getLocationHint(selectedRestaurant)}`
+																: getLocationHint(selectedRestaurant)}
+														</span>
 													</div>
 												)}
 											</div>
 
+											<p className="text-[15px] leading-[1.68] text-[var(--mapetite-text-soft)]">
+												{truncateCopy(
+													selectedRestaurant.description,
+													220,
+													"Keep the shortlist broad until one room feels worth the route. Use this panel to compare the address, timing, and quick cues before opening full details.",
+												)}
+											</p>
+
 											<div className="flex flex-wrap gap-2">
-												<Button asChild variant="outline">
+												{getDisplayCategory(selectedRestaurant) ? (
+													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+														{getDisplayCategory(selectedRestaurant)}
+													</span>
+												) : null}
+												{selectedRestaurant.address.city ? (
+													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+														{selectedRestaurant.address.city}
+													</span>
+												) : null}
+												{selectedRestaurant.priceRange ? (
+													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+														{"$".repeat(selectedRestaurant.priceRange)}
+													</span>
+												) : null}
+												{selectedRestaurant.hours ? (
+													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+														{selectedRestaurant.isOpenNow
+															? `Open until ${selectedRestaurant.hours.close}`
+															: `${selectedRestaurant.hours.open} - ${selectedRestaurant.hours.close}`}
+													</span>
+												) : null}
+											</div>
+
+											<div className="flex flex-wrap gap-3">
+												<Button
+													asChild
+													className="mapetite-accent-button h-[46px] rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none"
+												>
 													<Link
 														to="/restaurants/$restaurantId"
-														params={{ restaurantId: restaurant.id }}
+														params={{ restaurantId: selectedRestaurant.id }}
 													>
 														View details
 													</Link>
 												</Button>
+												<Button
+													type="button"
+													variant="outline"
+													onClick={() => toggleFavorite(selectedRestaurant.id)}
+													disabled={isTogglingFavorite}
+													className={cn(
+														"mapetite-quiet-button h-[46px] rounded-[10px] px-5 shadow-none",
+														favoriteIds.has(selectedRestaurant.id) &&
+															"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+													)}
+												>
+													<Heart
+														className={cn(
+															"mr-2 size-4",
+															favoriteIds.has(selectedRestaurant.id) && "fill-current",
+														)}
+													/>
+													{favoriteIds.has(selectedRestaurant.id)
+														? "Saved"
+														: "Save favorite"}
+												</Button>
+												<Button
+													asChild
+													variant="outline"
+													className="mapetite-quiet-button h-[46px] rounded-[10px] px-5 shadow-none"
+												>
+													<a
+														href={buildDirectionsUrl(selectedRestaurant)}
+														target="_blank"
+														rel="noreferrer"
+													>
+														Directions
+													</a>
+												</Button>
+											</div>
+
+											<div className="grid gap-3 border-t border-[rgba(255,236,220,0.08)] pt-4">
+												<div>
+													<strong className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--mapetite-text)]">
+														{getFullAddressLine(selectedRestaurant) || "Address available in details"}
+													</strong>
+													<p className="mapetite-muted-copy mt-2 text-[14px] leading-6">
+														{selectedRestaurant.reviewCount
+															? `A stronger comparison pick when the shortlist should stay narrow and the room needs enough confidence to justify the route. ${selectedRestaurant.reviewCount.toLocaleString()} reviews available once you open details.`
+															: "Use the full detail page when the address, timing, and route feel close enough to commit."}
+													</p>
+												</div>
+											</div>
+										</>
+									) : (
+										<div className="grid gap-4">
+											<div className="mapetite-media-fallback grid h-[220px] grid-rows-[auto_1fr_auto] rounded-[14px] p-4">
+												<strong className="text-[28px] font-semibold tracking-[-0.05em] text-[rgba(255,244,236,0.92)]">
+													MP
+												</strong>
+												<div />
+												<span className="text-[13px] text-[rgba(245,233,222,0.68)]">
+													Preview one room while the rest of the shortlist stays visible.
+												</span>
+											</div>
+											<h2 className="m-0 text-[30px] font-semibold leading-[1.04] tracking-[-0.05em] text-[var(--mapetite-text)]">
+												Select a restaurant to preview.
+											</h2>
+											<p className="text-[15px] leading-[1.68] text-[var(--mapetite-text-soft)]">
+												Choose a card from the left to keep one restaurant visible
+												while you compare the shortlist. The full decision screen
+												still lives on its own detail page.
+											</p>
+											<div className="grid gap-3 border-t border-[rgba(255,236,220,0.08)] pt-4">
+												<div className="flex items-center gap-3 text-[14px] text-[var(--mapetite-text-soft)]">
+													<MapPinned className="size-4 text-[var(--mapetite-accent)]" />
+													<span>User-driven only. No automatic selection.</span>
+												</div>
 											</div>
 										</div>
+									)}
+								</aside>
+							)}
+						</section>
+					)}
+
+					{isSearching && (
+						<section className="mt-6 grid gap-4">
+							<div className="mapetite-panel grid gap-3 px-6 py-5">
+								<div className="h-4 w-40 rounded-full bg-[rgba(255,248,242,0.08)]" />
+								<div className="h-3 w-[58%] rounded-full bg-[rgba(255,248,242,0.08)]" />
+								<div className="grid gap-3 min-[981px]:grid-cols-2">
+									<div className="mapetite-media-fallback h-32 rounded-[12px]" />
+									<div className="grid gap-3">
+										<div className="h-4 w-full rounded-full bg-[rgba(255,248,242,0.08)]" />
+										<div className="h-4 w-[84%] rounded-full bg-[rgba(255,248,242,0.08)]" />
+										<div className="h-4 w-[70%] rounded-full bg-[rgba(255,248,242,0.08)]" />
 									</div>
-								</CardContent>
-							</Card>
-						))}
-
-						<div className="flex flex-col items-center gap-3 pt-2">
-							{hasMoreResults ? (
-								<Button variant="outline" onClick={handleShowMoreResults}>
-									Show more restaurants
-								</Button>
-							) : matchingResultsCount > INITIAL_VISIBLE_RESULTS ? (
-								<p className="text-sm text-muted-foreground">
-									You&apos;ve reached the end of these results.
-								</p>
-							) : null}
-						</div>
-					</div>
-				)}
-
-				{restaurants.length > 0 &&
-					displayedRestaurants.length === 0 &&
-					!showFavorites && (
-						<Card className="border border-border">
-							<CardContent className="py-10 text-center">
-								<h3 className="text-lg font-semibold text-foreground">
-									No matches for the current filters
-								</h3>
-								<p className="mt-2 text-sm text-muted-foreground">
-									Adjust the filters above or clear them to widen the search.
-								</p>
-								<Button variant="outline" className="mt-4" onClick={clearAllFilters}>
-									Clear filters
-								</Button>
-							</CardContent>
-						</Card>
-					)}
-
-				{restaurants.length === 0 && !isSearching && (
-					<Card className="border border-border">
-						<CardContent className="py-10 text-center">
-							<div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-md border border-border bg-background">
-								<Search className="size-5 text-primary" />
+								</div>
 							</div>
-							<h3 className="text-lg font-semibold text-foreground">
-								Search for restaurants
-							</h3>
-							<p className="mt-2 text-sm text-muted-foreground">
-								Enter a location above to load results.
-							</p>
-						</CardContent>
-					</Card>
-				)}
-
-				{showFavorites &&
-					displayedRestaurants.length === 0 &&
-					restaurants.length > 0 && (
-						<Card className="border border-border">
-							<CardContent className="py-10 text-center">
-								<Heart className="mx-auto size-8 text-muted-foreground" />
-								<h3 className="mt-3 text-lg font-semibold text-foreground">
-									No favorites yet
-								</h3>
-								<p className="mt-2 text-sm text-muted-foreground">
-									Mark restaurants as favorites to collect them here.
-								</p>
-								<Button
-									onClick={() => setShowFavorites(false)}
-									variant="outline"
-									className="mt-4"
-								>
-									Browse restaurants
-								</Button>
-							</CardContent>
-						</Card>
+						</section>
 					)}
+
+					{restaurants.length === 0 && !isSearching && (
+						<section className="mt-6">
+							<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+								<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
+									<Search className="size-5" />
+								</div>
+								<div>
+									<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+										Search for restaurants
+									</h3>
+									<p className="mapetite-muted-copy mt-2 text-sm">
+										Enter a city, state, or country above to open the list.
+									</p>
+								</div>
+							</div>
+						</section>
+					)}
+
+					{showFavorites &&
+						displayedRestaurants.length === 0 &&
+						restaurants.length > 0 && (
+							<section className="mt-6">
+								<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+									<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
+									<div>
+										<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											No favorites yet
+										</h3>
+										<p className="mapetite-muted-copy mt-2 text-sm">
+											Save restaurants from the list to collect them here.
+										</p>
+									</div>
+									<div>
+										<Button
+											type="button"
+											onClick={() => setShowFavorites(false)}
+											variant="outline"
+											className="mapetite-quiet-button rounded-full px-5 shadow-none"
+										>
+											Browse restaurants
+										</Button>
+									</div>
+								</div>
+							</section>
+						)}
+				</div>
 			</div>
 		</Layout>
 	);
