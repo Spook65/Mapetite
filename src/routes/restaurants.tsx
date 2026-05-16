@@ -52,6 +52,9 @@ type RestaurantsSearch = {
 	city?: string;
 };
 
+const INITIAL_VISIBLE_RESULTS = 36;
+const RESULTS_BATCH_SIZE = 36;
+
 export const Route = createFileRoute("/restaurants")({
 	component: App,
 	validateSearch: (search: Record<string, unknown>): RestaurantsSearch => {
@@ -167,6 +170,9 @@ function RestaurantSearchPage() {
 	// Local component state (not persisted)
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
 	const [isSearching, setIsSearching] = useState(false);
+	const [visibleResultsCount, setVisibleResultsCount] = useState(
+		INITIAL_VISIBLE_RESULTS,
+	);
 	const activeSearchIdRef = useRef(0);
 
 	const categories = [
@@ -367,6 +373,29 @@ function RestaurantSearchPage() {
 		sortBy,
 	]);
 
+	useEffect(() => {
+		setVisibleResultsCount(INITIAL_VISIBLE_RESULTS);
+	}, [
+		restaurants,
+		selectedCategories,
+		priceFilter,
+		minRating,
+		sortBy,
+		openNowOnly,
+		showFavorites,
+	]);
+
+	const visibleRestaurants = useMemo(
+		() => displayedRestaurants.slice(0, visibleResultsCount),
+		[displayedRestaurants, visibleResultsCount],
+	);
+
+	const handleShowMoreResults = useCallback(() => {
+		setVisibleResultsCount((current) =>
+			Math.min(current + RESULTS_BATCH_SIZE, displayedRestaurants.length),
+		);
+	}, [displayedRestaurants.length]);
+
 	/**
 	 * Normalizes restaurant category for display in the category pill.
 	 * Follows fallback hierarchy: first cuisine → "Restaurant" (if amenity exists) → null.
@@ -429,6 +458,11 @@ function RestaurantSearchPage() {
 			.map((word) => word[0]?.toUpperCase() + word.slice(1))
 			.join(" ");
 	};
+
+	const totalResultsCount = restaurants.length;
+	const matchingResultsCount = displayedRestaurants.length;
+	const shownResultsCount = visibleRestaurants.length;
+	const hasMoreResults = shownResultsCount < matchingResultsCount;
 
 	return (
 		<Layout>
@@ -774,14 +808,22 @@ function RestaurantSearchPage() {
 							<div>
 								<h2 className="text-xl font-semibold tracking-tight text-foreground md:text-2xl">
 									{showFavorites
-										? `Favorites (${favoritesData?.count ?? 0})`
-										: `${restaurants.length} results`}
+										? `Favorites (${matchingResultsCount.toLocaleString()})`
+										: `${totalResultsCount.toLocaleString()} results found`}
 								</h2>
-								{displayedRestaurants.length !== restaurants.length && (
-									<p className="mt-1 text-sm text-muted-foreground">
-										Showing {displayedRestaurants.length} matches.
-									</p>
-								)}
+								<p className="mt-1 text-sm text-muted-foreground">
+									{showFavorites
+										? hasMoreResults
+											? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} favorite matches`
+											: `${matchingResultsCount.toLocaleString()} favorite matches`
+										: matchingResultsCount !== totalResultsCount
+											? hasMoreResults
+												? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} matching restaurants • ${totalResultsCount.toLocaleString()} results found`
+												: `${matchingResultsCount.toLocaleString()} matching restaurants • ${totalResultsCount.toLocaleString()} results found`
+											: hasMoreResults
+												? `Showing ${shownResultsCount.toLocaleString()} of ${totalResultsCount.toLocaleString()}`
+												: `${totalResultsCount.toLocaleString()} ready to browse`}
+								</p>
 							</div>
 							<Button
 								variant={showFavorites ? "default" : "outline"}
@@ -867,7 +909,7 @@ function RestaurantSearchPage() {
 
 				{restaurants.length > 0 && displayedRestaurants.length > 0 && (
 					<div className="space-y-4">
-						{displayedRestaurants.map((restaurant) => (
+						{visibleRestaurants.map((restaurant) => (
 							<Card key={restaurant.id} className="border border-border">
 								<CardContent className="p-4 md:p-5">
 									<div className="grid gap-4 md:grid-cols-[220px_minmax(0,1fr)]">
@@ -995,6 +1037,18 @@ function RestaurantSearchPage() {
 								</CardContent>
 							</Card>
 						))}
+
+						<div className="flex flex-col items-center gap-3 pt-2">
+							{hasMoreResults ? (
+								<Button variant="outline" onClick={handleShowMoreResults}>
+									Show more restaurants
+								</Button>
+							) : matchingResultsCount > INITIAL_VISIBLE_RESULTS ? (
+								<p className="text-sm text-muted-foreground">
+									You&apos;ve reached the end of these results.
+								</p>
+							) : null}
+						</div>
 					</div>
 				)}
 
