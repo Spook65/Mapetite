@@ -188,7 +188,7 @@ export function Layout({ children }: LayoutProps) {
 
 			<div className="flex min-w-0 flex-1 flex-col">
 				<header className="sticky top-0 z-10">
-					<div className="mapetite-container px-4 pt-4 pb-6 md:px-6 md:pt-6 md:pb-8">
+					<div className="mapetite-container px-4 pt-4 pb-6 md:px-6 md:pt-8 md:pb-8">
 						<div className="mapetite-panel-soft flex items-center justify-between gap-4 px-5 py-3 backdrop-blur md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center">
 							<div className="flex min-w-0 items-center gap-6 md:justify-self-start">
 								<Link to="/" className="flex min-w-0 items-center gap-3">
