@@ -189,8 +189,8 @@ export function Layout({ children }: LayoutProps) {
 			<div className="flex min-w-0 flex-1 flex-col">
 				<header className="sticky top-0 z-10">
 					<div className="mapetite-container px-4 pt-4 pb-2 md:px-6 md:pt-6 md:pb-3">
-						<div className="mapetite-panel-soft flex min-h-[68px] items-center justify-between gap-4 px-5 py-3 shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur">
-							<div className="flex min-w-0 items-center gap-6">
+						<div className="mapetite-panel-soft flex min-h-[68px] items-center justify-between gap-4 px-5 py-3 shadow-[0_18px_40px_rgba(0,0,0,0.18)] backdrop-blur md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center">
+							<div className="flex min-w-0 items-center gap-6 md:justify-self-start">
 								<Link to="/" className="flex min-w-0 items-center gap-3">
 									<div className="flex size-[34px] items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
 										<Utensils className="size-4" />
@@ -201,8 +201,9 @@ export function Layout({ children }: LayoutProps) {
 										</h1>
 									</div>
 								</Link>
+							</div>
 
-								<nav className="hidden items-center gap-5 md:flex">
+							<nav className="hidden items-center justify-center gap-5 md:flex md:justify-self-center">
 								{navItems.map((item) => {
 									const isActive =
 										item.path === "/"
@@ -225,10 +226,9 @@ export function Layout({ children }: LayoutProps) {
 										</Link>
 									);
 								})}
-								</nav>
-							</div>
+							</nav>
 
-							<div className="flex items-center gap-2">
+							<div className="flex items-center gap-2 md:justify-self-end">
 								<div className="hidden items-center gap-2 md:flex">
 								{isAuthenticated ? (
 									<>
