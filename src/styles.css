@@ -216,6 +216,14 @@ code {
 		opacity: 0.24;
 	}
 
+	.mapetite-page-shell main > .mapetite-page-shell {
+		background: transparent;
+	}
+
+	.mapetite-page-shell main > .mapetite-page-shell::before {
+		content: none;
+	}
+
 	.mapetite-container {
 		width: var(--mapetite-page-width);
 		margin-inline: auto;

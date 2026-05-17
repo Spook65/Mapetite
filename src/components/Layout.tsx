@@ -70,7 +70,7 @@ export function Layout({ children }: LayoutProps) {
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
 	return (
-		<div className="mapetite-canvas-bg flex min-h-screen w-full overflow-x-clip text-[var(--mapetite-text)]">
+		<div className="mapetite-page-shell flex min-h-screen w-full overflow-x-clip text-[var(--mapetite-text)]">
 			{isMobileMenuOpen && (
 				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
 				<div
