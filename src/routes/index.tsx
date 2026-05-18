@@ -1,7 +1,19 @@
+import { LogInModal } from "@/components/auth/LogInModal";
+import { SignUpModal } from "@/components/auth/SignUpModal";
 import { Button } from "@/components/ui/button";
+import { useAuthState } from "@/hooks/use-auth-api";
 import { cn } from "@/lib/utils";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowRight, Utensils } from "lucide-react";
+import {
+	ArrowRight,
+	Home,
+	LogIn,
+	LogOut,
+	Menu,
+	UserPlus,
+	Utensils,
+	X,
+} from "lucide-react";
 import { useMemo, useState } from "react";
 
 export const Route = createFileRoute("/")({
@@ -201,6 +213,10 @@ const cityStarts = [
 function LandingPage() {
 	const navigate = useNavigate();
 	const [selectedCityKey, setSelectedCityKey] = useState<(typeof cityStarts)[number]["key"]>("tokyo");
+	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+	const [isLogInOpen, setIsLogInOpen] = useState(false);
+	const { isAuthenticated, profile, logout } = useAuthState();
 
 	const selectedCity = useMemo(
 		() =>
@@ -209,6 +225,7 @@ function LandingPage() {
 	);
 
 	const featuredRestaurant = selectedCity.restaurants[0];
+	const firstName = profile?.name ? profile.name.trim().split(/\s+/)[0] : "User";
 
 	const handleCityStart = (cityName: string) => {
 		navigate({
@@ -217,9 +234,171 @@ function LandingPage() {
 		});
 	};
 
+	const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
 	return (
 		<div className="mapetite-page-shell">
+			{isMobileMenuOpen && (
+				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
+				<div
+					className="fixed inset-0 z-50 bg-black/50 md:hidden"
+					onClick={closeMobileMenu}
+				>
+					{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
+					<aside
+						className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div className="flex h-full flex-col">
+							<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] p-4">
+								<div className="flex items-center gap-3">
+									<div className="flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
+										<Utensils className="size-4" />
+									</div>
+									<div>
+										<h2 className="text-sm font-medium text-[var(--mapetite-text)]">
+											Mapetite
+										</h2>
+										<p className="text-xs text-[var(--mapetite-text-faint)]">
+											Restaurant discovery
+										</p>
+									</div>
+								</div>
+								<button
+									type="button"
+									onClick={closeMobileMenu}
+									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
+								>
+									<X className="size-4" />
+								</button>
+							</div>
+
+							<nav className="flex-1 px-3 py-4">
+								<div className="space-y-1">
+									<Link
+										to="/"
+										onClick={closeMobileMenu}
+										className="flex items-center gap-3 rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3 py-2.5 text-sm text-[var(--mapetite-text)] transition-colors"
+									>
+										<Home className="size-4" />
+										<span>Home</span>
+									</Link>
+									<Link
+										to="/restaurants"
+										onClick={closeMobileMenu}
+										className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+									>
+										<Utensils className="size-4" />
+										<span>Search restaurants</span>
+									</Link>
+								</div>
+
+								<div className="mt-6 space-y-1 border-t border-[var(--mapetite-border)] pt-4">
+									<a
+										href="#discover"
+										onClick={closeMobileMenu}
+										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+									>
+										Discover
+									</a>
+									<a
+										href="#search"
+										onClick={closeMobileMenu}
+										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+									>
+										Search start
+									</a>
+									<a
+										href="#experience"
+										onClick={closeMobileMenu}
+										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+									>
+										Experience
+									</a>
+									<a
+										href="#city-starts"
+										onClick={closeMobileMenu}
+										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+									>
+										City starts
+									</a>
+								</div>
+
+								<div className="mt-6 space-y-2 border-t border-[var(--mapetite-border)] pt-4">
+									{isAuthenticated ? (
+										<>
+											<div className="rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] p-3">
+												<p className="text-xs text-[var(--mapetite-text-faint)]">
+													Signed in as
+												</p>
+												<p className="mt-1 text-sm font-medium text-[var(--mapetite-text)]">
+													{firstName}
+												</p>
+											</div>
+											<Button
+												onClick={() => {
+													closeMobileMenu();
+													logout();
+												}}
+												variant="outline"
+												className="mapetite-quiet-button w-full rounded-[10px]"
+											>
+												<LogOut className="mr-2 size-4" />
+												Log Out
+											</Button>
+										</>
+									) : (
+										<>
+											<Button
+												onClick={() => {
+													closeMobileMenu();
+													setIsLogInOpen(true);
+												}}
+												variant="outline"
+												className="mapetite-quiet-button w-full rounded-[10px]"
+											>
+												<LogIn className="mr-2 size-4" />
+												Log In
+											</Button>
+											<Button
+												onClick={() => {
+													closeMobileMenu();
+													setIsSignUpOpen(true);
+												}}
+												className="mapetite-accent-button w-full rounded-[10px] text-[#20140d]"
+											>
+												<UserPlus className="mr-2 size-4" />
+												Sign Up
+											</Button>
+										</>
+									)}
+								</div>
+							</nav>
+						</div>
+					</aside>
+				</div>
+			)}
+
 			<div className="mapetite-container px-4 pt-4 pb-6 md:px-6 md:pt-2 md:pb-8">
+				<div className="mapetite-panel-soft mb-8 flex items-center justify-between gap-4 px-5 py-3 backdrop-blur md:hidden">
+					<div className="flex min-w-0 items-center gap-3">
+						<div className="flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border-strong)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
+							<Utensils className="size-4" />
+						</div>
+						<span className="truncate text-sm font-medium text-[var(--mapetite-text)]">
+							Mapetite
+						</span>
+					</div>
+					<button
+						type="button"
+						onClick={() => setIsMobileMenuOpen(true)}
+						className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
+						aria-label="Open menu"
+					>
+						<Menu className="size-4" />
+					</button>
+				</div>
+
 				<nav className="mapetite-panel-soft sticky top-14 z-20 mb-8 hidden items-center justify-between gap-4 px-5 py-3 backdrop-blur md:flex">
 					<div className="flex items-center gap-3 text-sm font-medium text-[var(--mapetite-text)]">
 						<div className="flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border-strong)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))]">
@@ -726,6 +905,9 @@ function LandingPage() {
 					</div>
 				</section>
 			</div>
+
+			<SignUpModal open={isSignUpOpen} onOpenChange={setIsSignUpOpen} />
+			<LogInModal open={isLogInOpen} onOpenChange={setIsLogInOpen} />
 		</div>
 	);
 }
