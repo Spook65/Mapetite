@@ -379,25 +379,30 @@ function LandingPage() {
 				</div>
 			)}
 
-			<div className="mapetite-container px-4 pt-4 pb-6 md:px-6 md:pt-2 md:pb-8">
-				<div className="mapetite-panel-soft mb-8 flex items-center justify-between gap-4 px-5 py-3 backdrop-blur md:hidden">
-					<div className="flex min-w-0 items-center gap-3">
-						<div className="flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border-strong)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
-							<Utensils className="size-4" />
+			<header className="sticky top-0 z-10 md:hidden">
+				<div className="mapetite-container px-4 pt-4 pb-6">
+					<div className="mapetite-panel-soft flex items-center justify-between gap-4 px-5 py-3 backdrop-blur">
+						<div className="flex min-w-0 items-center gap-3">
+							<div className="flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border-strong)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
+								<Utensils className="size-4" />
+							</div>
+							<span className="truncate text-sm font-medium text-[var(--mapetite-text)]">
+								Mapetite
+							</span>
 						</div>
-						<span className="truncate text-sm font-medium text-[var(--mapetite-text)]">
-							Mapetite
-						</span>
+						<button
+							type="button"
+							onClick={() => setIsMobileMenuOpen(true)}
+							className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
+							aria-label="Open menu"
+						>
+							<Menu className="size-4" />
+						</button>
 					</div>
-					<button
-						type="button"
-						onClick={() => setIsMobileMenuOpen(true)}
-						className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
-						aria-label="Open menu"
-					>
-						<Menu className="size-4" />
-					</button>
 				</div>
+			</header>
+
+			<div className="mapetite-container px-4 pb-6 md:px-6 md:pt-2 md:pb-8">
 
 				<nav className="mapetite-panel-soft sticky top-14 z-20 mb-8 hidden items-center justify-between gap-4 px-5 py-3 backdrop-blur md:flex">
 					<div className="flex items-center gap-3 text-sm font-medium text-[var(--mapetite-text)]">
