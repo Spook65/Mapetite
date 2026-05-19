@@ -293,7 +293,11 @@ function LandingPage() {
 									</Link>
 								</div>
 
-								<div className="mt-6 space-y-1 border-t border-[var(--mapetite-border)] pt-4">
+								<div className="mt-6 border-t border-[var(--mapetite-border)] pt-4">
+									<p className="px-3 text-[11px] font-medium tracking-[0.14em] text-[var(--mapetite-text-faint)] uppercase">
+										Explore landing
+									</p>
+									<div className="mt-2 space-y-1">
 									<a
 										href="#discover"
 										onClick={closeMobileMenu}
@@ -322,6 +326,7 @@ function LandingPage() {
 									>
 										City starts
 									</a>
+								</div>
 								</div>
 
 								<div className="mt-6 space-y-2 border-t border-[var(--mapetite-border)] pt-4">
@@ -453,11 +458,11 @@ function LandingPage() {
 								</p>
 							</div>
 
-							<div className="flex flex-wrap items-center gap-3">
+							<div className="flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
 								<Button
 									asChild
 									size="lg"
-									className="mapetite-accent-button rounded-[10px] px-6"
+									className="mapetite-accent-button w-full max-w-[350px] rounded-[10px] px-6 sm:w-auto sm:max-w-none"
 								>
 									<Link to="/restaurants">Search restaurants</Link>
 								</Button>
@@ -465,11 +470,11 @@ function LandingPage() {
 									asChild
 									variant="outline"
 									size="lg"
-									className="mapetite-quiet-button rounded-[10px] px-6"
+									className="mapetite-quiet-button w-full max-w-[350px] rounded-[10px] px-6 sm:w-auto sm:max-w-none"
 								>
 									<a href="#experience">See how it opens</a>
 								</Button>
-								<p className="mapetite-faint-copy basis-full text-sm">
+								<p className="mapetite-faint-copy basis-full text-center text-sm sm:text-left">
 									Opens the full search page. City starts are separate.
 								</p>
 							</div>
@@ -480,11 +485,11 @@ function LandingPage() {
 								<div className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
 									Tonight starts in {selectedCity.name}
 								</div>
-								<div className="mt-4 flex items-center justify-between gap-4">
+								<div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
 									<strong className="text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 										{selectedCity.name}, {selectedCity.country}
 									</strong>
-									<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
+									<div className="inline-flex w-fit items-center rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1 text-[13px] leading-5 text-[var(--mapetite-text-soft)]">
 										{selectedCity.stageTag}
 									</div>
 								</div>
