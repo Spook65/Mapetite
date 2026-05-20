@@ -538,7 +538,14 @@ function RestaurantSearchPage() {
 	return (
 		<Layout>
 			<div className="mapetite-page-shell min-h-full">
-				<div className="mapetite-container px-4 py-6 md:px-6 md:py-8">
+				<div
+					className={cn(
+						"mapetite-container px-4 pt-6 md:px-6 md:pt-8",
+						selectedRestaurant
+							? "pb-40 md:pb-12 min-[1261px]:pb-8"
+							: "pb-6 md:pb-8",
+					)}
+				>
 					<section className="mb-4 grid gap-5">
 						<div>
 							<div className="mapetite-eyebrow">Restaurant search</div>
@@ -1292,7 +1299,7 @@ function RestaurantSearchPage() {
 							</div>
 
 							{displayedRestaurants.length > 0 && (
-								<aside className="mapetite-panel grid h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:self-start">
+								<aside className="mapetite-panel hidden h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:grid min-[1261px]:self-start">
 									<div className="flex flex-wrap items-center justify-between gap-3">
 										<span className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.5)]">
 											Selected restaurant
@@ -1577,10 +1584,73 @@ function RestaurantSearchPage() {
 											Browse restaurants
 										</Button>
 									</div>
-								</div>
-							</section>
-						)}
+							</div>
+						</section>
+					)}
 				</div>
+
+				{selectedRestaurant && (
+					<div className="fixed inset-x-4 bottom-4 z-40 min-[1261px]:hidden">
+						<div className="mapetite-panel-soft border border-[rgba(255,236,220,0.12)] bg-[rgba(24,18,14,0.94)] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] backdrop-blur pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
+							<div className="flex items-start justify-between gap-3">
+								<div className="min-w-0">
+									<div className="flex flex-wrap items-center gap-2">
+										<strong className="truncate text-[18px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											{selectedRestaurant.name}
+										</strong>
+										{selectedRestaurant.rating != null ? (
+											<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-2.5 py-1 text-[12px] text-[var(--mapetite-text-soft)]">
+												{selectedRestaurant.rating.toFixed(1)}
+											</span>
+										) : null}
+									</div>
+									<p className="mapetite-muted-copy mt-1 truncate text-[13px] leading-5">
+										{getDisplayCategory(selectedRestaurant)
+											? `${getDisplayCategory(selectedRestaurant)} · ${getLocationHint(selectedRestaurant)}`
+											: getLocationHint(selectedRestaurant)}
+									</p>
+								</div>
+
+								<button
+									type="button"
+									onClick={() => setSelectedRestaurantId(null)}
+									className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+									aria-label="Dismiss selected restaurant preview"
+								>
+									<X className="size-4" />
+								</button>
+							</div>
+
+							<div className="mt-3 grid grid-cols-2 gap-2">
+								<Button
+									asChild
+									className="mapetite-accent-button h-11 w-full justify-center rounded-full px-4 text-[14px] font-semibold text-[#20140d] shadow-none"
+								>
+									<Link
+										to="/restaurants/$restaurantId"
+										params={{ restaurantId: selectedRestaurant.id }}
+									>
+										View details
+									</Link>
+								</Button>
+
+								<Button
+									asChild
+									variant="outline"
+									className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 text-[14px] shadow-none"
+								>
+									<a
+										href={buildDirectionsUrl(selectedRestaurant)}
+										target="_blank"
+										rel="noreferrer"
+									>
+										Directions
+									</a>
+								</Button>
+							</div>
+						</div>
+					</div>
+				)}
 			</div>
 		</Layout>
 	);
