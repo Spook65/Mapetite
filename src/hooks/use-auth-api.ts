@@ -15,6 +15,7 @@ import {
 	loginUser,
 	registerUser,
 } from "@/lib/api/auth";
+import { clearAuth, setAuthToken } from "@/lib/auth-integration";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Query keys for authentication
@@ -62,6 +63,8 @@ export function useRegister(options?: {
 		mutationFn: registerUser,
 
 		onSuccess: (data) => {
+			setAuthToken(data.auth_token);
+
 			// Cache the user profile data
 			queryClient.setQueryData<UserProfileResponse>(
 				AUTH_QUERY_KEYS.profile(data.auth_token),
@@ -97,6 +100,8 @@ export function useLogin(options?: {
 		mutationFn: loginUser,
 
 		onSuccess: (data) => {
+			setAuthToken(data.auth_token);
+
 			// Cache the user profile data
 			queryClient.setQueryData<UserProfileResponse>(
 				AUTH_QUERY_KEYS.profile(data.auth_token),
@@ -134,7 +139,7 @@ export function useAuthManager(authToken: string | null) {
 	const logout = () => {
 		// Clear all cached auth data
 		queryClient.removeQueries({ queryKey: ["user"] });
-		localStorage.removeItem("creao_auth_token");
+		void clearAuth();
 	};
 
 	return {
@@ -188,23 +193,21 @@ export function useAuthState() {
 	});
 
 	const registerMutation = useRegister({
-		onSuccess: (data) => {
-			localStorage.setItem("creao_auth_token", data.auth_token);
+		onSuccess: () => {
 			// Force re-render by invalidating queries
 			queryClient.invalidateQueries({ queryKey: ["user"] });
 		},
 	});
 
 	const loginMutation = useLogin({
-		onSuccess: (data) => {
-			localStorage.setItem("creao_auth_token", data.auth_token);
+		onSuccess: () => {
 			// Force re-render by invalidating queries
 			queryClient.invalidateQueries({ queryKey: ["user"] });
 		},
 	});
 
 	const logout = () => {
-		localStorage.removeItem("creao_auth_token");
+		void clearAuth();
 		queryClient.removeQueries({ queryKey: ["user"] });
 		// Force re-render
 		queryClient.invalidateQueries();

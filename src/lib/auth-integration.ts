@@ -157,7 +157,7 @@ class AuthIntegration {
 		}
 
 		try {
-			const response = await fetch(`${API_BASE_URL}/me`, {
+			const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
 				method: "GET",
 				headers: {
 					Authorization: `Bearer ${token}`,
@@ -171,6 +171,21 @@ class AuthIntegration {
 			console.warn("Token validation failed:", error);
 			return false;
 		}
+	}
+
+	/**
+	 * Store a token that just came back from a successful auth response.
+	 * This avoids a timing gap where local UI looks logged in but the shared
+	 * auth integration still thinks no token exists.
+	 */
+	public setTokenFromAuthResponse(token: string, origin?: string): void {
+		this.state = {
+			token,
+			status: "authenticated",
+			parentOrigin: origin || this.state.parentOrigin,
+		};
+		localStorage.setItem("creao_auth_token", token);
+		this.notifyListeners();
 	}
 
 	/**
@@ -593,6 +608,13 @@ export async function authenticatedFetch(
  */
 export async function clearAuth(): Promise<void> {
 	return authIntegration.clearAuth();
+}
+
+/**
+ * Store a freshly issued auth token from a successful login/signup response.
+ */
+export function setAuthToken(token: string, origin?: string): void {
+	authIntegration.setTokenFromAuthResponse(token, origin);
 }
 
 /**

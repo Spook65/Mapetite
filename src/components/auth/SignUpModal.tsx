@@ -29,9 +29,6 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 		error,
 	} = useRegister({
 		onSuccess: (data) => {
-			// Store the auth token
-			localStorage.setItem("creao_auth_token", data.auth_token);
-
 			// Show success message
 			setShowSuccess(true);
 

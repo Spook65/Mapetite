@@ -29,9 +29,6 @@ export function LogInModal({ open, onOpenChange }: LogInModalProps) {
 		error,
 	} = useLogin({
 		onSuccess: (data) => {
-			// Store the auth token
-			localStorage.setItem("creao_auth_token", data.auth_token);
-
 			// Close modal
 			onOpenChange(false);
 
