@@ -698,7 +698,7 @@ function RestaurantSearchPage() {
 									)}
 								>
 									<Heart
-										className={cn("mr-2 size-4", showFavorites && "fill-current")}
+										className={cn("mr-1.5 size-4", showFavorites && "fill-current")}
 									/>
 									{showFavorites ? "Viewing favorites" : "Favorites only"}
 								</Button>
@@ -1211,14 +1211,14 @@ function RestaurantSearchPage() {
 														}}
 														disabled={isTogglingFavorite}
 														className={cn(
-															"mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:w-auto",
+															"mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:min-w-[132px] min-[981px]:w-auto",
 															favoriteIds.has(restaurant.id) &&
 																"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 														)}
 													>
 														<Heart
 															className={cn(
-																"mr-2 size-4",
+																"mr-1.5 size-4",
 																favoriteIds.has(restaurant.id) && "fill-current",
 															)}
 														/>
@@ -1228,7 +1228,7 @@ function RestaurantSearchPage() {
 													<Button
 														asChild
 														variant="outline"
-														className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:w-auto"
+														className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:min-w-[132px] min-[981px]:w-auto"
 														onClick={(event) => event.stopPropagation()}
 													>
 														<a
@@ -1241,7 +1241,7 @@ function RestaurantSearchPage() {
 													</Button>
 
 													{isSelected ? (
-														<span className="w-full rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3 py-2 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:w-auto">
+														<span className="inline-flex h-11 w-full items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-4 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:min-w-[132px] min-[981px]:w-auto">
 															Previewing
 														</span>
 													) : null}
@@ -1299,7 +1299,7 @@ function RestaurantSearchPage() {
 							</div>
 
 							{displayedRestaurants.length > 0 && (
-								<aside className="mapetite-panel hidden h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:grid min-[1261px]:self-start">
+								<aside className="mapetite-panel hidden h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:grid min-[1261px]:max-h-[calc(100vh-118px)] min-[1261px]:self-start min-[1261px]:overflow-y-auto">
 									<div className="flex flex-wrap items-center justify-between gap-3">
 										<span className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.5)]">
 											Selected restaurant
@@ -1412,7 +1412,7 @@ function RestaurantSearchPage() {
 												>
 													<Heart
 														className={cn(
-															"mr-2 size-4",
+															"mr-1.5 size-4",
 															favoriteIds.has(selectedRestaurant.id) && "fill-current",
 														)}
 													/>
