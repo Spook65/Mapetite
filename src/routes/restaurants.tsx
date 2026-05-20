@@ -617,7 +617,7 @@ function RestaurantSearchPage() {
 								type="button"
 								onClick={handleSearch}
 								disabled={isSearching}
-								className="mapetite-accent-button h-[52px] self-end rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none"
+								className="mapetite-accent-button h-[52px] w-full self-end justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none min-[1261px]:w-auto"
 							>
 								<Search className="mr-2 size-4" />
 								{isSearching ? "Searching..." : "Search restaurants"}
@@ -628,7 +628,7 @@ function RestaurantSearchPage() {
 								variant="outline"
 								onClick={handleGetCurrentLocation}
 								disabled={isGettingLocation}
-								className="mapetite-quiet-button h-[52px] self-end rounded-[10px] px-5 text-[15px] shadow-none"
+								className="mapetite-quiet-button h-[52px] w-full self-end justify-center rounded-[10px] px-5 text-[15px] shadow-none min-[1261px]:w-auto"
 							>
 								<Navigation className="mr-2 size-4" />
 								{isGettingLocation ? "Locating..." : "Use My Location"}
@@ -659,7 +659,7 @@ function RestaurantSearchPage() {
 								})}
 							</div>
 
-							<div className="flex flex-wrap items-center justify-start gap-3 min-[981px]:justify-end">
+							<div className="grid w-full gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-start min-[981px]:w-auto min-[981px]:justify-end">
 								<Select
 									value={sortBy}
 									onValueChange={(value) =>
@@ -668,7 +668,7 @@ function RestaurantSearchPage() {
 										)
 									}
 								>
-									<SelectTrigger className="h-10 min-w-[190px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
+									<SelectTrigger className="h-10 w-full min-w-0 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] sm:min-w-[190px] sm:w-auto">
 										<SelectValue />
 									</SelectTrigger>
 									<SelectContent>
@@ -684,7 +684,7 @@ function RestaurantSearchPage() {
 									variant="outline"
 									onClick={() => setShowFavorites(!showFavorites)}
 									className={cn(
-										"rounded-full px-4 shadow-none",
+										"w-full justify-center rounded-full px-4 shadow-none sm:w-auto",
 										showFavorites
 											? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 											: "mapetite-quiet-button",
@@ -701,7 +701,7 @@ function RestaurantSearchPage() {
 										type="button"
 										variant="outline"
 										onClick={() => setShowMobileFilters(true)}
-										className="mapetite-quiet-button rounded-full px-4 shadow-none md:hidden"
+										className="mapetite-quiet-button w-full justify-center rounded-full px-4 shadow-none sm:w-auto md:hidden"
 									>
 										<SlidersHorizontal className="mr-2 size-4" />
 										Filters
@@ -1184,7 +1184,7 @@ function RestaurantSearchPage() {
 												<div className="grid content-start gap-2 min-[981px]:min-w-[120px] min-[981px]:justify-items-end">
 													<Button
 														asChild
-														className="mapetite-accent-button h-11 rounded-full px-4 text-[15px] font-semibold text-[#20140d] shadow-none"
+														className="mapetite-accent-button h-11 w-full justify-center rounded-full px-4 text-[15px] font-semibold text-[#20140d] shadow-none min-[981px]:w-auto"
 														onClick={(event) => event.stopPropagation()}
 													>
 														<Link
@@ -1204,7 +1204,7 @@ function RestaurantSearchPage() {
 														}}
 														disabled={isTogglingFavorite}
 														className={cn(
-															"mapetite-quiet-button h-11 rounded-full px-4 shadow-none",
+															"mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:w-auto",
 															favoriteIds.has(restaurant.id) &&
 																"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 														)}
@@ -1221,7 +1221,7 @@ function RestaurantSearchPage() {
 													<Button
 														asChild
 														variant="outline"
-														className="mapetite-quiet-button h-11 rounded-full px-4 shadow-none"
+														className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:w-auto"
 														onClick={(event) => event.stopPropagation()}
 													>
 														<a
@@ -1234,7 +1234,7 @@ function RestaurantSearchPage() {
 													</Button>
 
 													{isSelected ? (
-														<span className="rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3 py-2 text-[13px] text-[var(--mapetite-text)]">
+														<span className="w-full rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3 py-2 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:w-auto">
 															Previewing
 														</span>
 													) : null}
@@ -1250,7 +1250,7 @@ function RestaurantSearchPage() {
 												type="button"
 												variant="outline"
 												onClick={handleShowMoreResults}
-												className="mapetite-quiet-button rounded-full px-5 shadow-none"
+												className="mapetite-quiet-button w-full rounded-full px-5 shadow-none sm:w-auto"
 											>
 												Show more restaurants
 											</Button>
@@ -1380,10 +1380,10 @@ function RestaurantSearchPage() {
 												) : null}
 											</div>
 
-											<div className="flex flex-wrap gap-3">
+											<div className="grid gap-3 sm:flex sm:flex-wrap">
 												<Button
 													asChild
-													className="mapetite-accent-button h-[46px] rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none"
+													className="mapetite-accent-button h-[46px] w-full justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none sm:w-auto"
 												>
 													<Link
 														to="/restaurants/$restaurantId"
@@ -1398,7 +1398,7 @@ function RestaurantSearchPage() {
 													onClick={() => toggleFavorite(selectedRestaurant.id)}
 													disabled={isTogglingFavorite}
 													className={cn(
-														"mapetite-quiet-button h-[46px] rounded-[10px] px-5 shadow-none",
+														"mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto",
 														favoriteIds.has(selectedRestaurant.id) &&
 															"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 													)}
@@ -1416,7 +1416,7 @@ function RestaurantSearchPage() {
 												<Button
 													asChild
 													variant="outline"
-													className="mapetite-quiet-button h-[46px] rounded-[10px] px-5 shadow-none"
+													className="mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto"
 												>
 													<a
 														href={buildDirectionsUrl(selectedRestaurant)}
