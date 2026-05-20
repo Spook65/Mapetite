@@ -221,16 +221,12 @@ function DialogFooter({
 
 function DialogTitle({
 	className,
-	id,
 	...props
-}: React.ComponentProps<typeof DialogPrimitive.Title> & {
-	id?: string;
-}) {
+}: React.ComponentProps<typeof DialogPrimitive.Title>) {
 	return (
 		<DialogPrimitive.Title
 			data-slot="dialog-title"
 			className={cn("text-lg leading-none font-semibold", className)}
-			{...(id !== undefined ? { id } : {})}
 			{...props}
 		/>
 	);
@@ -238,16 +234,12 @@ function DialogTitle({
 
 function DialogDescription({
 	className,
-	id,
 	...props
-}: React.ComponentProps<typeof DialogPrimitive.Description> & {
-	id?: string;
-}) {
+}: React.ComponentProps<typeof DialogPrimitive.Description>) {
 	return (
 		<DialogPrimitive.Description
 			data-slot="dialog-description"
 			className={cn("text-muted-foreground text-sm", className)}
-			{...(id !== undefined ? { id } : {})}
 			{...props}
 		/>
 	);

@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRegister } from "@/hooks/use-auth-api";
 import { Loader2 } from "lucide-react";
-import { useId, useState } from "react";
+import { useState } from "react";
 
 interface SignUpModalProps {
 	open: boolean;
@@ -18,8 +18,6 @@ interface SignUpModalProps {
 }
 
 export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
-	const titleId = useId();
-	const descriptionId = useId();
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [name, setName] = useState("");
@@ -57,22 +55,12 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent
-				aria-labelledby={titleId}
-				aria-describedby={descriptionId}
-				className="gap-0 overflow-hidden border-[rgba(255,236,220,0.14)] bg-[rgba(28,22,18,0.96)] p-0 text-[var(--mapetite-text)] shadow-[0_24px_60px_rgba(0,0,0,0.34)] backdrop-blur sm:max-w-md"
-			>
+			<DialogContent className="gap-0 overflow-hidden border-[rgba(255,236,220,0.14)] bg-[rgba(28,22,18,0.96)] p-0 text-[var(--mapetite-text)] shadow-[0_24px_60px_rgba(0,0,0,0.34)] backdrop-blur sm:max-w-md">
 				<DialogHeader className="gap-3 border-b border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(213,154,104,0.12),rgba(213,154,104,0.02))] px-6 py-6 text-left">
-					<DialogTitle
-						id={titleId}
-						className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]"
-					>
+					<DialogTitle className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 						Create Account
 					</DialogTitle>
-					<DialogDescription
-						id={descriptionId}
-						className="max-w-sm text-sm leading-6 text-[var(--mapetite-text-soft)]"
-					>
+					<DialogDescription className="max-w-sm text-sm leading-6 text-[var(--mapetite-text-soft)]">
 						Create an account to save favorites and return to them later.
 					</DialogDescription>
 				</DialogHeader>
