@@ -1,17 +1,15 @@
 /**
- * React Hooks for User Favorites using ORM
+ * React Hooks for User Favorites using the app backend API
  *
  * This file provides convenient React hooks for managing user favorites
  * with proper state management, caching, and optimistic updates.
- * Uses the FavoriteORM for direct data access.
  */
 
 import {
-	type FavoriteModel,
-	FavoriteORM,
-} from "@/components/data/orm/orm_favorite";
+	getFavorites as fetchFavorites,
+	toggleFavorite as persistFavoriteToggle,
+} from "@/lib/api/user-favorites";
 import { getAuthToken } from "@/lib/auth-integration";
-import { getUserIdFromToken } from "@/lib/jwt-utils";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 // Query key for favorites
@@ -63,36 +61,12 @@ export function useFavorites(options?: {
 	enabled?: boolean;
 	refetchOnMount?: boolean;
 }) {
+	const hasAuthToken = !!getAuthToken();
+
 	return useQuery<GetFavoritesResponse, Error>({
 		queryKey: FAVORITES_QUERY_KEY,
-		queryFn: async () => {
-			// Get user ID from auth token
-			const token = getAuthToken();
-			if (!token) {
-				throw new Error("User is not authenticated");
-			}
-
-			const userId = getUserIdFromToken(token);
-			if (!userId) {
-				throw new Error("Unable to extract user_id from authentication token");
-			}
-
-			// Use ORM to fetch favorites
-			const orm = FavoriteORM.getInstance();
-			const favoriteRecords = await orm.getFavoriteByUserId(userId);
-
-			// Extract restaurant IDs
-			const restaurantIds = favoriteRecords.map(
-				(record) => record.restaurant_id,
-			);
-
-			return {
-				favorites: restaurantIds,
-				count: restaurantIds.length,
-				last_updated: new Date().toISOString(),
-			};
-		},
-		enabled: options?.enabled ?? true,
+		queryFn: fetchFavorites,
+		enabled: options?.enabled ?? hasAuthToken,
 		refetchOnMount: options?.refetchOnMount ?? true,
 		staleTime: 2 * 60 * 1000, // 2 minutes (favorites change less frequently)
 	});
@@ -170,58 +144,13 @@ export function useToggleFavorite(options?: {
 		ToggleFavoriteRequest,
 		ToggleFavoriteContext
 	>({
-		mutationFn: async (request: ToggleFavoriteRequest) => {
-			// Get user ID from auth token
+		mutationFn: (request: ToggleFavoriteRequest) => {
 			const token = getAuthToken();
 			if (!token) {
 				throw new Error("User is not authenticated");
 			}
 
-			const userId = getUserIdFromToken(token);
-			if (!userId) {
-				throw new Error("Unable to extract user_id from authentication token");
-			}
-
-			const orm = FavoriteORM.getInstance();
-
-			// Check if the restaurant is already favorited
-			const existingFavorites = await orm.getFavoriteByRestaurantIdUserId(
-				request.restaurant_id,
-				userId,
-			);
-
-			let action: "added" | "removed";
-
-			if (existingFavorites.length > 0) {
-				// Remove from favorites
-				await orm.deleteFavoriteByRestaurantIdUserId(
-					request.restaurant_id,
-					userId,
-				);
-				action = "removed";
-			} else {
-				// Add to favorites
-				await orm.insertFavorite([
-					{
-						user_id: userId,
-						restaurant_id: request.restaurant_id,
-						// Backend will auto-fill: id, data_creator, data_updater, create_time, update_time
-					} as FavoriteModel,
-				]);
-				action = "added";
-			}
-
-			// Fetch updated favorites list
-			const allFavorites = await orm.getFavoriteByUserId(userId);
-			const restaurantIds = allFavorites.map((record) => record.restaurant_id);
-
-			return {
-				status: "Success",
-				action,
-				restaurant_id: request.restaurant_id,
-				favorites: restaurantIds,
-				count: restaurantIds.length,
-			};
+			return persistFavoriteToggle(request);
 		},
 
 		// Optimistic update - update UI immediately before API call completes
