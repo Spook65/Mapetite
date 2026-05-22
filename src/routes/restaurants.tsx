@@ -691,14 +691,14 @@ function RestaurantSearchPage() {
 									variant="outline"
 									onClick={() => setShowFavorites(!showFavorites)}
 									className={cn(
-										"w-full justify-center rounded-full px-4 shadow-none sm:w-auto",
+										"w-full justify-center gap-1.5 rounded-full px-4 shadow-none sm:w-auto",
 										showFavorites
 											? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 											: "mapetite-quiet-button",
 									)}
 								>
 									<Heart
-										className={cn("mr-1.5 size-4", showFavorites && "fill-current")}
+										className={cn("size-4", showFavorites && "fill-current")}
 									/>
 									{showFavorites ? "Viewing favorites" : "Favorites only"}
 								</Button>
@@ -1211,14 +1211,14 @@ function RestaurantSearchPage() {
 														}}
 														disabled={isTogglingFavorite}
 														className={cn(
-															"mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-auto min-[981px]:px-3.5",
+															"mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-[112px] min-[981px]:px-3.5",
 															favoriteIds.has(restaurant.id) &&
 																"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 														)}
 													>
 														<Heart
 															className={cn(
-																"mr-1.5 size-4",
+																"size-4",
 																favoriteIds.has(restaurant.id) && "fill-current",
 															)}
 														/>
@@ -1228,7 +1228,7 @@ function RestaurantSearchPage() {
 													<Button
 														asChild
 														variant="outline"
-														className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-auto min-[981px]:px-3.5"
+														className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-[112px] min-[981px]:px-3.5"
 														onClick={(event) => event.stopPropagation()}
 													>
 														<a
@@ -1241,7 +1241,7 @@ function RestaurantSearchPage() {
 													</Button>
 
 													{isSelected ? (
-														<span className="inline-flex h-11 w-full items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-4 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:h-10 min-[981px]:w-auto min-[981px]:px-3.5">
+														<span className="inline-flex h-11 w-full items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-4 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:h-10 min-[981px]:w-[112px] min-[981px]:px-3.5">
 															Previewing
 														</span>
 													) : null}
@@ -1405,14 +1405,14 @@ function RestaurantSearchPage() {
 													onClick={() => toggleFavorite(selectedRestaurant.id)}
 													disabled={isTogglingFavorite}
 													className={cn(
-														"mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:px-4",
+														"mapetite-quiet-button h-[46px] w-full justify-center gap-1.5 rounded-[10px] px-5 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:w-[132px] min-[1261px]:px-4",
 														favoriteIds.has(selectedRestaurant.id) &&
 															"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 													)}
 												>
 													<Heart
 														className={cn(
-															"mr-1.5 size-4",
+															"size-4",
 															favoriteIds.has(selectedRestaurant.id) && "fill-current",
 														)}
 													/>
@@ -1423,7 +1423,7 @@ function RestaurantSearchPage() {
 												<Button
 													asChild
 													variant="outline"
-													className="mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:px-4"
+													className="mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:w-[132px] min-[1261px]:px-4"
 												>
 													<a
 														href={buildDirectionsUrl(selectedRestaurant)}
