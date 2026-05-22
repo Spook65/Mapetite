@@ -1211,7 +1211,7 @@ function RestaurantSearchPage() {
 														}}
 														disabled={isTogglingFavorite}
 														className={cn(
-															"mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:min-w-[132px] min-[981px]:w-auto",
+															"mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-auto min-[981px]:px-3.5",
 															favoriteIds.has(restaurant.id) &&
 																"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 														)}
@@ -1228,7 +1228,7 @@ function RestaurantSearchPage() {
 													<Button
 														asChild
 														variant="outline"
-														className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:min-w-[132px] min-[981px]:w-auto"
+														className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-auto min-[981px]:px-3.5"
 														onClick={(event) => event.stopPropagation()}
 													>
 														<a
@@ -1241,7 +1241,7 @@ function RestaurantSearchPage() {
 													</Button>
 
 													{isSelected ? (
-														<span className="inline-flex h-11 w-full items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-4 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:min-w-[132px] min-[981px]:w-auto">
+														<span className="inline-flex h-11 w-full items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-4 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:h-10 min-[981px]:w-auto min-[981px]:px-3.5">
 															Previewing
 														</span>
 													) : null}
@@ -1299,7 +1299,7 @@ function RestaurantSearchPage() {
 							</div>
 
 							{displayedRestaurants.length > 0 && (
-								<aside className="mapetite-panel hidden h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:grid min-[1261px]:max-h-[calc(100vh-118px)] min-[1261px]:self-start min-[1261px]:overflow-y-auto">
+								<aside className="mapetite-panel hidden h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:grid min-[1261px]:self-start">
 									<div className="flex flex-wrap items-center justify-between gap-3">
 										<span className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.5)]">
 											Selected restaurant
@@ -1405,7 +1405,7 @@ function RestaurantSearchPage() {
 													onClick={() => toggleFavorite(selectedRestaurant.id)}
 													disabled={isTogglingFavorite}
 													className={cn(
-														"mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto",
+														"mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:px-4",
 														favoriteIds.has(selectedRestaurant.id) &&
 															"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 													)}
@@ -1423,7 +1423,7 @@ function RestaurantSearchPage() {
 												<Button
 													asChild
 													variant="outline"
-													className="mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto"
+													className="mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:px-4"
 												>
 													<a
 														href={buildDirectionsUrl(selectedRestaurant)}
@@ -1479,51 +1479,6 @@ function RestaurantSearchPage() {
 							)}
 						</section>
 					)}
-
-					<section className="mt-6 grid gap-4 min-[981px]:grid-cols-3">
-						<div className="mapetite-panel-soft grid gap-4 px-5 py-5">
-							<strong className="text-[16px] font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
-								Loading
-							</strong>
-							<div className="grid gap-2">
-								<div className="h-3 w-full rounded-full bg-[rgba(255,248,242,0.08)]" />
-								<div className="h-3 w-[72%] rounded-full bg-[rgba(255,248,242,0.08)]" />
-								<div className="h-3 w-[88%] rounded-full bg-[rgba(255,248,242,0.08)]" />
-							</div>
-							<p className="mapetite-muted-copy text-[14px] leading-6">
-								Keep refresh states quiet while the list and selected preview
-								reload.
-							</p>
-						</div>
-
-						<div className="mapetite-panel-soft grid gap-4 px-5 py-5">
-							<strong className="text-[16px] font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
-								No results
-							</strong>
-							<div className="flex flex-wrap gap-2">
-								<div className="h-8 w-24 rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)]" />
-								<div className="h-8 w-32 rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)]" />
-							</div>
-							<p className="mapetite-muted-copy text-[14px] leading-6">
-								When the shortlist closes too tightly, guide the next move back
-								to filters or a broader place search.
-							</p>
-						</div>
-
-						<div className="mapetite-panel-soft grid gap-4 px-5 py-5">
-							<strong className="text-[16px] font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
-								Location unavailable
-							</strong>
-							<div className="flex flex-wrap gap-2">
-								<div className="h-8 w-28 rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)]" />
-								<div className="h-8 w-24 rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)]" />
-							</div>
-							<p className="mapetite-muted-copy text-[14px] leading-6">
-								Manual city, state, and country search stays available when
-								location access is off or unavailable.
-							</p>
-						</div>
-					</section>
 
 					{isSearching && (
 						<section className="mt-6 grid gap-4">
