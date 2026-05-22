@@ -70,6 +70,8 @@ const FOOD_CATEGORY_LABELS = {
   ice_cream: "Dessert",
 };
 
+const SECONDARY_CATEGORY_LABELS = new Set(["Catering", "Restaurant", "Dining"]);
+
 const FOOD_NAME_KEYWORDS = [
   "bakery",
   "bar",
@@ -159,6 +161,34 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
+}
+
+const ROAD_NAME_PATTERN =
+  /\b(avenue|ave\.?|street|st\.?|road|rd\.?|boulevard|blvd\.?|drive|dr\.?|lane|ln\.?|highway|hwy\.?|route|way)\b/i;
+
+function normalizeComparableText(value = "") {
+  return String(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function isLikelyStreetOnlyPlaceName(name, props = {}) {
+  if (!ROAD_NAME_PATTERN.test(name || "")) return false;
+
+  const streetParts = [props.housenumber, props.street].filter(Boolean);
+  const streetCandidate = streetParts.join(" ").trim() || props.address_line1 || "";
+  if (!streetCandidate) return false;
+
+  const normalizedName = normalizeComparableText(name);
+  const normalizedStreet = normalizeComparableText(streetCandidate);
+  if (!normalizedName || !normalizedStreet) return false;
+
+  return (
+    normalizedName === normalizedStreet ||
+    normalizedName.endsWith(normalizedStreet) ||
+    normalizedStreet.endsWith(normalizedName)
+  );
 }
 
 function normalizeAddress(props = {}, fallbackLocation = {}) {
@@ -349,7 +379,8 @@ function parseOpeningHours(openingHours) {
 }
 
 function normalizeDisplayCategories(rawCategories = [], queryCategories = []) {
-  const categories = new Set();
+  const primaryCategories = new Set();
+  const secondaryCategories = new Set();
 
   for (const category of rawCategories) {
     const normalized = String(category).trim().toLowerCase();
@@ -360,35 +391,49 @@ function normalizeDisplayCategories(rawCategories = [], queryCategories = []) {
     }
 
     if (normalized === "catering.restaurant" || normalized.startsWith("catering.restaurant.")) {
-      categories.add("Restaurant");
+      secondaryCategories.add("Restaurant");
       const parts = normalized.split(".");
       const last = parts[parts.length - 1];
       if (last && last !== "restaurant") {
         const label = getDisplayCategoryLabel(last);
         if (label && label !== "Restaurant") {
-          categories.add(label);
+          if (SECONDARY_CATEGORY_LABELS.has(label)) {
+            secondaryCategories.add(label);
+          } else {
+            primaryCategories.add(label);
+          }
         }
       }
       continue;
     }
 
     if (normalized === "catering.fast_food" || normalized.startsWith("catering.fast_food.")) {
-      categories.add("Fast food");
-      categories.add("Restaurant");
+      primaryCategories.add("Fast food");
+      secondaryCategories.add("Restaurant");
       continue;
     }
 
     const lastSegment = normalized.split(".").pop();
     if (lastSegment) {
-      categories.add(getDisplayCategoryLabel(lastSegment));
+      const label = getDisplayCategoryLabel(lastSegment);
+      if (SECONDARY_CATEGORY_LABELS.has(label)) {
+        secondaryCategories.add(label);
+      } else {
+        primaryCategories.add(label);
+      }
     }
   }
 
-  if (categories.size > 0 && !categories.has("Restaurant")) {
-    categories.add("Restaurant");
+  if (primaryCategories.size > 0 && !secondaryCategories.has("Restaurant")) {
+    secondaryCategories.add("Restaurant");
   }
 
-  return [...categories];
+  if (primaryCategories.size === 0 && secondaryCategories.has("Catering")) {
+    secondaryCategories.delete("Catering");
+    secondaryCategories.add("Dining");
+  }
+
+  return [...primaryCategories, ...secondaryCategories];
 }
 
 function mapSearchCategories(categories = []) {
@@ -509,10 +554,11 @@ function buildDescription(name, categories, locationContext = {}, props = {}) {
     "Restaurant";
   const city = locationContext.city || props.city || "the area";
   const extra = String(props.description || "").trim();
+  const article = /^[aeiou]/i.test(categoryLabel) ? "An" : "A";
   const baseDescription =
     categoryLabel === "Restaurant" || categoryLabel === "Dining"
       ? `A restaurant listing in ${city} with available location details.`
-      : `A ${categoryLabel.toLowerCase()} option in ${city} with available location details.`;
+      : `${article} ${categoryLabel} option in ${city} with available location details.`;
 
   return extra ? `${baseDescription} ${extra}` : baseDescription;
 }
@@ -539,7 +585,11 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
   const placeId = props.place_id || props.placeId || `${lat},${lon}`;
   const name = props.name || props.brand || props.address_line1 || "Restaurant";
   const categories = normalizeDisplayCategories(props.categories || [], queryCategories);
-  if (!isRestaurantLikePlace(props) || categories.length === 0) {
+  if (
+    !isRestaurantLikePlace(props) ||
+    categories.length === 0 ||
+    isLikelyStreetOnlyPlaceName(name, props)
+  ) {
     return null;
   }
   const rating = deriveRating(props, placeId);

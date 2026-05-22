@@ -356,10 +356,11 @@ function buildDescription(name, categories, locationContext, tags = {}) {
     "Restaurant";
   const city = locationContext?.city || tags["addr:city"] || "the area";
   const details = String(tags.description || tags.note || "").trim();
+  const article = /^[aeiou]/i.test(cuisine) ? "An" : "A";
   const baseDescription =
     cuisine === "Restaurant" || cuisine === "Dining"
       ? `A restaurant listing in ${city} with available location details.`
-      : `A ${cuisine.toLowerCase()} option in ${city} with available location details.`;
+      : `${article} ${cuisine} option in ${city} with available location details.`;
 
   return details ? `${baseDescription} ${details}` : baseDescription;
 }

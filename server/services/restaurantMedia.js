@@ -275,7 +275,9 @@ function isUsefulImageUrl(url) {
 
   const value = String(url).toLowerCase();
   if (!/^https?:\/\//.test(value)) return false;
-  if (/\.(svg|ico)(?:[?#].*)?$/.test(value)) return false;
+  if (/\.(svg|ico|gif)(?:[?#].*)?$/.test(value)) return false;
+  if (value.includes(".pdf")) return false;
+  if (value.includes("%3csvg") || value.includes("<svg")) return false;
 
   try {
     const parsed = new URL(url);
@@ -299,9 +301,28 @@ function isUsefulImageUrl(url) {
     "sprite",
     "avatar",
     "placeholder",
+    "food_default",
     "map",
     "google",
     "staticmap",
+    "allmenus.com/static/",
+    "facebook",
+    "instagram",
+    "insta",
+    "grubhub",
+    "menupix.com/152x152",
+    "152x152.png",
+    "order-with-grubhub",
+    "report",
+    "r0lgodlh",
+    "stars_",
+    "star0",
+    "star1",
+    "star2",
+    "star3",
+    "star4",
+    "star5",
+    "log.gif",
   ].some((needle) => value.includes(needle));
 }
 
