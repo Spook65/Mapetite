@@ -49,6 +49,54 @@ function titleCase(value) {
     .join(" ");
 }
 
+const FOOD_CATEGORY_LABELS = {
+  bakery: "Bakery",
+  bar: "Bar",
+  bistro: "Bistro",
+  cafe: "Cafe",
+  catering: "Catering",
+  chinese: "Chinese",
+  coffee_shop: "Cafe",
+  dessert: "Dessert",
+  diner: "Diner",
+  fast_food: "Fast food",
+  food: "Dining",
+  food_and_drink: "Dining",
+  food_court: "Food court",
+  french: "French",
+  indian: "Indian",
+  italian: "Italian",
+  japanese: "Japanese",
+  korean: "Korean",
+  mediterranean: "Mediterranean",
+  mexican: "Mexican",
+  burger: "Burger",
+  pizza: "Pizza",
+  pub: "Pub",
+  ramen: "Ramen",
+  restaurant: "Restaurant",
+  seafood: "Seafood",
+  sandwich: "Sandwiches",
+  sushi: "Sushi",
+  thai: "Thai",
+  vietnamese: "Vietnamese",
+  vegan: "Vegan",
+  vegetarian: "Vegetarian",
+  meal_takeaway: "Fast food",
+  meal_delivery: "Catering",
+  ice_cream: "Dessert",
+};
+
+function normalizeFoodCategoryLabel(value) {
+  const key = String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+
+  return FOOD_CATEGORY_LABELS[key] || titleCase(key);
+}
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 3959;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -67,6 +115,8 @@ function hasFiniteCoordinates(location = {}) {
   return (
     Number.isFinite(location.latitude) &&
     Number.isFinite(location.longitude) &&
+    Math.abs(location.latitude) <= 90 &&
+    Math.abs(location.longitude) <= 180 &&
     !(location.latitude === 0 && location.longitude === 0)
   );
 }
@@ -78,7 +128,7 @@ function parseCategories(tags = {}) {
   if (cuisine) {
     for (const value of cuisine.split(";")) {
       const cleaned = value.trim();
-      if (cleaned) categories.push(titleCase(cleaned));
+      if (cleaned) categories.push(normalizeFoodCategoryLabel(cleaned));
     }
   }
 
@@ -300,15 +350,18 @@ function normalizeAddress(tags = {}, fallbackLocation = {}) {
 }
 
 function buildDescription(name, categories, locationContext, tags = {}) {
-  const cuisine = categories.find((category) => category !== "Restaurant") || "restaurant";
+  const cuisine =
+    categories.find((category) => !["Restaurant", "Dining"].includes(category)) ||
+    categories[0] ||
+    "Restaurant";
   const city = locationContext?.city || tags["addr:city"] || "the area";
-  const details = tags.description || tags.note || "";
+  const details = String(tags.description || tags.note || "").trim();
+  const baseDescription =
+    cuisine === "Restaurant" || cuisine === "Dining"
+      ? `A restaurant listing in ${city} with available location details.`
+      : `A ${cuisine.toLowerCase()} option in ${city} with available location details.`;
 
-  return (
-    `${name} is a ${cuisine.toLowerCase()} destination in ${city}. ` +
-    `It was discovered through live OpenStreetMap data and enriched for browsing. ` +
-    (details ? `${details}` : "")
-  ).trim();
+  return details ? `${baseDescription} ${details}` : baseDescription;
 }
 
 function normalizeElement(element, locationContext = {}) {
@@ -316,7 +369,13 @@ function normalizeElement(element, locationContext = {}) {
   const lat = element.lat ?? element.center?.lat;
   const lon = element.lon ?? element.center?.lon;
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+  if (
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon) ||
+    Math.abs(lat) > 90 ||
+    Math.abs(lon) > 180 ||
+    (lat === 0 && lon === 0)
+  ) {
     return null;
   }
 

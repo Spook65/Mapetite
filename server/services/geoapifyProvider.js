@@ -28,6 +28,125 @@ function slugify(value) {
     .toLowerCase();
 }
 
+const FOOD_CATEGORY_LABELS = {
+  restaurant: "Restaurant",
+  cafe: "Cafe",
+  coffee: "Cafe",
+  coffee_shop: "Cafe",
+  tea: "Tea",
+  bubble_tea: "Tea",
+  bakery: "Bakery",
+  bar: "Bar",
+  pub: "Pub",
+  bistro: "Bistro",
+  diner: "Diner",
+  dessert: "Dessert",
+  fast_food: "Fast food",
+  food: "Dining",
+  food_and_drink: "Dining",
+  food_court: "Food court",
+  french: "French",
+  japanese: "Japanese",
+  korean: "Korean",
+  mediterranean: "Mediterranean",
+  sushi: "Sushi",
+  ramen: "Ramen",
+  pizza: "Pizza",
+  burger: "Burger",
+  seafood: "Seafood",
+  sandwich: "Sandwiches",
+  chinese: "Chinese",
+  indian: "Indian",
+  italian: "Italian",
+  kebab: "Kebab",
+  mexican: "Mexican",
+  thai: "Thai",
+  vietnamese: "Vietnamese",
+  vegan: "Vegan",
+  vegetarian: "Vegetarian",
+  catering: "Catering",
+  meal_takeaway: "Fast food",
+  meal_delivery: "Catering",
+  ice_cream: "Dessert",
+};
+
+const FOOD_NAME_KEYWORDS = [
+  "bakery",
+  "bar",
+  "bistro",
+  "burger",
+  "cafe",
+  "coffee",
+  "deli",
+  "diner",
+  "eatery",
+  "grill",
+  "izakaya",
+  "kitchen",
+  "noodle",
+  "pasta",
+  "pizza",
+  "pub",
+  "ramen",
+  "restaurant",
+  "steak",
+  "sushi",
+  "taqueria",
+  "tavern",
+  "tea",
+];
+
+function hasValidCoordinates(latitude, longitude) {
+  return (
+    Number.isFinite(latitude) &&
+    Number.isFinite(longitude) &&
+    Math.abs(latitude) <= 90 &&
+    Math.abs(longitude) <= 180 &&
+    !(latitude === 0 && longitude === 0)
+  );
+}
+
+function normalizeCategoryToken(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function extractCategoryTokens(value) {
+  return String(value)
+    .trim()
+    .toLowerCase()
+    .split(".")
+    .map(normalizeCategoryToken)
+    .filter(Boolean);
+}
+
+function getDisplayCategoryLabel(value) {
+  const token = normalizeCategoryToken(value);
+  return FOOD_CATEGORY_LABELS[token] || titleCase(token);
+}
+
+function isFoodRelatedCategory(value) {
+  const tokens = extractCategoryTokens(value);
+  return tokens.some((token) => token in FOOD_CATEGORY_LABELS);
+}
+
+function isRestaurantLikePlace(props = {}) {
+  const rawCategories = Array.isArray(props.categories) ? props.categories : [];
+  if (rawCategories.some(isFoodRelatedCategory)) {
+    return true;
+  }
+
+  const searchableText = [props.name, props.brand, props.address_line1]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+
+  return FOOD_NAME_KEYWORDS.some((keyword) => searchableText.includes(keyword));
+}
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 3959;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -232,50 +351,40 @@ function parseOpeningHours(openingHours) {
 function normalizeDisplayCategories(rawCategories = [], queryCategories = []) {
   const categories = new Set();
 
-  for (const category of queryCategories) {
-    const cleaned = titleCase(category);
-    if (cleaned) {
-      categories.add(cleaned);
-    }
-  }
-
   for (const category of rawCategories) {
     const normalized = String(category).trim().toLowerCase();
     if (!normalized) continue;
 
+    if (!isFoodRelatedCategory(normalized)) {
+      continue;
+    }
+
     if (normalized === "catering.restaurant" || normalized.startsWith("catering.restaurant.")) {
+      categories.add("Restaurant");
       const parts = normalized.split(".");
       const last = parts[parts.length - 1];
-      categories.add("Restaurant");
       if (last && last !== "restaurant") {
-        categories.add(titleCase(last));
+        const label = getDisplayCategoryLabel(last);
+        if (label && label !== "Restaurant") {
+          categories.add(label);
+        }
       }
       continue;
     }
 
     if (normalized === "catering.fast_food" || normalized.startsWith("catering.fast_food.")) {
-      categories.add("Fast Food");
+      categories.add("Fast food");
       categories.add("Restaurant");
-      continue;
-    }
-
-    if (normalized === "vegetarian") {
-      categories.add("Vegetarian");
-      continue;
-    }
-
-    if (normalized === "vegan") {
-      categories.add("Vegan");
       continue;
     }
 
     const lastSegment = normalized.split(".").pop();
     if (lastSegment) {
-      categories.add(titleCase(lastSegment));
+      categories.add(getDisplayCategoryLabel(lastSegment));
     }
   }
 
-  if (!categories.has("Restaurant")) {
+  if (categories.size > 0 && !categories.has("Restaurant")) {
     categories.add("Restaurant");
   }
 
@@ -395,15 +504,17 @@ async function fetchGeoapifyPlaces(url) {
 
 function buildDescription(name, categories, locationContext = {}, props = {}) {
   const categoryLabel =
-    categories.find((category) => category !== "Restaurant") || "restaurant";
+    categories.find((category) => !["Restaurant", "Dining"].includes(category)) ||
+    categories[0] ||
+    "Restaurant";
   const city = locationContext.city || props.city || "the area";
-  const extra = props.description || "";
+  const extra = String(props.description || "").trim();
+  const baseDescription =
+    categoryLabel === "Restaurant" || categoryLabel === "Dining"
+      ? `A restaurant listing in ${city} with available location details.`
+      : `A ${categoryLabel.toLowerCase()} option in ${city} with available location details.`;
 
-  return (
-    `${name} is a ${categoryLabel.toLowerCase()} destination in ${city}. ` +
-    "The listing is powered by Geoapify place data and enriched for browsing." +
-    (extra ? ` ${extra}` : "")
-  ).trim();
+  return extra ? `${baseDescription} ${extra}` : baseDescription;
 }
 
 function hasFiniteCoordinates(location = {}) {
@@ -421,13 +532,16 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
   const lon = Number(props.lon ?? coordinates[0]);
   const lat = Number(props.lat ?? coordinates[1]);
 
-  if (!Number.isFinite(lat) || !Number.isFinite(lon)) {
+  if (!hasValidCoordinates(lat, lon)) {
     return null;
   }
 
   const placeId = props.place_id || props.placeId || `${lat},${lon}`;
   const name = props.name || props.brand || props.address_line1 || "Restaurant";
   const categories = normalizeDisplayCategories(props.categories || [], queryCategories);
+  if (!isRestaurantLikePlace(props) || categories.length === 0) {
+    return null;
+  }
   const rating = deriveRating(props, placeId);
   const reviewCount = deriveReviewCount(props, placeId);
   const openingHours = parseOpeningHours(props.opening_hours);

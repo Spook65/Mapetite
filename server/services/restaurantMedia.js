@@ -277,6 +277,21 @@ function isUsefulImageUrl(url) {
   if (!/^https?:\/\//.test(value)) return false;
   if (/\.(svg|ico)(?:[?#].*)?$/.test(value)) return false;
 
+  try {
+    const parsed = new URL(url);
+    if (parsed.pathname.includes("/_next/image")) return false;
+
+    const proxiedUrl =
+      parsed.searchParams.get("url") ||
+      parsed.searchParams.get("img_url") ||
+      parsed.searchParams.get("image_url");
+    if (proxiedUrl && /^https?:\/\//i.test(proxiedUrl)) {
+      return false;
+    }
+  } catch {
+    return false;
+  }
+
   return ![
     "logo",
     "icon",
