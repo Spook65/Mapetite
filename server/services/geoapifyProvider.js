@@ -3,7 +3,7 @@ import { buildRestaurantArtworkUrl } from "./restaurantMedia.js";
 
 const GEOAPIFY_BASE_URL = "https://api.geoapify.com";
 const GEOAPIFY_SEARCH_TIMEOUT_MS = 12000;
-const GEOAPIFY_DEFAULT_LIMIT = 20;
+const GEOAPIFY_DEFAULT_LIMIT = 40;
 
 function stableHash(value) {
   return String(value)
