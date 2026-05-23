@@ -108,6 +108,33 @@ function hasValidCoordinates(latitude, longitude) {
   );
 }
 
+function normalizeWebsite(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return "";
+    }
+    return parsed.toString();
+  } catch {
+    return "";
+  }
+}
+
+function normalizePhone(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length < 7) {
+    return "";
+  }
+
+  return raw.replace(/\s+/g, " ");
+}
+
 function normalizeCategoryToken(value) {
   return String(value)
     .trim()
@@ -638,8 +665,8 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     chef: buildChefInfo(categories, name, locationContext),
     signatureDishes: buildSignatureDishes(categories, name),
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
-    phone: props.phone || props.phone_number || props.contact?.phone,
-    website: props.website || props.website_uri,
+    phone: normalizePhone(props.phone || props.phone_number || props.contact?.phone),
+    website: normalizeWebsite(props.website || props.website_uri),
     amenities: [
       props.wifi === "yes" ? "Wi-Fi" : null,
       props.outdoor_seating === "yes" ? "Outdoor Seating" : null,

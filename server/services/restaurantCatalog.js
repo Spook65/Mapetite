@@ -40,6 +40,33 @@ function stableHash(value) {
     .reduce((sum, char) => sum + char.charCodeAt(0), 0);
 }
 
+function normalizeWebsite(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(/^https?:\/\//i.test(raw) ? raw : `https://${raw}`);
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return "";
+    }
+    return parsed.toString();
+  } catch {
+    return "";
+  }
+}
+
+function normalizePhone(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  const digits = raw.replace(/\D/g, "");
+  if (digits.length < 7) {
+    return "";
+  }
+
+  return raw.replace(/\s+/g, " ");
+}
+
 function titleCase(value) {
   return String(value)
     .replace(/[_-]/g, " ")
@@ -433,7 +460,8 @@ function normalizeElement(element, locationContext = {}) {
       tags.payment_cards === "yes" ? "Cards" : null,
       tags.payment_diners === "yes" ? "Diners Club" : null,
     ].filter(Boolean),
-    website: tags.website || tags["contact:website"] || tags["website"] || "",
+    phone: normalizePhone(tags.phone || tags["contact:phone"] || tags["contact:mobile"] || ""),
+    website: normalizeWebsite(tags.website || tags["contact:website"] || tags["website"] || ""),
     source: "osm",
   };
 

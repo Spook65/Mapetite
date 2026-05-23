@@ -166,39 +166,39 @@ function buildCuisineProfile(categories = [], name = "", brand = "") {
   const theme = CUISINE_THEMES[themeKey] || CUISINE_THEMES.default;
 
   const searchTermsByKey = {
-    ramen: ["ramen", "noodles", "udon", "soba", "menu", "gallery"],
-    sushi: ["sushi", "japanese", "menu", "gallery"],
-    burger: ["burger", "fast food", "menu", "gallery", "grill"],
-    pizza: ["pizza", "pizzeria", "menu", "gallery"],
-    pasta: ["pasta", "italian", "menu", "gallery"],
-    taco: ["tacos", "mexican", "menu", "gallery"],
-    chinese: ["chinese", "dumplings", "dim sum", "menu", "gallery"],
-    indian: ["indian", "curry", "menu", "gallery"],
-    vegan: ["vegan", "menu", "gallery"],
-    vegetarian: ["vegetarian", "menu", "gallery"],
-    healthy: ["healthy", "salad", "bowls", "menu", "gallery"],
-    bakery: ["bakery", "pastry", "menu", "gallery"],
-    seafood: ["seafood", "fish", "oyster", "menu", "gallery"],
-    cafe: ["cafe", "coffee", "espresso", "menu", "gallery"],
-    default: ["restaurant", "menu", "gallery"],
+    ramen: ["ramen", "noodles", "udon", "soba", "gallery", "food"],
+    sushi: ["sushi", "japanese", "gallery", "food"],
+    burger: ["burger", "fast food", "gallery", "grill", "food"],
+    pizza: ["pizza", "pizzeria", "gallery", "food"],
+    pasta: ["pasta", "italian", "gallery", "food"],
+    taco: ["tacos", "mexican", "gallery", "food"],
+    chinese: ["chinese", "dumplings", "dim sum", "gallery", "food"],
+    indian: ["indian", "curry", "gallery", "food"],
+    vegan: ["vegan", "gallery", "food"],
+    vegetarian: ["vegetarian", "gallery", "food"],
+    healthy: ["healthy", "salad", "bowls", "gallery", "food"],
+    bakery: ["bakery", "pastry", "gallery", "food"],
+    seafood: ["seafood", "fish", "oyster", "gallery", "food"],
+    cafe: ["cafe", "coffee", "espresso", "gallery", "food"],
+    default: ["restaurant", "gallery", "food"],
   };
 
   const pageKeywordsByKey = {
-    ramen: ["ramen", "noodles", "menu", "gallery", "photos", "food", "dining"],
-    sushi: ["sushi", "omakase", "menu", "gallery", "photos", "food", "dining"],
-    burger: ["burger", "fries", "menu", "gallery", "photos", "food", "dining"],
-    pizza: ["pizza", "menu", "gallery", "photos", "food", "dining"],
-    pasta: ["pasta", "menu", "gallery", "photos", "food", "dining"],
-    taco: ["tacos", "menu", "gallery", "photos", "food", "dining"],
-    chinese: ["menu", "gallery", "photos", "food", "dining", "dim sum"],
-    indian: ["menu", "gallery", "photos", "food", "dining", "curry"],
-    vegan: ["menu", "gallery", "photos", "food", "dining", "vegan"],
-    vegetarian: ["menu", "gallery", "photos", "food", "dining", "vegetarian"],
-    healthy: ["menu", "gallery", "photos", "food", "dining", "salad"],
-    bakery: ["menu", "gallery", "photos", "food", "dining", "pastry"],
-    seafood: ["menu", "gallery", "photos", "food", "dining", "seafood"],
-    cafe: ["menu", "gallery", "photos", "food", "dining", "coffee"],
-    default: ["menu", "gallery", "photos", "food", "dining"],
+    ramen: ["ramen", "noodles", "gallery", "photos", "food", "dining"],
+    sushi: ["sushi", "omakase", "gallery", "photos", "food", "dining"],
+    burger: ["burger", "fries", "gallery", "photos", "food", "dining"],
+    pizza: ["pizza", "gallery", "photos", "food", "dining"],
+    pasta: ["pasta", "gallery", "photos", "food", "dining"],
+    taco: ["tacos", "gallery", "photos", "food", "dining"],
+    chinese: ["gallery", "photos", "food", "dining", "dim sum"],
+    indian: ["gallery", "photos", "food", "dining", "curry"],
+    vegan: ["gallery", "photos", "food", "dining", "vegan"],
+    vegetarian: ["gallery", "photos", "food", "dining", "vegetarian"],
+    healthy: ["gallery", "photos", "food", "dining", "salad"],
+    bakery: ["gallery", "photos", "food", "dining", "pastry"],
+    seafood: ["gallery", "photos", "food", "dining", "seafood"],
+    cafe: ["gallery", "photos", "food", "dining", "coffee"],
+    default: ["gallery", "photos", "food", "dining"],
   };
 
   return {
@@ -315,6 +315,22 @@ function isUsefulImageUrl(url) {
     "order-with-grubhub",
     "report",
     "r0lgodlh",
+    "thumbnail",
+    "thumb",
+    "menu",
+    "menus",
+    "appetizer",
+    "dessert",
+    "drinks",
+    "cocktail",
+    "wine-list",
+    "wine_menu",
+    "drink-menu",
+    "food-menu",
+    "screenshot",
+    "screen-shot",
+    "shop-now",
+    "order-now",
     "stars_",
     "star0",
     "star1",
@@ -374,6 +390,33 @@ function hasKeywordMatch(value, keywords = []) {
   return keywords.some((keyword) => text.includes(String(keyword).toLowerCase()));
 }
 
+const NEGATIVE_MEDIA_KEYWORDS = [
+  "menu",
+  "appetizer",
+  "appetizers",
+  "dessert",
+  "desserts",
+  "drinks",
+  "drink list",
+  "cocktail",
+  "cocktails",
+  "wine list",
+  "thumbnail",
+  "thumb",
+  "screenshot",
+  "screen shot",
+  "poster",
+  "flyer",
+  "promo",
+  "advert",
+  "shop now",
+  "order now",
+  "delivery app",
+  "gift card",
+  "pdf",
+  "yelp",
+];
+
 function scoreImageCandidate(candidate, profile = {}) {
   const url = String(candidate.url || "");
   const alt = String(candidate.alt || "");
@@ -387,8 +430,11 @@ function scoreImageCandidate(candidate, profile = {}) {
   if (hasKeywordMatch(text, profile.searchTerms)) score += 4;
   if (hasKeywordMatch(text, profile.pageKeywords)) score += 2;
   if (hasKeywordMatch(text, [profile.theme?.label, profile.themeKey])) score += 2;
-  if (hasKeywordMatch(text, ["hero", "gallery", "food", "dish", "menu", "interior", "dining"])) {
+  if (hasKeywordMatch(text, ["hero", "gallery", "food", "dish", "interior", "dining", "room", "space"])) {
     score += 1;
+  }
+  if (hasKeywordMatch(text, NEGATIVE_MEDIA_KEYWORDS)) {
+    score -= 18;
   }
   if (hasKeywordMatch(text, ["logo", "icon", "favicon", "sprite", "avatar", "placeholder"])) {
     score -= 100;
@@ -424,8 +470,11 @@ function scoreOpenverseCandidate(candidate, profile = {}, query = "") {
     score += 4;
   }
 
-  if (hasKeywordMatch(text, ["restaurant", "dining", "food", "dish", "menu", "interior", "chef"])) {
+  if (hasKeywordMatch(text, ["restaurant", "dining", "food", "dish", "interior", "chef"])) {
     score += 1;
+  }
+  if (hasKeywordMatch(text, NEGATIVE_MEDIA_KEYWORDS)) {
+    score -= 18;
   }
 
   if (hasKeywordMatch(text, ["logo", "icon", "favicon", "avatar", "map", "illustration"])) {
@@ -485,8 +534,11 @@ function scoreWikimediaCandidate(candidate, profile = {}, query = "") {
     score += 4;
   }
 
-  if (hasKeywordMatch(text, ["restaurant", "dining", "food", "dish", "menu", "interior", "chef"])) {
+  if (hasKeywordMatch(text, ["restaurant", "dining", "food", "dish", "interior", "chef"])) {
     score += 1;
+  }
+  if (hasKeywordMatch(text, NEGATIVE_MEDIA_KEYWORDS)) {
+    score -= 18;
   }
 
   if (hasKeywordMatch(text, ["logo", "icon", "favicon", "avatar", "map", "illustration"])) {
@@ -616,6 +668,7 @@ function extractImageCandidatesFromHtml(html, baseUrl, profile = {}) {
 
   return normalized
     .map((candidate) => ({ ...candidate, score: scoreImageCandidate(candidate, profile) }))
+    .filter((candidate) => candidate.score >= 2)
     .sort((a, b) => b.score - a.score);
 }
 
@@ -627,7 +680,7 @@ function extractCandidateLinksFromHtml(html, baseUrl, profile = {}) {
     (match) => ({ href: match[1], text: match[2] || "" }),
   );
 
-  const keywords = ["gallery", "photos", "photo", "menu", "food", "dining", "about"];
+  const keywords = ["gallery", "photos", "photo", "food", "dining", "about", "inside", "space"];
   const origin = new URL(baseUrl).origin;
   const candidates = [];
 
@@ -941,106 +994,25 @@ export async function resolveRestaurantMedia(options = {}) {
     placeId,
   } = options;
 
-  const query = buildSearchQuery({
-    name,
-    brand,
-    street,
-    city,
-    state,
-    country,
-  }, profile);
-
   const images = [];
   const attributions = [];
   const seen = new Set();
 
-  const addCandidates = (candidates = []) => {
-    for (const candidate of candidates) {
-      if (images.length >= MAX_MEDIA_IMAGES) break;
-      if (!candidate?.url || seen.has(candidate.url)) continue;
-      seen.add(candidate.url);
-      images.push(candidate.url);
-      attributions.push(candidate.attribution ? [candidate.attribution] : []);
-    }
-  };
-
-  const openverseQueries = buildOpenverseQueries(
-    {
-      website,
-      name,
-      brand,
-      street,
-      city,
-      state,
-      country,
-      placeId,
-    },
-    profile,
-  );
-
-  const wikimediaQueries = buildWikimediaQueries(
-    {
-      website,
-      name,
-      brand,
-      street,
-      city,
-      state,
-      country,
-      placeId,
-    },
-    profile,
-  );
-
-  for (const wikimediaQuery of wikimediaQueries) {
-    if (images.length >= MAX_MEDIA_IMAGES) break;
-
-    const wikimediaMedia = await fetchWikimediaCommonsMedia(wikimediaQuery, profile);
-    addCandidates(
-      wikimediaMedia.map((candidate) => ({
-        url: candidate.url,
-        attribution: [candidate.author, candidate.license, "Wikimedia Commons"]
-          .filter(Boolean)
-          .join(" · "),
-      })),
-    );
+  const seeds = [];
+  if (website) {
+    seeds.push(website);
   }
 
-  for (const openverseQuery of openverseQueries) {
+  for (const seed of [...new Set(seeds)]) {
     if (images.length >= MAX_MEDIA_IMAGES) break;
 
-    const openverseImages = await fetchOpenverseImages(openverseQuery, profile);
-    addCandidates(openverseImages.map((image) => ({ url: image, attribution: "Openverse" })));
-  }
-
-  if (images.length < MAX_MEDIA_IMAGES) {
-    const seeds = [];
-    if (website) {
-      seeds.push(website);
-    }
-
-    if (query) {
-      const searchResults = await fetchDuckDuckGoResults(
-        `${query} ${profile.searchTerms.join(" ")}`.trim(),
-      );
-      seeds.push(...searchResults.slice(0, 3));
-    }
-
-    if (placeId && website && seeds.length === 0) {
-      seeds.push(website);
-    }
-
-    for (const seed of seeds) {
+    const pageImages = await fetchRestaurantImagesFromPage(seed, profile);
+    for (const image of pageImages) {
+      if (!image || seen.has(image)) continue;
+      seen.add(image);
+      images.push(image);
+      attributions.push([]);
       if (images.length >= MAX_MEDIA_IMAGES) break;
-
-      const pageImages = await fetchRestaurantImagesFromPage(seed, profile);
-      for (const image of pageImages) {
-        if (!image || seen.has(image)) continue;
-        seen.add(image);
-        images.push(image);
-        attributions.push([]);
-        if (images.length >= MAX_MEDIA_IMAGES) break;
-      }
     }
   }
 
