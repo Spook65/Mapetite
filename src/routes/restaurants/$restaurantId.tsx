@@ -47,19 +47,18 @@ function buildFullAddress(restaurant: Restaurant) {
 }
 
 function buildGalleryImages(restaurant: Restaurant) {
-	if (restaurant.galleryImageUrls?.length) return restaurant.galleryImageUrls;
-	if (restaurant.photoUrl) return [restaurant.photoUrl];
-	return [];
+	return restaurant.galleryImageUrls?.filter(Boolean) ?? [];
 }
 
 function buildGalleryAttributions(restaurant: Restaurant) {
 	if (restaurant.galleryPhotoAttributions?.length) {
 		return restaurant.galleryPhotoAttributions;
 	}
-	if (restaurant.photoAttributions?.length) {
-		return [restaurant.photoAttributions];
-	}
 	return [];
+}
+
+function isFallbackArtwork(url?: string | null) {
+	return typeof url === "string" && url.startsWith("data:image/svg+xml");
 }
 
 function buildMapEmbedUrl(restaurant: Restaurant) {
@@ -255,6 +254,10 @@ function RestaurantDetailPage() {
 	const fullAddress = buildFullAddress(restaurant);
 	const galleryImages = buildGalleryImages(restaurant);
 	const galleryAttributions = buildGalleryAttributions(restaurant);
+	const fallbackArtworkUrl = isFallbackArtwork(restaurant.photoUrl)
+		? restaurant.photoUrl
+		: null;
+	const hasVerifiedGalleryImages = galleryImages.length > 0;
 	const hasHours = !!restaurant.hours;
 	const hasReviews = !!restaurant.reviews?.length;
 	const hasRatingBreakdown = !!restaurant.ratingBreakdown;
@@ -274,86 +277,47 @@ function RestaurantDetailPage() {
 		(total, row) => total + row.count,
 		0,
 	);
-	const galleryViewBlueprints = [
-		{
-			badge: "Dining room",
-			label: "Dining room",
-			title: `A closer look at ${restaurant.name} before you commit.`,
-			copy:
-				restaurant.description ||
-				"Keep the room, the route, and the shortlist context visible even when live media is limited.",
-			left:
-				locationLine || restaurant.categories[0] || "Restaurant detail",
-			right: galleryImages.length > 0 ? "Gallery view active" : "Gallery fallback active",
-			summary: "What the room feels like once you're seated.",
-		},
-		{
-			badge: "Open kitchen",
-			label: "Open kitchen",
-			title: "A steadier read on pace, service, and the room around the table.",
-			copy:
-				restaurant.description ||
-				"Even a smaller set of photos should help the page feel grounded rather than empty.",
-			left:
-				restaurant.categories.slice(0, 2).join(" • ") ||
-				restaurant.categories[0] ||
-				"Restaurant detail",
-			right: hasHours
-				? `${restaurant.isOpenNow ? "Open now" : "Closed"}${
-						restaurant.hours?.close ? ` until ${restaurant.hours.close}` : ""
-					}`
-				: "Hours vary",
-			summary: "Useful when the energy of the room matters.",
-		},
-		{
-			badge: "Signature plates",
-			label: "Signature plates",
-			title: "Enough detail to understand the food before opening the route.",
-			copy:
-				priceRangeLabel
-					? `${priceRangeLabel} pricing with ${restaurant.categories.join(" • ")} at the center of the meal.`
-					: `A clearer read on ${restaurant.categories.join(" • ")} before deciding.`,
-			left:
-				priceRangeLabel
-					? `${priceRangeLabel} pricing`
-					: restaurant.categories[0] || "Restaurant detail",
-			right:
-				restaurant.reviewCount > 0
-					? `${restaurant.reviewCount.toLocaleString()} reviews`
-					: "Review data limited",
-			summary: "A quick food cue before the final call.",
-		},
-		{
-			badge: "Fallback state",
-			label: "Fallback state",
-			title: "Missing media should still feel polished, not broken.",
-			copy:
-				"When the source has fewer images, the page can still rely on address, reviews, and route context to help you decide.",
-			left:
-				hasMapCoordinates
-					? "Map preview available"
-					: locationLine || "Address stays visible",
-			right:
-				selectedImageIndex === 3 || galleryImages.length === 0
-					? "No external image required"
-					: "Fallback available",
-			summary: "A designed fallback for restaurants without full photo coverage.",
-		},
-	] as const;
-	const galleryViews =
-		galleryImages.length > 0
-			? galleryImages.map((image, index) => ({
-					...galleryViewBlueprints[
-						Math.min(index, galleryViewBlueprints.length - 1)
-					],
-					image,
-					attribution: galleryAttributions[index] ?? [],
-			  }))
-			: galleryViewBlueprints.map((view) => ({
-					...view,
-					image: null,
+	const galleryViews = hasVerifiedGalleryImages
+		? galleryImages.map((image, index) => ({
+				badge: galleryImages.length === 1 ? "Available photo" : `Image ${index + 1}`,
+				label: galleryImages.length === 1 ? "Available photo" : `Image ${index + 1}`,
+				title:
+					index === 0
+						? `Photo coverage for ${restaurant.name}`
+						: `Additional venue image ${index + 1}`,
+				copy:
+					restaurant.description ||
+					"A verified venue image to support the address, route, and review details on this page.",
+				left:
+					restaurant.categories.slice(0, 2).join(" • ") ||
+					restaurant.categories[0] ||
+					"Restaurant detail",
+				right:
+					galleryImages.length > 1
+						? `Image ${index + 1} of ${galleryImages.length}`
+						: "Verified venue photo",
+				summary:
+					galleryImages.length > 1
+						? "One of the available venue photos."
+						: "A verified venue image from the available photo coverage.",
+				image,
+				attribution: galleryAttributions[index] ?? [],
+		  }))
+		: [
+				{
+					badge: "Photo coverage unavailable",
+					label: "Fallback artwork",
+					title: `Verified venue photos are not available for ${restaurant.name} yet.`,
+					copy:
+						"Use the address, route, hours, and review details to decide while photo coverage is still limited.",
+					left:
+						locationLine || restaurant.categories[0] || "Restaurant detail",
+					right: hasMapCoordinates ? "Directions available" : "Address available",
+					summary: "A single fallback state instead of invented gallery coverage.",
+					image: fallbackArtworkUrl,
 					attribution: [] as string[],
-			  }));
+				},
+		  ];
 	const activeGalleryView =
 		galleryViews[
 			Math.min(selectedImageIndex, Math.max(galleryViews.length - 1, 0))
@@ -518,7 +482,14 @@ function RestaurantDetailPage() {
 										</div>
 									</div>
 
-									<div className="grid gap-4 lg:grid-cols-[minmax(0,1.25fr)_172px]">
+									<div
+										className={cn(
+											"grid gap-4",
+											galleryViews.length > 1
+												? "lg:grid-cols-[minmax(0,1.25fr)_172px]"
+												: "lg:grid-cols-1",
+										)}
+									>
 										<div
 											className={cn(
 												"relative grid min-h-[420px] grid-rows-[auto_1fr_auto] gap-[14px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] p-[22px]",
@@ -530,7 +501,11 @@ function RestaurantDetailPage() {
 											{activeGalleryView.image ? (
 												<img
 													src={activeGalleryView.image}
-													alt={`${restaurant.name} view ${selectedImageIndex + 1}`}
+													alt={
+														hasVerifiedGalleryImages
+															? `${restaurant.name} image ${selectedImageIndex + 1}`
+															: `${restaurant.name} fallback artwork`
+													}
 													className="absolute inset-0 h-full w-full object-cover"
 													loading="lazy"
 													referrerPolicy="no-referrer"
@@ -558,7 +533,8 @@ function RestaurantDetailPage() {
 											</div>
 										</div>
 
-										<div className="grid gap-3">
+										{galleryViews.length > 1 ? (
+											<div className="grid gap-3">
 											{galleryViews.map((view, index) => (
 												<button
 													key={`${view.label}-${index}`}
@@ -575,7 +551,7 @@ function RestaurantDetailPage() {
 														{view.image ? (
 															<img
 																src={view.image}
-																alt={`${restaurant.name} thumbnail ${index + 1}`}
+																alt={`${restaurant.name} image ${index + 1}`}
 																className="aspect-[4/3] w-full object-cover"
 																loading="lazy"
 																referrerPolicy="no-referrer"
@@ -592,7 +568,8 @@ function RestaurantDetailPage() {
 													</span>
 												</button>
 											))}
-										</div>
+											</div>
+										) : null}
 									</div>
 								</section>
 
