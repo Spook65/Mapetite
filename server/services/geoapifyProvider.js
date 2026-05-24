@@ -135,6 +135,21 @@ function normalizePhone(value) {
   return raw.replace(/\s+/g, " ");
 }
 
+function normalizeMenuUrl(value, baseWebsite = "") {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(raw, baseWebsite || undefined);
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return "";
+    }
+    return parsed.toString();
+  } catch {
+    return "";
+  }
+}
+
 function normalizeCategoryToken(value) {
   return String(value)
     .trim()
@@ -667,6 +682,14 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
     phone: normalizePhone(props.phone || props.phone_number || props.contact?.phone),
     website: normalizeWebsite(props.website || props.website_uri),
+    menuUrl: normalizeMenuUrl(
+      props.menu_url ||
+        props.menu ||
+        props.website_menu ||
+        props["website:menu"] ||
+        props["contact:menu"],
+      props.website || props.website_uri || "",
+    ),
     amenities: [
       props.wifi === "yes" ? "Wi-Fi" : null,
       props.outdoor_seating === "yes" ? "Outdoor Seating" : null,

@@ -77,6 +77,7 @@ export interface Restaurant {
 	};
 	phone?: string;
 	website?: string;
+	menuUrl?: string;
 	amenities?: string[];
 	paymentMethods?: string[];
 	source?: string;

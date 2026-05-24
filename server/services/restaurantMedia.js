@@ -2,6 +2,27 @@ const IMAGE_TIMEOUT_MS = 6000;
 const MAX_MEDIA_IMAGES = 6;
 const WIKIMEDIA_COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php";
 const OPENVERSE_BASE_URL = "https://api.openverse.org/v1/images/";
+const MENU_LINK_KEYWORDS = ["menu", "menus", "food-menu", "drink-menu", "dining"];
+const MENU_LINK_BLOCKLIST = [
+  "facebook",
+  "instagram",
+  "grubhub",
+  "doordash",
+  "ubereats",
+  "postmates",
+  "opentable",
+  "resy",
+  "tripadvisor",
+  "yelp",
+  "gift-card",
+  "giftcard",
+  "reservation",
+  "reserve",
+  "signup",
+  "login",
+  "order",
+  "delivery",
+];
 
 const CUISINE_THEMES = {
   ramen: { label: "Ramen", emoji: "🍜", colors: ["#0ea5e9", "#14b8a6"] },
@@ -268,6 +289,43 @@ function normalizeUrl(candidate, baseUrl) {
   } catch {
     return null;
   }
+}
+
+function isSafeHttpUrl(url) {
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === "http:" || parsed.protocol === "https:";
+  } catch {
+    return false;
+  }
+}
+
+function normalizeMenuUrl(candidate, baseUrl) {
+  const url = normalizeUrl(candidate, baseUrl);
+  if (!url || !isSafeHttpUrl(url)) return null;
+
+  const text = url.toLowerCase();
+  if (!MENU_LINK_KEYWORDS.some((keyword) => text.includes(keyword))) {
+    return null;
+  }
+
+  if (MENU_LINK_BLOCKLIST.some((keyword) => text.includes(keyword))) {
+    return null;
+  }
+
+  if (baseUrl) {
+    try {
+      const target = new URL(url);
+      const base = new URL(baseUrl);
+      if (target.origin !== base.origin) {
+        return null;
+      }
+    } catch {
+      return null;
+    }
+  }
+
+  return url;
 }
 
 function isUsefulImageUrl(url) {
@@ -706,6 +764,42 @@ function extractCandidateLinksFromHtml(html, baseUrl, profile = {}) {
   return [...new Set(candidates)].slice(0, 4);
 }
 
+function extractMenuLinksFromHtml(html, baseUrl) {
+  const hrefMatches = Array.from(
+    html.matchAll(
+      /<a[^>]+href=["']([^"']+)["'][^>]*>([\s\S]*?)<\/a>/gi,
+    ),
+    (match) => ({ href: match[1], text: stripHtml(match[2] || "") }),
+  );
+
+  const candidates = [];
+
+  for (const { href, text } of hrefMatches) {
+    const candidate = normalizeMenuUrl(
+      `${href} ${text}`.toLowerCase().includes("menu") ||
+        `${href} ${text}`.toLowerCase().includes("dining")
+        ? href
+        : null,
+      baseUrl,
+    );
+
+    if (!candidate) continue;
+
+    const combined = `${href} ${text}`.toLowerCase();
+    let score = 0;
+    if (combined.includes("/menu") || combined.includes(" menus")) score += 5;
+    if (combined.includes("food-menu") || combined.includes("drink-menu")) score += 4;
+    if (combined.includes("menu")) score += 3;
+    if (combined.includes("dining")) score += 1;
+    if (combined.includes("pdf")) score += 1;
+    candidates.push({ url: candidate, score });
+  }
+
+  return [...new Map(candidates.sort((a, b) => b.score - a.score).map((item) => [item.url, item])).values()]
+    .map((item) => item.url)
+    .slice(0, 3);
+}
+
 async function fetchText(url) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), IMAGE_TIMEOUT_MS);
@@ -734,6 +828,26 @@ async function fetchText(url) {
   } finally {
     clearTimeout(timeout);
   }
+}
+
+export async function resolveRestaurantMenuUrl(options = {}) {
+  const website = String(options.website || "").trim();
+  if (!website || !isSafeHttpUrl(website)) {
+    return null;
+  }
+
+  const directMenuUrl = normalizeMenuUrl(website);
+  if (directMenuUrl) {
+    return directMenuUrl;
+  }
+
+  const html = await fetchText(website);
+  if (!html) {
+    return null;
+  }
+
+  const menuLinks = extractMenuLinksFromHtml(html, website);
+  return menuLinks[0] || null;
 }
 
 async function fetchJson(url, options = {}) {

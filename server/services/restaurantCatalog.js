@@ -7,6 +7,7 @@ import {
 import {
   buildRestaurantArtworkUrl,
   resolveRestaurantMedia,
+  resolveRestaurantMenuUrl,
 } from "./restaurantMedia.js";
 
 const SEARCH_RADIUS_METERS = 3000;
@@ -65,6 +66,21 @@ function normalizePhone(value) {
   }
 
   return raw.replace(/\s+/g, " ");
+}
+
+function normalizeMenuUrl(value, baseWebsite = "") {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(raw, baseWebsite || undefined);
+    if (!["http:", "https:"].includes(parsed.protocol)) {
+      return "";
+    }
+    return parsed.toString();
+  } catch {
+    return "";
+  }
 }
 
 function titleCase(value) {
@@ -462,6 +478,10 @@ function normalizeElement(element, locationContext = {}) {
     ].filter(Boolean),
     phone: normalizePhone(tags.phone || tags["contact:phone"] || tags["contact:mobile"] || ""),
     website: normalizeWebsite(tags.website || tags["contact:website"] || tags["website"] || ""),
+    menuUrl: normalizeMenuUrl(
+      tags["website:menu"] || tags["contact:menu"] || tags.menu || "",
+      tags.website || tags["contact:website"] || tags["website"] || "",
+    ),
     source: "osm",
   };
 
@@ -725,6 +745,26 @@ async function ensureRestaurantMedia(restaurant) {
   return restaurant;
 }
 
+async function ensureRestaurantMenu(restaurant) {
+  if (!restaurant || restaurant.source === "demo") {
+    return restaurant;
+  }
+
+  if (restaurant.menuUrl || !restaurant.website) {
+    return restaurant;
+  }
+
+  const menuUrl = await resolveRestaurantMenuUrl({
+    website: restaurant.website,
+  });
+
+  if (menuUrl) {
+    restaurant.menuUrl = menuUrl;
+  }
+
+  return restaurant;
+}
+
 async function enrichSearchRestaurants(restaurants = [], limit = 8) {
   const visibleRestaurants = restaurants.slice(0, limit);
   const enrichedVisible = await Promise.all(
@@ -862,6 +902,7 @@ export async function getRestaurantById(restaurantId) {
   if (cached) {
     const { cachedAt, ...rest } = cached;
     const enriched = await ensureRestaurantMedia(rest);
+    await ensureRestaurantMenu(enriched);
     rememberRestaurants([enriched]);
     return enriched;
   }
@@ -872,6 +913,7 @@ export async function getRestaurantById(restaurantId) {
     );
     if (geoapifyRestaurant) {
       const enriched = await ensureRestaurantMedia(geoapifyRestaurant);
+      await ensureRestaurantMenu(enriched);
       rememberRestaurants([enriched]);
       return enriched;
     }
@@ -900,6 +942,7 @@ export async function getRestaurantById(restaurantId) {
   }
 
   const enriched = await ensureRestaurantMedia(restaurant);
+  await ensureRestaurantMenu(enriched);
 
   rememberRestaurants([enriched]);
   return enriched;
