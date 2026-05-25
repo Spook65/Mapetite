@@ -130,6 +130,17 @@ const FOOD_CATEGORY_LABELS = {
   ice_cream: "Dessert",
 };
 
+const GENERIC_CATEGORY_LABELS = new Set(["Restaurant", "Dining", "Catering"]);
+const LOW_CONFIDENCE_NAMES = new Set([
+  "restaurant",
+  "dining",
+  "cafe",
+  "bar",
+  "bakery",
+  "bistro",
+  "food court",
+]);
+
 function normalizeFoodCategoryLabel(value) {
   const key = String(value)
     .trim()
@@ -138,6 +149,26 @@ function normalizeFoodCategoryLabel(value) {
     .replace(/^_+|_+$/g, "");
 
   return FOOD_CATEGORY_LABELS[key] || titleCase(key);
+}
+
+function normalizeRankingToken(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
+}
+
+function getSpecificCategories(categories = []) {
+  return categories.filter((category) => !GENERIC_CATEGORY_LABELS.has(category));
+}
+
+function hasExplicitRatingValue(value) {
+  return Number.isFinite(value) && value >= 0 && value <= 5;
+}
+
+function hasExplicitReviewCountValue(value) {
+  return Number.isFinite(value) && value > 0;
 }
 
 function calculateDistance(lat1, lon1, lat2, lon2) {
@@ -226,6 +257,151 @@ function deriveReviewCount(tags = {}, seed = "") {
 
   const hash = stableHash(seed);
   return 25 + (hash % 175);
+}
+
+function scoreRestaurantForSearch(restaurant, options = {}) {
+  const selectedCategories = Array.isArray(options.selectedCategories)
+    ? options.selectedCategories
+    : [];
+  const location = options.location || {};
+  const specificCategories = getSpecificCategories(restaurant.categories || []);
+  const normalizedName = normalizeRankingToken(restaurant.name);
+  const normalizedSelectedCategories = selectedCategories
+    .map(normalizeRankingToken)
+    .filter(Boolean);
+  const normalizedRestaurantCategories = (restaurant.categories || [])
+    .map(normalizeRankingToken)
+    .filter(Boolean);
+  const weightedReviewCount =
+    restaurant.reviewCountSource === "provider"
+      ? Math.min(restaurant.reviewCount || 0, 500)
+      : Math.min(restaurant.reviewCount || 0, 8);
+  const priorWeight =
+    restaurant.ratingSource === "provider" || restaurant.reviewCountSource === "provider"
+      ? 18
+      : 40;
+  const weightedRating =
+    ((restaurant.rating || 3.8) * weightedReviewCount + 3.8 * priorWeight) /
+    Math.max(1, weightedReviewCount + priorWeight);
+  const ratingScore = weightedRating * 12;
+  const reviewConfidenceBoost =
+    restaurant.reviewCountSource === "provider"
+      ? Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 4, 8)
+      : Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 1.5, 2);
+  const providerRatingBoost = restaurant.ratingSource === "provider" ? 4 : 0;
+  const providerReviewBoost = restaurant.reviewCountSource === "provider" ? 3 : 0;
+  const hasSelectedCategoryMatch =
+    normalizedSelectedCategories.length > 0 &&
+    normalizedRestaurantCategories.some((category) =>
+      normalizedSelectedCategories.some(
+        (selected) => category === selected || category.includes(selected) || selected.includes(category),
+      ),
+    );
+  const categoryQualityScore =
+    (specificCategories.length > 0 ? 8 : 1) +
+    Math.min(specificCategories.length * 1.5, 4) +
+    (hasSelectedCategoryMatch ? 10 : 0);
+  const hasStreetAddress = Boolean(restaurant.address?.street);
+  const hasCityAddress = Boolean(restaurant.address?.city);
+  const hasCountryAddress = Boolean(restaurant.address?.country);
+  const hasValidCoordinates =
+    Number.isFinite(restaurant.latitude) &&
+    Number.isFinite(restaurant.longitude) &&
+    !(restaurant.latitude === 0 && restaurant.longitude === 0);
+  const completenessScore =
+    (hasStreetAddress ? 3 : hasCityAddress ? 2 : 0) +
+    (hasCountryAddress ? 2 : 0) +
+    (hasValidCoordinates ? 6 : -8) +
+    (restaurant.hours ? 4 : 0) +
+    (restaurant.website ? 3 : 0) +
+    (restaurant.phone ? 2 : 0) +
+    (restaurant.menuUrl ? 2 : 0) +
+    (Array.isArray(restaurant.galleryImageUrls) && restaurant.galleryImageUrls.length > 0 ? 3 : 0);
+  const locationScore =
+    (location.city &&
+    normalizeRankingToken(restaurant.address?.city) === normalizeRankingToken(location.city)
+      ? 4
+      : 0) +
+    (location.state &&
+    normalizeRankingToken(restaurant.address?.state) === normalizeRankingToken(location.state)
+      ? 1.5
+      : 0) +
+    (location.country &&
+    normalizeRankingToken(restaurant.address?.country) === normalizeRankingToken(location.country)
+      ? 1.5
+      : 0) +
+    (Number.isFinite(restaurant.distance)
+      ? restaurant.distance < 1
+        ? 6
+        : restaurant.distance < 3
+          ? 5
+          : restaurant.distance < 8
+            ? 3
+            : restaurant.distance < 20
+              ? 1
+              : restaurant.distance > 80
+                ? -10
+                : restaurant.distance > 40
+                  ? -4
+                  : 0
+      : 0) +
+    (restaurant.isOpenNow === true ? 2 : 0);
+  let penalties = 0;
+
+  if (!normalizedName || normalizedName.length < 3) {
+    penalties -= 10;
+  } else if (LOW_CONFIDENCE_NAMES.has(normalizedName)) {
+    penalties -= 12;
+  }
+
+  if (specificCategories.length === 0) {
+    penalties -= 4;
+  }
+
+  if (!hasStreetAddress && !hasCityAddress) {
+    penalties -= 6;
+  }
+
+  if ((restaurant.reviewCount || 0) < 5 && (restaurant.rating || 0) >= 4.8) {
+    penalties -= 3;
+  }
+
+  if (restaurant.source === "demo") {
+    penalties -= 35;
+  }
+
+  return Number(
+    (
+      ratingScore +
+      reviewConfidenceBoost +
+      providerRatingBoost +
+      providerReviewBoost +
+      categoryQualityScore +
+      completenessScore +
+      locationScore +
+      penalties
+    ).toFixed(2),
+  );
+}
+
+function rankRestaurantsForSearch(restaurants = [], options = {}) {
+  return restaurants
+    .map((restaurant) => ({
+      ...restaurant,
+      qualityScore: scoreRestaurantForSearch(restaurant, options),
+    }))
+    .sort((a, b) => {
+      const scoreDelta = (b.qualityScore || 0) - (a.qualityScore || 0);
+      if (scoreDelta !== 0) return scoreDelta;
+
+      const reviewDelta = (b.reviewCount || 0) - (a.reviewCount || 0);
+      if (reviewDelta !== 0) return reviewDelta;
+
+      const ratingDelta = (b.rating || 0) - (a.rating || 0);
+      if (ratingDelta !== 0) return ratingDelta;
+
+      return (a.distance ?? Number.POSITIVE_INFINITY) - (b.distance ?? Number.POSITIVE_INFINITY);
+    });
 }
 
 function buildRatingBreakdown(rating, reviewCount) {
@@ -428,7 +604,19 @@ function normalizeElement(element, locationContext = {}) {
     name,
     address: normalizeAddress(tags, locationContext),
     rating,
+    ratingSource: hasExplicitRatingValue(
+      Number(tags.stars) || Number(tags.rating) || Number(tags["rating"]),
+    )
+      ? "provider"
+      : "derived",
     reviewCount,
+    reviewCountSource: hasExplicitReviewCountValue(
+      Number(tags.review_count) ||
+        Number(tags["review_count"]) ||
+        Number(tags.reviews),
+    )
+      ? "provider"
+      : "derived",
     categories,
     priceRange,
     description: buildDescription(name, categories, locationContext, tags),
@@ -438,6 +626,7 @@ function normalizeElement(element, locationContext = {}) {
     distance,
     isOpenNow: undefined,
     hours,
+    hoursSource: hours ? "provider" : undefined,
     photoUrl: buildRestaurantArtworkUrl({
       categories,
       name,
@@ -651,7 +840,9 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
       zipCode: "",
     },
     rating,
+    ratingSource: "derived",
     reviewCount,
+    reviewCountSource: "derived",
     categories,
     priceRange: (hash % 4) + 1,
     description: `${categoryLabel} ${noun} is a polished demo restaurant in ${city}. It appears when live provider data is temporarily unavailable.`,
@@ -665,6 +856,7 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
         : undefined,
     isOpenNow: undefined,
     hours: undefined,
+    hoursSource: undefined,
     photoUrl: buildRestaurantArtworkUrl({
       categories,
       name: `${city} ${categoryLabel} ${noun}`,
@@ -767,7 +959,10 @@ function readKnownRestaurants() {
       const { cachedAt, ...rest } = restaurant;
       return rest;
     })
-    .sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    .sort(
+      (a, b) =>
+        (b.qualityScore || b.rating || 0) - (a.qualityScore || a.rating || 0),
+    );
 }
 
 function readSearchCache(key) {
@@ -805,6 +1000,10 @@ export async function searchRestaurants(params = {}) {
     try {
       const payload = await searchGeoapifyRestaurants(params, resolvedLocation);
       if (payload.restaurants.length > 0) {
+        payload.restaurants = rankRestaurantsForSearch(payload.restaurants, {
+          selectedCategories: params.categories,
+          location: resolvedLocation,
+        });
         payload.restaurants = await enrichSearchRestaurants(payload.restaurants);
         writeSearchCache(cacheKey, payload);
         rememberRestaurants(payload.restaurants);
@@ -842,11 +1041,10 @@ export async function searchRestaurants(params = {}) {
       );
     }
 
-    restaurants.sort(
-      (a, b) =>
-        (a.distance ?? Number.POSITIVE_INFINITY) -
-        (b.distance ?? Number.POSITIVE_INFINITY),
-    );
+    restaurants = rankRestaurantsForSearch(restaurants, {
+      selectedCategories: params.categories,
+      location: resolvedLocation,
+    });
 
     const payload = {
       restaurants,

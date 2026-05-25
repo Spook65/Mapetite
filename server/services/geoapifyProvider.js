@@ -280,6 +280,14 @@ function deriveReviewCount(props = {}, seed = "") {
   return 25 + (hash % 175);
 }
 
+function hasExplicitRatingValue(value) {
+  return Number.isFinite(value) && value >= 0 && value <= 5;
+}
+
+function hasExplicitReviewCountValue(value) {
+  return Number.isFinite(value) && value > 0;
+}
+
 function buildRatingBreakdown(rating, reviewCount) {
   const rounded = Math.max(1, Math.min(5, Math.round(rating)));
   const five = Math.max(1, Math.round(reviewCount * (0.46 + rounded * 0.05)));
@@ -654,7 +662,15 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     name,
     address: normalizeAddress(props, locationContext),
     rating,
+    ratingSource: hasExplicitRatingValue(Number(props.rating))
+      ? "provider"
+      : "derived",
     reviewCount,
+    reviewCountSource: hasExplicitReviewCountValue(
+      Number(props.review_count || props.reviews),
+    )
+      ? "provider"
+      : "derived",
     categories,
     priceRange: parsePriceRange(props, categories),
     description: buildDescription(name, categories, locationContext, props),
@@ -669,6 +685,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
           ? props.is_open_now
           : undefined,
     hours: openingHours,
+    hoursSource: openingHours ? "provider" : undefined,
     photoUrl: buildRestaurantArtworkUrl({
       categories,
       name,
