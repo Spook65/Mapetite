@@ -28,6 +28,37 @@ function formatPriceRange(priceRange?: number | null) {
 	return "$".repeat(priceRange);
 }
 
+function formatTimeToTwelveHour(value?: string | null) {
+	if (!value) return null;
+
+	const match = String(value)
+		.trim()
+		.match(/^(\d{1,2}):(\d{2})$/);
+	if (!match) return value;
+
+	const hours = Number(match[1]);
+	const minutes = match[2];
+	if (!Number.isInteger(hours) || hours < 0 || hours > 23) {
+		return value;
+	}
+
+	const period = hours >= 12 ? "PM" : "AM";
+	const displayHour = hours % 12 || 12;
+	return `${displayHour}:${minutes} ${period}`;
+}
+
+function formatHoursRange(
+	hours?: { open: string; close: string } | null,
+) {
+	if (!hours?.open || !hours?.close) return null;
+
+	const open = formatTimeToTwelveHour(hours.open);
+	const close = formatTimeToTwelveHour(hours.close);
+	if (!open || !close) return `${hours.open} - ${hours.close}`;
+
+	return `${open} – ${close}`;
+}
+
 function buildLocationLine(restaurant: Restaurant) {
 	return [restaurant.address.city, restaurant.address.state]
 		.filter(Boolean)
@@ -271,6 +302,7 @@ function RestaurantDetailPage() {
 	const hasPlanningActions = hasMenuUrl || hasWebsite || hasPhone;
 	const hasAmenities = !!restaurant.amenities?.length;
 	const hasPaymentMethods = !!restaurant.paymentMethods?.length;
+	const formattedHoursRange = formatHoursRange(restaurant.hours);
 	const ratingBreakdownRows = hasRatingBreakdown
 		? ([5, 4, 3, 2, 1] as const).map((score) => ({
 				score,
@@ -340,16 +372,16 @@ function RestaurantDetailPage() {
 	const heroHoursValue =
 		hasHours && restaurant.hours
 			? restaurant.isOpenNow === true && restaurant.hours.close
-				? `until ${restaurant.hours.close}`
-				: `${restaurant.hours.open} - ${restaurant.hours.close}`
+				? `until ${formatTimeToTwelveHour(restaurant.hours.close)}`
+				: formattedHoursRange
 			: null;
 	const tonightHoursLabel = hasHours
 		? restaurant.isOpenNow === true
 			? restaurant.hours?.close
-				? `Open until ${restaurant.hours.close}`
+				? `Open until ${formatTimeToTwelveHour(restaurant.hours.close)}`
 				: "Open now"
 			: restaurant.hours
-				? `Hours ${restaurant.hours.open} - ${restaurant.hours.close}`
+				? `Hours ${formattedHoursRange}`
 				: "Hours listed"
 		: "Hours unavailable";
 	const reviewSummaryCopy = hasReviews
@@ -635,14 +667,16 @@ function RestaurantDetailPage() {
 											</small>
 											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
 												{hasHours
-													? `${restaurant.isOpenNow === true ? "Open now" : "Hours listed"} • ${restaurant.hours?.open} - ${restaurant.hours?.close}`
+													? `${restaurant.isOpenNow === true ? "Open now" : "Hours listed"} • ${formattedHoursRange}`
 													: "Hours unavailable"}
 											</strong>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
 												{hasHours
 													? hasExplicitOpenStatus
 														? "Use the listed hours as one more signal before you leave the shortlist."
-														: "Hours are available, but live open status is not confirmed for this restaurant right now."
+														: hasWebsite
+															? "Hours are listed, but confirm on the restaurant website before going."
+															: "Hours are available, but live open status is not confirmed for this restaurant right now."
 													: "Hours are not available for this restaurant right now."}
 											</p>
 										</div>
