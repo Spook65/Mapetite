@@ -263,8 +263,10 @@ function RestaurantDetailPage() {
 	const hasRatingBreakdown = !!restaurant.ratingBreakdown;
 	const hasMapCoordinates =
 		Number.isFinite(restaurant.latitude) && Number.isFinite(restaurant.longitude);
+	const hasMenuUrl = !!restaurant.menuUrl;
 	const hasWebsite = !!restaurant.website;
 	const hasPhone = !!restaurant.phone;
+	const hasPlanningActions = hasMenuUrl || hasWebsite || hasPhone;
 	const hasAmenities = !!restaurant.amenities?.length;
 	const hasPaymentMethods = !!restaurant.paymentMethods?.length;
 	const ratingBreakdownRows = hasRatingBreakdown
@@ -855,11 +857,14 @@ function RestaurantDetailPage() {
 												{priceRangeLabel || "Varies"}
 											</span>
 										</div>
-										{(hasWebsite || hasPhone) && (
+										{hasPlanningActions && (
 											<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
-												<strong className="text-sm text-[var(--mapetite-text)]">Support</strong>
+												<strong className="text-sm text-[var(--mapetite-text)]">
+													Before you go
+												</strong>
 												<span className="text-right text-sm text-[var(--mapetite-text-soft)]">
 													{[
+														hasMenuUrl ? "Menu" : null,
 														hasWebsite ? "Website" : null,
 														hasPhone ? "Call" : null,
 													]
@@ -900,12 +905,23 @@ function RestaurantDetailPage() {
 										</Button>
 									</div>
 
-									{(hasWebsite || hasPhone) && (
+									{hasPlanningActions && (
 										<div className="border-t border-[rgba(255,236,220,0.08)] pt-4">
 											<small className="block text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.46)]">
 												Before you go
 											</small>
 											<div className="mt-3 grid gap-2">
+												{hasMenuUrl ? (
+													<a
+														href={restaurant.menuUrl}
+														target="_blank"
+														rel="noreferrer"
+														className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+													>
+														<ExternalLink className="size-4" />
+														View menu
+													</a>
+												) : null}
 												{hasWebsite ? (
 													<a
 														href={restaurant.website}
@@ -914,7 +930,7 @@ function RestaurantDetailPage() {
 														className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
 													>
 														<ExternalLink className="size-4" />
-														Website
+														Visit website
 													</a>
 												) : null}
 												{hasPhone ? (
@@ -923,7 +939,7 @@ function RestaurantDetailPage() {
 														className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
 													>
 														<Phone className="size-4" />
-														{restaurant.phone}
+														Call restaurant
 													</a>
 												) : null}
 											</div>
