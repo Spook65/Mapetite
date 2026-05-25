@@ -259,6 +259,8 @@ function RestaurantDetailPage() {
 		: null;
 	const hasVerifiedGalleryImages = galleryImages.length > 0;
 	const hasHours = !!restaurant.hours;
+	const hasExplicitOpenStatus =
+		restaurant.isOpenNow === true || restaurant.isOpenNow === false;
 	const hasReviews = !!restaurant.reviews?.length;
 	const hasRatingBreakdown = !!restaurant.ratingBreakdown;
 	const hasMapCoordinates =
@@ -326,10 +328,30 @@ function RestaurantDetailPage() {
 		] ?? galleryViews[0];
 	const contextTags = [
 		...restaurant.categories.slice(0, 3),
-		hasHours ? (restaurant.isOpenNow ? "Open now" : "Hours vary") : null,
+		hasHours ? (restaurant.isOpenNow === true ? "Open now" : "Hours listed") : null,
 		locationLine || null,
 		...(restaurant.amenities?.slice(0, 2) ?? []),
 	].filter(Boolean) as string[];
+	const heroHoursLabel = hasHours
+		? restaurant.isOpenNow === true
+			? "Open now"
+			: "Hours listed"
+		: null;
+	const heroHoursValue =
+		hasHours && restaurant.hours
+			? restaurant.isOpenNow === true && restaurant.hours.close
+				? `until ${restaurant.hours.close}`
+				: `${restaurant.hours.open} - ${restaurant.hours.close}`
+			: null;
+	const tonightHoursLabel = hasHours
+		? restaurant.isOpenNow === true
+			? restaurant.hours?.close
+				? `Open until ${restaurant.hours.close}`
+				: "Open now"
+			: restaurant.hours
+				? `Hours ${restaurant.hours.open} - ${restaurant.hours.close}`
+				: "Hours listed"
+		: "Hours unavailable";
 	const reviewSummaryCopy = hasReviews
 		? "Use recent reviews and the overall rating together before you commit."
 		: "Rating data is available, even if written reviews are limited for this restaurant.";
@@ -391,13 +413,9 @@ function RestaurantDetailPage() {
 										{hasHours ? (
 											<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 												<strong className="font-semibold text-[var(--mapetite-text)]">
-													{restaurant.isOpenNow ? "Open now" : "Closed"}
+													{heroHoursLabel}
 												</strong>
-												<span>
-													{restaurant.hours?.close
-														? `until ${restaurant.hours.close}`
-														: `${restaurant.hours?.open} - ${restaurant.hours?.close}`}
-												</span>
+												{heroHoursValue ? <span>{heroHoursValue}</span> : null}
 											</div>
 										) : null}
 									</div>
@@ -617,13 +635,15 @@ function RestaurantDetailPage() {
 											</small>
 											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
 												{hasHours
-													? `${restaurant.isOpenNow ? "Open now" : "Hours listed"} • ${restaurant.hours?.open} - ${restaurant.hours?.close}`
-													: "Hours not listed"}
+													? `${restaurant.isOpenNow === true ? "Open now" : "Hours listed"} • ${restaurant.hours?.open} - ${restaurant.hours?.close}`
+													: "Hours unavailable"}
 											</strong>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
 												{hasHours
-													? "Use the current hours as one more signal before you leave the shortlist."
-													: "Open status is not available for this restaurant right now."}
+													? hasExplicitOpenStatus
+														? "Use the listed hours as one more signal before you leave the shortlist."
+														: "Hours are available, but live open status is not confirmed for this restaurant right now."
+													: "Hours are not available for this restaurant right now."}
 											</p>
 										</div>
 										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
@@ -836,13 +856,7 @@ function RestaurantDetailPage() {
 										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
 											<strong className="text-sm text-[var(--mapetite-text)]">Tonight</strong>
 											<span className="text-sm text-[var(--mapetite-text-soft)]">
-												{hasHours
-													? `${restaurant.isOpenNow ? "Open" : "Closed"}${
-															restaurant.hours?.close
-																? ` until ${restaurant.hours.close}`
-																: ""
-														}`
-													: "Hours vary"}
+												{tonightHoursLabel}
 											</span>
 										</div>
 										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">

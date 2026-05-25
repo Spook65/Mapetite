@@ -45,19 +45,6 @@ function parseHours(tags?: Record<string, string>):
 	return { open: match[1], close: match[2] };
 }
 
-function isOpenNow(hours: { open: string; close: string }): boolean {
-	const now = new Date();
-	const current = now.getHours() * 60 + now.getMinutes();
-	const [openH, openM] = hours.open.split(":").map(Number);
-	const [closeH, closeM] = hours.close.split(":").map(Number);
-	const open = openH * 60 + openM;
-	const close = closeH * 60 + closeM;
-	if (close < open) {
-		return current >= open || current <= close;
-	}
-	return current >= open && current <= close;
-}
-
 export async function fetchRestaurantsNearby(
 	latitude: number,
 	longitude: number,
@@ -93,8 +80,6 @@ export async function fetchRestaurantsNearby(
 
 			const categories = parseCategories(tags);
 			const hours = parseHours(tags);
-			const openNow = hours ? isOpenNow(hours) : undefined;
-
 			const addressLine =
 				pickTag(tags, "street") ||
 				pickTag(tags, "road") ||
@@ -136,10 +121,9 @@ export async function fetchRestaurantsNearby(
 				longitude: lon,
 				reviews: [],
 				distance: undefined,
-				isOpenNow: openNow,
+				isOpenNow: undefined,
 				hours,
 			} satisfies Restaurant;
 		})
 		.filter(Boolean) as Restaurant[];
 }
-

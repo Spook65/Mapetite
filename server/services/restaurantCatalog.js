@@ -193,24 +193,6 @@ function parseHours(tags = {}) {
   return { open: match[1], close: match[2] };
 }
 
-function isOpenNow(hours) {
-  if (!hours) return undefined;
-
-  const now = new Date();
-  const current = now.getHours() * 60 + now.getMinutes();
-  const [openHour, openMinute] = hours.open.split(":").map(Number);
-  const [closeHour, closeMinute] = hours.close.split(":").map(Number);
-
-  const open = openHour * 60 + openMinute;
-  const close = closeHour * 60 + closeMinute;
-
-  if (close < open) {
-    return current >= open || current <= close;
-  }
-
-  return current >= open && current <= close;
-}
-
 function parsePriceRange(tags = {}, categories = []) {
   const explicit =
     Number(tags.price_level) ||
@@ -454,7 +436,7 @@ function normalizeElement(element, locationContext = {}) {
     longitude: lon,
     reviews,
     distance,
-    isOpenNow: isOpenNow(hours),
+    isOpenNow: undefined,
     hours,
     photoUrl: buildRestaurantArtworkUrl({
       categories,
@@ -681,11 +663,8 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
       typeof locationContext.longitude === "number"
         ? calculateDistance(locationContext.latitude, locationContext.longitude, latitude, longitude)
         : undefined,
-    isOpenNow: index % 2 === 0,
-    hours: {
-      open: "11:00 AM",
-      close: "10:00 PM",
-    },
+    isOpenNow: undefined,
+    hours: undefined,
     photoUrl: buildRestaurantArtworkUrl({
       categories,
       name: `${city} ${categoryLabel} ${noun}`,
