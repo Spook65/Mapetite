@@ -206,7 +206,11 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 }
 
 const ROAD_NAME_PATTERN =
-  /\b(avenue|ave\.?|street|st\.?|road|rd\.?|boulevard|blvd\.?|drive|dr\.?|lane|ln\.?|highway|hwy\.?|route|way)\b/i;
+  /\b(avenue|ave\.?|street|st\.?|road|rd\.?|boulevard|blvd\.?|drive|dr\.?|lane|ln\.?|highway|hwy\.?|route|way|line|walk|circle|arcade|loop)\b/i;
+const LOW_CONFIDENCE_PLACE_NAME_PATTERN =
+  /\b(line|walk|circle|arcade|loop|under[-\s]?track|ground floor|1f|2f|3f|route)\b/i;
+const RESTAURANT_NAME_SIGNAL_PATTERN =
+  /\b(restaurant|cafe|bar|bistro|diner|kitchen|grill|ramen|sushi|taqueria|izakaya|yakitori|pho|bbq|pizza|noodle|steak|taco)\b/i;
 
 function normalizeComparableText(value = "") {
   return String(value)
@@ -231,6 +235,39 @@ function isLikelyStreetOnlyPlaceName(name, props = {}) {
     normalizedName.endsWith(normalizedStreet) ||
     normalizedStreet.endsWith(normalizedName)
   );
+}
+
+function isLowConfidencePlaceName(name, props = {}) {
+  const value = String(name || "").trim();
+  if (!value) return true;
+  if (value.length < 3) return true;
+  if (/^\d+$/.test(value)) return true;
+
+  const normalizedName = normalizeComparableText(value);
+  const normalizedAddress = normalizeComparableText(
+    props.address_line1 ||
+      [props.housenumber, props.street].filter(Boolean).join(" "),
+  );
+
+  if (
+    normalizedName &&
+    normalizedAddress &&
+    normalizedName === normalizedAddress &&
+    !props.phone &&
+    !props.website &&
+    !props.brand
+  ) {
+    return true;
+  }
+
+  if (
+    LOW_CONFIDENCE_PLACE_NAME_PATTERN.test(value) &&
+    !RESTAURANT_NAME_SIGNAL_PATTERN.test(value)
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 function normalizeAddress(props = {}, fallbackLocation = {}) {
@@ -588,7 +625,7 @@ async function fetchGeoapifyGeocode(query) {
   const url = new URL(`${GEOAPIFY_BASE_URL}/v1/geocode/search`);
   url.searchParams.set("text", query);
   url.searchParams.set("format", "json");
-  url.searchParams.set("limit", "1");
+  url.searchParams.set("limit", "5");
   url.searchParams.set("apiKey", env.geoapifyApiKey);
   return fetchJson(url.toString());
 }
@@ -638,7 +675,8 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
   if (
     !isRestaurantLikePlace(props) ||
     categories.length === 0 ||
-    isLikelyStreetOnlyPlaceName(name, props)
+    isLikelyStreetOnlyPlaceName(name, props) ||
+    isLowConfidencePlaceName(name, props)
   ) {
     return null;
   }
@@ -730,6 +768,63 @@ function buildLocationQuery(location) {
     .join(", ");
 }
 
+function scoreGeoapifyLocationCandidate(result, locationInput = {}) {
+  const wantedCity = normalizeComparableText(locationInput.city || "");
+  const wantedState = normalizeComparableText(locationInput.state || "");
+  const wantedCountry = normalizeComparableText(locationInput.country || "");
+  const resultCity = normalizeComparableText(result.city || result.name || "");
+  const resultState = normalizeComparableText(result.state || "");
+  const resultCountry = normalizeComparableText(result.country || "");
+  const resultFormatted = normalizeComparableText(result.formatted || "");
+
+  let score = 0;
+  if (wantedCity) {
+    if (resultCity === wantedCity) {
+      score += 40;
+    } else if (
+      resultFormatted.includes(wantedCity) ||
+      normalizeComparableText(result.county || "").includes(wantedCity)
+    ) {
+      score += 20;
+    }
+  }
+
+  if (wantedState && resultState === wantedState) {
+    score += 8;
+  }
+
+  if (wantedCountry && resultCountry === wantedCountry) {
+    score += 8;
+  }
+
+  score += Number(result.rank?.importance || 0) * 10;
+  score += Number(result.rank?.popularity || 0) * 3;
+  score += Number(result.rank?.confidence_city_level || result.rank?.confidence || 0) * 6;
+  return score;
+}
+
+function pickBestGeoapifyLocationResult(results = [], locationInput = {}) {
+  const candidates = results.filter((result) => {
+    const latitude = Number(result?.lat);
+    const longitude = Number(result?.lon);
+    return Number.isFinite(latitude) && Number.isFinite(longitude);
+  });
+
+  if (candidates.length === 0) {
+    return null;
+  }
+
+  candidates.sort((a, b) => {
+    const scoreDelta =
+      scoreGeoapifyLocationCandidate(b, locationInput) -
+      scoreGeoapifyLocationCandidate(a, locationInput);
+    if (scoreDelta !== 0) return scoreDelta;
+    return Number(b.rank?.importance || 0) - Number(a.rank?.importance || 0);
+  });
+
+  return candidates[0];
+}
+
 export function isGeoapifyEnabled() {
   return Boolean(env.geoapifyApiKey);
 }
@@ -754,7 +849,10 @@ export async function resolveGeoapifyLocation(locationInput = {}) {
 
   try {
     const data = await fetchGeoapifyGeocode(query);
-    const result = Array.isArray(data?.results) ? data.results[0] : null;
+    const result = pickBestGeoapifyLocationResult(
+      Array.isArray(data?.results) ? data.results : [],
+      locationInput,
+    );
     if (!result) return null;
 
     const latitude = Number(result.lat);
@@ -814,7 +912,7 @@ export async function searchGeoapifyRestaurants(params = {}, locationContext = {
 
   const data = await fetchGeoapifyPlaces(url);
   const features = extractGeoapifyPlacesResponse(data);
-  const restaurants = features
+  let restaurants = features
     .map((feature, index) =>
       normalizeGeoapifyPlace(feature, locationContext, queryCategories, index),
     )

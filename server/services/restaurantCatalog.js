@@ -171,6 +171,45 @@ function hasExplicitReviewCountValue(value) {
   return Number.isFinite(value) && value > 0;
 }
 
+function normalizeWebsiteDomain(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+
+  try {
+    const parsed = new URL(raw);
+    return parsed.hostname.replace(/^www\./i, "").toLowerCase();
+  } catch {
+    return "";
+  }
+}
+
+function normalizePhoneToken(value) {
+  return String(value || "").replace(/\D/g, "");
+}
+
+function normalizeAddressKey(address = {}) {
+  return normalizeRankingToken(
+    [
+      address.street,
+      address.city,
+      address.state,
+      address.country,
+      address.zipCode,
+    ]
+      .filter(Boolean)
+      .join(" "),
+  );
+}
+
+function countVerifiedGalleryImages(restaurant = {}) {
+  if (!Array.isArray(restaurant.galleryImageUrls)) return 0;
+  return restaurant.galleryImageUrls.filter(
+    (imageUrl) =>
+      typeof imageUrl === "string" &&
+      /^https?:\/\//i.test(imageUrl),
+  ).length;
+}
+
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 3959;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -272,24 +311,30 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
   const normalizedRestaurantCategories = (restaurant.categories || [])
     .map(normalizeRankingToken)
     .filter(Boolean);
+  const hasProviderRating = restaurant.ratingSource === "provider";
+  const hasProviderReviews = restaurant.reviewCountSource === "provider";
+  const ratingConfidenceFactor = hasProviderRating
+    ? hasProviderReviews
+      ? 1
+      : 0.82
+    : hasProviderReviews
+      ? 0.72
+      : 0.32;
   const weightedReviewCount =
-    restaurant.reviewCountSource === "provider"
+    hasProviderReviews
       ? Math.min(restaurant.reviewCount || 0, 500)
-      : Math.min(restaurant.reviewCount || 0, 8);
-  const priorWeight =
-    restaurant.ratingSource === "provider" || restaurant.reviewCountSource === "provider"
-      ? 18
-      : 40;
+      : Math.min(restaurant.reviewCount || 0, 4);
+  const priorWeight = hasProviderRating || hasProviderReviews ? 20 : 72;
   const weightedRating =
     ((restaurant.rating || 3.8) * weightedReviewCount + 3.8 * priorWeight) /
     Math.max(1, weightedReviewCount + priorWeight);
-  const ratingScore = weightedRating * 12;
+  const ratingScore = weightedRating * 12 * ratingConfidenceFactor;
   const reviewConfidenceBoost =
-    restaurant.reviewCountSource === "provider"
-      ? Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 4, 8)
-      : Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 1.5, 2);
-  const providerRatingBoost = restaurant.ratingSource === "provider" ? 4 : 0;
-  const providerReviewBoost = restaurant.reviewCountSource === "provider" ? 3 : 0;
+    hasProviderReviews
+      ? Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 4.5, 9)
+      : Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 0.9, 1.2);
+  const providerRatingBoost = hasProviderRating ? 5 : 0;
+  const providerReviewBoost = hasProviderReviews ? 4 : 0;
   const hasSelectedCategoryMatch =
     normalizedSelectedCategories.length > 0 &&
     normalizedRestaurantCategories.some((category) =>
@@ -308,6 +353,7 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
     Number.isFinite(restaurant.latitude) &&
     Number.isFinite(restaurant.longitude) &&
     !(restaurant.latitude === 0 && restaurant.longitude === 0);
+  const verifiedGalleryImageCount = countVerifiedGalleryImages(restaurant);
   const completenessScore =
     (hasStreetAddress ? 3 : hasCityAddress ? 2 : 0) +
     (hasCountryAddress ? 2 : 0) +
@@ -316,7 +362,9 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
     (restaurant.website ? 3 : 0) +
     (restaurant.phone ? 2 : 0) +
     (restaurant.menuUrl ? 2 : 0) +
-    (Array.isArray(restaurant.galleryImageUrls) && restaurant.galleryImageUrls.length > 0 ? 3 : 0);
+    (verifiedGalleryImageCount > 0
+      ? Math.min(verifiedGalleryImageCount * 1.5 + 2, 8)
+      : -1);
   const locationScore =
     (location.city &&
     normalizeRankingToken(restaurant.address?.city) === normalizeRankingToken(location.city)
@@ -340,10 +388,14 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
             : restaurant.distance < 20
               ? 1
               : restaurant.distance > 80
-                ? -10
-                : restaurant.distance > 40
-                  ? -4
-                  : 0
+                ? -60
+                : restaurant.distance > 60
+                  ? -45
+                  : restaurant.distance > 40
+                    ? -25
+                    : restaurant.distance > 25
+                      ? -12
+                      : 0
       : 0) +
     (restaurant.isOpenNow === true ? 2 : 0);
   let penalties = 0;
@@ -364,6 +416,14 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
 
   if ((restaurant.reviewCount || 0) < 5 && (restaurant.rating || 0) >= 4.8) {
     penalties -= 3;
+  }
+
+  if (!hasProviderRating && !hasProviderReviews) {
+    penalties -= 6;
+  }
+
+  if (verifiedGalleryImageCount === 0 && !restaurant.website) {
+    penalties -= 2;
   }
 
   if (restaurant.source === "demo") {
@@ -402,6 +462,159 @@ function rankRestaurantsForSearch(restaurants = [], options = {}) {
 
       return (a.distance ?? Number.POSITIVE_INFINITY) - (b.distance ?? Number.POSITIVE_INFINITY);
     });
+}
+
+function areCoordinatesClose(a, b, maxMeters = 120) {
+  if (
+    !Number.isFinite(a?.latitude) ||
+    !Number.isFinite(a?.longitude) ||
+    !Number.isFinite(b?.latitude) ||
+    !Number.isFinite(b?.longitude)
+  ) {
+    return false;
+  }
+
+  const miles = calculateDistance(a.latitude, a.longitude, b.latitude, b.longitude);
+  return miles * 1609.344 <= maxMeters;
+}
+
+function isDuplicateRestaurantRecord(a, b) {
+  const normalizedNameA = normalizeRankingToken(a?.name);
+  const normalizedNameB = normalizeRankingToken(b?.name);
+  const sameName = Boolean(normalizedNameA && normalizedNameA === normalizedNameB);
+  const sameAddressKey =
+    normalizeAddressKey(a?.address) &&
+    normalizeAddressKey(a?.address) === normalizeAddressKey(b?.address);
+  const sameStreetAndCity = Boolean(
+    normalizeRankingToken(a?.address?.street) &&
+      normalizeRankingToken(a?.address?.street) === normalizeRankingToken(b?.address?.street) &&
+      normalizeRankingToken(a?.address?.city) === normalizeRankingToken(b?.address?.city),
+  );
+  const samePhone =
+    normalizePhoneToken(a?.phone).length >= 7 &&
+    normalizePhoneToken(a?.phone) === normalizePhoneToken(b?.phone);
+  const sameWebsiteDomain =
+    normalizeWebsiteDomain(a?.website) &&
+    normalizeWebsiteDomain(a?.website) === normalizeWebsiteDomain(b?.website);
+  const closeCoordinates = areCoordinatesClose(a, b, 120);
+  const veryCloseCoordinates = areCoordinatesClose(a, b, 50);
+
+  return (
+    (sameName && sameAddressKey) ||
+    (sameName && veryCloseCoordinates) ||
+    (sameName && closeCoordinates && (sameStreetAndCity || samePhone || sameWebsiteDomain)) ||
+    (samePhone && closeCoordinates) ||
+    (sameWebsiteDomain && sameName && closeCoordinates)
+  );
+}
+
+function dedupStrengthScore(restaurant = {}) {
+  return (
+    (restaurant.ratingSource === "provider" ? 14 : 0) +
+    (restaurant.reviewCountSource === "provider" ? 12 : 0) +
+    Math.min((restaurant.reviewCount || 0) / 30, 8) +
+    (restaurant.website ? 5 : 0) +
+    (restaurant.phone ? 4 : 0) +
+    (restaurant.menuUrl ? 3 : 0) +
+    (restaurant.hours ? 2 : 0) +
+    countVerifiedGalleryImages(restaurant) * 3 +
+    (restaurant.address?.street ? 3 : 0) +
+    (restaurant.address?.city ? 2 : 0)
+  );
+}
+
+function mergeRestaurantRecords(primary, secondary) {
+  const merged = {
+    ...secondary,
+    ...primary,
+    address: {
+      ...(secondary.address || {}),
+      ...(primary.address || {}),
+    },
+  };
+
+  merged.categories = [
+    ...new Set([...(primary.categories || []), ...(secondary.categories || [])]),
+  ];
+
+  if (!merged.website && secondary.website) merged.website = secondary.website;
+  if (!merged.phone && secondary.phone) merged.phone = secondary.phone;
+  if (!merged.menuUrl && secondary.menuUrl) merged.menuUrl = secondary.menuUrl;
+  if (!merged.hours && secondary.hours) merged.hours = secondary.hours;
+  if (!merged.hoursSource && secondary.hoursSource) merged.hoursSource = secondary.hoursSource;
+  if (!merged.geoapifyPlaceId && secondary.geoapifyPlaceId) {
+    merged.geoapifyPlaceId = secondary.geoapifyPlaceId;
+  }
+
+  merged.galleryImageUrls = [
+    ...new Set([...(primary.galleryImageUrls || []), ...(secondary.galleryImageUrls || [])]),
+  ];
+
+  merged.galleryPhotoAttributions = [
+    ...(Array.isArray(primary.galleryPhotoAttributions)
+      ? primary.galleryPhotoAttributions
+      : []),
+    ...(Array.isArray(secondary.galleryPhotoAttributions)
+      ? secondary.galleryPhotoAttributions
+      : []),
+  ];
+
+  if (
+    (!merged.photoUrl || !/^https?:\/\//i.test(merged.photoUrl)) &&
+    secondary.photoUrl &&
+    /^https?:\/\//i.test(secondary.photoUrl)
+  ) {
+    merged.photoUrl = secondary.photoUrl;
+  }
+
+  const secondaryRatingSource = secondary.ratingSource === "provider";
+  const primaryRatingSource = primary.ratingSource === "provider";
+  if (!primaryRatingSource && secondaryRatingSource) {
+    merged.rating = secondary.rating;
+    merged.ratingSource = secondary.ratingSource;
+  }
+
+  const secondaryReviewSource = secondary.reviewCountSource === "provider";
+  const primaryReviewSource = primary.reviewCountSource === "provider";
+  if (!primaryReviewSource && secondaryReviewSource) {
+    merged.reviewCount = secondary.reviewCount;
+    merged.reviewCountSource = secondary.reviewCountSource;
+  } else if (!secondaryReviewSource && !primaryReviewSource) {
+    merged.reviewCount = Math.max(primary.reviewCount || 0, secondary.reviewCount || 0);
+  }
+
+  if (!Number.isFinite(merged.distance) && Number.isFinite(secondary.distance)) {
+    merged.distance = secondary.distance;
+  } else if (Number.isFinite(merged.distance) && Number.isFinite(secondary.distance)) {
+    merged.distance = Math.min(merged.distance, secondary.distance);
+  }
+
+  return merged;
+}
+
+function deduplicateRestaurants(restaurants = []) {
+  const deduped = [];
+
+  for (const restaurant of restaurants) {
+    const matchIndex = deduped.findIndex((existing) =>
+      isDuplicateRestaurantRecord(existing, restaurant),
+    );
+
+    if (matchIndex === -1) {
+      deduped.push(restaurant);
+      continue;
+    }
+
+    const existing = deduped[matchIndex];
+    const existingScore = dedupStrengthScore(existing);
+    const incomingScore = dedupStrengthScore(restaurant);
+    const primary = existingScore >= incomingScore ? existing : restaurant;
+    const secondary = primary === existing ? restaurant : existing;
+
+    deduped[matchIndex] = mergeRestaurantRecords(primary, secondary);
+  }
+
+  return deduped;
 }
 
 function buildRatingBreakdown(rating, reviewCount) {
@@ -936,12 +1149,33 @@ async function ensureRestaurantMenu(restaurant) {
   return restaurant;
 }
 
-async function enrichSearchRestaurants(restaurants = [], limit = 8) {
-  const visibleRestaurants = restaurants.slice(0, limit);
-  const enrichedVisible = await Promise.all(
-    visibleRestaurants.map((restaurant) => ensureRestaurantMedia(restaurant)),
+async function enrichSearchRestaurants(restaurants = [], limit = 16) {
+  if (restaurants.length === 0) {
+    return restaurants;
+  }
+
+  const enrichableIndexes = restaurants
+    .map((restaurant, index) => ({
+      index,
+      restaurant,
+      priority:
+        (restaurant.website ? 8 : 0) +
+        (restaurant.phone ? 1 : 0) +
+        (countVerifiedGalleryImages(restaurant) === 0 ? 2 : 0),
+    }))
+    .sort((a, b) => b.priority - a.priority)
+    .slice(0, Math.min(limit, restaurants.length));
+
+  const enrichedByIndex = new Map();
+  await Promise.all(
+    enrichableIndexes.map(async ({ index, restaurant }) => {
+      enrichedByIndex.set(index, await ensureRestaurantMedia(restaurant));
+    }),
   );
-  return [...enrichedVisible, ...restaurants.slice(limit)];
+
+  return restaurants.map((restaurant, index) =>
+    enrichedByIndex.get(index) || restaurant,
+  );
 }
 
 function rememberRestaurants(restaurants) {
@@ -1000,6 +1234,7 @@ export async function searchRestaurants(params = {}) {
     try {
       const payload = await searchGeoapifyRestaurants(params, resolvedLocation);
       if (payload.restaurants.length > 0) {
+        payload.restaurants = deduplicateRestaurants(payload.restaurants);
         payload.restaurants = rankRestaurantsForSearch(payload.restaurants, {
           selectedCategories: params.categories,
           location: resolvedLocation,
@@ -1041,6 +1276,7 @@ export async function searchRestaurants(params = {}) {
       );
     }
 
+    restaurants = deduplicateRestaurants(restaurants);
     restaurants = rankRestaurantsForSearch(restaurants, {
       selectedCategories: params.categories,
       location: resolvedLocation,
