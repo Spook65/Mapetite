@@ -672,11 +672,11 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
   const placeId = props.place_id || props.placeId || `${lat},${lon}`;
   const name = props.name || props.brand || props.address_line1 || "Restaurant";
   const categories = normalizeDisplayCategories(props.categories || [], queryCategories);
+  const lowConfidenceName = isLowConfidencePlaceName(name, props);
   if (
     !isRestaurantLikePlace(props) ||
     categories.length === 0 ||
-    isLikelyStreetOnlyPlaceName(name, props) ||
-    isLowConfidencePlaceName(name, props)
+    isLikelyStreetOnlyPlaceName(name, props)
   ) {
     return null;
   }
@@ -759,6 +759,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
       props.payment_diners === "yes" ? "Diners Club" : null,
     ].filter(Boolean),
     source: "geoapify",
+    nameLooksLowConfidence: lowConfidenceName,
   };
 }
 

@@ -316,15 +316,15 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
   const ratingConfidenceFactor = hasProviderRating
     ? hasProviderReviews
       ? 1
-      : 0.82
+      : 0.88
     : hasProviderReviews
-      ? 0.72
-      : 0.32;
+      ? 0.78
+      : 0.5;
   const weightedReviewCount =
     hasProviderReviews
       ? Math.min(restaurant.reviewCount || 0, 500)
-      : Math.min(restaurant.reviewCount || 0, 4);
-  const priorWeight = hasProviderRating || hasProviderReviews ? 20 : 72;
+      : Math.min(restaurant.reviewCount || 0, 12);
+  const priorWeight = hasProviderRating || hasProviderReviews ? 20 : 44;
   const weightedRating =
     ((restaurant.rating || 3.8) * weightedReviewCount + 3.8 * priorWeight) /
     Math.max(1, weightedReviewCount + priorWeight);
@@ -332,7 +332,7 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
   const reviewConfidenceBoost =
     hasProviderReviews
       ? Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 4.5, 9)
-      : Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 0.9, 1.2);
+      : Math.min(Math.log10((restaurant.reviewCount || 0) + 1) * 1.2, 2);
   const providerRatingBoost = hasProviderRating ? 5 : 0;
   const providerReviewBoost = hasProviderReviews ? 4 : 0;
   const hasSelectedCategoryMatch =
@@ -388,13 +388,13 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
             : restaurant.distance < 20
               ? 1
               : restaurant.distance > 80
-                ? -60
+                ? -44
                 : restaurant.distance > 60
-                  ? -45
+                  ? -34
                   : restaurant.distance > 40
-                    ? -25
+                    ? -20
                     : restaurant.distance > 25
-                      ? -12
+                      ? -8
                       : 0
       : 0) +
     (restaurant.isOpenNow === true ? 2 : 0);
@@ -419,11 +419,18 @@ function scoreRestaurantForSearch(restaurant, options = {}) {
   }
 
   if (!hasProviderRating && !hasProviderReviews) {
-    penalties -= 6;
+    penalties -= 2;
   }
 
   if (verifiedGalleryImageCount === 0 && !restaurant.website) {
-    penalties -= 2;
+    penalties -= 1;
+  }
+
+  if (restaurant.nameLooksLowConfidence) {
+    penalties -= 6;
+    if (!restaurant.website && !restaurant.phone) {
+      penalties -= 3;
+    }
   }
 
   if (restaurant.source === "demo") {
