@@ -9,11 +9,31 @@ import {
   resolveRestaurantMedia,
   resolveRestaurantMenuUrl,
 } from "./restaurantMedia.js";
+import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
 
 const SEARCH_RADIUS_METERS = 3000;
-const SEARCH_CACHE_TTL_MS = 5 * 60 * 1000;
-const searchCache = new Map();
-const restaurantCache = new Map();
+const SEARCH_CACHE_SUCCESS_TTL_MS = 60 * 60 * 1000;
+const SEARCH_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000;
+const SEARCH_CACHE_MAX_SIZE = 500;
+const DETAIL_CACHE_TTL_MS = 6 * 60 * 60 * 1000;
+const DETAIL_CACHE_MAX_SIZE = 1000;
+const LOCATION_CACHE_SUCCESS_TTL_MS = 24 * 60 * 60 * 1000;
+const LOCATION_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000;
+const LOCATION_CACHE_MAX_SIZE = 500;
+
+const searchCache = new InMemoryTtlCache({
+  defaultTtlMs: SEARCH_CACHE_SUCCESS_TTL_MS,
+  maxSize: SEARCH_CACHE_MAX_SIZE,
+});
+const restaurantCache = new InMemoryTtlCache({
+  defaultTtlMs: DETAIL_CACHE_TTL_MS,
+  maxSize: DETAIL_CACHE_MAX_SIZE,
+});
+const locationCache = new InMemoryTtlCache({
+  defaultTtlMs: LOCATION_CACHE_SUCCESS_TTL_MS,
+  maxSize: LOCATION_CACHE_MAX_SIZE,
+});
+const LOCATION_CACHE_MISS = Object.freeze({ missing: true });
 
 const CHEF_BY_CUISINE = {
   Noodles: ["Chef Takeshi Yamamoto", "Chef Li Wei", "Chef Nguyen Pham"],
@@ -890,8 +910,24 @@ async function resolveLocation(locationInput = {}) {
     };
   }
 
+  const locationCacheKey = buildLocationCacheKey(locationInput);
+  if (locationCacheKey) {
+    const cachedLocation = locationCache.get(locationCacheKey);
+    if (cachedLocation === LOCATION_CACHE_MISS) {
+      return null;
+    }
+    if (cachedLocation) {
+      return cachedLocation;
+    }
+  }
+
   const geoapifyLocation = await resolveGeoapifyLocation(locationInput);
   if (geoapifyLocation) {
+    if (locationCacheKey) {
+      locationCache.set(locationCacheKey, geoapifyLocation, {
+        ttlMs: LOCATION_CACHE_SUCCESS_TTL_MS,
+      });
+    }
     return geoapifyLocation;
   }
 
@@ -899,7 +935,14 @@ async function resolveLocation(locationInput = {}) {
     .filter(Boolean)
     .join(", ");
 
-  if (!query) return null;
+  if (!query) {
+    if (locationCacheKey) {
+      locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
+        ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
+      });
+    }
+    return null;
+  }
 
   const url = new URL("https://nominatim.openstreetmap.org/search");
   url.searchParams.set("q", query);
@@ -907,41 +950,75 @@ async function resolveLocation(locationInput = {}) {
   url.searchParams.set("addressdetails", "1");
   url.searchParams.set("limit", "1");
 
-  const response = await fetch(url.toString(), {
-    headers: {
-      "User-Agent": "Mapetite/1.0 (restaurant discovery)",
-      Accept: "application/json",
-    },
-  });
+  try {
+    const response = await fetch(url.toString(), {
+      headers: {
+        "User-Agent": "Mapetite/1.0 (restaurant discovery)",
+        Accept: "application/json",
+      },
+    });
 
-  if (!response.ok) {
+    if (!response.ok) {
+      if (locationCacheKey) {
+        locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
+          ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
+        });
+      }
+      return null;
+    }
+
+    const data = await response.json();
+    const result = data?.[0];
+    if (!result) {
+      if (locationCacheKey) {
+        locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
+          ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
+        });
+      }
+      return null;
+    }
+
+    const address = result.address || {};
+    const latitude = Number(result.lat);
+    const longitude = Number(result.lon);
+    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
+      if (locationCacheKey) {
+        locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
+          ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
+        });
+      }
+      return null;
+    }
+
+    const resolvedLocation = {
+      city:
+        address.city ||
+        address.town ||
+        address.village ||
+        address.county ||
+        locationInput.city ||
+        "",
+      state: address.state || locationInput.state || "",
+      country: address.country || locationInput.country || "",
+      latitude,
+      longitude,
+    };
+
+    if (locationCacheKey) {
+      locationCache.set(locationCacheKey, resolvedLocation, {
+        ttlMs: LOCATION_CACHE_SUCCESS_TTL_MS,
+      });
+    }
+
+    return resolvedLocation;
+  } catch {
+    if (locationCacheKey) {
+      locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
+        ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
+      });
+    }
     return null;
   }
-
-  const data = await response.json();
-  const result = data?.[0];
-  if (!result) return null;
-
-  const address = result.address || {};
-  const latitude = Number(result.lat);
-  const longitude = Number(result.lon);
-  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-    return null;
-  }
-
-  return {
-    city:
-      address.city ||
-      address.town ||
-      address.village ||
-      address.county ||
-      locationInput.city ||
-      "",
-    state: address.state || locationInput.state || "",
-    country: address.country || locationInput.country || "",
-    latitude,
-    longitude,
-  };
 }
 
 async function fetchOverpass(query) {
@@ -1006,6 +1083,19 @@ function buildSearchCacheKey(params, location, provider) {
     radiusMeters: params.radiusMeters || SEARCH_RADIUS_METERS,
     categories: [...(params.categories || [])].sort(),
   });
+}
+
+function normalizeLocationToken(value) {
+  return String(value || "").trim().toLowerCase();
+}
+
+function buildLocationCacheKey(locationInput = {}) {
+  const city = normalizeLocationToken(locationInput.city);
+  const state = normalizeLocationToken(locationInput.state);
+  const country = normalizeLocationToken(locationInput.country);
+  if (!city && !state && !country) return "";
+
+  return JSON.stringify({ city, state, country });
 }
 
 function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCategories = []) {
@@ -1207,21 +1297,21 @@ function readKnownRestaurants() {
 }
 
 function readSearchCache(key) {
-  const cached = searchCache.get(key);
-  if (!cached) return null;
-  if (cached.expiresAt < Date.now()) {
-    searchCache.delete(key);
-    return null;
-  }
-
-  return cached.payload;
+  return searchCache.get(key) || null;
 }
 
-function writeSearchCache(key, payload) {
-  searchCache.set(key, {
-    expiresAt: Date.now() + SEARCH_CACHE_TTL_MS,
-    payload,
-  });
+function writeSearchCache(key, payload, options = {}) {
+  const restaurantCount = Array.isArray(payload?.restaurants)
+    ? payload.restaurants.length
+    : 0;
+  const ttlMs =
+    Number(options.ttlMs) > 0
+      ? Number(options.ttlMs)
+      : restaurantCount > 0
+        ? SEARCH_CACHE_SUCCESS_TTL_MS
+        : SEARCH_CACHE_NEGATIVE_TTL_MS;
+
+  searchCache.set(key, payload, { ttlMs });
 }
 
 export async function searchRestaurants(params = {}) {
@@ -1297,8 +1387,7 @@ export async function searchRestaurants(params = {}) {
 
     payload.restaurants = await enrichSearchRestaurants(payload.restaurants);
 
-    const osmCacheKey = buildSearchCacheKey(params, resolvedLocation, "osm");
-    writeSearchCache(osmCacheKey, payload);
+    writeSearchCache(cacheKey, payload);
     rememberRestaurants(restaurants);
 
     return payload;
@@ -1310,8 +1399,9 @@ export async function searchRestaurants(params = {}) {
       location: resolvedLocation,
       count: restaurants.length,
     };
-    const demoCacheKey = buildSearchCacheKey(params, resolvedLocation, "demo");
-    writeSearchCache(demoCacheKey, payload);
+    writeSearchCache(cacheKey, payload, {
+      ttlMs: SEARCH_CACHE_NEGATIVE_TTL_MS,
+    });
     rememberRestaurants(restaurants);
     return payload;
   }

@@ -1,7 +1,12 @@
+import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
+
 const IMAGE_TIMEOUT_MS = 6000;
 const MAX_MEDIA_IMAGES = 6;
 const WIKIMEDIA_COMMONS_API_URL = "https://commons.wikimedia.org/w/api.php";
 const OPENVERSE_BASE_URL = "https://api.openverse.org/v1/images/";
+const MEDIA_CACHE_SUCCESS_TTL_MS = 24 * 60 * 60 * 1000;
+const MEDIA_CACHE_NEGATIVE_TTL_MS = 60 * 60 * 1000;
+const MEDIA_CACHE_MAX_SIZE = 1000;
 const MENU_LINK_KEYWORDS = ["menu", "menus", "food-menu", "drink-menu", "dining"];
 const MENU_LINK_BLOCKLIST = [
   "facebook",
@@ -47,7 +52,10 @@ const CUISINE_THEMES = {
   default: { label: "Dining", emoji: "🍽️", colors: ["#0ea5e9", "#14b8a6"] },
 };
 
-const imageCache = new Map();
+const imageCache = new InMemoryTtlCache({
+  defaultTtlMs: MEDIA_CACHE_SUCCESS_TTL_MS,
+  maxSize: MEDIA_CACHE_MAX_SIZE,
+});
 
 function stableHash(value) {
   return String(value)
@@ -1131,7 +1139,9 @@ export async function resolveRestaurantMedia(options = {}) {
   }
 
   const media = { images, attributions };
-  imageCache.set(cacheKey, media);
+  imageCache.set(cacheKey, media, {
+    ttlMs: images.length > 0 ? MEDIA_CACHE_SUCCESS_TTL_MS : MEDIA_CACHE_NEGATIVE_TTL_MS,
+  });
   return media;
 }
 
