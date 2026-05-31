@@ -6,7 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { reverseGeocode } from "@/lib/api/nominatim";
-import { searchRestaurants } from "@/lib/search-restaurants";
+import { getRestaurantById, searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
@@ -45,6 +45,66 @@ type RestaurantsSearch = {
 
 const INITIAL_VISIBLE_RESULTS = 36;
 const RESULTS_BATCH_SIZE = 36;
+const FAVORITE_SNAPSHOTS_STORAGE_KEY = "mapetite-favorite-snapshots-v1";
+
+function loadFavoriteSnapshotsFromStorage(): Record<string, Restaurant> {
+	if (typeof window === "undefined") return {};
+
+	try {
+		const raw = window.localStorage.getItem(FAVORITE_SNAPSHOTS_STORAGE_KEY);
+		if (!raw) return {};
+
+		const parsed = JSON.parse(raw) as Record<string, unknown>;
+		if (!parsed || typeof parsed !== "object") return {};
+
+		const snapshots: Record<string, Restaurant> = {};
+		for (const [id, value] of Object.entries(parsed)) {
+			if (!id || !value || typeof value !== "object") continue;
+			const restaurant = value as Restaurant;
+			if (typeof restaurant.id !== "string" || restaurant.id !== id) continue;
+			snapshots[id] = restaurant;
+		}
+		return snapshots;
+	} catch {
+		return {};
+	}
+}
+
+function persistFavoriteSnapshotsToStorage(
+	snapshots: Record<string, Restaurant>,
+) {
+	if (typeof window === "undefined") return;
+	try {
+		window.localStorage.setItem(
+			FAVORITE_SNAPSHOTS_STORAGE_KEY,
+			JSON.stringify(snapshots),
+		);
+	} catch {
+		// Ignore storage write failures (private mode/storage quota).
+	}
+}
+
+function getRestaurantSnapshotCompleteness(restaurant: Restaurant) {
+	let score = 0;
+	if (restaurant.name) score += 1;
+	if (restaurant.address?.street) score += 1;
+	if (restaurant.address?.city) score += 1;
+	if (Number.isFinite(restaurant.latitude) && Number.isFinite(restaurant.longitude))
+		score += 1;
+	if (Array.isArray(restaurant.categories) && restaurant.categories.length > 0)
+		score += 1;
+	if (restaurant.rating != null) score += 1;
+	if (restaurant.reviewCount != null) score += 1;
+	if (restaurant.priceRange != null) score += 1;
+	if (restaurant.hours?.open && restaurant.hours?.close) score += 1;
+	if (restaurant.photoUrl) score += 1;
+	if (restaurant.galleryImageUrls?.length) score += 1;
+	if (restaurant.website) score += 1;
+	if (restaurant.phone) score += 1;
+	if (restaurant.menuUrl) score += 1;
+	if (restaurant.source) score += 1;
+	return score;
+}
 
 export const Route = createFileRoute("/restaurants")({
 	component: App,
@@ -201,13 +261,18 @@ function RestaurantSearchPage() {
 	// Local component state (not persisted)
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
 	const [isSearching, setIsSearching] = useState(false);
+	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
 	const [visibleResultsCount, setVisibleResultsCount] = useState(
 		INITIAL_VISIBLE_RESULTS,
 	);
 	const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(
 		null,
 	);
+	const [favoriteSnapshots, setFavoriteSnapshots] = useState<
+		Record<string, Restaurant>
+	>(() => loadFavoriteSnapshotsFromStorage());
 	const activeSearchIdRef = useRef(0);
+	const favoriteHydrationAttemptsRef = useRef<Set<string>>(new Set());
 
 	const categories = [
 		"Noodles",
@@ -337,10 +402,154 @@ function RestaurantSearchPage() {
 
 	// Memoize favorite IDs Set to avoid recreating on every render.
 	// Only recomputes when favoritesData?.favorites array reference changes.
+	const favoriteIdList = favoritesData?.favorites ?? [];
 	const favoriteIds = useMemo(
-		() => new Set(favoritesData?.favorites ?? []),
-		[favoritesData?.favorites],
+		() => new Set(favoriteIdList),
+		[favoriteIdList],
 	);
+
+	const upsertFavoriteSnapshots = useCallback((incoming: Restaurant[]) => {
+		setFavoriteSnapshots((previous) => {
+			let changed = false;
+			const next = { ...previous };
+
+			for (const restaurant of incoming) {
+				if (!restaurant?.id) continue;
+				const existing = previous[restaurant.id];
+				if (!existing) {
+					next[restaurant.id] = restaurant;
+					changed = true;
+					continue;
+				}
+
+				const existingScore = getRestaurantSnapshotCompleteness(existing);
+				const incomingScore = getRestaurantSnapshotCompleteness(restaurant);
+				if (incomingScore > existingScore) {
+					next[restaurant.id] = restaurant;
+					changed = true;
+				}
+			}
+
+			return changed ? next : previous;
+		});
+	}, []);
+
+	useEffect(() => {
+		persistFavoriteSnapshotsToStorage(favoriteSnapshots);
+	}, [favoriteSnapshots]);
+
+	const favoriteRestaurantLookup = useMemo(() => {
+		const map = new Map<string, Restaurant>();
+		for (const restaurant of restaurants) {
+			if (favoriteIds.has(restaurant.id)) {
+				map.set(restaurant.id, restaurant);
+			}
+		}
+		for (const favoriteId of favoriteIdList) {
+			if (map.has(favoriteId)) continue;
+			const snapshot = favoriteSnapshots[favoriteId];
+			if (snapshot) {
+				map.set(favoriteId, snapshot);
+			}
+		}
+		return map;
+	}, [restaurants, favoriteIds, favoriteIdList, favoriteSnapshots]);
+
+	const favoriteRestaurants = useMemo(
+		() =>
+			favoriteIdList
+				.map((favoriteId) => favoriteRestaurantLookup.get(favoriteId))
+				.filter(Boolean) as Restaurant[],
+		[favoriteIdList, favoriteRestaurantLookup],
+	);
+
+	useEffect(() => {
+		if (!favoriteIdList.length || !restaurants.length) return;
+		const visibleFavorites = restaurants.filter((restaurant) =>
+			favoriteIds.has(restaurant.id),
+		);
+		if (visibleFavorites.length) {
+			upsertFavoriteSnapshots(visibleFavorites);
+		}
+	}, [favoriteIdList, restaurants, favoriteIds, upsertFavoriteSnapshots]);
+
+	useEffect(() => {
+		const attempts = favoriteHydrationAttemptsRef.current;
+		for (const attemptedId of Array.from(attempts)) {
+			if (!favoriteIds.has(attemptedId)) {
+				attempts.delete(attemptedId);
+			}
+		}
+	}, [favoriteIds]);
+
+	useEffect(() => {
+		setFavoriteSnapshots((previous) => {
+			if (!Object.keys(previous).length) return previous;
+			if (!favoriteIdList.length) return {};
+
+			let changed = false;
+			const next: Record<string, Restaurant> = {};
+			for (const favoriteId of favoriteIdList) {
+				const snapshot = previous[favoriteId];
+				if (snapshot) {
+					next[favoriteId] = snapshot;
+				}
+			}
+
+			if (Object.keys(next).length !== Object.keys(previous).length) {
+				changed = true;
+			}
+
+			return changed ? next : previous;
+		});
+	}, [favoriteIdList]);
+
+	useEffect(() => {
+		if (!favoriteIdList.length) return;
+
+		const missingFavoriteIds = favoriteIdList.filter(
+			(favoriteId) =>
+				!favoriteRestaurantLookup.has(favoriteId) &&
+				!favoriteHydrationAttemptsRef.current.has(favoriteId),
+		);
+		if (!missingFavoriteIds.length) return;
+
+		for (const favoriteId of missingFavoriteIds) {
+			favoriteHydrationAttemptsRef.current.add(favoriteId);
+		}
+
+		let cancelled = false;
+		setIsHydratingFavorites(true);
+
+		(async () => {
+			const fetchedFavorites = await Promise.all(
+				missingFavoriteIds.map(async (favoriteId) => {
+					try {
+						return await getRestaurantById(favoriteId);
+					} catch {
+						return null;
+					}
+				}),
+			);
+
+			if (cancelled) return;
+
+			const resolvedFavorites = fetchedFavorites.filter(
+				(restaurant): restaurant is Restaurant => !!restaurant,
+			);
+			if (resolvedFavorites.length) {
+				upsertFavoriteSnapshots(resolvedFavorites);
+			}
+		})().finally(() => {
+			if (!cancelled) {
+				setIsHydratingFavorites(false);
+			}
+		});
+
+		return () => {
+			cancelled = true;
+		};
+	}, [favoriteIdList, favoriteRestaurantLookup, upsertFavoriteSnapshots]);
 
 	// Memoize filtered and sorted restaurant list to prevent unnecessary re-renders.
 	// This expensive operation (filtering + sorting large arrays) only runs when:
@@ -350,9 +559,7 @@ function RestaurantSearchPage() {
 	// Note: location is NOT a dependency because distance is pre-calculated in restaurant objects.
 	const displayedRestaurants = useMemo(() => {
 		// Start with favorites filter if enabled, otherwise use all restaurants
-		let filtered = showFavorites
-			? restaurants.filter((r) => favoriteIds.has(r.id))
-			: restaurants;
+		let filtered = showFavorites ? favoriteRestaurants : restaurants;
 
 		// Apply price filter - only filter if priceRange exists and is valid
 		filtered = filtered.filter((r) => {
@@ -399,8 +606,8 @@ function RestaurantSearchPage() {
 		return sorted;
 	}, [
 		restaurants,
+		favoriteRestaurants,
 		showFavorites,
-		favoriteIds,
 		priceFilter,
 		minRating,
 		openNowOnly,
@@ -411,6 +618,7 @@ function RestaurantSearchPage() {
 		setVisibleResultsCount(INITIAL_VISIBLE_RESULTS);
 	}, [
 		restaurants,
+		favoriteRestaurants,
 		selectedCategories,
 		priceFilter,
 		minRating,
@@ -504,19 +712,28 @@ function RestaurantSearchPage() {
 			.join(" ");
 	};
 
-	const totalResultsCount = restaurants.length;
+	const totalResultsCount = showFavorites
+		? favoriteRestaurants.length
+		: restaurants.length;
 	const matchingResultsCount = displayedRestaurants.length;
 	const shownResultsCount = visibleRestaurants.length;
 	const hasMoreResults = shownResultsCount < matchingResultsCount;
+	const hasSearchResults = restaurants.length > 0;
+	const hasFavoriteResults = favoriteRestaurants.length > 0;
+	const hasResultsForCurrentView = showFavorites ? hasFavoriteResults : hasSearchResults;
 	const selectedRestaurant = useMemo(
 		() =>
 			selectedRestaurantId
 				? displayedRestaurants.find(
-						(restaurant) => restaurant.id === selectedRestaurantId,
-					) ?? restaurants.find((restaurant) => restaurant.id === selectedRestaurantId) ??
-					null
-				: null,
-		[selectedRestaurantId, displayedRestaurants, restaurants],
+							(restaurant) => restaurant.id === selectedRestaurantId,
+						) ??
+						favoriteRestaurants.find(
+							(restaurant) => restaurant.id === selectedRestaurantId,
+						) ??
+						restaurants.find((restaurant) => restaurant.id === selectedRestaurantId) ??
+						null
+					: null,
+		[selectedRestaurantId, displayedRestaurants, favoriteRestaurants, restaurants],
 	);
 	const hasActiveFilters =
 		selectedCategories.size > 0 ||
@@ -703,8 +920,8 @@ function RestaurantSearchPage() {
 									{showFavorites ? "Viewing favorites" : "Favorites only"}
 								</Button>
 
-								{restaurants.length > 0 && (
-									<Button
+									{hasResultsForCurrentView && (
+										<Button
 										type="button"
 										variant="outline"
 										onClick={() => setShowMobileFilters(true)}
@@ -852,8 +1069,8 @@ function RestaurantSearchPage() {
 						</div>
 					)}
 
-					{restaurants.length > 0 && (
-						<section className="mapetite-panel mb-4 hidden p-5 md:grid md:gap-5">
+						{hasResultsForCurrentView && (
+							<section className="mapetite-panel mb-4 hidden p-5 md:grid md:gap-5">
 							<div className="flex flex-wrap items-center justify-between gap-4">
 								<div>
 									<div className="mapetite-eyebrow">Refine search</div>
@@ -972,8 +1189,8 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
-					{restaurants.length > 0 && (
-						<section className="grid gap-6 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] min-[1261px]:items-start">
+						{hasResultsForCurrentView && (
+							<section className="grid gap-6 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] min-[1261px]:items-start">
 							<div className="grid gap-4">
 								<div className="mapetite-panel flex flex-wrap items-center justify-between gap-3 px-5 py-4">
 									<div>
@@ -1269,9 +1486,9 @@ function RestaurantSearchPage() {
 									</div>
 								)}
 
-								{restaurants.length > 0 &&
-									displayedRestaurants.length === 0 &&
-									!showFavorites && (
+									{hasResultsForCurrentView &&
+										displayedRestaurants.length === 0 &&
+										!showFavorites && (
 										<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
 											<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 												<Filter className="size-5" />
@@ -1497,8 +1714,8 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
-					{restaurants.length === 0 && !isSearching && (
-						<section className="mt-6">
+						{!showFavorites && restaurants.length === 0 && !isSearching && (
+							<section className="mt-6">
 							<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
 								<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 									<Search className="size-5" />
@@ -1515,21 +1732,25 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
-					{showFavorites &&
-						displayedRestaurants.length === 0 &&
-						restaurants.length > 0 && (
-							<section className="mt-6">
-								<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
-									<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
-									<div>
-										<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-											No favorites yet
-										</h3>
-										<p className="mapetite-muted-copy mt-2 text-sm">
-											Save restaurants from the list to collect them here.
-										</p>
-									</div>
-									<div>
+						{showFavorites &&
+							!isHydratingFavorites &&
+							displayedRestaurants.length === 0 && (
+								<section className="mt-6">
+									<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+										<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
+										<div>
+											<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+												{favoriteIdList.length === 0
+													? "No favorites yet"
+													: "No favorite matches for these filters"}
+											</h3>
+											<p className="mapetite-muted-copy mt-2 text-sm">
+												{favoriteIdList.length === 0
+													? "Save restaurants from the list to collect them here."
+													: "Try adjusting filters or sort to widen your saved shortlist."}
+											</p>
+										</div>
+										<div>
 										<Button
 											type="button"
 											onClick={() => setShowFavorites(false)}
@@ -1539,9 +1760,25 @@ function RestaurantSearchPage() {
 											Browse restaurants
 										</Button>
 									</div>
-							</div>
-						</section>
-					)}
+								</div>
+							</section>
+						)}
+
+						{showFavorites && isHydratingFavorites && displayedRestaurants.length === 0 && (
+							<section className="mt-6">
+								<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+									<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
+									<div>
+										<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											Loading saved favorites
+										</h3>
+										<p className="mapetite-muted-copy mt-2 text-sm">
+											Retrieving saved restaurants that are outside the current search list.
+										</p>
+									</div>
+								</div>
+							</section>
+						)}
 				</div>
 
 				{selectedRestaurant && (
