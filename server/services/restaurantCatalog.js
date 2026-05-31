@@ -1022,12 +1022,14 @@ async function resolveLocation(locationInput = {}) {
 }
 
 async function fetchOverpass(query) {
+  const body = new URLSearchParams({ data: query }).toString();
   const response = await fetch("https://overpass-api.de/api/interpreter", {
     method: "POST",
-    body: query,
+    body,
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "application/json",
+      Accept: "*/*",
+      "User-Agent": "Mapetite/1.0 (+https://mapetite.local)",
     },
   });
 
