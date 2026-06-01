@@ -12,6 +12,7 @@ import {
 import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
 
 const SEARCH_RADIUS_METERS = 3000;
+const OSM_FALLBACK_MAX_RESULTS = 100;
 const SEARCH_CACHE_SUCCESS_TTL_MS = 60 * 60 * 1000;
 const SEARCH_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000;
 const SEARCH_CACHE_MAX_SIZE = 500;
@@ -1316,6 +1317,14 @@ function writeSearchCache(key, payload, options = {}) {
   searchCache.set(key, payload, { ttlMs });
 }
 
+function capOsmFallbackResults(restaurants = []) {
+  if (!Array.isArray(restaurants) || restaurants.length <= OSM_FALLBACK_MAX_RESULTS) {
+    return restaurants;
+  }
+
+  return restaurants.slice(0, OSM_FALLBACK_MAX_RESULTS);
+}
+
 export async function searchRestaurants(params = {}) {
   const resolvedLocation = await resolveLocation(params);
   if (!resolvedLocation) {
@@ -1380,6 +1389,7 @@ export async function searchRestaurants(params = {}) {
       selectedCategories: params.categories,
       location: resolvedLocation,
     });
+    restaurants = capOsmFallbackResults(restaurants);
 
     const payload = {
       restaurants,
