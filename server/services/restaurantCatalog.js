@@ -12,6 +12,10 @@ import {
 import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
 
 const SEARCH_RADIUS_METERS = 3000;
+// Keep OSM fallback payloads curated and performant for MVP:
+// we rank first, then return only the top 100 (no provider pagination yet).
+// This prevents multi-thousand fallback responses from large cities while
+// leaving room for frontend batching/show-more to work.
 const OSM_FALLBACK_MAX_RESULTS = 100;
 const SEARCH_CACHE_SUCCESS_TTL_MS = 60 * 60 * 1000;
 const SEARCH_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000;
