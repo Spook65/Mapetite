@@ -72,17 +72,18 @@ window.APP_CONFIG = appConfig;
 // Also export for module imports
 export const APP_CONFIG = appConfig;
 
-// Log the parsed configuration
-console.log("App Configuration:", {
-	userId: appConfig.userId,
-	projectId: appConfig.projectId,
-	taskId: appConfig.taskId,
-	workspaceId: appConfig.workspaceId,
-	uploadFolder: appConfig.uploadFolder,
-	baseUrl: appConfig.baseUrl,
-	isValidBuildUrl: appConfig.isValidBuildUrl,
-	currentUrl: window.location.href,
-});
+if (import.meta.env.DEV && import.meta.env.VITE_APP_CONFIG_DEBUG === "true") {
+	console.log("App Configuration:", {
+		userId: appConfig.userId,
+		projectId: appConfig.projectId,
+		taskId: appConfig.taskId,
+		workspaceId: appConfig.workspaceId,
+		uploadFolder: appConfig.uploadFolder,
+		baseUrl: appConfig.baseUrl,
+		isValidBuildUrl: appConfig.isValidBuildUrl,
+		currentUrl: window.location.href,
+	});
+}
 
 // Initialize auth integration automatically when app starts
 initializeAuthIntegration();

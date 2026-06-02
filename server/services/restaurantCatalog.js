@@ -266,7 +266,8 @@ function parseCategories(tags = {}) {
   if (cuisine) {
     for (const value of cuisine.split(";")) {
       const cleaned = value.trim();
-      if (cleaned) categories.push(normalizeFoodCategoryLabel(cleaned));
+      const label = cleaned ? normalizeFoodCategoryLabel(cleaned) : "";
+      if (label) categories.push(label);
     }
   }
 

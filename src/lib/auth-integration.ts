@@ -30,6 +30,14 @@ interface AuthState {
 
 // Configuration for token validation
 const API_BASE_URL = "http://localhost:3000";
+const AUTH_DEBUG =
+	import.meta.env.DEV && import.meta.env.VITE_AUTH_DEBUG === "true";
+
+function logAuth(...args: unknown[]): void {
+	if (AUTH_DEBUG) {
+		console.log(...args);
+	}
+}
 
 class AuthIntegration {
 	private state: AuthState = {
@@ -50,7 +58,7 @@ class AuthIntegration {
 	 * Initialize the authentication system
 	 */
 	private async initialize(): Promise<void> {
-		console.log("Auth initialization started");
+		logAuth("Auth initialization started");
 		try {
 			await this.initializeFromStorage();
 			await this.initializeFromUrl();
@@ -58,13 +66,13 @@ class AuthIntegration {
 
 			// If still loading after initialization, set to unauthenticated
 			if (this.state.status === "loading") {
-				console.log(
+				logAuth(
 					"Auth initialization complete - setting to unauthenticated",
 				);
 				this.state.status = "unauthenticated";
 				this.notifyListeners();
 			} else {
-				console.log(
+				logAuth(
 					"Auth initialization complete - status:",
 					this.state.status,
 				);
@@ -89,26 +97,26 @@ class AuthIntegration {
 	 * Initialize authentication from localStorage
 	 */
 	private async initializeFromStorage(): Promise<void> {
-		console.log("Initializing auth from storage...");
+		logAuth("Initializing auth from storage...");
 		const storedToken = localStorage.getItem("creao_auth_token");
 		if (storedToken) {
-			console.log("Found stored token, validating...");
+			logAuth("Found stored token, validating...");
 			// Validate the stored token
 			const isValid = await this.validateToken(storedToken);
 			if (isValid) {
-				console.log("Stored token is valid");
+				logAuth("Stored token is valid");
 				this.state.token = storedToken;
 				this.state.status = "authenticated";
 				this.notifyListeners();
 			} else {
-				console.log("Stored token is invalid, clearing...");
+				logAuth("Stored token is invalid, clearing...");
 				// Clear invalid token
 				localStorage.removeItem("creao_auth_token");
 				this.state.status = "invalid_token";
 				this.notifyListeners();
 			}
 		} else {
-			console.log("No stored token found");
+			logAuth("No stored token found");
 			this.state.status = "unauthenticated";
 			this.notifyListeners();
 		}
@@ -149,7 +157,7 @@ class AuthIntegration {
 	 * Validate token by making a request to the /me endpoint
 	 */
 	private async validateToken(token: string): Promise<boolean> {
-		console.log("Validating token...", { API_BASE_URL });
+		logAuth("Validating token...", { API_BASE_URL });
 
 		if (!API_BASE_URL) {
 			console.error("API_BASE_URL is not set");
@@ -165,7 +173,7 @@ class AuthIntegration {
 				},
 			});
 
-			console.log("Token validation response:", response.status, response.ok);
+			logAuth("Token validation response:", response.status, response.ok);
 			return response.ok;
 		} catch (error) {
 			console.warn("Token validation failed:", error);
@@ -192,11 +200,11 @@ class AuthIntegration {
 	 * Set the authentication token (async now to validate)
 	 */
 	private async setToken(token: string, origin?: string): Promise<void> {
-		console.log("[AuthIntegration] Setting token, length:", token.length);
+		logAuth("[AuthIntegration] Setting token, length:", token.length);
 
 		// Validate the token first
 		const isValid = await this.validateToken(token);
-		console.log("[AuthIntegration] Token validation result:", isValid);
+		logAuth("[AuthIntegration] Token validation result:", isValid);
 
 		if (isValid) {
 			this.state = {
@@ -207,7 +215,7 @@ class AuthIntegration {
 
 			// Store in localStorage for persistence
 			localStorage.setItem("creao_auth_token", token);
-			console.log(
+			logAuth(
 				"[AuthIntegration] Token stored in localStorage, key: creao_auth_token",
 			);
 		} else {
@@ -218,7 +226,7 @@ class AuthIntegration {
 				parentOrigin: origin || this.state.parentOrigin,
 			};
 			localStorage.removeItem("creao_auth_token");
-			console.log("[AuthIntegration] Invalid token, cleared from localStorage");
+			logAuth("[AuthIntegration] Invalid token, cleared from localStorage");
 		}
 
 		// Notify listeners
@@ -445,7 +453,7 @@ const authIntegration = new AuthIntegration();
  */
 export async function initializeAuthIntegration(): Promise<void> {
 	// Integration is automatically initialized via constructor
-	console.log("Auth integration initialized");
+	logAuth("Auth integration initialized");
 }
 
 /**
@@ -453,7 +461,7 @@ export async function initializeAuthIntegration(): Promise<void> {
  */
 export function getAuthToken(): string | null {
 	const token = authIntegration.getAuthTokenSync();
-	console.log(
+	logAuth(
 		"[getAuthToken] Retrieving token, present:",
 		!!token,
 		"length:",
@@ -567,10 +575,9 @@ export async function authenticatedFetch(
 ): Promise<Response> {
 	const token = getAuthToken();
 
-	// Debug logging to verify token is present
-	console.log("[authenticatedFetch] Token present:", !!token);
+	logAuth("[authenticatedFetch] Token present:", !!token);
 	if (token) {
-		console.log(
+		logAuth(
 			"[authenticatedFetch] Token length:",
 			token.length,
 			"First 20 chars:",
@@ -586,16 +593,15 @@ export async function authenticatedFetch(
 		headers.set("Content-Type", "application/json");
 	}
 
-	// Debug logging to verify Authorization header is set
-	console.log(
+	logAuth(
 		"[authenticatedFetch] Authorization header:",
 		headers.get("Authorization"),
 	);
-	console.log(
+	logAuth(
 		"[authenticatedFetch] Content-Type header:",
 		headers.get("Content-Type"),
 	);
-	console.log("[authenticatedFetch] Request URL:", url);
+	logAuth("[authenticatedFetch] Request URL:", url);
 
 	return fetch(url, {
 		...options,

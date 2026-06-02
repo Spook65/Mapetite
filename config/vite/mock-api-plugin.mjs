@@ -9,6 +9,19 @@ const userFavorites = new Map();
 // In-memory storage for users and auth tokens
 const mockUsers = new Map();
 const authTokens = new Map();
+const MOCK_API_DEBUG = process.env.VITE_MOCK_API_DEBUG === "true";
+
+function debugLog(...args) {
+	if (MOCK_API_DEBUG) {
+		console.log(...args);
+	}
+}
+
+function debugError(...args) {
+	if (MOCK_API_DEBUG) {
+		console.error(...args);
+	}
+}
 
 // Mock user ID for testing
 const MOCK_USER_ID = "mock-user-123";
@@ -29,9 +42,9 @@ function generateMockToken(userId) {
 	const signature = Buffer.from(`mock-signature-${userId}`).toString("base64");
 	const token = `${header}.${payload}.${signature}`;
 
-	console.log("[Mock API] generateMockToken - Generated token for userId:", userId);
-	console.log("[Mock API] generateMockToken - Token expires:", new Date(exp));
-	console.log("[Mock API] generateMockToken - Token preview:", token.substring(0, 40) + "...");
+	debugLog("[Mock API] generateMockToken - Generated token for userId:", userId);
+	debugLog("[Mock API] generateMockToken - Token expires:", new Date(exp));
+	debugLog("[Mock API] generateMockToken - Token preview:", token.substring(0, 40) + "...");
 
 	return token;
 }
@@ -41,34 +54,34 @@ function generateMockToken(userId) {
  */
 function validateMockToken(token) {
 	if (!token) {
-		console.error("[Mock API] validateMockToken - No token provided");
+		debugError("[Mock API] validateMockToken - No token provided");
 		return null;
 	}
 
 	try {
 		// Remove "Bearer " prefix if present
 		const cleanToken = token.replace(/^Bearer\s+/i, "");
-		console.log("[Mock API] validateMockToken - Token after Bearer removal:", cleanToken.substring(0, 30) + "...");
+		debugLog("[Mock API] validateMockToken - Token after Bearer removal:", cleanToken.substring(0, 30) + "...");
 
 		const parts = cleanToken.split(".");
 		if (parts.length !== 3) {
-			console.error("[Mock API] validateMockToken - Invalid token format (expected 3 parts, got", parts.length + ")");
+			debugError("[Mock API] validateMockToken - Invalid token format (expected 3 parts, got", parts.length + ")");
 			return null;
 		}
 
 		const payload = JSON.parse(Buffer.from(parts[1], "base64").toString());
-		console.log("[Mock API] validateMockToken - Decoded payload:", { userId: payload.userId, exp: payload.exp, iat: payload.iat });
+		debugLog("[Mock API] validateMockToken - Decoded payload:", { userId: payload.userId, exp: payload.exp, iat: payload.iat });
 
 		// Check if token is expired
 		if (payload.exp && payload.exp < Date.now()) {
-			console.error("[Mock API] validateMockToken - Token expired. Exp:", new Date(payload.exp), "Now:", new Date());
+			debugError("[Mock API] validateMockToken - Token expired. Exp:", new Date(payload.exp), "Now:", new Date());
 			return null;
 		}
 
-		console.log("[Mock API] validateMockToken - Token valid for userId:", payload.userId);
+		debugLog("[Mock API] validateMockToken - Token valid for userId:", payload.userId);
 		return payload.userId;
 	} catch (error) {
-		console.error("[Mock API] validateMockToken - Error validating token:", error.message);
+		debugError("[Mock API] validateMockToken - Error validating token:", error.message);
 		return null;
 	}
 }
@@ -320,35 +333,33 @@ export const mockApiPlugin = () => ({
 			// Authentication middleware for favorites endpoints
 			const authHeader = req.headers.authorization;
 
-			// ========== DEBUG LOGGING: CONFIRM WHAT SERVER RECEIVES ==========
-			console.log("\n========== INCOMING REQUEST DEBUG ==========");
-			console.log("[Mock API] Full Authorization header received:");
-			console.log("  - Type:", typeof authHeader);
-			console.log("  - Value:", authHeader);
-			console.log("  - Is undefined?:", authHeader === undefined);
-			console.log("  - Is null?:", authHeader === null);
-			console.log("  - Is empty string?:", authHeader === "");
+			debugLog("\n========== INCOMING REQUEST DEBUG ==========");
+			debugLog("[Mock API] Full Authorization header received:");
+			debugLog("  - Type:", typeof authHeader);
+			debugLog("  - Value:", authHeader);
+			debugLog("  - Is undefined?:", authHeader === undefined);
+			debugLog("  - Is null?:", authHeader === null);
+			debugLog("  - Is empty string?:", authHeader === "");
 
 			if (authHeader) {
-				console.log("  - Starts with 'Bearer '?:", authHeader.startsWith("Bearer "));
-				console.log("  - Length:", authHeader.length);
-				console.log("  - First 50 chars:", authHeader.substring(0, 50));
+				debugLog("  - Starts with 'Bearer '?:", authHeader.startsWith("Bearer "));
+				debugLog("  - Length:", authHeader.length);
+				debugLog("  - First 50 chars:", authHeader.substring(0, 50));
 
 				// Extract the token part (after "Bearer ")
 				const tokenPart = authHeader.replace(/^Bearer\s+/i, "");
-				console.log("  - Token after 'Bearer ' removal:");
-				console.log("    - Length:", tokenPart.length);
-				console.log("    - First 50 chars:", tokenPart.substring(0, 50));
-				console.log("    - Has 3 parts (header.payload.signature)?:", tokenPart.split(".").length === 3);
+				debugLog("  - Token after 'Bearer ' removal:");
+				debugLog("    - Length:", tokenPart.length);
+				debugLog("    - First 50 chars:", tokenPart.substring(0, 50));
+				debugLog("    - Has 3 parts (header.payload.signature)?:", tokenPart.split(".").length === 3);
 			}
-			console.log("==========================================\n");
-			// ========== END DEBUG LOGGING ==========
+			debugLog("==========================================\n");
 
 			const userId = validateMockToken(authHeader);
 
 			if (!userId) {
-				console.error("[Mock API] Authentication failed - invalid or missing token");
-				console.error("[Mock API] Auth header received:", authHeader);
+				debugError("[Mock API] Authentication failed - invalid or missing token");
+				debugError("[Mock API] Auth header received:", authHeader);
 				res.statusCode = 401;
 				res.setHeader("Content-Type", "application/json");
 				res.end(
@@ -364,14 +375,14 @@ export const mockApiPlugin = () => ({
 				return;
 			}
 
-			console.log("[Mock API] Authentication successful - userId:", userId);
+			debugLog("[Mock API] Authentication successful - userId:", userId);
 
 			// Handle GET /api/user/favorites
 			if (req.method === "GET" && url.pathname === "/api/user/favorites") {
 				const favorites = getUserFavorites(userId);
 				const favoritesArray = Array.from(favorites);
 
-				console.log(`[Mock API] GET /api/user/favorites - User: ${userId}, Count: ${favoritesArray.length}`);
+				debugLog(`[Mock API] GET /api/user/favorites - User: ${userId}, Count: ${favoritesArray.length}`);
 
 				res.setHeader("Content-Type", "application/json");
 				res.statusCode = 200;
@@ -396,7 +407,7 @@ export const mockApiPlugin = () => ({
 					try {
 						const { restaurant_id } = JSON.parse(body);
 
-						console.log(`[Mock API] POST /api/user/favorites - User: ${userId}, Restaurant: ${restaurant_id}`);
+						debugLog(`[Mock API] POST /api/user/favorites - User: ${userId}, Restaurant: ${restaurant_id}`);
 
 						if (!restaurant_id) {
 							res.statusCode = 400;
@@ -423,7 +434,7 @@ export const mockApiPlugin = () => ({
 
 						const favoritesArray = Array.from(favorites);
 
-						console.log(`[Mock API] Favorite ${action} - Total favorites: ${favoritesArray.length}`);
+						debugLog(`[Mock API] Favorite ${action} - Total favorites: ${favoritesArray.length}`);
 
 						res.setHeader("Content-Type", "application/json");
 						res.statusCode = 200;
