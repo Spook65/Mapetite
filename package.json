@@ -2,17 +2,23 @@
   "name": "basic_template",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@10.33.2",
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0",
+    "pnpm": ">=10"
+  },
   "scripts": {
     "dev": "vite --port 3000",
     "start": "vite --port 3000",
-    "build": "npm run check:safe && vite build",
+    "build": "pnpm run typecheck && vite build",
     "serve": "vite preview",
     "test": "vitest run",
-    "check": "tsgo --noEmit && npm run lint:radix -- --fix && npm run format",
-    "check:safe": "timeout 20 npm run check || (echo 'Check timed out after 20 seconds' && exit 1)",
+    "typecheck": "tsc --noEmit",
+    "check": "pnpm run typecheck && pnpm run lint:radix",
+    "check:safe": "pnpm run typecheck",
     "format": "biome check --write --unsafe",
     "format:quiet": "biome check --write --unsafe --log-level=warn",
-    "lint:radix": "grep -l -r '<SelectItem' src | xargs eslint --config config/eslint/eslint.radix.config.js",
+    "lint:radix": "grep -l -r '<SelectItem' src | xargs eslint --fix --config config/eslint/eslint.radix.config.js",
     "lint:mcp": "eslint src --config config/eslint/eslint.mcp.config.js",
     "lint:validate": "node config/eslint/validate-configs.js",
     "prepare": "if [ -f ./bin/setup-githooks.sh ]; then ./bin/setup-githooks.sh; fi"
@@ -82,6 +88,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@eslint/js": "^9.39.4",
     "@babel/plugin-syntax-typescript": "^7.27.1",
     "@babel/plugin-transform-react-jsx": "^7.27.1",
     "@babel/plugin-transform-react-jsx-development": "^7.27.1",
