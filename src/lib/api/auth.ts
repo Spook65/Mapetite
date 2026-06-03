@@ -11,6 +11,21 @@
  */
 
 const API_BASE_URL = "http://localhost:3000";
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+function normalizeAuthEmail(email: string): string {
+	return email.trim().toLowerCase();
+}
+
+function prepareAuthEmail(email: string): string {
+	const normalizedEmail = normalizeAuthEmail(email);
+
+	if (!EMAIL_PATTERN.test(normalizedEmail)) {
+		throw new Error("Enter a valid email address.");
+	}
+
+	return normalizedEmail;
+}
 
 // ==================== POST /api/auth/register ====================
 
@@ -71,12 +86,23 @@ export interface RegisterResponse {
 export async function registerUser(
 	request: RegisterRequest,
 ): Promise<RegisterResponse> {
+	const normalizedEmail = prepareAuthEmail(request.email);
+	const name = request.name.trim();
+
+	if (!name) {
+		throw new Error("Enter your name.");
+	}
+
+	if (!request.password) {
+		throw new Error("Enter a password.");
+	}
+
 	const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(request),
+		body: JSON.stringify({ ...request, email: normalizedEmail, name }),
 	});
 
 	const data = await response.json();
@@ -144,12 +170,18 @@ export interface LoginResponse {
  * ```
  */
 export async function loginUser(request: LoginRequest): Promise<LoginResponse> {
+	const normalizedEmail = prepareAuthEmail(request.email);
+
+	if (!request.password) {
+		throw new Error("Enter a password.");
+	}
+
 	const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
 		},
-		body: JSON.stringify(request),
+		body: JSON.stringify({ ...request, email: normalizedEmail }),
 	});
 
 	const data = await response.json();

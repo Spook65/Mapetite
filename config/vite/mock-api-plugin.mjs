@@ -3,6 +3,8 @@
  * Provides mock API endpoints for development
  */
 
+import { randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+
 // In-memory storage for favorites (per mock user)
 const userFavorites = new Map();
 
@@ -10,6 +12,7 @@ const userFavorites = new Map();
 const mockUsers = new Map();
 const authTokens = new Map();
 const MOCK_API_DEBUG = process.env.VITE_MOCK_API_DEBUG === "true";
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function debugLog(...args) {
 	if (MOCK_API_DEBUG) {
@@ -21,6 +24,36 @@ function debugError(...args) {
 	if (MOCK_API_DEBUG) {
 		console.error(...args);
 	}
+}
+
+function normalizeEmail(email) {
+	return String(email || "").trim().toLowerCase();
+}
+
+function isValidEmail(email) {
+	return EMAIL_PATTERN.test(email);
+}
+
+function hashPassword(password) {
+	const salt = randomBytes(16).toString("hex");
+	const hash = scryptSync(String(password), salt, 64).toString("hex");
+	return `${salt}:${hash}`;
+}
+
+function verifyPassword(password, storedHash) {
+	const [salt, hash] = String(storedHash || "").split(":");
+
+	if (!salt || !hash) {
+		return false;
+	}
+
+	const candidateHash = scryptSync(String(password), salt, 64);
+	const storedPasswordHash = Buffer.from(hash, "hex");
+
+	return (
+		candidateHash.length === storedPasswordHash.length &&
+		timingSafeEqual(candidateHash, storedPasswordHash)
+	);
 }
 
 // Mock user ID for testing
@@ -90,8 +123,10 @@ function validateMockToken(token) {
  * Get user by email
  */
 function getUserByEmail(email) {
+	const normalizedEmail = normalizeEmail(email);
+
 	for (const [userId, user] of mockUsers.entries()) {
-		if (user.email === email) {
+		if (user.email === normalizedEmail) {
 			return { userId, ...user };
 		}
 	}
@@ -138,22 +173,24 @@ export const mockApiPlugin = () => ({
 				req.on("end", () => {
 					try {
 						const { email, password, name } = JSON.parse(body);
+						const normalizedEmail = normalizeEmail(email);
+						const normalizedName = String(name || "").trim();
 
 						// Validate required fields
-						if (!email || !password || !name) {
+						if (!isValidEmail(normalizedEmail) || !password || !normalizedName) {
 							res.statusCode = 400;
 							res.setHeader("Content-Type", "application/json");
 							res.end(
 								JSON.stringify({
 									status: "Failed",
-									message: "email, password, and name are required",
+									message: "A valid email, password, and name are required",
 								}),
 							);
 							return;
 						}
 
 						// Check if user already exists
-						if (getUserByEmail(email)) {
+						if (getUserByEmail(normalizedEmail)) {
 							res.statusCode = 409;
 							res.setHeader("Content-Type", "application/json");
 							res.end(
@@ -168,9 +205,9 @@ export const mockApiPlugin = () => ({
 						// Create new user
 						const userId = `user-${Date.now()}-${Math.random().toString(36).substring(7)}`;
 						mockUsers.set(userId, {
-							email,
-							password, // In a real app, this would be hashed
-							name,
+							email: normalizedEmail,
+							passwordHash: hashPassword(password),
+							name: normalizedName,
 							createdAt: new Date().toISOString(),
 						});
 
@@ -187,8 +224,8 @@ export const mockApiPlugin = () => ({
 								status: "Success",
 								auth_token: authToken,
 								user_id: userId,
-								name,
-								email,
+								name: normalizedName,
+								email: normalizedEmail,
 							}),
 						);
 					} catch (error) {
@@ -215,24 +252,25 @@ export const mockApiPlugin = () => ({
 				req.on("end", () => {
 					try {
 						const { email, password } = JSON.parse(body);
+						const normalizedEmail = normalizeEmail(email);
 
 						// Validate required fields
-						if (!email || !password) {
+						if (!isValidEmail(normalizedEmail) || !password) {
 							res.statusCode = 400;
 							res.setHeader("Content-Type", "application/json");
 							res.end(
 								JSON.stringify({
 									status: "Failed",
-									message: "email and password are required",
+									message: "A valid email and password are required",
 								}),
 							);
 							return;
 						}
 
 						// Find user by email
-						const user = getUserByEmail(email);
+						const user = getUserByEmail(normalizedEmail);
 
-						if (!user || user.password !== password) {
+						if (!user || !verifyPassword(password, user.passwordHash)) {
 							res.statusCode = 401;
 							res.setHeader("Content-Type", "application/json");
 							res.end(

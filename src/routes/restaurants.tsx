@@ -274,13 +274,7 @@ function RestaurantSearchPage() {
 	const activeSearchIdRef = useRef(0);
 	const favoriteHydrationAttemptsRef = useRef<Set<string>>(new Set());
 
-	const categories = [
-		"Noodles",
-		"Vegetarian",
-		"Healthy",
-		"Fast-Food",
-		"Best Tourist Spot",
-	];
+	const categories = ["Noodles", "Vegetarian", "Fast-Food"];
 
 	// Handle city search parameter from navigation
 	useEffect(() => {
