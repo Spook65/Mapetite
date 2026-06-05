@@ -25,6 +25,10 @@ const DETAIL_CACHE_MAX_SIZE = 1000;
 const LOCATION_CACHE_SUCCESS_TTL_MS = 24 * 60 * 60 * 1000;
 const LOCATION_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000;
 const LOCATION_CACHE_MAX_SIZE = 500;
+const GEOAPIFY_BROAD_RETRY_RADIUS_METERS = 12000;
+const SEARCH_DEBUG =
+  process.env.MAPETITE_SEARCH_DEBUG === "true" ||
+  process.env.SEARCH_DEBUG === "true";
 
 const searchCache = new InMemoryTtlCache({
   defaultTtlMs: SEARCH_CACHE_SUCCESS_TTL_MS,
@@ -39,6 +43,12 @@ const locationCache = new InMemoryTtlCache({
   maxSize: LOCATION_CACHE_MAX_SIZE,
 });
 const LOCATION_CACHE_MISS = Object.freeze({ missing: true });
+
+function debugSearch(message, meta = {}) {
+  if (SEARCH_DEBUG) {
+    console.info(message, meta);
+  }
+}
 
 const CHEF_BY_CUISINE = {
   Noodles: ["Chef Takeshi Yamamoto", "Chef Li Wei", "Chef Nguyen Pham"],
@@ -1330,6 +1340,53 @@ function capOsmFallbackResults(restaurants = []) {
   return restaurants.slice(0, OSM_FALLBACK_MAX_RESULTS);
 }
 
+function buildGeoapifyBroadRetryParams(params = {}) {
+  return {
+    ...params,
+    categories: [],
+    broadened: true,
+    radiusMeters: Math.max(
+      Number(params.radiusMeters || SEARCH_RADIUS_METERS),
+      GEOAPIFY_BROAD_RETRY_RADIUS_METERS,
+    ),
+  };
+}
+
+function buildGeoapifyBroadRetryLocation(params = {}, resolvedLocation = {}) {
+  if (Array.isArray(params.categories) && params.categories.length > 0) {
+    return resolvedLocation;
+  }
+
+  return {
+    ...resolvedLocation,
+    // A place filter can be too narrow for smaller Geoapify coverage areas.
+    // Without selected categories, retry with the same coordinates and a bounded radius.
+    placeId: undefined,
+  };
+}
+
+async function searchGeoapifyWithOneBroadRetry(params, resolvedLocation) {
+  const primaryPayload = await searchGeoapifyRestaurants(params, resolvedLocation);
+
+  if (primaryPayload.restaurants.length > 0) {
+    return primaryPayload;
+  }
+
+  const retryParams = buildGeoapifyBroadRetryParams(params);
+  const retryPayload = await searchGeoapifyRestaurants(
+    retryParams,
+    buildGeoapifyBroadRetryLocation(params, resolvedLocation),
+  );
+
+  retryPayload.meta = {
+    ...(retryPayload.meta || {}),
+    primaryAttempt: primaryPayload.meta,
+    retryReason: "geoapify-empty-primary",
+  };
+
+  return retryPayload;
+}
+
 export async function searchRestaurants(params = {}) {
   const resolvedLocation = await resolveLocation(params);
   if (!resolvedLocation) {
@@ -1343,9 +1400,14 @@ export async function searchRestaurants(params = {}) {
     return cached;
   }
 
+  let geoapifyMeta;
   if (preferredProvider === "geoapify") {
     try {
-      const payload = await searchGeoapifyRestaurants(params, resolvedLocation);
+      const payload = await searchGeoapifyWithOneBroadRetry(
+        params,
+        resolvedLocation,
+      );
+      geoapifyMeta = payload.meta;
       if (payload.restaurants.length > 0) {
         payload.restaurants = deduplicateRestaurants(payload.restaurants);
         payload.restaurants = rankRestaurantsForSearch(payload.restaurants, {
@@ -1358,8 +1420,14 @@ export async function searchRestaurants(params = {}) {
         return payload;
       }
 
-      console.warn("Geoapify returned no restaurants; falling back to OpenStreetMap.");
+      debugSearch("Geoapify returned no restaurants; falling back to OpenStreetMap.", {
+        geoapify: payload.meta,
+      });
     } catch (error) {
+      geoapifyMeta = {
+        provider: "geoapify",
+        error: error?.message || String(error),
+      };
       console.warn(
         "Geoapify search failed; falling back to OpenStreetMap.",
         error,
@@ -1376,6 +1444,7 @@ export async function searchRestaurants(params = {}) {
     let restaurants = elements
       .map((element) => normalizeElement(element, resolvedLocation))
       .filter(Boolean);
+    const normalizedCount = restaurants.length;
 
     if (Array.isArray(params.categories) && params.categories.length > 0) {
       restaurants = restaurants.filter((restaurant) =>
@@ -1388,8 +1457,10 @@ export async function searchRestaurants(params = {}) {
         ),
       );
     }
+    const categoryFilteredCount = restaurants.length;
 
     restaurants = deduplicateRestaurants(restaurants);
+    const deduplicatedCount = restaurants.length;
     restaurants = rankRestaurantsForSearch(restaurants, {
       selectedCategories: params.categories,
       location: resolvedLocation,
@@ -1400,6 +1471,19 @@ export async function searchRestaurants(params = {}) {
       restaurants,
       location: resolvedLocation,
       count: restaurants.length,
+      meta: {
+        provider: "osm",
+        geoapify: geoapifyMeta,
+        osm: {
+          rawCount: elements.length,
+          normalizedCount,
+          categoryFilteredCount,
+          deduplicatedCount,
+          returnedCount: restaurants.length,
+          capped: deduplicatedCount > OSM_FALLBACK_MAX_RESULTS,
+          maxResults: OSM_FALLBACK_MAX_RESULTS,
+        },
+      },
     };
 
     payload.restaurants = await enrichSearchRestaurants(payload.restaurants);

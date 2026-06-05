@@ -554,8 +554,23 @@ function mapSearchCategories(categories = []) {
     const slug = slugify(normalized);
     if (!slug) continue;
 
-    if (["noodles", "noodle", "ramen", "sushi", "pizza", "tacos", "burger", "chinese", "japanese", "indian", "italian", "mexican"].includes(slug)) {
-      mappedCategories.add(`catering.restaurant.${slug}`);
+    const cuisineCategoryMap = {
+      noodles: "noodle",
+      noodle: "noodle",
+      ramen: "ramen",
+      sushi: "sushi",
+      pizza: "pizza",
+      tacos: "tacos",
+      burger: "burger",
+      chinese: "chinese",
+      japanese: "japanese",
+      indian: "indian",
+      italian: "italian",
+      mexican: "mexican",
+    };
+
+    if (cuisineCategoryMap[slug]) {
+      mappedCategories.add(`catering.restaurant.${cuisineCategoryMap[slug]}`);
       continue;
     }
 
@@ -610,8 +625,10 @@ async function fetchJson(url, options = {}) {
 
     if (!response.ok) {
       const body = await response.text().catch(() => "");
+      const detail =
+        body.length > 600 ? `${body.slice(0, 600)}...` : body;
       throw new Error(
-        `Geoapify request failed (${response.status}): ${body || response.statusText}`,
+        `Geoapify request failed (${response.status}): ${detail || response.statusText}`,
       );
     }
 
@@ -763,6 +780,74 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
   };
 }
 
+function getGeoapifyRejectionReason(feature, locationContext = {}) {
+  const props = feature?.properties || {};
+  const geometry = feature?.geometry || {};
+  const coordinates = Array.isArray(geometry.coordinates) ? geometry.coordinates : [];
+  const lon = Number(props.lon ?? coordinates[0]);
+  const lat = Number(props.lat ?? coordinates[1]);
+
+  if (!hasValidCoordinates(lat, lon)) {
+    return "invalidCoordinates";
+  }
+
+  const name = props.name || props.brand || props.address_line1 || "Restaurant";
+  const categories = normalizeDisplayCategories(props.categories || [], []);
+
+  if (!isRestaurantLikePlace(props)) {
+    return "notRestaurantLike";
+  }
+
+  if (categories.length === 0) {
+    return "missingFoodCategory";
+  }
+
+  if (isLikelyStreetOnlyPlaceName(name, props)) {
+    return "streetOnlyName";
+  }
+
+  return "";
+}
+
+function buildGeoapifySearchMetadata({
+  url,
+  features = [],
+  restaurants = [],
+  radiusMeters,
+  filter,
+  categories,
+  conditions,
+  limit,
+  broadened = false,
+}) {
+  const rejected = {};
+
+  for (const feature of features) {
+    const reason = getGeoapifyRejectionReason(feature);
+    if (reason) {
+      rejected[reason] = (rejected[reason] || 0) + 1;
+    }
+  }
+
+  return {
+    provider: "geoapify",
+    broadened,
+    rawCount: features.length,
+    usableCount: restaurants.length,
+    rejected,
+    request: {
+      categories,
+      conditions,
+      filter,
+      radiusMeters,
+      limit,
+      url: url
+        ? url.toString().replace(/([?&]apiKey=)[^&]+/i, "$1<redacted>")
+        : "",
+    },
+  };
+}
+
 function buildLocationQuery(location) {
   return [location.city, location.state, location.country]
     .filter(Boolean)
@@ -893,21 +978,33 @@ export async function searchGeoapifyRestaurants(params = {}, locationContext = {
   if (mapped.conditions.length > 0) {
     url.searchParams.set("conditions", mapped.conditions.join(","));
   }
-  url.searchParams.set("limit", String(params.limit || GEOAPIFY_DEFAULT_LIMIT));
+  const limit = params.limit || GEOAPIFY_DEFAULT_LIMIT;
+  url.searchParams.set("limit", String(limit));
   url.searchParams.set("lang", "en");
+  let filter = "";
+  let radiusMeters;
 
   if (locationContext.placeId) {
-    url.searchParams.set("filter", `place:${locationContext.placeId}`);
+    filter = `place:${locationContext.placeId}`;
+    url.searchParams.set("filter", filter);
   } else if (hasFiniteCoordinates(locationContext)) {
+    radiusMeters = params.radiusMeters || 3000;
+    filter = `circle:${locationContext.longitude},${locationContext.latitude},${radiusMeters}`;
     url.searchParams.set(
       "filter",
-      `circle:${locationContext.longitude},${locationContext.latitude},${params.radiusMeters || 3000}`,
+      filter,
     );
   } else {
     return {
       restaurants: [],
       location: locationContext,
       count: 0,
+      meta: buildGeoapifySearchMetadata({
+        url,
+        categories: mapped.categories,
+        conditions: mapped.conditions,
+        limit,
+      }),
     };
   }
 
@@ -923,6 +1020,17 @@ export async function searchGeoapifyRestaurants(params = {}, locationContext = {
     restaurants,
     location: locationContext,
     count: restaurants.length,
+    meta: buildGeoapifySearchMetadata({
+      url,
+      features,
+      restaurants,
+      radiusMeters,
+      filter,
+      categories: mapped.categories,
+      conditions: mapped.conditions,
+      limit,
+      broadened: Boolean(params.broadened),
+    }),
   };
 }
 
