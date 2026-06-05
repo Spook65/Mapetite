@@ -213,6 +213,7 @@ const cityStarts = [
 function LandingPage() {
 	const navigate = useNavigate();
 	const [selectedCityKey, setSelectedCityKey] = useState<(typeof cityStarts)[number]["key"]>("tokyo");
+	const [selectedRestaurantIndex, setSelectedRestaurantIndex] = useState(0);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 	const [isLogInOpen, setIsLogInOpen] = useState(false);
@@ -224,7 +225,8 @@ function LandingPage() {
 		[selectedCityKey],
 	);
 
-	const featuredRestaurant = selectedCity.restaurants[0];
+	const featuredRestaurant =
+		selectedCity.restaurants[selectedRestaurantIndex] ?? selectedCity.restaurants[0];
 	const firstName = profile?.name ? profile.name.trim().split(/\s+/)[0] : "User";
 
 	const handleCityStart = (cityName: string) => {
@@ -232,6 +234,11 @@ function LandingPage() {
 			to: "/restaurants",
 			search: { city: cityName },
 		});
+	};
+
+	const handleSelectCity = (cityKey: (typeof cityStarts)[number]["key"]) => {
+		setSelectedCityKey(cityKey);
+		setSelectedRestaurantIndex(0);
 	};
 
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
@@ -495,10 +502,18 @@ function LandingPage() {
 								</div>
 
 								<div className="mt-5 grid gap-3 sm:grid-cols-3">
-									{selectedCity.restaurants.map((restaurant) => (
-										<div
+									{selectedCity.restaurants.map((restaurant, index) => (
+										<button
 											key={restaurant.name}
-											className="rounded-[10px] border border-[var(--mapetite-border)] bg-black/10 px-4 py-3"
+											type="button"
+											onClick={() => setSelectedRestaurantIndex(index)}
+											aria-pressed={selectedRestaurantIndex === index}
+											className={cn(
+												"rounded-[10px] border px-4 py-3 text-left transition-colors",
+												selectedRestaurantIndex === index
+													? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)]"
+													: "border-[var(--mapetite-border)] bg-black/10 hover:bg-white/[0.04]",
+											)}
 										>
 											<strong className="block text-sm font-medium text-[var(--mapetite-text)]">
 												{restaurant.name}
@@ -506,19 +521,19 @@ function LandingPage() {
 											<span className="mapetite-muted-copy mt-1 block text-sm">
 												{restaurant.subtitle} · {restaurant.rating}
 											</span>
-										</div>
+										</button>
 									))}
 								</div>
 
 								<div className="mt-5 flex flex-wrap gap-2">
 									<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-										Save favorite
+										Favorite-ready
 									</div>
 									<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-										Open details
+										Detail context
 									</div>
 									<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-										Get directions
+										Route-aware
 									</div>
 								</div>
 							</div>
@@ -580,7 +595,7 @@ function LandingPage() {
 										<button
 											key={city.key}
 											type="button"
-											onClick={() => setSelectedCityKey(city.key)}
+											onClick={() => handleSelectCity(city.key)}
 											aria-pressed={selectedCityKey === city.key}
 											className={cn(
 												"rounded-full border px-4 py-2 text-sm font-medium transition-colors",
@@ -600,10 +615,18 @@ function LandingPage() {
 									Shortlist preview
 								</div>
 								<div className="mt-4 space-y-3">
-									{selectedCity.restaurants.map((restaurant) => (
-										<div
+									{selectedCity.restaurants.map((restaurant, index) => (
+										<button
 											key={restaurant.name}
-											className="flex items-center justify-between gap-4 rounded-[10px] border border-[var(--mapetite-border)] bg-white/[0.03] px-4 py-3"
+											type="button"
+											onClick={() => setSelectedRestaurantIndex(index)}
+											aria-pressed={selectedRestaurantIndex === index}
+											className={cn(
+												"flex w-full items-center justify-between gap-4 rounded-[10px] border px-4 py-3 text-left transition-colors",
+												selectedRestaurantIndex === index
+													? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)]"
+													: "border-[var(--mapetite-border)] bg-white/[0.03] hover:bg-white/[0.06]",
+											)}
 										>
 											<div>
 												<strong className="block text-sm font-medium text-[var(--mapetite-text)]">
@@ -616,7 +639,7 @@ function LandingPage() {
 											<div className="rounded-full border border-[var(--mapetite-border)] px-2.5 py-1 text-sm text-[var(--mapetite-text-soft)]">
 												{restaurant.rating}
 											</div>
-										</div>
+										</button>
 									))}
 								</div>
 							</div>
@@ -710,13 +733,16 @@ function LandingPage() {
 									</div>
 									<div className="mt-4 space-y-3">
 										{selectedCity.restaurants.map((restaurant, index) => (
-											<div
+											<button
 												key={restaurant.name}
+												type="button"
+												onClick={() => setSelectedRestaurantIndex(index)}
+												aria-pressed={selectedRestaurantIndex === index}
 												className={cn(
-													"rounded-[10px] border px-4 py-3 transition-colors",
-													index === 0
+													"w-full rounded-[10px] border px-4 py-3 text-left transition-colors",
+													selectedRestaurantIndex === index
 														? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)]"
-														: "border-[var(--mapetite-border)] bg-white/[0.03]",
+														: "border-[var(--mapetite-border)] bg-white/[0.03] hover:bg-white/[0.06]",
 												)}
 											>
 												<div className="flex items-start justify-between gap-3">
@@ -732,7 +758,7 @@ function LandingPage() {
 														{restaurant.rating}
 													</div>
 												</div>
-											</div>
+											</button>
 										))}
 									</div>
 								</div>
@@ -773,10 +799,10 @@ function LandingPage() {
 
 									<div className="mt-5 flex flex-wrap gap-2">
 										<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.04] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-											Save favorite
+											Favorite from search
 										</div>
 										<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.04] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-											Get directions
+											Directions in detail
 										</div>
 									</div>
 								</div>
@@ -804,7 +830,7 @@ function LandingPage() {
 									<button
 										key={city.key}
 										type="button"
-										onClick={() => setSelectedCityKey(city.key)}
+										onClick={() => handleSelectCity(city.key)}
 										className={cn(
 											"rounded-[12px] border p-4 text-left transition-colors",
 											selectedCityKey === city.key
