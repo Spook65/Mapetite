@@ -764,7 +764,7 @@ function RestaurantSearchPage() {
 								Choose a place, then browse with less noise.
 							</h1>
 							<p className="mapetite-muted-copy mt-3 max-w-[620px] text-[15px] leading-7">
-								Start with a city and add country or region only when it helps.
+								Start with a city and add region or country only when it helps.
 								Refine after the list opens, then keep one selected restaurant
 								visible while you compare.
 							</p>
@@ -778,8 +778,8 @@ function RestaurantSearchPage() {
 									Find restaurants by place
 								</strong>
 								<p className="mapetite-muted-copy mt-2 text-sm">
-									City and country are usually enough. Add a state or region when
-									a city name is shared by multiple places.
+									Start with a city. Add region or country when the place name is
+									shared.
 								</p>
 							</div>
 						</div>
@@ -806,11 +806,11 @@ function RestaurantSearchPage() {
 									htmlFor="state"
 									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
 								>
-									State / Region
+									Region
 								</Label>
 								<Input
 									id="state"
-									placeholder="Optional, e.g. California or New York"
+									placeholder="Optional region"
 									value={location.state}
 									onChange={(e) => updateLocation({ state: e.target.value })}
 									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-[var(--mapetite-text)] placeholder:text-[var(--mapetite-text-faint)]"
@@ -826,7 +826,7 @@ function RestaurantSearchPage() {
 								</Label>
 								<Input
 									id="country"
-									placeholder="Optional"
+									placeholder="Optional country"
 									value={location.country}
 									onChange={(e) => updateLocation({ country: e.target.value })}
 									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-[var(--mapetite-text)] placeholder:text-[var(--mapetite-text-faint)]"
