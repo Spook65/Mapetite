@@ -25,46 +25,46 @@ const cityStarts = [
 		key: "tokyo",
 		name: "Tokyo",
 		country: "Japan",
-		stageTag: "Late counters",
+		stageTag: "Example flow",
 		stageNote:
-			"Tighter shortlists, quieter counters, and stronger late options.",
+			"A sample flow for comparing compact rooms, counter formats, and quieter plans.",
 		summary:
 			"Begin here when the night leans toward compact dining rooms, quieter service, and a shortlist that narrows quickly.",
 		focusTitle: "Tokyo keeps the shortlist tighter from the first result.",
-		focusSubtitle: "Counter dining · late service · hidden bars",
-		bestFor: "Counter dining and late reservations.",
+		focusSubtitle: "Counter dining · ramen · izakaya",
+		bestFor: "Counter dining and compact shortlist decisions.",
 		shortlistMood: "Compact, precise, and easy to narrow.",
 		naturalNextMove: "Open details when one room feels worth the trip.",
-		heroTitle: "Omakase, kaiseki, late-night counters",
-		shortlistLabel: "3 places open late",
+		heroTitle: "Counter dining, ramen, izakaya",
+		shortlistLabel: "Example shortlist",
 		tags: ["Omakase", "Ramen", "Izakaya"],
 		restaurants: [
 			{
-				name: "Omakase Kuro",
+				name: "Counter dining",
 				subtitle: "Counter dining · Shinjuku",
-				rating: "4.8",
+				signal: "Focused",
 				detail:
-					"Calm counter service, strong omakase pacing, and a late reservation window.",
-				imageLabel: "Quiet counter seating · late service",
-				meta: ["4.8 rating", "Omakase", "Shinjuku"],
+					"A sample decision card for comparing pacing, room size, and neighborhood fit.",
+				imageLabel: "Preview artwork · counter-style context",
+				meta: ["Omakase", "Shinjuku", "Preview"],
 			},
 			{
-				name: "Shio Atelier",
+				name: "Ramen room",
 				subtitle: "Ramen · Nakameguro",
-				rating: "4.6",
+				signal: "Compact",
 				detail:
-					"Broth-led, compact, and easy to slot into a quieter evening plan.",
-				imageLabel: "Open kitchen glow · neighborhood pace",
-				meta: ["4.6 rating", "Ramen", "Nakameguro"],
+					"A sample card for a simpler stop where route, neighborhood, and timing matter more than ceremony.",
+				imageLabel: "Preview artwork · neighborhood pace",
+				meta: ["Ramen", "Nakameguro", "Preview"],
 			},
 			{
-				name: "Midnight Coal",
+				name: "Izakaya option",
 				subtitle: "Izakaya · Ebisu",
-				rating: "4.7",
+				signal: "Lively",
 				detail:
-					"Lively enough for a late table, but still focused on the room and the grill.",
-				imageLabel: "Late service · charcoal counter",
-				meta: ["4.7 rating", "Izakaya", "Ebisu"],
+					"A sample comparison point for a warmer, more social room in the shortlist.",
+				imageLabel: "Preview artwork · charcoal counter mood",
+				meta: ["Izakaya", "Ebisu", "Preview"],
 			},
 		],
 	},
@@ -82,35 +82,35 @@ const cityStarts = [
 		shortlistMood: "Layered, elegant, and easy to stretch into the night.",
 		naturalNextMove: "Compare the room, then open details for the final call.",
 		heroTitle: "Bistros, wine bars, tasting menus",
-		shortlistLabel: "3 rooms worth lingering in",
+		shortlistLabel: "Example shortlist",
 		tags: ["Bistro", "Wine bar", "Tasting menu"],
 		restaurants: [
 			{
-				name: "Maison Rive",
+				name: "Bistro table",
 				subtitle: "Bistro · Saint-Germain",
-				rating: "4.7",
+				signal: "Classic",
 				detail:
-					"A confident room with classic pacing, strong staff guidance, and a deep wine list.",
-				imageLabel: "Candlelit banquettes · late seating",
-				meta: ["4.7 rating", "Bistro", "Saint-Germain"],
+					"A sample card for comparing room character, location, and a slower meal.",
+				imageLabel: "Preview artwork · bistro room context",
+				meta: ["Bistro", "Saint-Germain", "Preview"],
 			},
 			{
-				name: "Verre Minuit",
+				name: "Wine bar",
 				subtitle: "Wine bar · Le Marais",
-				rating: "4.6",
+				signal: "Flexible",
 				detail:
-					"A tighter list built for glasses first, small plates second, and easy second stops.",
-				imageLabel: "Glass pours · narrow room energy",
-				meta: ["4.6 rating", "Wine bar", "Le Marais"],
+					"A sample option for lighter plans, smaller plates, and easier second stops.",
+				imageLabel: "Preview artwork · narrow room energy",
+				meta: ["Wine bar", "Le Marais", "Preview"],
 			},
 			{
-				name: "Atelier Sept",
+				name: "Tasting menu",
 				subtitle: "Tasting menu · 7th arrondissement",
-				rating: "4.8",
+				signal: "Occasion",
 				detail:
-					"More formal, more paced, and worth opening when the night needs a stronger centerpiece.",
-				imageLabel: "Chef-led dining room · tasting pace",
-				meta: ["4.8 rating", "Tasting menu", "7th arrondissement"],
+					"A sample card for when the night needs a more deliberate centerpiece.",
+				imageLabel: "Preview artwork · tasting room pace",
+				meta: ["Tasting menu", "7th arrondissement", "Preview"],
 			},
 		],
 	},
@@ -129,35 +129,35 @@ const cityStarts = [
 		shortlistMood: "Balanced, flexible, and easy to compare.",
 		naturalNextMove: "Use the shortlist to narrow, then open details for confidence.",
 		heroTitle: "Dining rooms and chef-led menus",
-		shortlistLabel: "3 places with room-led appeal",
+		shortlistLabel: "Example shortlist",
 		tags: ["Dining room", "Gastropub", "Chef-led"],
 		restaurants: [
 			{
-				name: "Lark & Ember",
+				name: "Dining room",
 				subtitle: "Dining room · Marylebone",
-				rating: "4.7",
+				signal: "Polished",
 				detail:
-					"A composed dining room that feels occasion-ready without forcing a heavy night.",
-				imageLabel: "Warm room lighting · composed tables",
-				meta: ["4.7 rating", "Dining room", "Marylebone"],
+					"A sample card for an occasion-ready room without forcing a heavy night.",
+				imageLabel: "Preview artwork · composed tables",
+				meta: ["Dining room", "Marylebone", "Preview"],
 			},
 			{
-				name: "The Bramble House",
+				name: "Gastropub",
 				subtitle: "Gastropub · Notting Hill",
-				rating: "4.5",
+				signal: "Relaxed",
 				detail:
-					"Relaxed enough for a quick decision, but still worth opening for menu confidence.",
-				imageLabel: "Corner pub glow · wood bar finish",
-				meta: ["4.5 rating", "Gastropub", "Notting Hill"],
+					"A sample option for relaxed pacing, neighborhood fit, and easier plans.",
+				imageLabel: "Preview artwork · corner pub glow",
+				meta: ["Gastropub", "Notting Hill", "Preview"],
 			},
 			{
-				name: "Chapter One Table",
+				name: "Chef-led menu",
 				subtitle: "Chef-led menu · Shoreditch",
-				rating: "4.8",
+				signal: "Focused",
 				detail:
-					"Sharper pacing and more deliberate courses when the shortlist needs a clear standout.",
-				imageLabel: "Chef pass · evening tasting room",
-				meta: ["4.8 rating", "Chef-led", "Shoreditch"],
+					"A sample card for sharper pacing when the shortlist needs a clearer standout.",
+				imageLabel: "Preview artwork · chef pass context",
+				meta: ["Chef-led", "Shoreditch", "Preview"],
 			},
 		],
 	},
@@ -176,35 +176,35 @@ const cityStarts = [
 		shortlistMood: "Wide, visual, and easier to compare by setting.",
 		naturalNextMove: "Open details once the room and route both feel right.",
 		heroTitle: "Rooftops, hotel dining, tasting menus",
-		shortlistLabel: "3 rooms with stronger setting pull",
+		shortlistLabel: "Example shortlist",
 		tags: ["Rooftop", "Hotel dining", "Tasting menu"],
 		restaurants: [
 			{
-				name: "Astra Marina",
+				name: "Rooftop setting",
 				subtitle: "Rooftop dining · Dubai Marina",
-				rating: "4.7",
+				signal: "Scenic",
 				detail:
-					"A stronger route-and-room decision where the setting matters as much as the booking.",
-				imageLabel: "Skyline terrace · marina lights",
-				meta: ["4.7 rating", "Rooftop", "Dubai Marina"],
+					"A sample card for route-and-room decisions where the setting matters.",
+				imageLabel: "Preview artwork · skyline terrace mood",
+				meta: ["Rooftop", "Dubai Marina", "Preview"],
 			},
 			{
-				name: "Palm Atelier",
+				name: "Hotel dining",
 				subtitle: "Hotel dining · Palm Jumeirah",
-				rating: "4.6",
+				signal: "Composed",
 				detail:
-					"Polished hotel service with enough calm to make the shortlist feel easy to trust.",
-				imageLabel: "Lobby glow · waterfront dining",
-				meta: ["4.6 rating", "Hotel dining", "Palm Jumeirah"],
+					"A sample option for calmer service, setting confidence, and easier comparison.",
+				imageLabel: "Preview artwork · waterfront dining mood",
+				meta: ["Hotel dining", "Palm Jumeirah", "Preview"],
 			},
 			{
-				name: "Ember Room DXB",
+				name: "Tasting room",
 				subtitle: "Tasting menu · DIFC",
-				rating: "4.8",
+				signal: "Deliberate",
 				detail:
-					"A sharper choice when the night calls for something more deliberate and worth the trip.",
-				imageLabel: "Evening tasting room · city lights",
-				meta: ["4.8 rating", "Tasting menu", "DIFC"],
+					"A sample card for a more deliberate choice when the trip needs stronger context.",
+				imageLabel: "Preview artwork · city-light dining mood",
+				meta: ["Tasting menu", "DIFC", "Preview"],
 			},
 		],
 	},
@@ -490,7 +490,7 @@ function LandingPage() {
 						<div className="grid gap-4">
 							<div className="mapetite-panel overflow-hidden p-5 md:p-6">
 								<div className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-									Tonight starts in {selectedCity.name}
+									Sample city flow
 								</div>
 								<div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
 									<strong className="text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
@@ -519,7 +519,7 @@ function LandingPage() {
 												{restaurant.name}
 											</strong>
 											<span className="mapetite-muted-copy mt-1 block text-sm">
-												{restaurant.subtitle} · {restaurant.rating}
+												{restaurant.subtitle} · {restaurant.signal}
 											</span>
 										</button>
 									))}
@@ -637,7 +637,7 @@ function LandingPage() {
 												</span>
 											</div>
 											<div className="rounded-full border border-[var(--mapetite-border)] px-2.5 py-1 text-sm text-[var(--mapetite-text-soft)]">
-												{restaurant.rating}
+												{restaurant.signal}
 											</div>
 										</button>
 									))}
@@ -728,7 +728,7 @@ function LandingPage() {
 											Shortlist
 										</span>
 										<div className="rounded-full border border-[var(--mapetite-border)] px-2.5 py-1 text-xs text-[var(--mapetite-text-soft)]">
-											{selectedCity.restaurants.length} restaurants
+											{selectedCity.restaurants.length} sample cards
 										</div>
 									</div>
 									<div className="mt-4 space-y-3">
@@ -755,7 +755,7 @@ function LandingPage() {
 														</span>
 													</div>
 													<div className="text-sm font-medium text-[var(--mapetite-text)]">
-														{restaurant.rating}
+														{restaurant.signal}
 													</div>
 												</div>
 											</button>
@@ -766,7 +766,7 @@ function LandingPage() {
 								<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
 									<div className="flex items-center justify-between gap-3">
 										<span className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-											Restaurant detail
+											Example detail
 										</span>
 										<div className="rounded-full border border-[var(--mapetite-border)] px-2.5 py-1 text-xs text-[var(--mapetite-text-soft)]">
 											{selectedCity.name}
