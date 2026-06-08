@@ -13,7 +13,9 @@ function Root() {
 			<ErrorBoundary tagName="main" className="flex-1 w-full">
 				<Outlet />
 			</ErrorBoundary>
-			<TanStackRouterDevtools position="bottom-right" />
+			{import.meta.env.DEV ? (
+				<TanStackRouterDevtools position="bottom-right" />
+			) : null}
 			<Toaster />
 		</div>
 	);
