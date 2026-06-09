@@ -149,7 +149,7 @@ Frontend variables:
 | `VITE_APP_CONFIG_DEBUG` | Optional | Enables app config debug logs in development only when `true`. |
 | `TENANT_ID` | Optional | Used by Vite base path logic for hosted tenant-style paths. |
 | `VITE_MCP_API_BASE_PATH` | Optional/legacy | Used by remaining generated MCP SDK helpers if those paths are exercised. |
-| `VITE_API_BASE_PATH` | Optional/legacy | Used by remaining generated auth SDK helpers if those paths are exercised. |
+| `VITE_API_BASE_PATH` | Optional | Base path for same-origin auth/favorites endpoints. Leave blank for local Vite mock auth. Do not point this at the restaurant backend unless it implements matching auth routes. |
 
 Backend variables:
 
@@ -226,11 +226,21 @@ Current release-readiness notes:
 
 Recommended deployment mode: portfolio demo with a public URL. Mapetite is suitable to show as an MVP/portfolio project when the limitations below are disclosed. It is not ready to treat as production auth or a real public consumer service.
 
-- The frontend and backend can be deployed separately.
-- Set `VITE_RESTAURANTS_API_BASE_URL` in the frontend deployment to point at the deployed backend.
-- Configure `GEOAPIFY_API_KEY` on the backend deployment for primary provider results.
-- Configure `DATABASE_URL` for production backend environments.
-- Configure `CORS_ORIGIN` to allow the deployed frontend origin before serving real users. The backend is permissive only when `CORS_ORIGIN` is unset.
+- Deploy the frontend and backend separately. Do not convert the Express backend to Vercel serverless functions for the current MVP.
+- Frontend target: Vercel.
+  - Framework preset: `Vite`
+  - Build command: `pnpm run build`
+  - Output directory: `dist`
+  - Environment variable: `VITE_RESTAURANTS_API_BASE_URL=https://your-backend-url`
+- Backend target: Render, Railway, Fly.io, or another Node/Express host.
+  - `NODE_ENV=production`
+  - `GEOAPIFY_API_KEY=...`
+  - `CORS_ORIGIN=https://your-vercel-url`
+  - `RATE_LIMIT_WINDOW_MS=900000`
+  - `RATE_LIMIT_MAX=300`
+  - `SEARCH_RATE_LIMIT_MAX=60`
+  - `DATABASE_URL=...` if deploying production persistence paths
+- The committed `vercel.json` rewrites app routes to `index.html` so direct visits to routes like `/restaurants/:id` work on Vercel.
 - Keep `MAPETITE_SEARCH_DEBUG`, `SEARCH_DEBUG`, `VITE_AUTH_DEBUG`, `VITE_MOCK_API_DEBUG`, and `VITE_APP_CONFIG_DEBUG` set to `false` for deployed demos.
 - The backend includes lightweight in-memory rate limiting. Tune `RATE_LIMIT_MAX` and `SEARCH_RATE_LIMIT_MAX` for the deployed host and expected demo traffic.
 - In-memory caches reset when the backend restarts. Use a persistent cache later if refresh stability becomes important.

@@ -1,7 +1,19 @@
 import type { LocationState, Restaurant } from "@/store/restaurant-search-store";
 
-const API_BASE_URL =
-	import.meta.env.VITE_RESTAURANTS_API_BASE_URL || "http://127.0.0.1:5001";
+function getRestaurantsApiBaseUrl() {
+	const configuredBaseUrl = import.meta.env.VITE_RESTAURANTS_API_BASE_URL;
+	if (configuredBaseUrl) {
+		return configuredBaseUrl;
+	}
+
+	if (import.meta.env.DEV) {
+		return "http://127.0.0.1:5001";
+	}
+
+	throw new Error(
+		"VITE_RESTAURANTS_API_BASE_URL is required for deployed restaurant API calls.",
+	);
+}
 
 export interface RestaurantSearchRequest {
 	city?: string;
@@ -41,7 +53,7 @@ function appendIfDefined(params: URLSearchParams, key: string, value: unknown) {
 export async function searchRestaurantsApi(
 	request: RestaurantSearchRequest,
 ): Promise<RestaurantSearchResponse> {
-	const url = new URL(`${API_BASE_URL}/api/restaurants/search`);
+	const url = new URL(`${getRestaurantsApiBaseUrl()}/api/restaurants/search`);
 	appendIfDefined(url.searchParams, "city", request.city);
 	appendIfDefined(url.searchParams, "state", request.state);
 	appendIfDefined(url.searchParams, "country", request.country);
@@ -79,7 +91,7 @@ export async function getRestaurantByIdApi(
 	restaurantId: string,
 ): Promise<Restaurant | null> {
 	const response = await fetch(
-		`${API_BASE_URL}/api/restaurants/${encodeURIComponent(restaurantId)}`,
+		`${getRestaurantsApiBaseUrl()}/api/restaurants/${encodeURIComponent(restaurantId)}`,
 		{
 			headers: {
 				Accept: "application/json",

@@ -29,7 +29,7 @@ interface AuthState {
 }
 
 // Configuration for token validation
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_PATH || "";
 const AUTH_DEBUG =
 	import.meta.env.DEV && import.meta.env.VITE_AUTH_DEBUG === "true";
 

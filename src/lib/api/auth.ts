@@ -10,7 +10,7 @@
  * - GET /api/user/profile: Get the authenticated user's profile
  */
 
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_PATH || "";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 function normalizeAuthEmail(email: string): string {
