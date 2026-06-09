@@ -158,6 +158,7 @@ Backend variables:
 | `GEOAPIFY_API_KEY` | Recommended | Primary restaurant/geocoding provider. If missing, search falls back to OSM/Overpass where possible. |
 | `PORT` | Optional | Defaults to `5001`. |
 | `HOST` | Optional | Defaults to `127.0.0.1`. |
+| `CORS_ORIGIN` | Recommended in production | Comma-separated frontend origins allowed by the backend. Leave unset for permissive local MVP behavior. |
 | `DATABASE_URL` | Required in production | Prisma/Postgres connection. Local MVP flows can run without invoking Prisma, but production config requires it. |
 | `MONGODB_URI` / `MONGO_URI` | Optional | Optional Mongo connection. The app logs a warning and continues if unavailable. |
 | `MAPETITE_SEARCH_DEBUG` | Optional | Backend search diagnostics when `true`. |
@@ -206,13 +207,25 @@ Important production gaps:
 - Serve only over HTTPS.
 - Review token lifetime, storage, refresh, logout, and CSRF/CORS behavior before real users.
 
+## Privacy and Security Baseline
+
+See [PRIVACY.md](./PRIVACY.md) for the MVP privacy baseline.
+
+Current release-readiness notes:
+
+- The app stores auth tokens in browser `localStorage`; this is acceptable for an MVP demo but should be revisited for production users.
+- The backend sends basic security headers and limits JSON request bodies to 1 MB.
+- Production deployments should set `CORS_ORIGIN` instead of relying on permissive local CORS.
+- Do not expose `GEOAPIFY_API_KEY`, `DATABASE_URL`, or other backend secrets to the frontend.
+- A development-only JWT diagnostic route exists at `/jwt-debug`, but it does not expose token details in production builds.
+
 ## Deployment Notes
 
 - The frontend and backend can be deployed separately.
 - Set `VITE_RESTAURANTS_API_BASE_URL` in the frontend deployment to point at the deployed backend.
 - Configure `GEOAPIFY_API_KEY` on the backend deployment for primary provider results.
 - Configure `DATABASE_URL` for production backend environments.
-- Configure CORS to allow the deployed frontend origin before serving real users. The current backend uses permissive CORS for MVP/local development.
+- Configure `CORS_ORIGIN` to allow the deployed frontend origin before serving real users. The backend is permissive only when `CORS_ORIGIN` is unset.
 - In-memory caches reset when the backend restarts. Use a persistent cache later if refresh stability becomes important.
 - Production auth/storage needs hardening before real users.
 - Free provider data quality varies by region; this is acceptable for MVP/portfolio, but should be documented in demos.

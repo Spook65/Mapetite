@@ -404,10 +404,6 @@ export const mockApiPlugin = () => ({
 					JSON.stringify({
 						status: "Failed",
 						message: "Unauthorized - invalid or missing auth token",
-						debug: {
-							headerPresent: !!authHeader,
-							headerFormat: authHeader ? authHeader.substring(0, 7) : "N/A"
-						}
 					}),
 				);
 				return;

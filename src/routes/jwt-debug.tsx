@@ -19,6 +19,23 @@ export const Route = createFileRoute("/jwt-debug")({
 });
 
 function JwtDebug() {
+	if (!import.meta.env.DEV) {
+		return (
+			<div className="container mx-auto p-4 max-w-2xl">
+				<h1 className="text-3xl font-bold mb-4 text-center">
+					Debug tools unavailable
+				</h1>
+				<p className="text-center text-muted-foreground">
+					This diagnostic route is only available during local development.
+				</p>
+			</div>
+		);
+	}
+
+	return <JwtDebugPanel />;
+}
+
+function JwtDebugPanel() {
 	const { token: authHookToken } = useAuth();
 	// Initialize manualJwtToken with authHookToken if present, otherwise empty string
 	const [manualJwtToken, setManualJwtToken] = useState<string>(
