@@ -10,6 +10,9 @@ const raw = {
   host: process.env.HOST || "127.0.0.1",
   port: process.env.PORT || "5001",
   corsOrigin: process.env.CORS_ORIGIN || "",
+  rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
+  rateLimitMax: Number(process.env.RATE_LIMIT_MAX || 300),
+  searchRateLimitMax: Number(process.env.SEARCH_RATE_LIMIT_MAX || 60),
   databaseUrl: process.env.DATABASE_URL,
   geoapifyApiKey:
     process.env.GEOAPIFY_API_KEY || "",

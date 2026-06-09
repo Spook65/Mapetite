@@ -159,6 +159,9 @@ Backend variables:
 | `PORT` | Optional | Defaults to `5001`. |
 | `HOST` | Optional | Defaults to `127.0.0.1`. |
 | `CORS_ORIGIN` | Recommended in production | Comma-separated frontend origins allowed by the backend. Leave unset for permissive local MVP behavior. |
+| `RATE_LIMIT_WINDOW_MS` | Optional | Backend API rate-limit window. Defaults to 15 minutes. |
+| `RATE_LIMIT_MAX` | Optional | General `/api` requests per IP per window. Defaults to `300`. |
+| `SEARCH_RATE_LIMIT_MAX` | Optional | `/api/restaurants/search` requests per IP per window. Defaults to `60`. |
 | `DATABASE_URL` | Required in production | Prisma/Postgres connection. Local MVP flows can run without invoking Prisma, but production config requires it. |
 | `MONGODB_URI` / `MONGO_URI` | Optional | Optional Mongo connection. The app logs a warning and continues if unavailable. |
 | `MAPETITE_SEARCH_DEBUG` | Optional | Backend search diagnostics when `true`. |
@@ -221,13 +224,17 @@ Current release-readiness notes:
 
 ## Deployment Notes
 
+Recommended deployment mode: portfolio demo with a public URL. Mapetite is suitable to show as an MVP/portfolio project when the limitations below are disclosed. It is not ready to treat as production auth or a real public consumer service.
+
 - The frontend and backend can be deployed separately.
 - Set `VITE_RESTAURANTS_API_BASE_URL` in the frontend deployment to point at the deployed backend.
 - Configure `GEOAPIFY_API_KEY` on the backend deployment for primary provider results.
 - Configure `DATABASE_URL` for production backend environments.
 - Configure `CORS_ORIGIN` to allow the deployed frontend origin before serving real users. The backend is permissive only when `CORS_ORIGIN` is unset.
+- Keep `MAPETITE_SEARCH_DEBUG`, `SEARCH_DEBUG`, `VITE_AUTH_DEBUG`, `VITE_MOCK_API_DEBUG`, and `VITE_APP_CONFIG_DEBUG` set to `false` for deployed demos.
+- The backend includes lightweight in-memory rate limiting. Tune `RATE_LIMIT_MAX` and `SEARCH_RATE_LIMIT_MAX` for the deployed host and expected demo traffic.
 - In-memory caches reset when the backend restarts. Use a persistent cache later if refresh stability becomes important.
-- Production auth/storage needs hardening before real users.
+- Production auth/storage needs hardening before real users. The Vite mock auth endpoints are local development behavior, not a real production auth service.
 - Free provider data quality varies by region; this is acceptable for MVP/portfolio, but should be documented in demos.
 
 ## Future Roadmap
