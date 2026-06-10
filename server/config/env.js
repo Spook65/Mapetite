@@ -4,9 +4,11 @@
 import logger from "./logger.js";
 
 const NODE_ENV = process.env.NODE_ENV || "development";
+const STORAGE_MODES = new Set(["memory", "database"]);
 
 const raw = {
   nodeEnv: NODE_ENV,
+  storageMode: process.env.MAPETITE_STORAGE_MODE || "memory",
   host: process.env.HOST || "127.0.0.1",
   port: process.env.PORT || "5001",
   corsOrigin: process.env.CORS_ORIGIN || "",
@@ -21,18 +23,24 @@ const raw = {
 };
 
 const validate = () => {
-  // In production we hard-require Postgres connectivity to be configured.
-  if (raw.nodeEnv === "production" && !raw.databaseUrl) {
-    throw new Error("DATABASE_URL is required in production");
+  if (!STORAGE_MODES.has(raw.storageMode)) {
+    throw new Error(
+      `MAPETITE_STORAGE_MODE must be one of: ${Array.from(STORAGE_MODES).join(", ")}`,
+    );
   }
 
-  if (!raw.databaseUrl) {
-    logger.warn("DATABASE_URL missing; Prisma will fail if invoked.", {
-      nodeEnv: raw.nodeEnv,
-    });
+  if (raw.storageMode === "database" && !raw.databaseUrl) {
+    throw new Error("DATABASE_URL is required when MAPETITE_STORAGE_MODE=database");
   }
 
-  if (!raw.mongoUri) {
+  if (raw.storageMode === "memory") {
+    logger.warn(
+      "MAPETITE_STORAGE_MODE=memory is demo-only; runtime state resets on restart.",
+      { nodeEnv: raw.nodeEnv },
+    );
+  }
+
+  if (raw.storageMode === "database" && !raw.mongoUri) {
     logger.warn("Mongo URI not configured; cache features will be disabled.", {
       nodeEnv: raw.nodeEnv,
     });

@@ -155,6 +155,7 @@ Backend variables:
 
 | Variable | Required | Notes |
 | --- | --- | --- |
+| `MAPETITE_STORAGE_MODE` | Recommended | Use `memory` for portfolio/MVP demo deployments. Use `database` only when deploying persistent storage. Defaults to `memory`. |
 | `GEOAPIFY_API_KEY` | Recommended | Primary restaurant/geocoding provider. If missing, search falls back to OSM/Overpass where possible. |
 | `PORT` | Optional | Defaults to `5001`. |
 | `HOST` | Optional | Defaults to `127.0.0.1`. |
@@ -162,7 +163,7 @@ Backend variables:
 | `RATE_LIMIT_WINDOW_MS` | Optional | Backend API rate-limit window. Defaults to 15 minutes. |
 | `RATE_LIMIT_MAX` | Optional | General `/api` requests per IP per window. Defaults to `300`. |
 | `SEARCH_RATE_LIMIT_MAX` | Optional | `/api/restaurants/search` requests per IP per window. Defaults to `60`. |
-| `DATABASE_URL` | Required in production | Prisma/Postgres connection. Local MVP flows can run without invoking Prisma, but production config requires it. |
+| `DATABASE_URL` | Required for `MAPETITE_STORAGE_MODE=database` | Prisma/Postgres connection. Not required for `memory` demo deployments. |
 | `MONGODB_URI` / `MONGO_URI` | Optional | Optional Mongo connection. The app logs a warning and continues if unavailable. |
 | `MAPETITE_SEARCH_DEBUG` | Optional | Backend search diagnostics when `true`. |
 | `SEARCH_DEBUG` | Optional | Legacy alias for backend search diagnostics. |
@@ -234,16 +235,19 @@ Recommended deployment mode: portfolio demo with a public URL. Mapetite is suita
   - Environment variable: `VITE_RESTAURANTS_API_BASE_URL=https://your-backend-url`
 - Backend target: Render, Railway, Fly.io, or another Node/Express host.
   - `NODE_ENV=production`
+  - `MAPETITE_STORAGE_MODE=memory`
   - `GEOAPIFY_API_KEY=...`
+  - `HOST=0.0.0.0`
   - `CORS_ORIGIN=https://your-vercel-url`
   - `RATE_LIMIT_WINDOW_MS=900000`
   - `RATE_LIMIT_MAX=300`
   - `SEARCH_RATE_LIMIT_MAX=60`
-  - `DATABASE_URL=...` if deploying production persistence paths
+  - `DATABASE_URL=...` only if `MAPETITE_STORAGE_MODE=database`
 - The committed `vercel.json` rewrites app routes to `index.html` so direct visits to routes like `/restaurants/:id` work on Vercel.
 - Keep `MAPETITE_SEARCH_DEBUG`, `SEARCH_DEBUG`, `VITE_AUTH_DEBUG`, `VITE_MOCK_API_DEBUG`, and `VITE_APP_CONFIG_DEBUG` set to `false` for deployed demos.
 - The backend includes lightweight in-memory rate limiting. Tune `RATE_LIMIT_MAX` and `SEARCH_RATE_LIMIT_MAX` for the deployed host and expected demo traffic.
 - In-memory caches reset when the backend restarts. Use a persistent cache later if refresh stability becomes important.
+- `MAPETITE_STORAGE_MODE=memory` is demo-only. Runtime state, in-memory caches, and any memory-backed account/favorite behavior reset on restart.
 - Production auth/storage needs hardening before real users. The Vite mock auth endpoints are local development behavior, not a real production auth service.
 - Free provider data quality varies by region; this is acceptable for MVP/portfolio, but should be documented in demos.
 

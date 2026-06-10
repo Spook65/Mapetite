@@ -96,8 +96,10 @@ const searchRateLimiter = createRateLimiter({
 });
 
 // Fire-and-forget optional Mongo connection for cache and document stores.
-// All failures are logged as warnings and must not prevent the server from running.
-void connectMongo(env.mongoUri);
+// Demo memory deployments intentionally run without Mongo.
+if (env.mongoUri) {
+  void connectMongo(env.mongoUri);
+}
 
 app.use("/api", apiRateLimiter);
 app.use("/api/restaurants/search", searchRateLimiter);
@@ -109,5 +111,10 @@ const PORT = Number(env.port || 5001);
 const HOST = env.host || "127.0.0.1";
 
 app.listen(PORT, HOST, () => {
-  logger.info("Server started", { host: HOST, port: PORT, nodeEnv: env.nodeEnv });
+  logger.info("Server started", {
+    host: HOST,
+    port: PORT,
+    nodeEnv: env.nodeEnv,
+    storageMode: env.storageMode,
+  });
 });

@@ -37,6 +37,7 @@ router.get("/", async (_req, res) => {
     status: "ok",
     uptimeSeconds: startedAt,
     nodeEnv: env.nodeEnv,
+    storageMode: env.storageMode,
     mongo,
     database: {
       status: "not_checked",
@@ -46,5 +47,4 @@ router.get("/", async (_req, res) => {
 });
 
 export default router;
-
 
