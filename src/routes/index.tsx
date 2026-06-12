@@ -228,6 +228,9 @@ function LandingPage() {
 	const featuredRestaurant =
 		selectedCity.restaurants[selectedRestaurantIndex] ?? selectedCity.restaurants[0];
 	const firstName = profile?.name ? profile.name.trim().split(/\s+/)[0] : "User";
+	const userInitial = profile?.name
+		? profile.name.trim().charAt(0).toUpperCase()
+		: "U";
 
 	const handleCityStart = (cityName: string) => {
 		navigate({
@@ -437,13 +440,55 @@ function LandingPage() {
 							City starts
 						</a>
 					</div>
-					<Button
-						asChild
-						size="sm"
-						className="mapetite-accent-button rounded-[10px] px-4 text-sm"
-					>
-						<Link to="/restaurants">Open search</Link>
-					</Button>
+					<div className="flex items-center gap-2">
+						{isAuthenticated ? (
+							<>
+								<span className="text-sm text-[var(--mapetite-text-soft)]">
+									{firstName}
+								</span>
+								<div
+									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]"
+									aria-label="User profile"
+								>
+									{userInitial}
+								</div>
+								<Button
+									onClick={logout}
+									variant="outline"
+									size="sm"
+									className="mapetite-quiet-button rounded-[10px]"
+								>
+									<LogOut className="mr-2 size-4" />
+									Log Out
+								</Button>
+							</>
+						) : (
+							<>
+								<Button
+									onClick={() => setIsLogInOpen(true)}
+									size="sm"
+									variant="ghost"
+									className="rounded-[10px] text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
+								>
+									Log In
+								</Button>
+								<Button
+									onClick={() => setIsSignUpOpen(true)}
+									size="sm"
+									className="mapetite-accent-button rounded-[10px] px-4 text-[#20140d]"
+								>
+									Sign Up
+								</Button>
+							</>
+						)}
+						<Button
+							asChild
+							size="sm"
+							className="mapetite-accent-button rounded-[10px] px-4 text-sm"
+						>
+							<Link to="/restaurants">Open search</Link>
+						</Button>
+					</div>
 				</nav>
 
 				<section
