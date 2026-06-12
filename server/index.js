@@ -11,6 +11,7 @@ import { connectMongo } from "./db/mongo.js";
 import restaurantRoutes from "./routes/restaurants.js";
 import mapRoutes from "./routes/maps.js";
 import healthRoutes from "./routes/health.js";
+import { createDemoAuthRouter } from "./routes/demoAuth.js";
 
 const app = express();
 app.disable("x-powered-by");
@@ -103,6 +104,9 @@ if (env.mongoUri) {
 
 app.use("/api", apiRateLimiter);
 app.use("/api/restaurants/search", searchRateLimiter);
+if (env.storageMode === "memory") {
+  app.use("/api", createDemoAuthRouter());
+}
 app.use("/api/restaurants", restaurantRoutes);
 app.use("/api/maps", mapRoutes);
 app.use("/health", healthRoutes);

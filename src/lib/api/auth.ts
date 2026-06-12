@@ -27,6 +27,14 @@ function prepareAuthEmail(email: string): string {
 	return normalizedEmail;
 }
 
+async function readAuthJson<T>(response: Response): Promise<T> {
+	try {
+		return (await response.json()) as T;
+	} catch {
+		throw new Error("Auth service is unavailable. Please try again later.");
+	}
+}
+
 // ==================== POST /api/auth/register ====================
 
 /**
@@ -105,7 +113,7 @@ export async function registerUser(
 		body: JSON.stringify({ ...request, email: normalizedEmail, name }),
 	});
 
-	const data = await response.json();
+	const data = await readAuthJson<RegisterResponse>(response);
 
 	if (!response.ok) {
 		throw new Error(
@@ -184,7 +192,7 @@ export async function loginUser(request: LoginRequest): Promise<LoginResponse> {
 		body: JSON.stringify({ ...request, email: normalizedEmail }),
 	});
 
-	const data = await response.json();
+	const data = await readAuthJson<LoginResponse>(response);
 
 	if (!response.ok) {
 		throw new Error(data.message || `Login failed: ${response.statusText}`);
@@ -248,7 +256,7 @@ export async function getUserProfile(
 		},
 	});
 
-	const data = await response.json();
+	const data = await readAuthJson<UserProfileResponse>(response);
 
 	if (!response.ok) {
 		throw new Error(

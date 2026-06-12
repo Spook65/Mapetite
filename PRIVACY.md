@@ -25,7 +25,7 @@ Search requests may include city, region, country, coordinates, radius, and cate
 ## Storage Notes
 
 - Local MVP auth users, password hashes, auth tokens, and favorites are kept in Vite mock API memory during local development.
-- Deployed portfolio demos can run the backend with `MAPETITE_STORAGE_MODE=memory`; memory mode is demo-only and does not provide durable account or favorite storage.
+- Deployed portfolio demos can run the backend with `MAPETITE_STORAGE_MODE=memory`; memory mode is demo-only and does not provide durable account or favorite storage. Demo users should not use sensitive passwords.
 - Browser tokens and search state persist in `localStorage` until the user logs out, clears storage, or resets the browser.
 - Backend restaurant search/detail/media caches are in memory and reset when the backend restarts.
 

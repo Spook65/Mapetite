@@ -73,6 +73,7 @@ Backend:
 Auth:
 
 - MVP/dev auth is served by the Vite mock API plugin during local frontend development.
+- Deployed portfolio demo auth/favorites are served by the Express backend when `MAPETITE_STORAGE_MODE=memory`.
 - Auth tokens are stored client-side in `localStorage` under `creao_auth_token`.
 - This is sufficient for portfolio/MVP flows, but production auth still needs hardening, HTTPS, durable user storage, email verification, secure token/session handling, and deployment-specific review.
 
@@ -149,7 +150,7 @@ Frontend variables:
 | `VITE_APP_CONFIG_DEBUG` | Optional | Enables app config debug logs in development only when `true`. |
 | `TENANT_ID` | Optional | Used by Vite base path logic for hosted tenant-style paths. |
 | `VITE_MCP_API_BASE_PATH` | Optional/legacy | Used by remaining generated MCP SDK helpers if those paths are exercised. |
-| `VITE_API_BASE_PATH` | Optional | Base path for same-origin auth/favorites endpoints. Leave blank for local Vite mock auth. Do not point this at the restaurant backend unless it implements matching auth routes. |
+| `VITE_API_BASE_PATH` | Required for deployed demo auth | Auth/favorites API base URL. Leave blank for local Vite mock auth. For the deployed portfolio demo, set it to the Render backend URL. |
 
 Backend variables:
 
@@ -201,7 +202,7 @@ Known MVP limitations:
 
 ## Authentication Notes
 
-Local development uses the Vite mock API plugin for registration, login, profile, and favorite flows. This lets the MVP demonstrate auth and favorites without requiring a production auth provider.
+Local development uses the Vite mock API plugin for registration, login, profile, and favorite flows. Deployed portfolio demos can use the Express backend's memory-mode demo auth routes by setting `MAPETITE_STORAGE_MODE=memory` on the backend and `VITE_API_BASE_PATH` on Vercel.
 
 Important production gaps:
 
@@ -233,12 +234,15 @@ Recommended deployment mode: portfolio demo with a public URL. Mapetite is suita
   - Build command: `pnpm run build`
   - Output directory: `dist`
   - Environment variable: `VITE_RESTAURANTS_API_BASE_URL=https://your-backend-url`
+  - Environment variable: `VITE_API_BASE_PATH=https://your-backend-url`
+  - Current demo backend value: `https://mapetite-y04j.onrender.com`
 - Backend target: Render, Railway, Fly.io, or another Node/Express host.
   - `NODE_ENV=production`
   - `MAPETITE_STORAGE_MODE=memory`
   - `GEOAPIFY_API_KEY=...`
   - `HOST=0.0.0.0`
   - `CORS_ORIGIN=https://your-vercel-url`
+  - Current demo frontend value: `https://mapetite-nine.vercel.app`
   - `RATE_LIMIT_WINDOW_MS=900000`
   - `RATE_LIMIT_MAX=300`
   - `SEARCH_RATE_LIMIT_MAX=60`
@@ -248,6 +252,7 @@ Recommended deployment mode: portfolio demo with a public URL. Mapetite is suita
 - The backend includes lightweight in-memory rate limiting. Tune `RATE_LIMIT_MAX` and `SEARCH_RATE_LIMIT_MAX` for the deployed host and expected demo traffic.
 - In-memory caches reset when the backend restarts. Use a persistent cache later if refresh stability becomes important.
 - `MAPETITE_STORAGE_MODE=memory` is demo-only. Runtime state, in-memory caches, and any memory-backed account/favorite behavior reset on restart.
+- Demo users should not use sensitive passwords. Memory-mode demo auth is for portfolio evaluation only.
 - Production auth/storage needs hardening before real users. The Vite mock auth endpoints are local development behavior, not a real production auth service.
 - Free provider data quality varies by region; this is acceptable for MVP/portfolio, but should be documented in demos.
 

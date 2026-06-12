@@ -14,6 +14,14 @@ import { getUserIdFromToken } from "@/lib/jwt-utils";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_PATH || "";
 
+async function readFavoritesJson<T>(response: Response): Promise<T> {
+	try {
+		return (await response.json()) as T;
+	} catch {
+		throw new Error("Favorites service is unavailable. Please try again later.");
+	}
+}
+
 // ==================== GET /api/user/favorites ====================
 
 /**
@@ -63,13 +71,15 @@ export async function getFavorites(): Promise<GetFavoritesResponse> {
 	});
 
 	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({}));
+		const errorData: { message?: string } = await readFavoritesJson<{ message?: string }>(
+			response,
+		).catch(() => ({}));
 		throw new Error(
 			errorData.message || `Failed to fetch favorites: ${response.statusText}`,
 		);
 	}
 
-	return response.json();
+	return readFavoritesJson<GetFavoritesResponse>(response);
 }
 
 // ==================== POST /api/user/favorites ====================
@@ -159,13 +169,15 @@ export async function toggleFavorite(
 	);
 
 	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({}));
+		const errorData: { message?: string } = await readFavoritesJson<{ message?: string }>(
+			response,
+		).catch(() => ({}));
 		throw new Error(
 			errorData.message || `Failed to toggle favorite: ${response.statusText}`,
 		);
 	}
 
-	return response.json();
+	return readFavoritesJson<ToggleFavoriteResponse>(response);
 }
 
 // ==================== Helper Functions ====================
