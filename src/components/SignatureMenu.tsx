@@ -34,12 +34,7 @@ export function SignatureMenu({
 }: SignatureMenuProps) {
 	if (!dishes.length) {
 		return (
-			<Card
-				className={cn(
-					"border border-border shadow-none",
-					className,
-				)}
-			>
+			<Card className={cn("border border-border shadow-none", className)}>
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2 text-lg">
 						<UtensilsCrossed className="size-4 text-primary" />
@@ -54,21 +49,14 @@ export function SignatureMenu({
 	}
 
 	return (
-		<Card
-			className={cn(
-				"border border-border shadow-none",
-				className,
-			)}
-		>
+		<Card className={cn("border border-border shadow-none", className)}>
 			<CardHeader>
 				<CardTitle className="flex items-center gap-2 text-lg">
 					<UtensilsCrossed className="size-4 text-primary" />
 					Signature dishes
 				</CardTitle>
 				{pricingNote && (
-					<p className="text-sm text-muted-foreground">
-						{pricingNote}
-					</p>
+					<p className="text-sm text-muted-foreground">{pricingNote}</p>
 				)}
 			</CardHeader>
 
@@ -78,9 +66,7 @@ export function SignatureMenu({
 						key={`${dish.name}-${index}`}
 						className={cn(
 							"rounded-md border border-border p-4",
-							dish.featured
-								? "bg-muted/60"
-								: "bg-card",
+							dish.featured ? "bg-muted/60" : "bg-card",
 						)}
 					>
 						{dish.featured && (
@@ -98,10 +84,7 @@ export function SignatureMenu({
 								{dish.tags && dish.tags.length > 0 && (
 									<div className="flex flex-wrap gap-2 mt-2">
 										{dish.tags.map((tag) => (
-											<Badge
-												key={tag}
-												variant="outline"
-											>
+											<Badge key={tag} variant="outline">
 												{tag}
 											</Badge>
 										))}
@@ -111,9 +94,7 @@ export function SignatureMenu({
 
 							<div className="flex items-center gap-1 rounded-md border border-border px-3 py-1 text-foreground">
 								<DollarSign className="size-4 text-primary" />
-								<span className="text-sm font-medium">
-									{dish.price}
-								</span>
+								<span className="text-sm font-medium">{dish.price}</span>
 							</div>
 						</div>
 

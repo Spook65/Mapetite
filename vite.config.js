@@ -21,9 +21,7 @@ export default defineConfig({
 		TanStackRouterVite({
 			autoCodeSplitting: false, // affects pick-n-edit feature. disabled for now.
 		}),
-		viteReact({
-			
-		}),
+		viteReact({}),
 		svgr(),
 		tailwindcss(),
 	],

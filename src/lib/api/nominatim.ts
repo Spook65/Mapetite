@@ -82,4 +82,3 @@ export async function reverseGeocode(
 	const data = (await res.json()) as NominatimResult;
 	return toLocationState(data);
 }
-

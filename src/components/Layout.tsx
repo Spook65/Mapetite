@@ -4,15 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "@tanstack/react-router";
-import {
-	Home,
-	LogIn,
-	LogOut,
-	Menu,
-	UserPlus,
-	Utensils,
-	X,
-} from "lucide-react";
+import { Home, LogIn, LogOut, Menu, UserPlus, Utensils, X } from "lucide-react";
 import { useState } from "react";
 
 interface LayoutProps {
@@ -230,53 +222,53 @@ export function Layout({ children }: LayoutProps) {
 
 							<div className="flex items-center gap-2 md:justify-self-end">
 								<div className="hidden items-center gap-2 md:flex">
-								{isAuthenticated ? (
-									<>
-										<span className="text-sm text-[var(--mapetite-text-soft)]">
-											{firstName}
-										</span>
-										<button
-											type="button"
-											onClick={() => {
-												console.log(
-												"Profile icon clicked - future feature: upload profile picture",
-											);
-										}}
-											className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]"
-											aria-label="User profile"
-											title="Click to change profile picture (coming soon)"
-										>
-											{userInitials}
-										</button>
-										<Button
-											onClick={logout}
-											variant="outline"
-											size="sm"
-											className="mapetite-quiet-button rounded-[10px]"
-										>
-											<LogOut className="mr-2 size-4" />
-											Log Out
-										</Button>
-									</>
-								) : (
-									<>
-										<Button
-											onClick={() => setIsLogInOpen(true)}
-											size="sm"
-											variant="ghost"
-											className="rounded-[10px] text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
-										>
-											Log In
-										</Button>
-										<Button
-											onClick={() => setIsSignUpOpen(true)}
-											size="sm"
-											className="mapetite-accent-button rounded-[10px] px-4 text-[#20140d]"
-										>
-											Sign Up
-										</Button>
-									</>
-								)}
+									{isAuthenticated ? (
+										<>
+											<span className="text-sm text-[var(--mapetite-text-soft)]">
+												{firstName}
+											</span>
+											<button
+												type="button"
+												onClick={() => {
+													console.log(
+														"Profile icon clicked - future feature: upload profile picture",
+													);
+												}}
+												className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]"
+												aria-label="User profile"
+												title="Click to change profile picture (coming soon)"
+											>
+												{userInitials}
+											</button>
+											<Button
+												onClick={logout}
+												variant="outline"
+												size="sm"
+												className="mapetite-quiet-button rounded-[10px]"
+											>
+												<LogOut className="mr-2 size-4" />
+												Log Out
+											</Button>
+										</>
+									) : (
+										<>
+											<Button
+												onClick={() => setIsLogInOpen(true)}
+												size="sm"
+												variant="ghost"
+												className="rounded-[10px] text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
+											>
+												Log In
+											</Button>
+											<Button
+												onClick={() => setIsSignUpOpen(true)}
+												size="sm"
+												className="mapetite-accent-button rounded-[10px] px-4 text-[#20140d]"
+											>
+												Sign Up
+											</Button>
+										</>
+									)}
 								</div>
 
 								<button
@@ -292,9 +284,7 @@ export function Layout({ children }: LayoutProps) {
 					</div>
 				</header>
 
-				<main className="min-w-0 flex-1">
-					{children}
-				</main>
+				<main className="min-w-0 flex-1">{children}</main>
 			</div>
 
 			<SignUpModal open={isSignUpOpen} onOpenChange={setIsSignUpOpen} />

@@ -192,24 +192,20 @@ code {
 
 	/* Mapetite premium utilities: opt-in only for later route integration */
 	.mapetite-canvas-bg {
-		background:
-			radial-gradient(
+		background: radial-gradient(
 				circle at top center,
 				rgba(180, 108, 67, 0.16),
 				transparent 24%
-			),
-			linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
+			), linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
 		color: var(--mapetite-text);
 	}
 
 	.mapetite-page-shell {
-		background:
-			radial-gradient(
+		background: radial-gradient(
 				circle at top center,
 				rgba(180, 108, 67, 0.16),
 				transparent 24%
-			),
-			linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
+			), linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
 		color: var(--mapetite-text);
 	}
 
@@ -218,9 +214,10 @@ code {
 		position: fixed;
 		inset: 0;
 		pointer-events: none;
-		background-image:
-			linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+		background-image: linear-gradient(
+				rgba(255, 255, 255, 0.02) 1px,
+				transparent 1px
+			), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
 		background-size: 100% 140px, 140px 100%;
 		mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.48), transparent 84%);
 		opacity: 0.24;
@@ -288,11 +285,8 @@ code {
 		color: #20140d;
 		border-color: transparent;
 		box-shadow: none;
-		transition:
-			background-color 150ms ease,
-			border-color 150ms ease,
-			color 150ms ease,
-			transform 150ms ease;
+		transition: background-color 150ms ease, border-color 150ms ease, color
+			150ms ease, transform 150ms ease;
 	}
 
 	.mapetite-accent-button:hover {
@@ -304,11 +298,8 @@ code {
 		background: rgba(255, 248, 242, 0.025);
 		color: var(--mapetite-text-soft);
 		border-color: var(--mapetite-border);
-		transition:
-			background-color 150ms ease,
-			border-color 150ms ease,
-			color 150ms ease,
-			transform 150ms ease;
+		transition: background-color 150ms ease, border-color 150ms ease, color
+			150ms ease, transform 150ms ease;
 	}
 
 	.mapetite-quiet-button:hover {
@@ -318,8 +309,7 @@ code {
 	}
 
 	.mapetite-media-fallback {
-		background:
-			linear-gradient(
+		background: linear-gradient(
 				180deg,
 				rgba(255, 248, 242, 0.05),
 				rgba(255, 248, 242, 0.02)

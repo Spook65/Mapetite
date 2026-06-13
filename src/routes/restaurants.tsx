@@ -2,6 +2,13 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
@@ -11,9 +18,9 @@ import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
 import {
-	createFileRoute,
 	Link,
 	Outlet,
+	createFileRoute,
 	useRouterState,
 } from "@tanstack/react-router";
 import {
@@ -30,13 +37,6 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 
 // Define search params schema for the route
 type RestaurantsSearch = {
@@ -89,7 +89,10 @@ function getRestaurantSnapshotCompleteness(restaurant: Restaurant) {
 	if (restaurant.name) score += 1;
 	if (restaurant.address?.street) score += 1;
 	if (restaurant.address?.city) score += 1;
-	if (Number.isFinite(restaurant.latitude) && Number.isFinite(restaurant.longitude))
+	if (
+		Number.isFinite(restaurant.latitude) &&
+		Number.isFinite(restaurant.longitude)
+	)
 		score += 1;
 	if (Array.isArray(restaurant.categories) && restaurant.categories.length > 0)
 		score += 1;
@@ -136,12 +139,14 @@ function getPreviewImage(restaurant: Restaurant) {
 }
 
 function getRestaurantInitials(restaurant: Restaurant) {
-	return restaurant.name
-		.split(/\s+/)
-		.filter(Boolean)
-		.slice(0, 2)
-		.map((part) => part.charAt(0).toUpperCase())
-		.join("") || "MP";
+	return (
+		restaurant.name
+			.split(/\s+/)
+			.filter(Boolean)
+			.slice(0, 2)
+			.map((part) => part.charAt(0).toUpperCase())
+			.join("") || "MP"
+	);
 }
 
 function getLocationHint(restaurant: Restaurant) {
@@ -149,13 +154,21 @@ function getLocationHint(restaurant: Restaurant) {
 		.filter(Boolean)
 		.join(", ");
 	if (cityState) return cityState;
-	return restaurant.address.street || restaurant.address.country || "Location set in details";
+	return (
+		restaurant.address.street ||
+		restaurant.address.country ||
+		"Location set in details"
+	);
 }
 
 function getFullAddressLine(restaurant: Restaurant) {
 	return [
 		restaurant.address.street,
-		[restaurant.address.city, restaurant.address.state, restaurant.address.zipCode]
+		[
+			restaurant.address.city,
+			restaurant.address.state,
+			restaurant.address.zipCode,
+		]
 			.filter(Boolean)
 			.join(" "),
 		restaurant.address.country,
@@ -164,7 +177,11 @@ function getFullAddressLine(restaurant: Restaurant) {
 		.join(", ");
 }
 
-function truncateCopy(copy: string | undefined, maxLength: number, fallback: string) {
+function truncateCopy(
+	copy: string | undefined,
+	maxLength: number,
+	fallback: string,
+) {
 	const value = copy?.trim();
 	if (!value) return fallback;
 	if (value.length <= maxLength) return value;
@@ -265,9 +282,9 @@ function RestaurantSearchPage() {
 	const [visibleResultsCount, setVisibleResultsCount] = useState(
 		INITIAL_VISIBLE_RESULTS,
 	);
-	const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(
-		null,
-	);
+	const [selectedRestaurantId, setSelectedRestaurantId] = useState<
+		string | null
+	>(null);
 	const [favoriteSnapshots, setFavoriteSnapshots] = useState<
 		Record<string, Restaurant>
 	>(() => loadFavoriteSnapshotsFromStorage());
@@ -348,10 +365,7 @@ function RestaurantSearchPage() {
 						setLocation(resolved);
 						setRestaurants([]);
 						const { restaurants: results, location: resolvedLocation } =
-							await searchRestaurants(
-								resolved,
-								Array.from(selectedCategories),
-							);
+							await searchRestaurants(resolved, Array.from(selectedCategories));
 						if (searchId !== activeSearchIdRef.current) {
 							return;
 						}
@@ -380,9 +394,12 @@ function RestaurantSearchPage() {
 
 	// Memoize handlers with useCallback to prevent unnecessary re-renders of child components.
 	// These functions are passed as props to RestaurantCard, so stable references prevent re-renders.
-	const toggleFavorite = useCallback((restaurantId: string) => {
-		toggleFavoriteMutate({ restaurant_id: restaurantId });
-	}, [toggleFavoriteMutate]);
+	const toggleFavorite = useCallback(
+		(restaurantId: string) => {
+			toggleFavoriteMutate({ restaurant_id: restaurantId });
+		},
+		[toggleFavoriteMutate],
+	);
 
 	const buildDirectionsUrl = useCallback((restaurant: Restaurant) => {
 		const hasCoordinates =
@@ -397,10 +414,7 @@ function RestaurantSearchPage() {
 	// Memoize favorite IDs Set to avoid recreating on every render.
 	// Only recomputes when favoritesData?.favorites array reference changes.
 	const favoriteIdList = favoritesData?.favorites ?? [];
-	const favoriteIds = useMemo(
-		() => new Set(favoriteIdList),
-		[favoriteIdList],
-	);
+	const favoriteIds = useMemo(() => new Set(favoriteIdList), [favoriteIdList]);
 
 	const upsertFavoriteSnapshots = useCallback((incoming: Restaurant[]) => {
 		setFavoriteSnapshots((previous) => {
@@ -579,8 +593,8 @@ function RestaurantSearchPage() {
 		const sorted = [...filtered];
 		if (sortBy === "distance") {
 			sorted.sort((a, b) => {
-				const distA = a.distance ?? Infinity; // Put undefined at end
-				const distB = b.distance ?? Infinity;
+				const distA = a.distance ?? Number.POSITIVE_INFINITY; // Put undefined at end
+				const distB = b.distance ?? Number.POSITIVE_INFINITY;
 				return distA - distB;
 			});
 		} else if (sortBy === "rating") {
@@ -646,7 +660,7 @@ function RestaurantSearchPage() {
 	/**
 	 * Normalizes restaurant category for display in the category pill.
 	 * Follows fallback hierarchy: first cuisine → "Restaurant" (if amenity exists) → null.
-	 * 
+	 *
 	 * Handles OSM data inconsistencies:
 	 * - Picks first category only (per requirement: "Pick the first cuisine only")
 	 * - Handles multiple values separated by semicolons (takes first before splitting)
@@ -658,8 +672,18 @@ function RestaurantSearchPage() {
 	const getDisplayCategory = (restaurant: Restaurant): string | null => {
 		// Geographic terms to exclude (case-insensitive)
 		const geographicTerms = new Set([
-			"country", "state", "city", "town", "village", "municipality",
-			"region", "province", "district", "county", "area", "locale",
+			"country",
+			"state",
+			"city",
+			"town",
+			"village",
+			"municipality",
+			"region",
+			"province",
+			"district",
+			"county",
+			"area",
+			"locale",
 		]);
 
 		const categories = restaurant.categories;
@@ -675,10 +699,7 @@ function RestaurantSearchPage() {
 		}
 
 		// Normalize: replace underscores/dashes with spaces, lowercase for processing
-		const normalized = firstCategory
-			.replace(/[_-]/g, " ")
-			.trim()
-			.toLowerCase();
+		const normalized = firstCategory.replace(/[_-]/g, " ").trim().toLowerCase();
 
 		// If normalized is "restaurant", treat as amenity/type, not cuisine
 		if (normalized === "restaurant") {
@@ -686,14 +707,14 @@ function RestaurantSearchPage() {
 		}
 
 		// Exclude empty, too short, or geographic values
-		if (
-			normalized.length < 2 ||
-			geographicTerms.has(normalized)
-		) {
+		if (normalized.length < 2 || geographicTerms.has(normalized)) {
 			// Check if amenity/type exists elsewhere in categories
-			if (categories.some((cat) => 
-				cat.trim().toLowerCase().replace(/[_-]/g, " ") === "restaurant"
-			)) {
+			if (
+				categories.some(
+					(cat) =>
+						cat.trim().toLowerCase().replace(/[_-]/g, " ") === "restaurant",
+				)
+			) {
 				return "Restaurant"; // Fallback: amenity/type exists
 			}
 			return null; // Nothing to display
@@ -714,20 +735,29 @@ function RestaurantSearchPage() {
 	const hasMoreResults = shownResultsCount < matchingResultsCount;
 	const hasSearchResults = restaurants.length > 0;
 	const hasFavoriteResults = favoriteRestaurants.length > 0;
-	const hasResultsForCurrentView = showFavorites ? hasFavoriteResults : hasSearchResults;
+	const hasResultsForCurrentView = showFavorites
+		? hasFavoriteResults
+		: hasSearchResults;
 	const selectedRestaurant = useMemo(
 		() =>
 			selectedRestaurantId
-				? displayedRestaurants.find(
-							(restaurant) => restaurant.id === selectedRestaurantId,
-						) ??
-						favoriteRestaurants.find(
-							(restaurant) => restaurant.id === selectedRestaurantId,
-						) ??
-						restaurants.find((restaurant) => restaurant.id === selectedRestaurantId) ??
-						null
-					: null,
-		[selectedRestaurantId, displayedRestaurants, favoriteRestaurants, restaurants],
+				? (displayedRestaurants.find(
+						(restaurant) => restaurant.id === selectedRestaurantId,
+					) ??
+					favoriteRestaurants.find(
+						(restaurant) => restaurant.id === selectedRestaurantId,
+					) ??
+					restaurants.find(
+						(restaurant) => restaurant.id === selectedRestaurantId,
+					) ??
+					null)
+				: null,
+		[
+			selectedRestaurantId,
+			displayedRestaurants,
+			favoriteRestaurants,
+			restaurants,
+		],
 	);
 	const hasActiveFilters =
 		selectedCategories.size > 0 ||
@@ -778,8 +808,8 @@ function RestaurantSearchPage() {
 									Find restaurants by place
 								</strong>
 								<p className="mapetite-muted-copy mt-2 text-sm">
-									Start with a city. Add region or country when the place name is
-									shared.
+									Start with a city. Add region or country when the place name
+									is shared.
 								</p>
 							</div>
 						</div>
@@ -894,7 +924,9 @@ function RestaurantSearchPage() {
 									<SelectContent>
 										<SelectItem value="none">Sort: Best match</SelectItem>
 										<SelectItem value="rating">Sort: Highest rated</SelectItem>
-										<SelectItem value="distance">Sort: Closest first</SelectItem>
+										<SelectItem value="distance">
+											Sort: Closest first
+										</SelectItem>
 										<SelectItem value="reviews">Sort: Most reviews</SelectItem>
 									</SelectContent>
 								</Select>
@@ -916,8 +948,8 @@ function RestaurantSearchPage() {
 									{showFavorites ? "Viewing favorites" : "Favorites only"}
 								</Button>
 
-									{hasResultsForCurrentView && (
-										<Button
+								{hasResultsForCurrentView && (
+									<Button
 										type="button"
 										variant="outline"
 										onClick={() => setShowMobileFilters(true)}
@@ -1021,9 +1053,15 @@ function RestaurantSearchPage() {
 											</SelectTrigger>
 											<SelectContent>
 												<SelectItem value="none">Sort: Best match</SelectItem>
-												<SelectItem value="distance">Sort: Closest first</SelectItem>
-												<SelectItem value="rating">Sort: Highest rated</SelectItem>
-												<SelectItem value="reviews">Sort: Most reviews</SelectItem>
+												<SelectItem value="distance">
+													Sort: Closest first
+												</SelectItem>
+												<SelectItem value="rating">
+													Sort: Highest rated
+												</SelectItem>
+												<SelectItem value="reviews">
+													Sort: Most reviews
+												</SelectItem>
 											</SelectContent>
 										</Select>
 									</div>
@@ -1065,8 +1103,8 @@ function RestaurantSearchPage() {
 						</div>
 					)}
 
-						{hasResultsForCurrentView && (
-							<section className="mapetite-panel mb-4 hidden p-5 md:grid md:gap-5">
+					{hasResultsForCurrentView && (
+						<section className="mapetite-panel mb-4 hidden p-5 md:grid md:gap-5">
 							<div className="flex flex-wrap items-center justify-between gap-4">
 								<div>
 									<div className="mapetite-eyebrow">Refine search</div>
@@ -1128,9 +1166,15 @@ function RestaurantSearchPage() {
 												</SelectTrigger>
 												<SelectContent>
 													<SelectItem value="none">Sort: Best match</SelectItem>
-													<SelectItem value="distance">Sort: Closest first</SelectItem>
-													<SelectItem value="rating">Sort: Highest rated</SelectItem>
-													<SelectItem value="reviews">Sort: Most reviews</SelectItem>
+													<SelectItem value="distance">
+														Sort: Closest first
+													</SelectItem>
+													<SelectItem value="rating">
+														Sort: Highest rated
+													</SelectItem>
+													<SelectItem value="reviews">
+														Sort: Most reviews
+													</SelectItem>
 												</SelectContent>
 											</Select>
 										</div>
@@ -1185,8 +1229,8 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
-						{hasResultsForCurrentView && (
-							<section className="grid gap-6 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] min-[1261px]:items-start">
+					{hasResultsForCurrentView && (
+						<section className="grid gap-6 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] min-[1261px]:items-start">
 							<div className="grid gap-4">
 								<div className="mapetite-panel flex flex-wrap items-center justify-between gap-3 px-5 py-4">
 									<div>
@@ -1298,8 +1342,6 @@ function RestaurantSearchPage() {
 										return (
 											<article
 												key={restaurant.id}
-												role="button"
-												tabIndex={0}
 												onClick={() => handleSelectRestaurant(restaurant.id)}
 												onKeyDown={(event) => {
 													if (event.key === "Enter" || event.key === " ") {
@@ -1395,7 +1437,8 @@ function RestaurantSearchPage() {
 														) : null}
 														{restaurant.reviewCount != null ? (
 															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-																{restaurant.reviewCount.toLocaleString()} reviews
+																{restaurant.reviewCount.toLocaleString()}{" "}
+																reviews
 															</span>
 														) : null}
 													</div>
@@ -1432,7 +1475,8 @@ function RestaurantSearchPage() {
 														<Heart
 															className={cn(
 																"size-4",
-																favoriteIds.has(restaurant.id) && "fill-current",
+																favoriteIds.has(restaurant.id) &&
+																	"fill-current",
 															)}
 														/>
 														{favoriteIds.has(restaurant.id) ? "Saved" : "Save"}
@@ -1482,9 +1526,9 @@ function RestaurantSearchPage() {
 									</div>
 								)}
 
-									{hasResultsForCurrentView &&
-										displayedRestaurants.length === 0 &&
-										!showFavorites && (
+								{hasResultsForCurrentView &&
+									displayedRestaurants.length === 0 &&
+									!showFavorites && (
 										<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
 											<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 												<Filter className="size-5" />
@@ -1494,7 +1538,8 @@ function RestaurantSearchPage() {
 													No matches for the current filters
 												</h3>
 												<p className="mapetite-muted-copy mt-2 text-sm">
-													Adjust the filters above or clear them to widen the search.
+													Adjust the filters above or clear them to widen the
+													search.
 												</p>
 											</div>
 											<div>
@@ -1626,7 +1671,8 @@ function RestaurantSearchPage() {
 													<Heart
 														className={cn(
 															"size-4",
-															favoriteIds.has(selectedRestaurant.id) && "fill-current",
+															favoriteIds.has(selectedRestaurant.id) &&
+																"fill-current",
 														)}
 													/>
 													{favoriteIds.has(selectedRestaurant.id)
@@ -1651,7 +1697,8 @@ function RestaurantSearchPage() {
 											<div className="grid gap-3 border-t border-[rgba(255,236,220,0.08)] pt-4">
 												<div>
 													<strong className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--mapetite-text)]">
-														{getFullAddressLine(selectedRestaurant) || "Address available in details"}
+														{getFullAddressLine(selectedRestaurant) ||
+															"Address available in details"}
 													</strong>
 													<p className="mapetite-muted-copy mt-2 text-[14px] leading-6">
 														{selectedRestaurant.reviewCount
@@ -1669,16 +1716,17 @@ function RestaurantSearchPage() {
 												</strong>
 												<div />
 												<span className="text-[13px] text-[rgba(245,233,222,0.68)]">
-													Preview one room while the rest of the shortlist stays visible.
+													Preview one room while the rest of the shortlist stays
+													visible.
 												</span>
 											</div>
 											<h2 className="m-0 text-[30px] font-semibold leading-[1.04] tracking-[-0.05em] text-[var(--mapetite-text)]">
 												Select a restaurant to preview.
 											</h2>
 											<p className="text-[15px] leading-[1.68] text-[var(--mapetite-text-soft)]">
-												Choose a card from the left to keep one restaurant visible
-												while you compare the shortlist. The full decision screen
-												still lives on its own detail page.
+												Choose a card from the left to keep one restaurant
+												visible while you compare the shortlist. The full
+												decision screen still lives on its own detail page.
 											</p>
 											<div className="grid gap-3 border-t border-[rgba(255,236,220,0.08)] pt-4">
 												<div className="flex items-center gap-3 text-[14px] text-[var(--mapetite-text-soft)]">
@@ -1710,8 +1758,8 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
-						{!showFavorites && restaurants.length === 0 && !isSearching && (
-							<section className="mt-6">
+					{!showFavorites && restaurants.length === 0 && !isSearching && (
+						<section className="mt-6">
 							<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
 								<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 									<Search className="size-5" />
@@ -1728,25 +1776,25 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
-						{showFavorites &&
-							!isHydratingFavorites &&
-							displayedRestaurants.length === 0 && (
-								<section className="mt-6">
-									<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
-										<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
-										<div>
-											<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-												{favoriteIdList.length === 0
-													? "No favorites yet"
-													: "No favorite matches for these filters"}
-											</h3>
-											<p className="mapetite-muted-copy mt-2 text-sm">
-												{favoriteIdList.length === 0
-													? "Save restaurants from the list to collect them here."
-													: "Try adjusting filters or sort to widen your saved shortlist."}
-											</p>
-										</div>
-										<div>
+					{showFavorites &&
+						!isHydratingFavorites &&
+						displayedRestaurants.length === 0 && (
+							<section className="mt-6">
+								<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+									<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
+									<div>
+										<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											{favoriteIdList.length === 0
+												? "No favorites yet"
+												: "No favorite matches for these filters"}
+										</h3>
+										<p className="mapetite-muted-copy mt-2 text-sm">
+											{favoriteIdList.length === 0
+												? "Save restaurants from the list to collect them here."
+												: "Try adjusting filters or sort to widen your saved shortlist."}
+										</p>
+									</div>
+									<div>
 										<Button
 											type="button"
 											onClick={() => setShowFavorites(false)}
@@ -1760,7 +1808,9 @@ function RestaurantSearchPage() {
 							</section>
 						)}
 
-						{showFavorites && isHydratingFavorites && displayedRestaurants.length === 0 && (
+					{showFavorites &&
+						isHydratingFavorites &&
+						displayedRestaurants.length === 0 && (
 							<section className="mt-6">
 								<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
 									<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
@@ -1769,7 +1819,8 @@ function RestaurantSearchPage() {
 											Loading saved favorites
 										</h3>
 										<p className="mapetite-muted-copy mt-2 text-sm">
-											Retrieving saved restaurants that are outside the current search list.
+											Retrieving saved restaurants that are outside the current
+											search list.
 										</p>
 									</div>
 								</div>

@@ -1,4 +1,7 @@
-import type { LocationState, Restaurant } from "@/store/restaurant-search-store";
+import type {
+	LocationState,
+	Restaurant,
+} from "@/store/restaurant-search-store";
 
 function getRestaurantsApiBaseUrl() {
 	const configuredBaseUrl = import.meta.env.VITE_RESTAURANTS_API_BASE_URL;

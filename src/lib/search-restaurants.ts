@@ -1,13 +1,16 @@
 import {
-	getRestaurantByIdApi,
-	searchRestaurantsApi,
-} from "@/lib/api/restaurants";
-import { fetchRestaurantsNearby } from "@/lib/api/overpass";
-import {
 	resolveCityLocation as nominatimResolveCity,
 	searchCities,
 } from "@/lib/api/nominatim";
-import type { LocationState, Restaurant } from "@/store/restaurant-search-store";
+import { fetchRestaurantsNearby } from "@/lib/api/overpass";
+import {
+	getRestaurantByIdApi,
+	searchRestaurantsApi,
+} from "@/lib/api/restaurants";
+import type {
+	LocationState,
+	Restaurant,
+} from "@/store/restaurant-search-store";
 
 /**
  * Helper function to calculate distance between two coordinates (in miles)
@@ -54,14 +57,20 @@ export async function searchRestaurants(
 			location: response.location ?? location,
 		};
 	} catch (error) {
-		console.warn("Backend restaurant search failed; falling back to local OSM.", error);
+		console.warn(
+			"Backend restaurant search failed; falling back to local OSM.",
+			error,
+		);
 		if (location.latitude === undefined || location.longitude === undefined) {
 			const resolved = await nominatimResolveCity(
 				[location.city, location.state, location.country]
 					.filter(Boolean)
 					.join(", "),
 			);
-			if (resolved?.latitude === undefined || resolved?.longitude === undefined) {
+			if (
+				resolved?.latitude === undefined ||
+				resolved?.longitude === undefined
+			) {
 				return { restaurants: [], location: resolved ?? location };
 			}
 			location = resolved;
@@ -70,11 +79,7 @@ export async function searchRestaurants(
 		const latitude = location.latitude as number;
 		const longitude = location.longitude as number;
 
-		const results = await fetchRestaurantsNearby(
-			latitude,
-			longitude,
-			3000,
-		);
+		const results = await fetchRestaurantsNearby(latitude, longitude, 3000);
 
 		const filtered =
 			selectedCategories.length === 0

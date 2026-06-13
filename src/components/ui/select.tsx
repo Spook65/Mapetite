@@ -66,7 +66,7 @@ function SelectTrigger({
 		},
 	}));
 	return (
-			<SelectPrimitive.Trigger
+		<SelectPrimitive.Trigger
 			data-slot="select-trigger"
 			data-size={size}
 			id={id}

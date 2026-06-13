@@ -96,12 +96,7 @@ export function ReviewSummary({
 	};
 
 	return (
-		<Card
-			className={cn(
-				"border border-border shadow-none",
-				className,
-			)}
-		>
+		<Card className={cn("border border-border shadow-none", className)}>
 			<CardHeader>
 				<CardTitle className="flex items-center gap-2 text-lg">
 					<MessageCircle className="size-4 text-primary" />

@@ -25,12 +25,7 @@ export function ChefProfileSection({
 	className,
 }: ChefProfileSectionProps) {
 	return (
-		<Card
-			className={cn(
-				"border border-border shadow-none",
-				className,
-			)}
-		>
+		<Card className={cn("border border-border shadow-none", className)}>
 			<CardHeader>
 				<CardTitle className="flex items-center gap-2 text-lg">
 					<ChefHat className="size-4 text-primary" />

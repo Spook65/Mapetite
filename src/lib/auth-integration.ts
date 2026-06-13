@@ -66,16 +66,11 @@ class AuthIntegration {
 
 			// If still loading after initialization, set to unauthenticated
 			if (this.state.status === "loading") {
-				logAuth(
-					"Auth initialization complete - setting to unauthenticated",
-				);
+				logAuth("Auth initialization complete - setting to unauthenticated");
 				this.state.status = "unauthenticated";
 				this.notifyListeners();
 			} else {
-				logAuth(
-					"Auth initialization complete - status:",
-					this.state.status,
-				);
+				logAuth("Auth initialization complete - status:", this.state.status);
 			}
 		} catch (error) {
 			console.error("Auth initialization failed:", error);
