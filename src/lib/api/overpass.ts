@@ -33,9 +33,9 @@ function parseCategories(tags?: Record<string, string>): string[] {
 	return ["Restaurant"];
 }
 
-function parseHours(tags?: Record<string, string>):
-	| { open: string; close: string }
-	| undefined {
+function parseHours(
+	tags?: Record<string, string>,
+): { open: string; close: string } | undefined {
 	const hours = tags?.opening_hours;
 	if (!hours) return undefined;
 

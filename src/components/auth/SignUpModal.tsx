@@ -149,9 +149,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 
 						{error && (
 							<div className="rounded-md border border-destructive/30 bg-destructive/10 p-3">
-								<p className="text-sm text-destructive">
-									{error.message}
-								</p>
+								<p className="text-sm text-destructive">{error.message}</p>
 							</div>
 						)}
 

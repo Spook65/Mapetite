@@ -18,7 +18,9 @@ async function readFavoritesJson<T>(response: Response): Promise<T> {
 	try {
 		return (await response.json()) as T;
 	} catch {
-		throw new Error("Favorites service is unavailable. Please try again later.");
+		throw new Error(
+			"Favorites service is unavailable. Please try again later.",
+		);
 	}
 }
 
@@ -71,9 +73,9 @@ export async function getFavorites(): Promise<GetFavoritesResponse> {
 	});
 
 	if (!response.ok) {
-		const errorData: { message?: string } = await readFavoritesJson<{ message?: string }>(
-			response,
-		).catch(() => ({}));
+		const errorData: { message?: string } = await readFavoritesJson<{
+			message?: string;
+		}>(response).catch(() => ({}));
 		throw new Error(
 			errorData.message || `Failed to fetch favorites: ${response.statusText}`,
 		);
@@ -169,9 +171,9 @@ export async function toggleFavorite(
 	);
 
 	if (!response.ok) {
-		const errorData: { message?: string } = await readFavoritesJson<{ message?: string }>(
-			response,
-		).catch(() => ({}));
+		const errorData: { message?: string } = await readFavoritesJson<{
+			message?: string;
+		}>(response).catch(() => ({}));
 		throw new Error(
 			errorData.message || `Failed to toggle favorite: ${response.statusText}`,
 		);

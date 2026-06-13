@@ -160,10 +160,7 @@ export function ReservationModal({
 							</p>
 						</div>
 
-						<Button
-							onClick={() => handleOpenChange(false)}
-							className="w-full"
-						>
+						<Button onClick={() => handleOpenChange(false)} className="w-full">
 							Done
 						</Button>
 					</div>

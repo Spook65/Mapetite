@@ -6,7 +6,7 @@ import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
 	ArrowLeft,
 	ExternalLink,
@@ -47,9 +47,7 @@ function formatTimeToTwelveHour(value?: string | null) {
 	return `${displayHour}:${minutes} ${period}`;
 }
 
-function formatHoursRange(
-	hours?: { open: string; close: string } | null,
-) {
+function formatHoursRange(hours?: { open: string; close: string } | null) {
 	if (!hours?.open || !hours?.close) return null;
 
 	const open = formatTimeToTwelveHour(hours.open);
@@ -68,7 +66,11 @@ function buildLocationLine(restaurant: Restaurant) {
 function buildFullAddress(restaurant: Restaurant) {
 	return [
 		restaurant.address.street,
-		[restaurant.address.city, restaurant.address.state, restaurant.address.zipCode]
+		[
+			restaurant.address.city,
+			restaurant.address.state,
+			restaurant.address.zipCode,
+		]
 			.filter(Boolean)
 			.join(" "),
 		restaurant.address.country,
@@ -172,7 +174,9 @@ function RestaurantDetailPage() {
 				if (cancelled) return;
 				setFetchedRestaurant(restaurantData);
 				if (!restaurantData) {
-					setRestaurantLoadError("Restaurant details are not available right now.");
+					setRestaurantLoadError(
+						"Restaurant details are not available right now.",
+					);
 				}
 			} catch (error) {
 				if (cancelled) return;
@@ -295,7 +299,8 @@ function RestaurantDetailPage() {
 	const hasReviews = !!restaurant.reviews?.length;
 	const hasRatingBreakdown = !!restaurant.ratingBreakdown;
 	const hasMapCoordinates =
-		Number.isFinite(restaurant.latitude) && Number.isFinite(restaurant.longitude);
+		Number.isFinite(restaurant.latitude) &&
+		Number.isFinite(restaurant.longitude);
 	const hasMenuUrl = !!restaurant.menuUrl;
 	const hasWebsite = !!restaurant.website;
 	const hasPhone = !!restaurant.phone;
@@ -307,7 +312,7 @@ function RestaurantDetailPage() {
 		? ([5, 4, 3, 2, 1] as const).map((score) => ({
 				score,
 				count: restaurant.ratingBreakdown?.[score] ?? 0,
-		  }))
+			}))
 		: [];
 	const totalBreakdownCount = ratingBreakdownRows.reduce(
 		(total, row) => total + row.count,
@@ -315,8 +320,10 @@ function RestaurantDetailPage() {
 	);
 	const galleryViews = hasVerifiedGalleryImages
 		? galleryImages.map((image, index) => ({
-				badge: galleryImages.length === 1 ? "Available photo" : `Image ${index + 1}`,
-				label: galleryImages.length === 1 ? "Available photo" : `Image ${index + 1}`,
+				badge:
+					galleryImages.length === 1 ? "Available photo" : `Image ${index + 1}`,
+				label:
+					galleryImages.length === 1 ? "Available photo" : `Image ${index + 1}`,
 				title:
 					index === 0
 						? `Photo coverage for ${restaurant.name}`
@@ -338,29 +345,34 @@ function RestaurantDetailPage() {
 						: "A verified venue image from the available photo coverage.",
 				image,
 				attribution: galleryAttributions[index] ?? [],
-		  }))
+			}))
 		: [
 				{
 					badge: "Photo coverage unavailable",
 					label: "Fallback artwork",
 					title: `Verified venue photos are not available for ${restaurant.name} yet.`,
-					copy:
-						"Use the address, route, hours, and review details to decide while photo coverage is still limited.",
-					left:
-						locationLine || restaurant.categories[0] || "Restaurant detail",
-					right: hasMapCoordinates ? "Directions available" : "Address available",
-					summary: "A single fallback state instead of invented gallery coverage.",
+					copy: "Use the address, route, hours, and review details to decide while photo coverage is still limited.",
+					left: locationLine || restaurant.categories[0] || "Restaurant detail",
+					right: hasMapCoordinates
+						? "Directions available"
+						: "Address available",
+					summary:
+						"A single fallback state instead of invented gallery coverage.",
 					image: fallbackArtworkUrl,
 					attribution: [] as string[],
 				},
-		  ];
+			];
 	const activeGalleryView =
 		galleryViews[
 			Math.min(selectedImageIndex, Math.max(galleryViews.length - 1, 0))
 		] ?? galleryViews[0];
 	const contextTags = [
 		...restaurant.categories.slice(0, 3),
-		hasHours ? (restaurant.isOpenNow === true ? "Open now" : "Hours listed") : null,
+		hasHours
+			? restaurant.isOpenNow === true
+				? "Open now"
+				: "Hours listed"
+			: null,
 		locationLine || null,
 		...(restaurant.amenities?.slice(0, 2) ?? []),
 	].filter(Boolean) as string[];
@@ -453,7 +465,10 @@ function RestaurantDetailPage() {
 									</div>
 
 									<div className="flex flex-wrap gap-3">
-										<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
+										<Button
+											asChild
+											className="mapetite-accent-button rounded-[10px] px-5"
+										>
 											<a href={directionsUrl} target="_blank" rel="noreferrer">
 												<Navigation className="mr-2 size-4" />
 												Get directions
@@ -467,7 +482,10 @@ function RestaurantDetailPage() {
 											className="mapetite-quiet-button rounded-[10px] px-5"
 										>
 											<Heart
-												className={cn("mr-2 size-4", isFavorite && "fill-current")}
+												className={cn(
+													"mr-2 size-4",
+													isFavorite && "fill-current",
+												)}
 											/>
 											{isFavorite ? "Saved" : "Save"}
 										</Button>
@@ -492,12 +510,15 @@ function RestaurantDetailPage() {
 									</strong>
 									<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
 										Photo coverage, tonight&apos;s hours, address, and review
-										confidence stay visible without turning the page into a dashboard.
+										confidence stay visible without turning the page into a
+										dashboard.
 									</p>
 									<div className="flex flex-wrap gap-2">
 										{[
 											hasMapCoordinates ? "Nearby map" : null,
-											hasReviews || hasRatingBreakdown ? "Review summary" : null,
+											hasReviews || hasRatingBreakdown
+												? "Review summary"
+												: null,
 											"Back to shortlist",
 										]
 											.filter(Boolean)
@@ -521,15 +542,18 @@ function RestaurantDetailPage() {
 
 						<div className="grid gap-6 min-[1181px]:grid-cols-[minmax(0,1fr)_320px] min-[1181px]:items-start">
 							<div className="grid gap-6">
-								<section id="gallery" className="mapetite-panel grid gap-[18px] p-[22px]">
+								<section
+									id="gallery"
+									className="mapetite-panel grid gap-[18px] p-[22px]"
+								>
 									<div className="flex flex-wrap items-end justify-between gap-4">
 										<div>
 											<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 												Gallery
 											</h2>
 											<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
-												Use the space, plating, and pace of service to decide whether it
-												matches the night you have in mind.
+												Use the space, plating, and pace of service to decide
+												whether it matches the night you have in mind.
 											</p>
 										</div>
 									</div>
@@ -587,52 +611,56 @@ function RestaurantDetailPage() {
 
 										{galleryViews.length > 1 ? (
 											<div className="grid gap-3">
-											{galleryViews.map((view, index) => (
-												<button
-													key={`${view.label}-${index}`}
-													type="button"
-													onClick={() => setSelectedImageIndex(index)}
-													className={cn(
-														"grid gap-2 rounded-[12px] border p-[14px] text-left transition-all hover:-translate-y-0.5",
-														selectedImageIndex === index
-															? "border-[rgba(213,154,104,0.3)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]"
-															: "border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]",
-													)}
-												>
-													<div className="overflow-hidden rounded-[10px] border border-[rgba(255,236,220,0.08)]">
-														{view.image ? (
-															<img
-																src={view.image}
-																alt={`${restaurant.name} image ${index + 1}`}
-																className="aspect-[4/3] w-full object-cover"
-																loading="lazy"
-																referrerPolicy="no-referrer"
-															/>
-														) : (
-															<div className="min-h-[82px] bg-[linear-gradient(180deg,rgba(255,248,242,0.05),rgba(255,248,242,0.02)),linear-gradient(135deg,rgba(213,154,104,0.22),rgba(180,108,67,0.06)_50%,rgba(17,13,11,0.16)_100%)]" />
+												{galleryViews.map((view, index) => (
+													<button
+														key={`${view.label}-${index}`}
+														type="button"
+														onClick={() => setSelectedImageIndex(index)}
+														className={cn(
+															"grid gap-2 rounded-[12px] border p-[14px] text-left transition-all hover:-translate-y-0.5",
+															selectedImageIndex === index
+																? "border-[rgba(213,154,104,0.3)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]"
+																: "border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]",
 														)}
-													</div>
-													<strong className="text-[15px] font-semibold text-[var(--mapetite-text)]">
-														{view.label}
-													</strong>
-													<span className="text-[13px] text-[var(--mapetite-text-soft)]">
-														{view.summary}
-													</span>
-												</button>
-											))}
+													>
+														<div className="overflow-hidden rounded-[10px] border border-[rgba(255,236,220,0.08)]">
+															{view.image ? (
+																<img
+																	src={view.image}
+																	alt={`${restaurant.name} image ${index + 1}`}
+																	className="aspect-[4/3] w-full object-cover"
+																	loading="lazy"
+																	referrerPolicy="no-referrer"
+																/>
+															) : (
+																<div className="min-h-[82px] bg-[linear-gradient(180deg,rgba(255,248,242,0.05),rgba(255,248,242,0.02)),linear-gradient(135deg,rgba(213,154,104,0.22),rgba(180,108,67,0.06)_50%,rgba(17,13,11,0.16)_100%)]" />
+															)}
+														</div>
+														<strong className="text-[15px] font-semibold text-[var(--mapetite-text)]">
+															{view.label}
+														</strong>
+														<span className="text-[13px] text-[var(--mapetite-text-soft)]">
+															{view.summary}
+														</span>
+													</button>
+												))}
 											</div>
 										) : null}
 									</div>
 								</section>
 
-								<section id="context" className="mapetite-panel grid gap-[18px] p-[22px]">
+								<section
+									id="context"
+									className="mapetite-panel grid gap-[18px] p-[22px]"
+								>
 									<div>
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											Restaurant context
 										</h2>
 										<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
-											Keep the details useful: where it is, how it&apos;s priced, when
-											it&apos;s open, and what makes it worth opening the route for.
+											Keep the details useful: where it is, how it&apos;s
+											priced, when it&apos;s open, and what makes it worth
+											opening the route for.
 										</p>
 									</div>
 
@@ -685,7 +713,9 @@ function RestaurantDetailPage() {
 												Price
 											</small>
 											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
-												{priceRangeLabel ? `${priceRangeLabel} pricing` : "Pricing varies"}
+												{priceRangeLabel
+													? `${priceRangeLabel} pricing`
+													: "Pricing varies"}
 											</strong>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
 												{priceRangeLabel
@@ -714,7 +744,10 @@ function RestaurantDetailPage() {
 									) : null}
 								</section>
 
-								<section id="reviews" className="mapetite-panel grid gap-[18px] p-[22px]">
+								<section
+									id="reviews"
+									className="mapetite-panel grid gap-[18px] p-[22px]"
+								>
 									<div>
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											Reviews and confidence
@@ -802,22 +835,26 @@ function RestaurantDetailPage() {
 										) : (
 											<div className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
 												<p className="text-sm leading-7 text-[var(--mapetite-text-soft)]">
-													Written reviews are limited for this restaurant right now, but
-													the overall rating still gives you a quick confidence signal.
+													Written reviews are limited for this restaurant right
+													now, but the overall rating still gives you a quick
+													confidence signal.
 												</p>
 											</div>
 										)}
 									</div>
 								</section>
 
-								<section id="location" className="mapetite-panel grid gap-[18px] p-[22px]">
+								<section
+									id="location"
+									className="mapetite-panel grid gap-[18px] p-[22px]"
+								>
 									<div>
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											Location and route
 										</h2>
 										<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
-											Leave with the exact address, a grounded location preview, and a
-											clear next action.
+											Leave with the exact address, a grounded location preview,
+											and a clear next action.
 										</p>
 									</div>
 
@@ -834,8 +871,9 @@ function RestaurantDetailPage() {
 											) : (
 												<div className="flex min-h-[320px] items-end bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.26),rgba(180,108,67,0.08)_38%,rgba(17,13,11,0.2)_100%)] p-5">
 													<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-														Use directions to open the route even when a full map preview
-														isn&apos;t available for this restaurant.
+														Use directions to open the route even when a full
+														map preview isn&apos;t available for this
+														restaurant.
 													</p>
 												</div>
 											)}
@@ -846,8 +884,8 @@ function RestaurantDetailPage() {
 												{fullAddress}
 											</strong>
 											<p className="text-sm leading-7 text-[var(--mapetite-text-soft)]">
-												Keep the address, route, and final decision close once the
-												restaurant feels worth the trip.
+												Keep the address, route, and final decision close once
+												the restaurant feels worth the trip.
 											</p>
 											<div className="flex flex-wrap gap-2">
 												{[
@@ -864,15 +902,21 @@ function RestaurantDetailPage() {
 														</span>
 													))}
 											</div>
-											<Button asChild className="mapetite-quiet-button w-fit rounded-[10px] px-5">
-												<a href={directionsUrl} target="_blank" rel="noreferrer">
+											<Button
+												asChild
+												className="mapetite-quiet-button w-fit rounded-[10px] px-5"
+											>
+												<a
+													href={directionsUrl}
+													target="_blank"
+													rel="noreferrer"
+												>
 													Check route details
 												</a>
 											</Button>
 										</div>
 									</div>
 								</section>
-
 							</div>
 
 							<aside className="min-[1181px]:sticky min-[1181px]:top-[94px] min-[1181px]:self-start">
@@ -881,26 +925,32 @@ function RestaurantDetailPage() {
 										Ready to decide?
 									</h3>
 									<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-										Keep the actions close to the facts you need most: where it is,
-										whether it&apos;s open, and how to get back if you want another
-										option.
+										Keep the actions close to the facts you need most: where it
+										is, whether it&apos;s open, and how to get back if you want
+										another option.
 									</p>
 
 									<div className="grid gap-3">
 										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
-											<strong className="text-sm text-[var(--mapetite-text)]">Tonight</strong>
+											<strong className="text-sm text-[var(--mapetite-text)]">
+												Tonight
+											</strong>
 											<span className="text-sm text-[var(--mapetite-text-soft)]">
 												{tonightHoursLabel}
 											</span>
 										</div>
 										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
-											<strong className="text-sm text-[var(--mapetite-text)]">Address</strong>
+											<strong className="text-sm text-[var(--mapetite-text)]">
+												Address
+											</strong>
 											<span className="text-right text-sm text-[var(--mapetite-text-soft)]">
 												{restaurant.address.street || locationLine}
 											</span>
 										</div>
 										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
-											<strong className="text-sm text-[var(--mapetite-text)]">Price</strong>
+											<strong className="text-sm text-[var(--mapetite-text)]">
+												Price
+											</strong>
 											<span className="text-sm text-[var(--mapetite-text-soft)]">
 												{priceRangeLabel || "Varies"}
 											</span>
@@ -924,7 +974,11 @@ function RestaurantDetailPage() {
 									</div>
 
 									<div className="grid gap-3">
-										<Button asChild size="lg" className="mapetite-accent-button rounded-[10px] px-5">
+										<Button
+											asChild
+											size="lg"
+											className="mapetite-accent-button rounded-[10px] px-5"
+										>
 											<a href={directionsUrl} target="_blank" rel="noreferrer">
 												<Navigation className="mr-2 size-4" />
 												Get directions
@@ -938,7 +992,10 @@ function RestaurantDetailPage() {
 											className="mapetite-quiet-button rounded-[10px] px-5"
 										>
 											<Heart
-												className={cn("mr-2 size-4", isFavorite && "fill-current")}
+												className={cn(
+													"mr-2 size-4",
+													isFavorite && "fill-current",
+												)}
 											/>
 											{isFavorite ? "Saved" : "Save"}
 										</Button>
@@ -1007,7 +1064,10 @@ function RestaurantDetailPage() {
 									keeping the route back to the shortlist clear and easy.
 								</p>
 							</div>
-							<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
+							<Button
+								asChild
+								className="mapetite-accent-button rounded-[10px] px-5"
+							>
 								<Link to="/restaurants">Back to search results</Link>
 							</Button>
 						</section>

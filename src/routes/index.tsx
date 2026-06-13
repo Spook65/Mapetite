@@ -73,7 +73,8 @@ const cityStarts = [
 		name: "Paris",
 		country: "France",
 		stageTag: "Long lunches",
-		stageNote: "Bistros, wine bars, and tasting rooms that reward a slower start.",
+		stageNote:
+			"Bistros, wine bars, and tasting rooms that reward a slower start.",
 		summary:
 			"Start in Paris when the plan needs dining rooms with more ceremony and a shortlist built around lingering.",
 		focusTitle: "Paris opens into longer meals and stronger room character.",
@@ -127,7 +128,8 @@ const cityStarts = [
 		focusSubtitle: "Dining rooms · gastropubs · chef-led menus",
 		bestFor: "Room-led dinners with range across neighborhoods.",
 		shortlistMood: "Balanced, flexible, and easy to compare.",
-		naturalNextMove: "Use the shortlist to narrow, then open details for confidence.",
+		naturalNextMove:
+			"Use the shortlist to narrow, then open details for confidence.",
 		heroTitle: "Dining rooms and chef-led menus",
 		shortlistLabel: "Example shortlist",
 		tags: ["Dining room", "Gastropub", "Chef-led"],
@@ -170,7 +172,8 @@ const cityStarts = [
 			"Hotel dining, rooftops, and bigger-room decisions with strong location context.",
 		summary:
 			"Begin in Dubai when the setting matters as much as the menu and the shortlist needs stronger location cues.",
-		focusTitle: "Dubai turns the search toward rooms with bigger setting impact.",
+		focusTitle:
+			"Dubai turns the search toward rooms with bigger setting impact.",
 		focusSubtitle: "Rooftops · hotel dining · tasting menus",
 		bestFor: "Destination dinners and higher-context reservations.",
 		shortlistMood: "Wide, visual, and easier to compare by setting.",
@@ -212,7 +215,8 @@ const cityStarts = [
 
 function LandingPage() {
 	const navigate = useNavigate();
-	const [selectedCityKey, setSelectedCityKey] = useState<(typeof cityStarts)[number]["key"]>("tokyo");
+	const [selectedCityKey, setSelectedCityKey] =
+		useState<(typeof cityStarts)[number]["key"]>("tokyo");
 	const [selectedRestaurantIndex, setSelectedRestaurantIndex] = useState(0);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -226,8 +230,11 @@ function LandingPage() {
 	);
 
 	const featuredRestaurant =
-		selectedCity.restaurants[selectedRestaurantIndex] ?? selectedCity.restaurants[0];
-	const firstName = profile?.name ? profile.name.trim().split(/\s+/)[0] : "User";
+		selectedCity.restaurants[selectedRestaurantIndex] ??
+		selectedCity.restaurants[0];
+	const firstName = profile?.name
+		? profile.name.trim().split(/\s+/)[0]
+		: "User";
 	const userInitial = profile?.name
 		? profile.name.trim().charAt(0).toUpperCase()
 		: "U";
@@ -308,35 +315,35 @@ function LandingPage() {
 										Explore landing
 									</p>
 									<div className="mt-2 space-y-1">
-									<a
-										href="#discover"
-										onClick={closeMobileMenu}
-										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-									>
-										Discover
-									</a>
-									<a
-										href="#search"
-										onClick={closeMobileMenu}
-										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-									>
-										Search start
-									</a>
-									<a
-										href="#experience"
-										onClick={closeMobileMenu}
-										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-									>
-										Experience
-									</a>
-									<a
-										href="#city-starts"
-										onClick={closeMobileMenu}
-										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-									>
-										City starts
-									</a>
-								</div>
+										<a
+											href="#discover"
+											onClick={closeMobileMenu}
+											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											Discover
+										</a>
+										<a
+											href="#search"
+											onClick={closeMobileMenu}
+											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											Search start
+										</a>
+										<a
+											href="#experience"
+											onClick={closeMobileMenu}
+											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											Experience
+										</a>
+										<a
+											href="#city-starts"
+											onClick={closeMobileMenu}
+											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											City starts
+										</a>
+									</div>
 								</div>
 
 								<div className="mt-6 space-y-2 border-t border-[var(--mapetite-border)] pt-4">
@@ -418,7 +425,6 @@ function LandingPage() {
 			</header>
 
 			<div className="mapetite-container px-4 pb-6 md:px-6 md:pt-2 md:pb-8">
-
 				<nav className="mapetite-panel-soft sticky top-14 z-20 mb-8 hidden items-center justify-between gap-4 px-5 py-3 backdrop-blur md:flex">
 					<div className="flex items-center gap-3 text-sm font-medium text-[var(--mapetite-text)]">
 						<div className="flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border-strong)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))]">
@@ -427,16 +433,28 @@ function LandingPage() {
 						<span>Mapetite</span>
 					</div>
 					<div className="flex items-center gap-5 text-sm text-[var(--mapetite-text-soft)]">
-						<a href="#discover" className="transition-colors hover:text-[var(--mapetite-text)]">
+						<a
+							href="#discover"
+							className="transition-colors hover:text-[var(--mapetite-text)]"
+						>
 							Discover
 						</a>
-						<a href="#search" className="transition-colors hover:text-[var(--mapetite-text)]">
+						<a
+							href="#search"
+							className="transition-colors hover:text-[var(--mapetite-text)]"
+						>
 							Search start
 						</a>
-						<a href="#experience" className="transition-colors hover:text-[var(--mapetite-text)]">
+						<a
+							href="#experience"
+							className="transition-colors hover:text-[var(--mapetite-text)]"
+						>
 							Experience
 						</a>
-						<a href="#city-starts" className="transition-colors hover:text-[var(--mapetite-text)]">
+						<a
+							href="#city-starts"
+							className="transition-colors hover:text-[var(--mapetite-text)]"
+						>
 							City starts
 						</a>
 					</div>
@@ -491,10 +509,7 @@ function LandingPage() {
 					</div>
 				</nav>
 
-				<section
-					id="discover"
-					className="scroll-mt-32 py-10 md:py-14 lg:py-16"
-				>
+				<section id="discover" className="scroll-mt-32 py-10 md:py-14 lg:py-16">
 					<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)] lg:gap-12">
 						<div className="mapetite-section-stack">
 							<div className="mapetite-eyebrow">
@@ -505,8 +520,8 @@ function LandingPage() {
 									Find restaurants worth crossing the city for.
 								</h1>
 								<p className="mapetite-muted-copy mt-5 max-w-xl text-lg leading-8">
-									Start with a city, open a shortlist that fits the night, and go
-									deeper only when a restaurant feels worth the trip.
+									Start with a city, open a shortlist that fits the night, and
+									go deeper only when a restaurant feels worth the trip.
 								</p>
 							</div>
 
@@ -606,10 +621,7 @@ function LandingPage() {
 					</div>
 				</section>
 
-				<section
-					id="search"
-					className="scroll-mt-32 py-10 md:py-14 lg:py-16"
-				>
+				<section id="search" className="scroll-mt-32 py-10 md:py-14 lg:py-16">
 					<div className="mapetite-panel p-5 md:p-7">
 						<div className="grid gap-4 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,0.3fr)] lg:items-end">
 							<div>
@@ -619,8 +631,8 @@ function LandingPage() {
 								</h2>
 							</div>
 							<p className="mapetite-muted-copy max-w-md text-sm leading-7 lg:justify-self-end">
-								Choose a city start if you want to begin from a place instead of a
-								blank search.
+								Choose a city start if you want to begin from a place instead of
+								a blank search.
 							</p>
 						</div>
 
@@ -714,12 +726,12 @@ function LandingPage() {
 						<div className="mapetite-section-stack">
 							<div className="mapetite-eyebrow">From city to table</div>
 							<h2 className="max-w-md text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)] md:text-4xl">
-								Pick a place, keep the shortlist close, and open details when the
-								choice becomes real.
+								Pick a place, keep the shortlist close, and open details when
+								the choice becomes real.
 							</h2>
 							<p className="mapetite-muted-copy max-w-md text-base leading-7">
-								A quick preview of what opens after search, without rebuilding the
-								restaurant page here.
+								A quick preview of what opens after search, without rebuilding
+								the restaurant page here.
 							</p>
 
 							<div className="space-y-3">

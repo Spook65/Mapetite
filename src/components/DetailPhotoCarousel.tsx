@@ -23,38 +23,61 @@ function normalizeText(value: string) {
 function pickFallbackTheme(categories: string[] = [], restaurantName = "") {
 	const tokens = [...categories, restaurantName].map(normalizeText);
 
-	if (tokens.some((token) => token.includes("ramen") || token.includes("noodle"))) {
+	if (
+		tokens.some((token) => token.includes("ramen") || token.includes("noodle"))
+	) {
 		return { label: "Ramen", emoji: "🍜", colors: ["#0ea5e9", "#14b8a6"] };
 	}
 
-	if (tokens.some((token) => token.includes("burger") || token.includes("fastfood"))) {
+	if (
+		tokens.some(
+			(token) => token.includes("burger") || token.includes("fastfood"),
+		)
+	) {
 		return { label: "Burger", emoji: "🍔", colors: ["#f97316", "#ef4444"] };
 	}
 
-	if (tokens.some((token) => token.includes("pizza") || token.includes("italian"))) {
+	if (
+		tokens.some((token) => token.includes("pizza") || token.includes("italian"))
+	) {
 		return { label: "Italian", emoji: "🍕", colors: ["#ef4444", "#f97316"] };
 	}
 
-	if (tokens.some((token) => token.includes("taco") || token.includes("mexican"))) {
+	if (
+		tokens.some((token) => token.includes("taco") || token.includes("mexican"))
+	) {
 		return { label: "Tacos", emoji: "🌮", colors: ["#f59e0b", "#84cc16"] };
 	}
 
-	if (tokens.some((token) => token.includes("sushi") || token.includes("japanese"))) {
+	if (
+		tokens.some(
+			(token) => token.includes("sushi") || token.includes("japanese"),
+		)
+	) {
 		return { label: "Sushi", emoji: "🍣", colors: ["#3b82f6", "#06b6d4"] };
 	}
 
-	if (tokens.some((token) => token.includes("vegetarian") || token.includes("healthy"))) {
+	if (
+		tokens.some(
+			(token) => token.includes("vegetarian") || token.includes("healthy"),
+		)
+	) {
 		return { label: "Fresh", emoji: "🥗", colors: ["#22c55e", "#14b8a6"] };
 	}
 
-	if (tokens.some((token) => token.includes("cafe") || token.includes("coffee"))) {
+	if (
+		tokens.some((token) => token.includes("cafe") || token.includes("coffee"))
+	) {
 		return { label: "Cafe", emoji: "☕", colors: ["#a16207", "#f59e0b"] };
 	}
 
 	return { label: "Dining", emoji: "🍽️", colors: ["#0ea5e9", "#14b8a6"] };
 }
 
-function buildFallbackArtworkUrl(restaurantName: string, categories: string[] = []) {
+function buildFallbackArtworkUrl(
+	restaurantName: string,
+	categories: string[] = [],
+) {
 	const theme = pickFallbackTheme(categories, restaurantName);
 	const svg = `
 		<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720">
