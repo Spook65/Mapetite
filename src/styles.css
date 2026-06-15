@@ -17,6 +17,18 @@ html {
 	scroll-behavior: smooth;
 }
 
+button:not(:disabled),
+a,
+[role="button"],
+.cursor-pointer {
+	cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+	cursor: not-allowed;
+}
+
 @media (prefers-reduced-motion: reduce) {
 	html {
 		scroll-behavior: auto;

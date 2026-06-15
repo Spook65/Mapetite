@@ -419,35 +419,35 @@ function LandingPage() {
 
 			<div className="mapetite-container px-4 pb-6 md:px-6 md:pt-2 md:pb-8">
 
-				<nav className="mapetite-panel-soft sticky top-14 z-20 mb-8 hidden items-center justify-between gap-4 px-5 py-3 backdrop-blur md:flex">
-					<div className="flex items-center gap-3 text-sm font-medium text-[var(--mapetite-text)]">
-						<div className="flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border-strong)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))]">
+				<nav className="mapetite-panel-soft sticky top-14 z-20 mb-8 hidden items-center justify-between gap-3 px-4 py-3 backdrop-blur md:flex xl:gap-4 xl:px-5">
+					<div className="flex shrink-0 items-center gap-3 whitespace-nowrap text-sm font-medium text-[var(--mapetite-text)]">
+						<div className="flex size-9 shrink-0 items-center justify-center rounded-[10px] border border-[var(--mapetite-border-strong)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))]">
 							<Utensils className="size-4" />
 						</div>
 						<span>Mapetite</span>
 					</div>
-					<div className="flex items-center gap-5 text-sm text-[var(--mapetite-text-soft)]">
-						<a href="#discover" className="transition-colors hover:text-[var(--mapetite-text)]">
+					<div className="hidden min-w-0 items-center gap-3 text-sm text-[var(--mapetite-text-soft)] lg:flex xl:gap-5">
+						<a href="#discover" className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]">
 							Discover
 						</a>
-						<a href="#search" className="transition-colors hover:text-[var(--mapetite-text)]">
+						<a href="#search" className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]">
 							Search start
 						</a>
-						<a href="#experience" className="transition-colors hover:text-[var(--mapetite-text)]">
+						<a href="#experience" className="hidden whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)] xl:inline">
 							Experience
 						</a>
-						<a href="#city-starts" className="transition-colors hover:text-[var(--mapetite-text)]">
+						<a href="#city-starts" className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]">
 							City starts
 						</a>
 					</div>
-					<div className="flex items-center gap-2">
+					<div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
 						{isAuthenticated ? (
 							<>
-								<span className="text-sm text-[var(--mapetite-text-soft)]">
+								<span className="hidden text-sm text-[var(--mapetite-text-soft)] xl:inline">
 									{firstName}
 								</span>
 								<div
-									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]"
+									className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]"
 									aria-label="User profile"
 								>
 									{userInitial}
@@ -456,7 +456,7 @@ function LandingPage() {
 									onClick={logout}
 									variant="outline"
 									size="sm"
-									className="mapetite-quiet-button rounded-[10px]"
+									className="mapetite-quiet-button rounded-[10px] whitespace-nowrap"
 								>
 									<LogOut className="mr-2 size-4" />
 									Log Out
@@ -468,14 +468,14 @@ function LandingPage() {
 									onClick={() => setIsLogInOpen(true)}
 									size="sm"
 									variant="ghost"
-									className="rounded-[10px] text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
+									className="rounded-[10px] whitespace-nowrap text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
 								>
 									Log In
 								</Button>
 								<Button
 									onClick={() => setIsSignUpOpen(true)}
 									size="sm"
-									className="mapetite-accent-button rounded-[10px] px-4 text-[#20140d]"
+									className="mapetite-accent-button rounded-[10px] px-4 whitespace-nowrap text-[#20140d]"
 								>
 									Sign Up
 								</Button>
@@ -484,7 +484,7 @@ function LandingPage() {
 						<Button
 							asChild
 							size="sm"
-							className="mapetite-accent-button rounded-[10px] px-4 text-sm"
+							className="mapetite-accent-button rounded-[10px] px-4 text-sm whitespace-nowrap"
 						>
 							<Link to="/restaurants">Open search</Link>
 						</Button>
