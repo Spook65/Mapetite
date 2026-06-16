@@ -771,7 +771,7 @@ function RestaurantSearchPage() {
 						</div>
 					</section>
 
-					<section className="mapetite-panel mb-4 grid gap-4 p-5 md:p-6">
+					<section className="mapetite-panel mb-4 grid gap-5 p-5 md:p-6">
 						<div className="flex flex-wrap items-end justify-between gap-4">
 							<div className="w-full text-center min-[1261px]:text-left">
 								<strong className="text-[21px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
@@ -784,8 +784,8 @@ function RestaurantSearchPage() {
 							</div>
 						</div>
 
-						<div className="mx-auto grid w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
-							<div className="grid gap-2">
+						<div className="mx-auto grid w-full max-w-[720px] gap-3.5 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:gap-3 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
+							<div className="grid gap-2.5">
 								<Label
 									htmlFor="city"
 									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
@@ -801,7 +801,7 @@ function RestaurantSearchPage() {
 								/>
 							</div>
 
-							<div className="grid gap-2">
+							<div className="grid gap-2.5">
 								<Label
 									htmlFor="state"
 									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
@@ -817,7 +817,7 @@ function RestaurantSearchPage() {
 								/>
 							</div>
 
-							<div className="grid gap-2">
+							<div className="grid gap-2.5">
 								<Label
 									htmlFor="country"
 									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
@@ -858,66 +858,83 @@ function RestaurantSearchPage() {
 
 					<section className="mapetite-panel-soft mb-4 grid gap-4 p-4 md:p-5">
 						<div className="grid gap-3 min-[981px]:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] min-[981px]:items-center">
-							<div className="flex flex-wrap gap-2">
-								{categories.map((category) => {
-									const isActive = selectedCategories.has(category);
-									return (
-										<button
-											key={category}
-											type="button"
-											onClick={() => toggleCategory(category)}
-											className={cn(
-												"rounded-full border px-4 py-2 text-sm transition-colors",
-												isActive
-													? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
-													: "border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.02)] text-[rgba(245,233,222,0.62)] hover:border-[rgba(255,236,220,0.18)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]",
-											)}
-										>
-											{category}
-										</button>
-									);
-								})}
+							<div className="grid justify-items-center gap-3 min-[981px]:block min-[981px]:justify-items-stretch">
+								<div className="text-center min-[981px]:hidden">
+									<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase">
+										Popular filters
+									</div>
+								</div>
+								<div className="flex max-w-[330px] flex-wrap justify-center gap-2 min-[981px]:max-w-none min-[981px]:justify-start">
+									{categories.map((category) => {
+										const isActive = selectedCategories.has(category);
+										return (
+											<button
+												key={category}
+												type="button"
+												onClick={() => toggleCategory(category)}
+												className={cn(
+													"rounded-full border px-4 py-2 text-sm transition-colors",
+													isActive
+														? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+														: "border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.02)] text-[rgba(245,233,222,0.62)] hover:border-[rgba(255,236,220,0.18)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]",
+												)}
+											>
+												{category}
+											</button>
+										);
+									})}
+								</div>
 							</div>
 
-							<div className="grid w-full gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-start min-[981px]:w-auto min-[981px]:justify-end">
-								<Select
-									value={sortBy}
-									onValueChange={(value) =>
-										setSortBy(
-											value as "distance" | "rating" | "reviews" | "none",
-										)
-									}
-								>
-									<SelectTrigger className="h-10 w-full min-w-0 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] sm:min-w-[190px] sm:w-auto">
-										<SelectValue />
-									</SelectTrigger>
-									<SelectContent>
-										<SelectItem value="none">Sort: Best match</SelectItem>
-										<SelectItem value="rating">Sort: Highest rated</SelectItem>
-										<SelectItem value="distance">Sort: Closest first</SelectItem>
-										<SelectItem value="reviews">Sort: Most reviews</SelectItem>
-									</SelectContent>
-								</Select>
+							<div className="grid w-full gap-3 min-[981px]:w-auto min-[981px]:grid-flow-col min-[981px]:items-center min-[981px]:justify-end">
+								<div className="grid gap-1.5 min-[981px]:block">
+									<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[981px]:hidden">
+										Sort
+									</div>
+									<Select
+										value={sortBy}
+										onValueChange={(value) =>
+											setSortBy(
+												value as "distance" | "rating" | "reviews" | "none",
+											)
+										}
+									>
+										<SelectTrigger className="h-11 w-full min-w-0 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] min-[981px]:h-10 min-[981px]:w-auto min-[981px]:min-w-[190px]">
+											<SelectValue />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectItem value="none">Sort: Best match</SelectItem>
+											<SelectItem value="rating">Sort: Highest rated</SelectItem>
+											<SelectItem value="distance">Sort: Closest first</SelectItem>
+											<SelectItem value="reviews">Sort: Most reviews</SelectItem>
+										</SelectContent>
+									</Select>
+								</div>
 
-								<Button
-									type="button"
-									variant="outline"
-									onClick={() => setShowFavorites(!showFavorites)}
-									className={cn(
-										"w-full justify-center gap-1.5 rounded-full px-4 shadow-none sm:w-auto",
-										showFavorites
-											? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
-											: "mapetite-quiet-button",
-									)}
-								>
-									<Heart
-										className={cn("size-4", showFavorites && "fill-current")}
-									/>
-									{showFavorites ? "Viewing favorites" : "Favorites only"}
-								</Button>
+								<div className="grid gap-1.5 min-[981px]:block">
+									<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[981px]:hidden">
+										Saved
+									</div>
+									<Button
+										type="button"
+										variant="outline"
+										onClick={() => setShowFavorites(!showFavorites)}
+										className={cn(
+											"h-11 w-full justify-center gap-1.5 rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-auto",
+											showFavorites
+												? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+												: "mapetite-quiet-button",
+										)}
+									>
+										<Heart
+											className={cn("size-4", showFavorites && "fill-current")}
+										/>
+										{showFavorites ? "Viewing favorites" : "Favorites only"}
+									</Button>
+								</div>
 
-									{hasResultsForCurrentView && (
-										<Button
+								{hasResultsForCurrentView && (
+									<Button
 										type="button"
 										variant="outline"
 										onClick={() => setShowMobileFilters(true)}
