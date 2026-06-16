@@ -757,8 +757,8 @@ function RestaurantSearchPage() {
 							: "pb-6 md:pb-8",
 					)}
 				>
-					<section className="mb-4 grid gap-5">
-						<div>
+					<section className="mb-4 grid justify-items-center gap-5 text-center min-[1261px]:justify-items-start min-[1261px]:text-left">
+						<div className="grid justify-items-center min-[1261px]:justify-items-start">
 							<div className="mapetite-eyebrow">Restaurant search</div>
 							<h1 className="mt-3 max-w-[11ch] text-[clamp(2.25rem,4.6vw,3.5rem)] font-semibold leading-[0.98] tracking-[-0.06em] text-[var(--mapetite-text)]">
 								Choose a place, then browse with less noise.
@@ -788,7 +788,7 @@ function RestaurantSearchPage() {
 							<div className="grid gap-2.5">
 								<Label
 									htmlFor="city"
-									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
 									City
 								</Label>
@@ -804,7 +804,7 @@ function RestaurantSearchPage() {
 							<div className="grid gap-2.5">
 								<Label
 									htmlFor="state"
-									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
 									Region
 								</Label>
@@ -820,7 +820,7 @@ function RestaurantSearchPage() {
 							<div className="grid gap-2.5">
 								<Label
 									htmlFor="country"
-									className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
 									Country
 								</Label>
