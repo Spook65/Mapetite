@@ -773,18 +773,18 @@ function RestaurantSearchPage() {
 
 					<section className="mapetite-panel mb-4 grid gap-4 p-5 md:p-6">
 						<div className="flex flex-wrap items-end justify-between gap-4">
-							<div>
+							<div className="w-full text-center min-[1261px]:text-left">
 								<strong className="text-[21px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 									Find restaurants by place
 								</strong>
-								<p className="mapetite-muted-copy mt-2 text-sm">
+								<p className="mapetite-muted-copy mx-auto mt-2 max-w-[32rem] text-sm min-[1261px]:mx-0">
 									Start with a city. Add region or country when the place name is
 									shared.
 								</p>
 							</div>
 						</div>
 
-						<div className="grid gap-3 min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
+						<div className="mx-auto grid w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
 							<div className="grid gap-2">
 								<Label
 									htmlFor="city"
@@ -1454,7 +1454,7 @@ function RestaurantSearchPage() {
 													</Button>
 
 													{isSelected ? (
-														<span className="inline-flex h-11 w-full items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-4 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:h-10 min-[981px]:w-[112px] min-[981px]:px-3.5">
+														<span className="hidden h-10 w-[112px] items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3.5 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:inline-flex">
 															Previewing
 														</span>
 													) : null}

@@ -22,11 +22,26 @@ a,
 [role="button"],
 .cursor-pointer {
 	cursor: pointer;
+	-webkit-tap-highlight-color: transparent;
+	touch-action: manipulation;
 }
 
 button:disabled,
 [aria-disabled="true"] {
 	cursor: not-allowed;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible),
+[role="button"]:focus:not(:focus-visible) {
+	outline: none;
+}
+
+button:focus-visible,
+a:focus-visible,
+[role="button"]:focus-visible {
+	outline: 2px solid rgba(213, 154, 104, 0.92);
+	outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -312,6 +327,11 @@ code {
 		transform: translateY(-1px);
 	}
 
+	.mapetite-accent-button:active {
+		background: #d8a06e;
+		transform: translateY(0) scale(0.99);
+	}
+
 	.mapetite-quiet-button {
 		background: rgba(255, 248, 242, 0.025);
 		color: var(--mapetite-text-soft);
@@ -327,6 +347,11 @@ code {
 		background: rgba(255, 248, 242, 0.06);
 		color: var(--mapetite-text);
 		transform: translateY(-1px);
+	}
+
+	.mapetite-quiet-button:active {
+		background: rgba(255, 248, 242, 0.08);
+		transform: translateY(0) scale(0.99);
 	}
 
 	.mapetite-media-fallback {
