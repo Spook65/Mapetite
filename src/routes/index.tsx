@@ -496,11 +496,11 @@ function LandingPage() {
 					className="scroll-mt-32 py-10 md:py-14 lg:py-16"
 				>
 					<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)] lg:gap-12">
-						<div className="mapetite-section-stack">
-							<div className="mapetite-eyebrow">
+						<div className="mapetite-section-stack items-center text-center md:items-stretch md:text-left">
+							<div className="mapetite-eyebrow justify-center md:justify-start">
 								Restaurant discovery, built around place
 							</div>
-							<div>
+							<div className="grid justify-items-center md:justify-items-start">
 								<h1 className="max-w-[10ch] text-5xl font-semibold tracking-[-0.06em] text-[var(--mapetite-text)] sm:text-6xl lg:text-[5rem] lg:leading-[0.94]">
 									Find restaurants worth crossing the city for.
 								</h1>
@@ -510,11 +510,11 @@ function LandingPage() {
 								</p>
 							</div>
 
-							<div className="flex flex-col items-center gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+							<div className="flex w-full flex-col items-center gap-3 md:w-auto md:flex-row md:flex-wrap md:items-center">
 								<Button
 									asChild
 									size="lg"
-									className="mapetite-accent-button w-full max-w-[350px] rounded-[10px] px-6 sm:w-auto sm:max-w-none"
+									className="mapetite-accent-button w-full max-w-[350px] rounded-[10px] px-6 md:w-auto md:max-w-none"
 								>
 									<Link to="/restaurants">Search restaurants</Link>
 								</Button>
@@ -522,11 +522,11 @@ function LandingPage() {
 									asChild
 									variant="outline"
 									size="lg"
-									className="mapetite-quiet-button w-full max-w-[350px] rounded-[10px] px-6 sm:w-auto sm:max-w-none"
+									className="mapetite-quiet-button w-full max-w-[350px] rounded-[10px] px-6 md:w-auto md:max-w-none"
 								>
 									<a href="#experience">See how it opens</a>
 								</Button>
-								<p className="mapetite-faint-copy basis-full text-center text-sm sm:text-left">
+								<p className="mapetite-faint-copy basis-full text-center text-sm md:text-left">
 									Opens the full search page. City starts are separate.
 								</p>
 							</div>

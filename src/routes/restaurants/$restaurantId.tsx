@@ -393,7 +393,7 @@ function RestaurantDetailPage() {
 			<div className="mapetite-page-shell min-h-full">
 				<div className="mapetite-container px-4 py-4 md:px-6 md:py-6">
 					<main className="grid gap-6 py-6 md:py-8">
-						<div className="flex flex-wrap items-center justify-between gap-4">
+						<div className="flex flex-col items-center justify-center gap-3 text-center md:flex-row md:justify-between md:text-left">
 							<button
 								type="button"
 								onClick={() => navigate({ to: "/restaurants" })}
@@ -409,9 +409,9 @@ function RestaurantDetailPage() {
 
 						<section className="mapetite-panel p-6 md:p-7">
 							<div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
-								<div className="grid gap-4">
-									<div className="mapetite-eyebrow">Restaurant detail</div>
-									<div>
+								<div className="grid justify-items-center gap-4 text-center lg:justify-items-start lg:text-left">
+									<div className="mapetite-eyebrow justify-center lg:justify-start">Restaurant detail</div>
+									<div className="grid justify-items-center lg:justify-items-start">
 										<h1 className="max-w-[10ch] text-[clamp(34px,4vw,52px)] font-semibold leading-none tracking-[-0.06em] text-[var(--mapetite-text)]">
 											{restaurant.name}
 										</h1>
@@ -420,7 +420,7 @@ function RestaurantDetailPage() {
 										</p>
 									</div>
 
-									<div className="flex flex-wrap items-center gap-2.5">
+									<div className="flex flex-wrap items-center justify-center gap-2.5 lg:justify-start">
 										<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 											<strong className="font-semibold text-[var(--mapetite-text)]">
 												{restaurant.rating.toFixed(1)}
@@ -452,7 +452,7 @@ function RestaurantDetailPage() {
 										) : null}
 									</div>
 
-									<div className="flex flex-wrap gap-3">
+									<div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start">
 										<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
 											<a href={directionsUrl} target="_blank" rel="noreferrer">
 												<Navigation className="mr-2 size-4" />
@@ -483,7 +483,7 @@ function RestaurantDetailPage() {
 									</div>
 								</div>
 
-								<aside className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-[18px]">
+								<aside className="grid justify-items-center gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-[18px] text-center lg:justify-items-start lg:text-left">
 									<small className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.46)]">
 										Decision cues
 									</small>
@@ -494,7 +494,7 @@ function RestaurantDetailPage() {
 										Photo coverage, tonight&apos;s hours, address, and review
 										confidence stay visible without turning the page into a dashboard.
 									</p>
-									<div className="flex flex-wrap gap-2">
+									<div className="flex flex-wrap justify-center gap-2 lg:justify-start">
 										{[
 											hasMapCoordinates ? "Nearby map" : null,
 											hasReviews || hasRatingBreakdown ? "Review summary" : null,
@@ -523,11 +523,11 @@ function RestaurantDetailPage() {
 							<div className="grid gap-6">
 								<section id="gallery" className="mapetite-panel grid gap-[18px] p-[22px]">
 									<div className="flex flex-wrap items-end justify-between gap-4">
-										<div>
+										<div className="w-full text-center md:text-left">
 											<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 												Gallery
 											</h2>
-											<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
+											<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
 												Use the space, plating, and pace of service to decide whether it
 												matches the night you have in mind.
 											</p>
@@ -626,18 +626,18 @@ function RestaurantDetailPage() {
 								</section>
 
 								<section id="context" className="mapetite-panel grid gap-[18px] p-[22px]">
-									<div>
+									<div className="text-center md:text-left">
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											Restaurant context
 										</h2>
-										<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
+										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
 											Keep the details useful: where it is, how it&apos;s priced, when
 											it&apos;s open, and what makes it worth opening the route for.
 										</p>
 									</div>
 
 									<div className="grid gap-[18px] md:grid-cols-2">
-										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
 											<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
 												Address
 											</small>
@@ -650,7 +650,7 @@ function RestaurantDetailPage() {
 													: "Keep the full address close before opening the route."}
 											</p>
 										</div>
-										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
 											<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
 												Kitchen
 											</small>
@@ -661,7 +661,7 @@ function RestaurantDetailPage() {
 												{restaurant.description}
 											</p>
 										</div>
-										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
 											<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
 												Hours
 											</small>
@@ -680,7 +680,7 @@ function RestaurantDetailPage() {
 													: "Hours are not available for this restaurant right now."}
 											</p>
 										</div>
-										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4">
+										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
 											<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
 												Price
 											</small>
@@ -696,7 +696,7 @@ function RestaurantDetailPage() {
 									</div>
 
 									{contextTags.length > 0 ? (
-										<div className="flex flex-wrap gap-2">
+										<div className="flex flex-wrap justify-center gap-2 md:justify-start">
 											{contextTags.map((tag, index) => (
 												<span
 													key={`${tag}-${index}`}
@@ -715,17 +715,17 @@ function RestaurantDetailPage() {
 								</section>
 
 								<section id="reviews" className="mapetite-panel grid gap-[18px] p-[22px]">
-									<div>
+									<div className="text-center md:text-left">
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											Reviews and confidence
 										</h2>
-										<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
+										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
 											{reviewSummaryCopy}
 										</p>
 									</div>
 
 									<div className="grid gap-[18px] lg:grid-cols-[240px_minmax(0,1fr)] lg:items-start">
-										<div className="grid gap-[10px] rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-[18px]">
+										<div className="grid gap-[10px] rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-[18px] text-center md:text-left">
 											<strong className="text-[46px] font-semibold leading-[0.95] tracking-[-0.06em] text-[var(--mapetite-text)]">
 												{restaurant.rating.toFixed(1)}
 											</strong>
@@ -811,11 +811,11 @@ function RestaurantDetailPage() {
 								</section>
 
 								<section id="location" className="mapetite-panel grid gap-[18px] p-[22px]">
-									<div>
+									<div className="text-center md:text-left">
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											Location and route
 										</h2>
-										<p className="mapetite-muted-copy mt-2 max-w-[620px] text-sm leading-6">
+										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
 											Leave with the exact address, a grounded location preview, and a
 											clear next action.
 										</p>
@@ -841,7 +841,7 @@ function RestaurantDetailPage() {
 											)}
 										</div>
 
-										<div className="grid gap-4">
+										<div className="grid justify-items-center gap-4 text-center md:justify-items-start md:text-left">
 											<strong className="text-lg font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
 												{fullAddress}
 											</strong>
@@ -849,7 +849,7 @@ function RestaurantDetailPage() {
 												Keep the address, route, and final decision close once the
 												restaurant feels worth the trip.
 											</p>
-											<div className="flex flex-wrap gap-2">
+											<div className="flex flex-wrap justify-center gap-2 md:justify-start">
 												{[
 													hasMapCoordinates ? "Map preview available" : null,
 													locationLine || null,

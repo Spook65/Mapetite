@@ -1325,7 +1325,7 @@ function RestaurantSearchPage() {
 													}
 												}}
 												className={cn(
-													"grid gap-4 rounded-[14px] border p-4 text-left transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)] min-[981px]:grid-cols-[172px_minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:p-[18px]",
+												"grid gap-4 rounded-[14px] border p-4 text-center transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)] min-[981px]:grid-cols-[172px_minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:p-[18px] min-[981px]:text-left",
 													isSelected
 														? "border-[rgba(213,154,104,0.24)] bg-[rgba(255,248,242,0.05)] shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
 														: "border-[rgba(255,236,220,0.08)] bg-[var(--mapetite-surface)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:border-[rgba(213,154,104,0.24)] hover:bg-[rgba(255,248,242,0.05)] hover:-translate-y-[1px]",
@@ -1341,7 +1341,7 @@ function RestaurantSearchPage() {
 																referrerPolicy="no-referrer"
 															/>
 															<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(19,15,13,0.08),rgba(19,15,13,0.74))]" />
-															<div className="relative grid h-full grid-rows-[auto_1fr_auto] p-[14px]">
+														<div className="relative grid h-full grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left">
 																<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[rgba(255,244,236,0.92)]">
 																	{getRestaurantInitials(restaurant)}
 																</strong>
@@ -1354,7 +1354,7 @@ function RestaurantSearchPage() {
 															</div>
 														</div>
 													) : (
-														<div className="mapetite-media-fallback grid h-full min-h-[132px] grid-rows-[auto_1fr_auto] p-[14px]">
+													<div className="mapetite-media-fallback grid h-full min-h-[132px] grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left">
 															<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[rgba(255,244,236,0.92)]">
 																{getRestaurantInitials(restaurant)}
 															</strong>
@@ -1369,8 +1369,8 @@ function RestaurantSearchPage() {
 												</div>
 
 												<div className="grid gap-[10px]">
-													<div className="flex flex-wrap items-center justify-between gap-3">
-														<div>
+												<div className="flex flex-wrap items-center justify-center gap-3 min-[981px]:justify-between">
+													<div className="w-full min-[981px]:w-auto">
 															<h3 className="m-0 text-[clamp(1.8rem,2.2vw,2rem)] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 																{restaurant.name}
 															</h3>
@@ -1394,7 +1394,7 @@ function RestaurantSearchPage() {
 														{summary}
 													</p>
 
-													<div className="flex flex-wrap gap-2">
+											<div className="flex flex-wrap justify-center gap-2 min-[981px]:justify-start">
 														{priceLabel ? (
 															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 																{priceLabel}
@@ -1592,7 +1592,7 @@ function RestaurantSearchPage() {
 												)}
 											</p>
 
-											<div className="flex flex-wrap gap-2">
+										<div className="flex flex-wrap gap-2">
 												{getDisplayCategory(selectedRestaurant) ? (
 													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 														{getDisplayCategory(selectedRestaurant)}
