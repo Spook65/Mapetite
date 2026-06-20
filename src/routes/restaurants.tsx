@@ -757,7 +757,7 @@ function RestaurantSearchPage() {
 							: "pb-6 md:pb-8",
 					)}
 				>
-					<section className="mb-4 grid justify-items-center gap-5 text-center min-[1261px]:justify-items-start min-[1261px]:text-left">
+					<section className="mb-3 grid justify-items-center gap-4 text-center md:mb-4 md:gap-5 min-[1261px]:justify-items-start min-[1261px]:text-left">
 						<div className="grid justify-items-center min-[1261px]:justify-items-start">
 							<div className="mapetite-eyebrow">Restaurant search</div>
 							<h1 className="mt-3 max-w-[11ch] text-[clamp(2.25rem,4.6vw,3.5rem)] font-semibold leading-[0.98] tracking-[-0.06em] text-[var(--mapetite-text)]">
@@ -771,7 +771,7 @@ function RestaurantSearchPage() {
 						</div>
 					</section>
 
-					<section className="mapetite-panel mb-4 grid gap-5 p-5 md:p-6">
+					<section className="mapetite-panel mb-4 grid gap-4 p-4 md:gap-5 md:p-6">
 						<div className="flex flex-wrap items-end justify-between gap-4">
 							<div className="w-full text-center min-[1261px]:text-left">
 								<strong className="text-[21px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
@@ -784,11 +784,11 @@ function RestaurantSearchPage() {
 							</div>
 						</div>
 
-						<div className="mx-auto grid w-full max-w-[720px] gap-3.5 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:gap-3 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
-							<div className="grid gap-2.5">
+						<div className="mx-auto grid w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
+							<div className="grid gap-2">
 								<Label
 									htmlFor="city"
-									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
+									className="text-left text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
 								>
 									City
 								</Label>
@@ -801,10 +801,10 @@ function RestaurantSearchPage() {
 								/>
 							</div>
 
-							<div className="grid gap-2.5">
+							<div className="grid gap-2">
 								<Label
 									htmlFor="state"
-									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
+									className="text-left text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
 								>
 									Region
 								</Label>
@@ -817,10 +817,10 @@ function RestaurantSearchPage() {
 								/>
 							</div>
 
-							<div className="grid gap-2.5">
+							<div className="grid gap-2">
 								<Label
 									htmlFor="country"
-									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
+									className="text-left text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
 								>
 									Country
 								</Label>
@@ -837,7 +837,7 @@ function RestaurantSearchPage() {
 								type="button"
 								onClick={handleSearch}
 								disabled={isSearching}
-								className="mapetite-accent-button h-[52px] w-full self-end justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none min-[1261px]:w-auto"
+								className="mapetite-accent-button h-12 w-full self-end justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none md:h-[52px] min-[1261px]:w-auto"
 							>
 								<Search className="mr-2 size-4" />
 								{isSearching ? "Searching..." : "Search restaurants"}
@@ -848,7 +848,7 @@ function RestaurantSearchPage() {
 								variant="outline"
 								onClick={handleGetCurrentLocation}
 								disabled={isGettingLocation}
-								className="mapetite-quiet-button h-[52px] w-full self-end justify-center rounded-[10px] px-5 text-[15px] shadow-none min-[1261px]:w-auto"
+								className="mapetite-quiet-button h-12 w-full self-end justify-center rounded-[10px] px-5 text-[15px] shadow-none md:h-[52px] min-[1261px]:w-auto"
 							>
 								<Navigation className="mr-2 size-4" />
 								{isGettingLocation ? "Locating..." : "Use My Location"}

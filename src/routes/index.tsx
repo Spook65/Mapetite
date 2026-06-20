@@ -1,4 +1,5 @@
 import { LogInModal } from "@/components/auth/LogInModal";
+import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { SignUpModal } from "@/components/auth/SignUpModal";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
@@ -493,16 +494,19 @@ function LandingPage() {
 
 				<section
 					id="discover"
-					className="scroll-mt-32 py-10 md:py-14 lg:py-16"
+					className="scroll-mt-32 py-8 md:py-14 lg:py-16"
 				>
-					<div className="grid items-center gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)] lg:gap-12">
+					<div className="grid items-center gap-7 md:gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)] lg:gap-12">
 						<div className="mapetite-section-stack items-center text-center md:items-stretch md:text-left">
 							<div className="mapetite-eyebrow justify-center md:justify-start">
 								Restaurant discovery, built around place
 							</div>
 							<div className="grid justify-items-center md:justify-items-start">
-								<h1 className="max-w-[10ch] text-5xl font-semibold tracking-[-0.06em] text-[var(--mapetite-text)] sm:text-6xl lg:text-[5rem] lg:leading-[0.94]">
-									Find restaurants worth crossing the city for.
+								<h1 className="max-w-[11ch] text-[clamp(2.65rem,13vw,4rem)] font-semibold leading-[0.94] tracking-[-0.06em] text-[var(--mapetite-text)] md:max-w-[10ch] md:text-6xl lg:text-[5rem] lg:leading-[0.94]">
+									<span className="md:hidden">Find restaurants worth the trip.</span>
+									<span className="hidden md:inline">
+										Find restaurants worth crossing the city for.
+									</span>
 								</h1>
 								<p className="mapetite-muted-copy mt-5 max-w-xl text-lg leading-8">
 									Start with a city, open a shortlist that fits the night, and go
@@ -986,6 +990,7 @@ function LandingPage() {
 					</div>
 				</section>
 			</div>
+			<MapetiteFooter />
 
 			<SignUpModal open={isSignUpOpen} onOpenChange={setIsSignUpOpen} />
 			<LogInModal open={isLogInOpen} onOpenChange={setIsLogInOpen} />

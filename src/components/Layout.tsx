@@ -1,5 +1,6 @@
 import { LogInModal } from "@/components/auth/LogInModal";
 import { SignUpModal } from "@/components/auth/SignUpModal";
+import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { cn } from "@/lib/utils";
@@ -295,6 +296,7 @@ export function Layout({ children }: LayoutProps) {
 				<main className="min-w-0 flex-1">
 					{children}
 				</main>
+				<MapetiteFooter />
 			</div>
 
 			<SignUpModal open={isSignUpOpen} onOpenChange={setIsSignUpOpen} />
