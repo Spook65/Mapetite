@@ -899,8 +899,9 @@ function RestaurantSearchPage() {
 											)
 										}
 									>
-										<SelectTrigger className="h-11 w-full min-w-0 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] min-[981px]:h-10 min-[981px]:w-auto min-[981px]:min-w-[190px]">
-											<SelectValue className="flex-1 justify-center pl-4 text-center min-[981px]:justify-start min-[981px]:pl-0 min-[981px]:text-left" />
+										<SelectTrigger className="grid h-11 w-full min-w-0 grid-cols-[1rem_minmax(0,1fr)_1rem] items-center rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] min-[981px]:flex min-[981px]:h-10 min-[981px]:w-auto min-[981px]:min-w-[190px]">
+											<span aria-hidden="true" className="size-4 min-[981px]:hidden" />
+											<SelectValue className="justify-center text-center min-[981px]:flex-1 min-[981px]:justify-start min-[981px]:text-left" />
 										</SelectTrigger>
 										<SelectContent>
 											<SelectItem value="none">Sort: Best match</SelectItem>
@@ -920,10 +921,10 @@ function RestaurantSearchPage() {
 										variant="outline"
 										onClick={() => setShowFavorites(!showFavorites)}
 										className={cn(
-											"h-11 w-full justify-center gap-1.5 rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-auto",
+											"mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none min-[981px]:h-10 min-[981px]:w-auto",
 											showFavorites
 												? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
-												: "mapetite-quiet-button",
+												: null,
 										)}
 									>
 										<Heart
@@ -938,9 +939,9 @@ function RestaurantSearchPage() {
 										type="button"
 										variant="outline"
 										onClick={() => setShowMobileFilters(true)}
-										className="mapetite-quiet-button w-full justify-center rounded-full px-4 shadow-none sm:w-auto md:hidden"
+										className="mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none md:hidden"
 									>
-										<SlidersHorizontal className="mr-2 size-4" />
+										<SlidersHorizontal className="size-4" />
 										Filters
 									</Button>
 								)}
@@ -956,10 +957,10 @@ function RestaurantSearchPage() {
 						>
 							{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
 							<div
-								className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
+								className="absolute right-0 top-0 h-full w-80 max-w-[85vw] overflow-y-auto border-l border-[var(--mapetite-border)] bg-[#16110e] pb-[env(safe-area-inset-bottom)] shadow-[-18px_0_40px_rgba(0,0,0,0.28)]"
 								onClick={(e) => e.stopPropagation()}
 							>
-								<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] px-4 py-4">
+								<div className="relative flex items-center justify-center border-b border-[var(--mapetite-border)] px-14 py-4 text-center">
 									<div>
 										<h2 className="text-base font-semibold text-[var(--mapetite-text)]">
 											Filters and sort
@@ -971,7 +972,7 @@ function RestaurantSearchPage() {
 									<button
 										type="button"
 										onClick={() => setShowMobileFilters(false)}
-										className="inline-flex size-9 items-center justify-center rounded-md border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
+										className="absolute right-4 inline-flex size-9 items-center justify-center rounded-md border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
 									>
 										<X className="size-4" />
 									</button>
@@ -989,8 +990,8 @@ function RestaurantSearchPage() {
 													type="button"
 													variant="outline"
 													onClick={() => togglePriceFilter(price)}
-													className={cn(
-														"rounded-full shadow-none",
+											className={cn(
+												"h-10 rounded-full px-2 shadow-none",
 														priceFilter.includes(price)
 															? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 															: "mapetite-quiet-button",
@@ -1033,8 +1034,9 @@ function RestaurantSearchPage() {
 												)
 											}
 										>
-											<SelectTrigger className="h-11 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
-												<SelectValue />
+											<SelectTrigger className="grid h-11 w-full grid-cols-[1rem_minmax(0,1fr)_1rem] items-center rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
+												<span aria-hidden="true" className="size-4" />
+												<SelectValue className="justify-center text-center" />
 											</SelectTrigger>
 											<SelectContent>
 												<SelectItem value="none">Sort: Best match</SelectItem>
@@ -1064,14 +1066,14 @@ function RestaurantSearchPage() {
 										<Button
 											type="button"
 											variant="outline"
-											className="mapetite-quiet-button flex-1 shadow-none"
+											className="mapetite-quiet-button h-11 flex-1 rounded-[10px] text-sm shadow-none"
 											onClick={clearAllFilters}
 										>
 											Clear filters
 										</Button>
 										<Button
 											type="button"
-											className="mapetite-accent-button flex-1 shadow-none"
+											className="mapetite-accent-button h-11 flex-1 rounded-[10px] text-sm shadow-none"
 											onClick={() => setShowMobileFilters(false)}
 										>
 											Apply
