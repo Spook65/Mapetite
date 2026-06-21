@@ -4,8 +4,8 @@ export function MapetiteFooter() {
 	return (
 		<footer className="mt-auto border-t border-[rgba(255,236,220,0.08)]">
 			<div className="mapetite-container px-4 pt-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] md:px-6 md:py-8">
-				<div className="mapetite-panel-soft grid gap-4 px-5 py-5 text-center md:grid-cols-[minmax(0,1fr)_auto] md:items-end md:text-left">
-					<div className="grid gap-2 text-[12px] leading-5 text-[var(--mapetite-text-faint)]">
+				<div className="mapetite-panel-soft grid justify-items-center gap-4 px-5 py-5 text-center">
+					<div className="mx-auto grid max-w-4xl gap-2 text-[12px] leading-5 text-[var(--mapetite-text-faint)]">
 						<p>&copy; 2026 Brandon Hann. Mapetite. Portfolio MVP demo.</p>
 						<p>
 							Restaurant and location data &copy;{" "}

@@ -788,7 +788,7 @@ function RestaurantSearchPage() {
 							<div className="grid gap-2">
 								<Label
 									htmlFor="city"
-									className="text-left text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
 									City
 								</Label>
@@ -797,14 +797,14 @@ function RestaurantSearchPage() {
 									placeholder="Paris, Tokyo, Chicago"
 									value={location.city}
 									onChange={(e) => updateLocation({ city: e.target.value })}
-									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-[var(--mapetite-text)] placeholder:text-[var(--mapetite-text-faint)]"
+									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
 								/>
 							</div>
 
 							<div className="grid gap-2">
 								<Label
 									htmlFor="state"
-									className="text-left text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
 									Region
 								</Label>
@@ -813,14 +813,14 @@ function RestaurantSearchPage() {
 									placeholder="Optional region"
 									value={location.state}
 									onChange={(e) => updateLocation({ state: e.target.value })}
-									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-[var(--mapetite-text)] placeholder:text-[var(--mapetite-text-faint)]"
+									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
 								/>
 							</div>
 
 							<div className="grid gap-2">
 								<Label
 									htmlFor="country"
-									className="text-left text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase"
+									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
 									Country
 								</Label>
@@ -829,7 +829,7 @@ function RestaurantSearchPage() {
 									placeholder="Optional country"
 									value={location.country}
 									onChange={(e) => updateLocation({ country: e.target.value })}
-									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-[var(--mapetite-text)] placeholder:text-[var(--mapetite-text-faint)]"
+									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
 								/>
 							</div>
 
@@ -900,7 +900,7 @@ function RestaurantSearchPage() {
 										}
 									>
 										<SelectTrigger className="h-11 w-full min-w-0 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] min-[981px]:h-10 min-[981px]:w-auto min-[981px]:min-w-[190px]">
-											<SelectValue />
+											<SelectValue className="flex-1 justify-center pl-4 text-center min-[981px]:justify-start min-[981px]:pl-0 min-[981px]:text-left" />
 										</SelectTrigger>
 										<SelectContent>
 											<SelectItem value="none">Sort: Best match</SelectItem>
