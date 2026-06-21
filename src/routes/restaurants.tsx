@@ -545,6 +545,19 @@ function RestaurantSearchPage() {
 		};
 	}, [favoriteIdList, favoriteRestaurantLookup, upsertFavoriteSnapshots]);
 
+	const currentViewRestaurants = showFavorites
+		? favoriteRestaurants
+		: restaurants;
+	const hasTrustedOpenNowData = currentViewRestaurants.some(
+		(restaurant) => typeof restaurant.isOpenNow === "boolean",
+	);
+
+	useEffect(() => {
+		if (openNowOnly && !hasTrustedOpenNowData) {
+			setOpenNowOnly(false);
+		}
+	}, [openNowOnly, hasTrustedOpenNowData, setOpenNowOnly]);
+
 	// Memoize filtered and sorted restaurant list to prevent unnecessary re-renders.
 	// This expensive operation (filtering + sorting large arrays) only runs when:
 	// - restaurants array changes (new search results)
@@ -567,11 +580,9 @@ function RestaurantSearchPage() {
 			return r.rating >= minRating;
 		});
 
-		// Apply open now filter - only filter if isOpenNow is explicitly false when filter is active
-		if (openNowOnly) {
-			filtered = filtered.filter(
-				(r) => r.isOpenNow === true, // Only exclude if explicitly false or undefined
-			);
+		// Only apply this filter when the provider supplied explicit current status.
+		if (openNowOnly && hasTrustedOpenNowData) {
+			filtered = filtered.filter((r) => r.isOpenNow === true);
 		}
 
 		// Apply sorting - handle undefined values gracefully
@@ -605,6 +616,7 @@ function RestaurantSearchPage() {
 		priceFilter,
 		minRating,
 		openNowOnly,
+		hasTrustedOpenNowData,
 		sortBy,
 	]);
 
@@ -712,6 +724,11 @@ function RestaurantSearchPage() {
 	const matchingResultsCount = displayedRestaurants.length;
 	const shownResultsCount = visibleRestaurants.length;
 	const hasMoreResults = shownResultsCount < matchingResultsCount;
+	const openNowStatusCopy = !hasTrustedOpenNowData
+		? "Open-now status unavailable for this search."
+		: openNowOnly && matchingResultsCount === 0
+			? "No restaurants are currently confirmed open."
+			: "Uses provider-confirmed current status.";
 	const hasSearchResults = restaurants.length > 0;
 	const hasFavoriteResults = favoriteRestaurants.length > 0;
 	const hasResultsForCurrentView = showFavorites ? hasFavoriteResults : hasSearchResults;
@@ -899,15 +916,14 @@ function RestaurantSearchPage() {
 											)
 										}
 									>
-										<SelectTrigger className="grid h-11 w-full min-w-0 grid-cols-[1rem_minmax(0,1fr)_1rem] items-center rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] min-[981px]:flex min-[981px]:h-10 min-[981px]:w-auto min-[981px]:min-w-[190px]">
-											<span aria-hidden="true" className="size-4 min-[981px]:hidden" />
-											<SelectValue className="justify-center text-center min-[981px]:flex-1 min-[981px]:justify-start min-[981px]:text-left" />
+										<SelectTrigger className="relative h-11 w-full min-w-0 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-3 text-[var(--mapetite-text)] [&>svg]:ml-auto min-[981px]:h-10 min-[981px]:w-auto min-[981px]:min-w-[190px]">
+											<SelectValue className="absolute left-1/2 max-w-[calc(100%-5rem)] -translate-x-1/2 justify-center text-center min-[981px]:static min-[981px]:max-w-none min-[981px]:flex-1 min-[981px]:translate-x-0 min-[981px]:justify-start min-[981px]:text-left" />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem value="none">Sort: Best match</SelectItem>
-											<SelectItem value="rating">Sort: Highest rated</SelectItem>
-											<SelectItem value="distance">Sort: Closest first</SelectItem>
-											<SelectItem value="reviews">Sort: Most reviews</SelectItem>
+											<SelectItem className="justify-center px-10 text-center min-[981px]:justify-start min-[981px]:pr-8 min-[981px]:pl-2" value="none">Sort: Best match</SelectItem>
+											<SelectItem className="justify-center px-10 text-center min-[981px]:justify-start min-[981px]:pr-8 min-[981px]:pl-2" value="rating">Sort: Highest rated</SelectItem>
+											<SelectItem className="justify-center px-10 text-center min-[981px]:justify-start min-[981px]:pr-8 min-[981px]:pl-2" value="distance">Sort: Closest first</SelectItem>
+											<SelectItem className="justify-center px-10 text-center min-[981px]:justify-start min-[981px]:pr-8 min-[981px]:pl-2" value="reviews">Sort: Most reviews</SelectItem>
 										</SelectContent>
 									</Select>
 								</div>
@@ -1034,15 +1050,14 @@ function RestaurantSearchPage() {
 												)
 											}
 										>
-											<SelectTrigger className="grid h-11 w-full grid-cols-[1rem_minmax(0,1fr)_1rem] items-center rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
-												<span aria-hidden="true" className="size-4" />
-												<SelectValue className="justify-center text-center" />
+											<SelectTrigger className="relative h-11 w-full rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-3 text-[var(--mapetite-text)] [&>svg]:ml-auto">
+												<SelectValue className="absolute left-1/2 max-w-[calc(100%-5rem)] -translate-x-1/2 justify-center text-center" />
 											</SelectTrigger>
 											<SelectContent>
-												<SelectItem value="none">Sort: Best match</SelectItem>
-												<SelectItem value="distance">Sort: Closest first</SelectItem>
-												<SelectItem value="rating">Sort: Highest rated</SelectItem>
-												<SelectItem value="reviews">Sort: Most reviews</SelectItem>
+												<SelectItem className="justify-center px-10 text-center" value="none">Sort: Best match</SelectItem>
+												<SelectItem className="justify-center px-10 text-center" value="distance">Sort: Closest first</SelectItem>
+												<SelectItem className="justify-center px-10 text-center" value="rating">Sort: Highest rated</SelectItem>
+												<SelectItem className="justify-center px-10 text-center" value="reviews">Sort: Most reviews</SelectItem>
 											</SelectContent>
 										</Select>
 									</div>
@@ -1053,11 +1068,12 @@ function RestaurantSearchPage() {
 												Open now
 											</Label>
 											<p className="mapetite-muted-copy text-sm">
-												Show only restaurants currently open.
+												{openNowStatusCopy}
 											</p>
 										</div>
 										<Switch
-											checked={openNowOnly}
+											checked={hasTrustedOpenNowData && openNowOnly}
+											disabled={!hasTrustedOpenNowData}
 											onCheckedChange={setOpenNowOnly}
 										/>
 									</div>
@@ -1180,11 +1196,12 @@ function RestaurantSearchPage() {
 												Open now
 											</Label>
 											<p className="mapetite-muted-copy text-sm">
-												Show only restaurants currently open.
+												{openNowStatusCopy}
 											</p>
 										</div>
 										<Switch
-											checked={openNowOnly}
+											checked={hasTrustedOpenNowData && openNowOnly}
+											disabled={!hasTrustedOpenNowData}
 											onCheckedChange={setOpenNowOnly}
 										/>
 									</div>
