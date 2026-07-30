@@ -207,6 +207,16 @@
       "timezone": "America/Los_Angeles"
     },
     {
+      "city": "Sacramento",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 38.5816,
+      "longitude": -121.4944,
+      "timezone": "America/Los_Angeles"
+    },
+    {
       "city": "Toronto",
       "region": "Ontario",
       "regionCode": "ON",
@@ -215,6 +225,36 @@
       "latitude": 43.6532,
       "longitude": -79.3832,
       "timezone": "America/Toronto"
+    },
+    {
+      "city": "Dubai",
+      "region": "Dubai",
+      "regionCode": "DU",
+      "country": "United Arab Emirates",
+      "countryCode": "AE",
+      "latitude": 25.2048,
+      "longitude": 55.2708,
+      "timezone": "Asia/Dubai"
+    },
+    {
+      "city": "Portland",
+      "region": "Oregon",
+      "regionCode": "OR",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 45.5152,
+      "longitude": -122.6784,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "Portland",
+      "region": "Maine",
+      "regionCode": "ME",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 43.6591,
+      "longitude": -70.2568,
+      "timezone": "America/New_York"
     },
     {
       "city": "Mexico City",

@@ -187,6 +187,19 @@ function getSearchErrorDescription(error: unknown) {
 	return "Unable to fetch restaurants right now.";
 }
 
+function isExpectedPlaceValidationError(error: unknown) {
+	return (
+		error instanceof RestaurantSearchApiError &&
+		(error.code === "PLACE_NOT_FOUND" || error.code === "PLACE_AMBIGUOUS")
+	);
+}
+
+function getSearchErrorTitle(error: unknown) {
+	return isExpectedPlaceValidationError(error)
+		? "Check the place"
+		: "Search failed";
+}
+
 function RestaurantSearchPage() {
 	const { city: searchCity } = Route.useSearch();
 
@@ -317,8 +330,10 @@ function RestaurantSearchPage() {
 					if (searchId !== activeSearchIdRef.current) {
 						return;
 					}
-					console.error("Search failed", error);
-					toast.error("Search failed", {
+					if (!isExpectedPlaceValidationError(error)) {
+						console.error("Search failed", error);
+					}
+					toast.error(getSearchErrorTitle(error), {
 						description: getSearchErrorDescription(error),
 					});
 				}
@@ -344,8 +359,10 @@ function RestaurantSearchPage() {
 			setRestaurants(results);
 			setShowFavorites(false);
 		} catch (error) {
-			console.error("Search failed", error);
-			toast.error("Search failed", {
+			if (!isExpectedPlaceValidationError(error)) {
+				console.error("Search failed", error);
+			}
+			toast.error(getSearchErrorTitle(error), {
 				description: getSearchErrorDescription(error),
 			});
 		} finally {

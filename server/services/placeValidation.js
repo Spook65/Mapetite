@@ -34,17 +34,22 @@ function normalizeCountryToken(value) {
   const normalized = normalizePlaceToken(value);
   const aliases = {
     america: "united states",
+    ae: "united arab emirates",
     england: "united kingdom",
+    emirates: "united arab emirates",
     gb: "united kingdom",
     greatbritain: "united kingdom",
     jp: "japan",
     korea: "south korea",
     kr: "south korea",
     uk: "united kingdom",
+    uae: "united arab emirates",
+    "u a e": "united arab emirates",
     usa: "united states",
     us: "united states",
     "u s": "united states",
     "u s a": "united states",
+    unitedarabemirates: "united arab emirates",
     unitedstates: "united states",
   };
 
@@ -55,10 +60,14 @@ function normalizeRegionToken(value) {
   const normalized = normalizePlaceToken(value);
   const aliases = {
     ca: "california",
+    idf: "ile de france",
     il: "illinois",
     ma: "massachusetts",
+    me: "maine",
     mo: "missouri",
     ny: "new york",
+    on: "ontario",
+    or: "oregon",
     tx: "texas",
   };
 
