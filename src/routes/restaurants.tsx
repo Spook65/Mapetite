@@ -386,6 +386,16 @@ function RestaurantSearchPage() {
 	const favoriteHydrationAttemptsRef = useRef<Set<string>>(new Set());
 
 	const categories = ["Noodles", "Vegetarian", "Fast-Food"];
+	const hasLocationInput = Boolean(
+		location.city.trim() || location.state.trim() || location.country.trim(),
+	);
+
+	const handleClearLocation = useCallback(() => {
+		setLocation({ city: "", state: "", country: "" });
+		window.setTimeout(() => {
+			document.getElementById("city")?.focus();
+		}, 0);
+	}, [setLocation]);
 
 	// Handle city search parameter from navigation
 	useEffect(() => {
@@ -916,6 +926,15 @@ function RestaurantSearchPage() {
 									Start with a city. Add region or country when the place name is
 									shared.
 								</p>
+								{hasLocationInput ? (
+									<button
+										type="button"
+										onClick={handleClearLocation}
+										className="mt-3 rounded-full border border-[rgba(255,236,220,0.12)] px-3 py-1 text-xs font-medium text-[rgba(245,233,222,0.58)] transition-colors hover:border-[rgba(213,154,104,0.35)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)]"
+									>
+										Clear all
+									</button>
+								) : null}
 							</div>
 						</div>
 
