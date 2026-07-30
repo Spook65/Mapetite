@@ -1,5 +1,6 @@
 import {
 	getRestaurantByIdApi,
+	RestaurantSearchApiError,
 	searchRestaurantsApi,
 } from "@/lib/api/restaurants";
 import { fetchRestaurantsNearby } from "@/lib/api/overpass";
@@ -54,6 +55,13 @@ export async function searchRestaurants(
 			location: response.location ?? location,
 		};
 	} catch (error) {
+		if (
+			error instanceof RestaurantSearchApiError &&
+			(error.code === "PLACE_NOT_FOUND" || error.code === "PLACE_AMBIGUOUS")
+		) {
+			throw error;
+		}
+
 		console.warn("Backend restaurant search failed; falling back to local OSM.", error);
 		if (location.latitude === undefined || location.longitude === undefined) {
 			const resolved = await nominatimResolveCity(

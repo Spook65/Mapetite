@@ -31,6 +31,26 @@ export interface RestaurantSearchResponse {
 	count?: number;
 }
 
+export type PlaceSearchSuggestion = {
+	city: string;
+	region?: string;
+	regionCode?: string;
+	country: string;
+	countryCode?: string;
+};
+
+export class RestaurantSearchApiError extends Error {
+	code?: string;
+	suggestions: PlaceSearchSuggestion[];
+
+	constructor(message: string, code?: string, suggestions: PlaceSearchSuggestion[] = []) {
+		super(message);
+		this.name = "RestaurantSearchApiError";
+		this.code = code;
+		this.suggestions = suggestions;
+	}
+}
+
 export interface RestaurantDetailResponse {
 	restaurant: Restaurant | null;
 }
@@ -73,8 +93,10 @@ export async function searchRestaurantsApi(
 
 	if (!response.ok) {
 		const errorBody = await response.json().catch(() => ({}));
-		throw new Error(
+		throw new RestaurantSearchApiError(
 			errorBody.message || `Restaurant search failed: ${response.statusText}`,
+			typeof errorBody.error === "string" ? errorBody.error : undefined,
+			Array.isArray(errorBody.suggestions) ? errorBody.suggestions : [],
 		);
 	}
 

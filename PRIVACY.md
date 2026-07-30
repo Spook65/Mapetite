@@ -19,6 +19,9 @@ Restaurant search can send place-search context to third-party providers:
 
 - Geoapify is the primary provider when `GEOAPIFY_API_KEY` is configured.
 - OSM/Overpass is used as fallback.
+- Countries States Cities Database is used as backend-only location validation
+  data so fake or ambiguous city/region/country input does not silently search
+  an unrelated place.
 
 Search requests may include city, region, country, coordinates, radius, and category context. Mapetite does not sell user data.
 
@@ -32,6 +35,11 @@ Search requests may include city, region, country, coordinates, radius, and cate
 ## Data Accuracy and Honesty
 
 Mapetite uses free/low-cost provider data. Restaurant data may be incomplete or stale. Menu links, websites, phone numbers, hours, photos, and open-now status only appear when available from provider or normalization logic. Fallback artwork is not presented as verified venue photography.
+
+Location validation data is derived from the Countries States Cities Database
+(ODbL v1.0). It is community-maintained and may contain errors or lag behind
+place-name/geopolitical changes. It validates places only; it does not verify
+restaurant data.
 
 ## Deletion and Production Readiness
 

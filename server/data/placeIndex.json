@@ -1,0 +1,230 @@
+{
+  "source": {
+    "name": "Countries States Cities Database",
+    "url": "https://github.com/dr5hn/countries-states-cities-database",
+    "license": "ODbL v1.0",
+    "note": "Compact backend index derived from Countries States Cities Database fields for MVP place validation. Regenerate from the upstream data source before broad production use."
+  },
+  "places": [
+    {
+      "city": "Stockton",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 37.9577,
+      "longitude": -121.2908,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "Lodi",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 38.1302,
+      "longitude": -121.2724,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "New York",
+      "region": "New York",
+      "regionCode": "NY",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 40.7128,
+      "longitude": -74.006,
+      "timezone": "America/New_York"
+    },
+    {
+      "city": "Tokyo",
+      "region": "Tokyo",
+      "regionCode": "13",
+      "country": "Japan",
+      "countryCode": "JP",
+      "latitude": 35.6895,
+      "longitude": 139.6917,
+      "timezone": "Asia/Tokyo"
+    },
+    {
+      "city": "Paris",
+      "region": "Ile-de-France",
+      "regionCode": "IDF",
+      "country": "France",
+      "countryCode": "FR",
+      "latitude": 48.8566,
+      "longitude": 2.3522,
+      "timezone": "Europe/Paris"
+    },
+    {
+      "city": "Paris",
+      "region": "Texas",
+      "regionCode": "TX",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 33.6609,
+      "longitude": -95.5555,
+      "timezone": "America/Chicago"
+    },
+    {
+      "city": "Paris",
+      "region": "Ontario",
+      "regionCode": "ON",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 43.1942,
+      "longitude": -80.3844,
+      "timezone": "America/Toronto"
+    },
+    {
+      "city": "Springfield",
+      "region": "Illinois",
+      "regionCode": "IL",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 39.7817,
+      "longitude": -89.6501,
+      "timezone": "America/Chicago"
+    },
+    {
+      "city": "Springfield",
+      "region": "Massachusetts",
+      "regionCode": "MA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 42.1015,
+      "longitude": -72.5898,
+      "timezone": "America/New_York"
+    },
+    {
+      "city": "Springfield",
+      "region": "Missouri",
+      "regionCode": "MO",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 37.2089,
+      "longitude": -93.2923,
+      "timezone": "America/Chicago"
+    },
+    {
+      "city": "San Jose",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 37.3382,
+      "longitude": -121.8863,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "San Jose",
+      "region": "San Jose",
+      "regionCode": "SJ",
+      "country": "Costa Rica",
+      "countryCode": "CR",
+      "latitude": 9.9281,
+      "longitude": -84.0907,
+      "timezone": "America/Costa_Rica"
+    },
+    {
+      "city": "London",
+      "region": "England",
+      "regionCode": "ENG",
+      "country": "United Kingdom",
+      "countryCode": "GB",
+      "latitude": 51.5074,
+      "longitude": -0.1278,
+      "timezone": "Europe/London"
+    },
+    {
+      "city": "Seoul",
+      "region": "Seoul",
+      "regionCode": "11",
+      "country": "South Korea",
+      "countryCode": "KR",
+      "latitude": 37.5665,
+      "longitude": 126.978,
+      "timezone": "Asia/Seoul"
+    },
+    {
+      "city": "Phnom Penh",
+      "region": "Phnom Penh",
+      "regionCode": "12",
+      "country": "Cambodia",
+      "countryCode": "KH",
+      "latitude": 11.5564,
+      "longitude": 104.9282,
+      "timezone": "Asia/Phnom_Penh"
+    },
+    {
+      "city": "Bangkok",
+      "region": "Bangkok",
+      "regionCode": "10",
+      "country": "Thailand",
+      "countryCode": "TH",
+      "latitude": 13.7563,
+      "longitude": 100.5018,
+      "timezone": "Asia/Bangkok"
+    },
+    {
+      "city": "Rome",
+      "region": "Lazio",
+      "regionCode": "62",
+      "country": "Italy",
+      "countryCode": "IT",
+      "latitude": 41.9028,
+      "longitude": 12.4964,
+      "timezone": "Europe/Rome"
+    },
+    {
+      "city": "Chicago",
+      "region": "Illinois",
+      "regionCode": "IL",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 41.8781,
+      "longitude": -87.6298,
+      "timezone": "America/Chicago"
+    },
+    {
+      "city": "Los Angeles",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 34.0522,
+      "longitude": -118.2437,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "San Francisco",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 37.7749,
+      "longitude": -122.4194,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "Toronto",
+      "region": "Ontario",
+      "regionCode": "ON",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 43.6532,
+      "longitude": -79.3832,
+      "timezone": "America/Toronto"
+    },
+    {
+      "city": "Mexico City",
+      "region": "Ciudad de Mexico",
+      "regionCode": "CMX",
+      "country": "Mexico",
+      "countryCode": "MX",
+      "latitude": 19.4326,
+      "longitude": -99.1332,
+      "timezone": "America/Mexico_City"
+    }
+  ]
+}

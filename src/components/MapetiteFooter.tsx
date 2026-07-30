@@ -29,6 +29,18 @@ export function MapetiteFooter() {
 							.
 						</p>
 						<p>
+							Location validation data by{" "}
+							<a
+								href="https://github.com/dr5hn/countries-states-cities-database"
+								target="_blank"
+								rel="noreferrer"
+								className="text-[var(--mapetite-text-soft)] underline decoration-[rgba(213,154,104,0.35)] underline-offset-4 hover:text-[var(--mapetite-text)]"
+							>
+								Countries States Cities Database
+							</a>
+							, ODbL v1.0.
+						</p>
+						<p>
 							Restaurant names and trademarks belong to their respective owners.
 							 Mapetite is not affiliated with listed restaurants.
 						</p>

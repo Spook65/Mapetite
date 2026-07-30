@@ -6,6 +6,7 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { reverseGeocode } from "@/lib/api/nominatim";
+import { RestaurantSearchApiError } from "@/lib/api/restaurants";
 import { getRestaurantById, searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
@@ -171,6 +172,21 @@ function truncateCopy(copy: string | undefined, maxLength: number, fallback: str
 	return `${value.slice(0, maxLength - 1).trimEnd()}…`;
 }
 
+function getSearchErrorDescription(error: unknown) {
+	if (error instanceof RestaurantSearchApiError) {
+		const suggestions = error.suggestions
+			.slice(0, 3)
+			.map((place) =>
+				[place.city, place.region, place.country].filter(Boolean).join(", "),
+			)
+			.join(" • ");
+
+		return suggestions ? `${error.message} Try: ${suggestions}.` : error.message;
+	}
+
+	return "Unable to fetch restaurants right now.";
+}
+
 function RestaurantSearchPage() {
 	const { city: searchCity } = Route.useSearch();
 
@@ -288,14 +304,24 @@ function RestaurantSearchPage() {
 				};
 				setLocation(requestedLocation);
 				setRestaurants([]);
-				const { restaurants: results, location: resolvedLocation } =
-					await searchRestaurants(requestedLocation, []);
-				if (searchId !== activeSearchIdRef.current) {
-					return;
+				try {
+					const { restaurants: results, location: resolvedLocation } =
+						await searchRestaurants(requestedLocation, []);
+					if (searchId !== activeSearchIdRef.current) {
+						return;
+					}
+					setLocation(resolvedLocation ?? requestedLocation);
+					setRestaurants(results);
+					setShowFavorites(false);
+				} catch (error) {
+					if (searchId !== activeSearchIdRef.current) {
+						return;
+					}
+					console.error("Search failed", error);
+					toast.error("Search failed", {
+						description: getSearchErrorDescription(error),
+					});
 				}
-				setLocation(resolvedLocation ?? requestedLocation);
-				setRestaurants(results);
-				setShowFavorites(false);
 			})();
 		}
 	}, [searchCity, setLocation, setRestaurants, setShowFavorites]);
@@ -320,7 +346,7 @@ function RestaurantSearchPage() {
 		} catch (error) {
 			console.error("Search failed", error);
 			toast.error("Search failed", {
-				description: "Unable to fetch restaurants right now.",
+				description: getSearchErrorDescription(error),
 			});
 		} finally {
 			if (searchId === activeSearchIdRef.current) {

@@ -173,6 +173,10 @@ Backend variables:
 
 - Geoapify is the primary restaurant and location provider.
 - OSM/Overpass is the fallback when Geoapify is unavailable or returns too little usable data.
+- City/region/country searches are validated against a compact backend-only
+  location index derived from the Countries States Cities Database before
+  provider restaurant search runs. Invalid places return a clear not-found
+  response instead of being silently geocoded to an unrelated place.
 - Geoapify's primary search cap is separate from the OSM fallback cap.
 - OSM fallback is capped to the top 100 results after normalization, filtering, deduplication, and ranking so large cities do not send thousands of results to the frontend.
 - In-memory TTL caches reduce repeated provider calls:
@@ -196,9 +200,21 @@ Known MVP limitations:
 - Open-now claims are only trusted when the provider explicitly supplies open-now status.
 - Ratings/reviews can be incomplete or derived depending on provider data.
 - Free Geoapify/OSM coverage will not match paid Yelp or Google Places coverage.
+- The compact MVP location-validation index is not a full global autocomplete
+  database. It should be regenerated from the upstream Countries States Cities
+  Database before broad production use.
 - The landing preview content is sample/product-flow content, not live provider restaurant data.
 - First-date/date-night ranking and occasion modes are not implemented yet.
 - Backend favorites still benefit from stronger future snapshot persistence; the MVP uses frontend local snapshots to help rehydrate favorites across searches.
+
+## Location Validation Attribution
+
+Location validation data is derived from the
+[Countries States Cities Database](https://github.com/dr5hn/countries-states-cities-database),
+licensed under ODbL v1.0. The data is community-maintained and may contain
+errors or lag behind geopolitical/place-name changes. Mapetite uses this data
+only to validate and canonicalize city/region/country searches before provider
+restaurant lookup; it does not verify restaurant listings.
 
 ## Authentication Notes
 

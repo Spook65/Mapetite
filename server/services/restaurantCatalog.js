@@ -10,6 +10,7 @@ import {
   resolveRestaurantMenuUrl,
 } from "./restaurantMedia.js";
 import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
+import { validatePlaceInput } from "./placeValidation.js";
 
 const SEARCH_RADIUS_METERS = 3000;
 // Keep OSM fallback payloads curated and performant for MVP:
@@ -937,104 +938,40 @@ async function resolveLocation(locationInput = {}) {
     }
   }
 
-  const geoapifyLocation = await resolveGeoapifyLocation(locationInput);
+  const canonicalLocation = validatePlaceInput(locationInput);
+  const canonicalLocationInput = {
+    ...locationInput,
+    city: canonicalLocation.city,
+    state: canonicalLocation.state,
+    country: canonicalLocation.country,
+  };
+
+  const geoapifyLocation = await resolveGeoapifyLocation(canonicalLocationInput);
   if (geoapifyLocation) {
-    if (locationCacheKey) {
-      locationCache.set(locationCacheKey, geoapifyLocation, {
-        ttlMs: LOCATION_CACHE_SUCCESS_TTL_MS,
-      });
-    }
-    return geoapifyLocation;
-  }
-
-  const query = [locationInput.city, locationInput.state, locationInput.country]
-    .filter(Boolean)
-    .join(", ");
-
-  if (!query) {
-    if (locationCacheKey) {
-      locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
-        ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
-      });
-    }
-    return null;
-  }
-
-  const url = new URL("https://nominatim.openstreetmap.org/search");
-  url.searchParams.set("q", query);
-  url.searchParams.set("format", "jsonv2");
-  url.searchParams.set("addressdetails", "1");
-  url.searchParams.set("limit", "1");
-
-  try {
-    const response = await fetch(url.toString(), {
-      headers: {
-        "User-Agent": "Mapetite/1.0 (restaurant discovery)",
-        Accept: "application/json",
-      },
-    });
-
-    if (!response.ok) {
-      if (locationCacheKey) {
-        locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
-          ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
-        });
-      }
-      return null;
-    }
-
-    const data = await response.json();
-    const result = data?.[0];
-    if (!result) {
-      if (locationCacheKey) {
-        locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
-          ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
-        });
-      }
-      return null;
-    }
-
-    const address = result.address || {};
-    const latitude = Number(result.lat);
-    const longitude = Number(result.lon);
-    if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
-      if (locationCacheKey) {
-        locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
-          ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
-        });
-      }
-      return null;
-    }
-
     const resolvedLocation = {
-      city:
-        address.city ||
-        address.town ||
-        address.village ||
-        address.county ||
-        locationInput.city ||
-        "",
-      state: address.state || locationInput.state || "",
-      country: address.country || locationInput.country || "",
-      latitude,
-      longitude,
+      ...geoapifyLocation,
+      city: canonicalLocation.city,
+      state: canonicalLocation.state,
+      country: canonicalLocation.country,
+      countryCode: canonicalLocation.countryCode,
+      regionCode: canonicalLocation.regionCode,
+      timezone: canonicalLocation.timezone,
+      validationSource: canonicalLocation.source,
     };
-
     if (locationCacheKey) {
       locationCache.set(locationCacheKey, resolvedLocation, {
         ttlMs: LOCATION_CACHE_SUCCESS_TTL_MS,
       });
     }
-
     return resolvedLocation;
-  } catch {
-    if (locationCacheKey) {
-      locationCache.set(locationCacheKey, LOCATION_CACHE_MISS, {
-        ttlMs: LOCATION_CACHE_NEGATIVE_TTL_MS,
-      });
-    }
-    return null;
   }
+
+  if (locationCacheKey) {
+    locationCache.set(locationCacheKey, canonicalLocation, {
+      ttlMs: LOCATION_CACHE_SUCCESS_TTL_MS,
+    });
+  }
+  return canonicalLocation;
 }
 
 async function fetchOverpass(query) {

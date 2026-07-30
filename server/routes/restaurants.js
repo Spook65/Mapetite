@@ -5,6 +5,7 @@ import {
   searchRestaurants,
   upsertRestaurantFromSnapshot,
 } from "../services/restaurantCatalog.js";
+import { PlaceValidationError } from "../services/placeValidation.js";
 
 const router = express.Router();
 
@@ -63,6 +64,14 @@ async function handleSearch(req, res) {
     const result = await searchRestaurants(params);
     res.json(result);
   } catch (error) {
+    if (error instanceof PlaceValidationError) {
+      return res.status(error.code === "PLACE_AMBIGUOUS" ? 409 : 400).json({
+        error: error.code,
+        message: error.message,
+        suggestions: error.suggestions,
+      });
+    }
+
     console.error("[restaurants] search failed", error);
     res.status(500).json({ message: "Unable to search restaurants" });
   }
