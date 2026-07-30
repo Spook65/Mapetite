@@ -47,6 +47,7 @@ type RestaurantsSearch = {
 const INITIAL_VISIBLE_RESULTS = 36;
 const RESULTS_BATCH_SIZE = 36;
 const FAVORITE_SNAPSHOTS_STORAGE_KEY = "mapetite-favorite-snapshots-v1";
+const GEOLOCATION_TIMEOUT_MS = 10_000;
 
 function loadFavoriteSnapshotsFromStorage(): Record<string, Restaurant> {
 	if (typeof window === "undefined") return {};
@@ -198,6 +199,87 @@ function getSearchErrorTitle(error: unknown) {
 	return isExpectedPlaceValidationError(error)
 		? "Check the place"
 		: "Search failed";
+}
+
+function getCurrentPositionWithTimeout(): Promise<GeolocationPosition> {
+	if (typeof navigator === "undefined" || !navigator.geolocation) {
+		return Promise.reject(new Error("GEOLOCATION_UNSUPPORTED"));
+	}
+
+	return new Promise((resolve, reject) => {
+		let settled = false;
+		const timeoutId = window.setTimeout(() => {
+			if (settled) return;
+			settled = true;
+			reject(new Error("GEOLOCATION_TIMEOUT"));
+		}, GEOLOCATION_TIMEOUT_MS + 1_000);
+
+		navigator.geolocation.getCurrentPosition(
+			(position) => {
+				if (settled) return;
+				settled = true;
+				window.clearTimeout(timeoutId);
+				resolve(position);
+			},
+			(error) => {
+				if (settled) return;
+				settled = true;
+				window.clearTimeout(timeoutId);
+				reject(error);
+			},
+			{
+				enableHighAccuracy: false,
+				maximumAge: 60_000,
+				timeout: GEOLOCATION_TIMEOUT_MS,
+			},
+		);
+	});
+}
+
+function getLocationErrorDescription(error: unknown) {
+	const code =
+		error && typeof error === "object" && "code" in error
+			? Number((error as GeolocationPositionError).code)
+			: undefined;
+
+	if (code === 1) {
+		return "Location permission was denied. Try typing a city instead.";
+	}
+	if (code === 2) {
+		return "Your location is unavailable right now. Try typing a city instead.";
+	}
+	if (code === 3 || (error instanceof Error && error.message === "GEOLOCATION_TIMEOUT")) {
+		return "We couldn't get your location in time. Try typing a city instead.";
+	}
+	if (error instanceof Error && error.message === "GEOLOCATION_UNSUPPORTED") {
+		return "Location is not available in this browser. Try typing a city instead.";
+	}
+	if (error instanceof Error && error.message === "REVERSE_GEOCODE_FAILED") {
+		return "We couldn't turn your location into a searchable place. Try typing a city instead.";
+	}
+	if (isExpectedPlaceValidationError(error)) {
+		return "We couldn't validate your current city yet. Try typing it with region or country instead.";
+	}
+
+	return "We couldn't use your location right now. Try typing a city instead.";
+}
+
+function isExpectedLocationError(error: unknown) {
+	const code =
+		error && typeof error === "object" && "code" in error
+			? Number((error as GeolocationPositionError).code)
+			: undefined;
+
+	return (
+		code === 1 ||
+		code === 2 ||
+		code === 3 ||
+		(error instanceof Error &&
+			(error.message === "GEOLOCATION_TIMEOUT" ||
+				error.message === "GEOLOCATION_UNSUPPORTED" ||
+				error.message === "REVERSE_GEOCODE_FAILED")) ||
+		isExpectedPlaceValidationError(error)
+	);
 }
 
 function RestaurantSearchPage() {
@@ -372,51 +454,44 @@ function RestaurantSearchPage() {
 		}
 	};
 
-	const handleGetCurrentLocation = () => {
+	const handleGetCurrentLocation = async () => {
 		setIsGettingLocation(true);
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(
-				async (position) => {
-					const { latitude, longitude } = position.coords;
-					const searchId = ++activeSearchIdRef.current;
-					try {
-						const reverse = await reverseGeocode(latitude, longitude);
-						const resolved = {
-							country: reverse?.country || "",
-							state: reverse?.state || "",
-							city: reverse?.city || "Current Location",
-							latitude,
-							longitude,
-						};
-						setLocation(resolved);
-						setRestaurants([]);
-						const { restaurants: results, location: resolvedLocation } =
-							await searchRestaurants(
-								resolved,
-								Array.from(selectedCategories),
-							);
-						if (searchId !== activeSearchIdRef.current) {
-							return;
-						}
-						setLocation(resolvedLocation ?? resolved);
-						setRestaurants(results);
-						setShowFavorites(false);
-					} catch (error) {
-						console.error("Geolocation search failed", error);
-						toast.error("Unable to get nearby places");
-					} finally {
-						if (searchId === activeSearchIdRef.current) {
-							setIsGettingLocation(false);
-						}
-					}
-				},
-				(error) => {
-					alert("Unable to get your location. Please enter manually.");
-					setIsGettingLocation(false);
-				},
-			);
-		} else {
-			alert("Geolocation is not supported by your browser.");
+		const searchId = ++activeSearchIdRef.current;
+
+		try {
+			const position = await getCurrentPositionWithTimeout();
+			const { latitude, longitude } = position.coords;
+			const reverse = await reverseGeocode(latitude, longitude);
+
+			if (!reverse?.city) {
+				throw new Error("REVERSE_GEOCODE_FAILED");
+			}
+
+			const resolved = {
+				country: reverse.country || "",
+				state: reverse.state || "",
+				city: reverse.city,
+				latitude,
+				longitude,
+			};
+			setLocation(resolved);
+			setRestaurants([]);
+			const { restaurants: results, location: resolvedLocation } =
+				await searchRestaurants(resolved, Array.from(selectedCategories));
+			if (searchId !== activeSearchIdRef.current) {
+				return;
+			}
+			setLocation(resolvedLocation ?? resolved);
+			setRestaurants(results);
+			setShowFavorites(false);
+		} catch (error) {
+			if (!isExpectedLocationError(error)) {
+				console.error("Geolocation search failed", error);
+			}
+			toast.error("Unable to use location", {
+				description: getLocationErrorDescription(error),
+			});
+		} finally {
 			setIsGettingLocation(false);
 		}
 	};
