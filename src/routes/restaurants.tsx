@@ -941,11 +941,11 @@ function RestaurantSearchPage() {
 									htmlFor="state"
 									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
-									Region
+									State / Province / Region
 								</Label>
 								<Input
 									id="state"
-									placeholder="Optional region"
+									placeholder="Optional state, province, or region"
 									value={location.state}
 									onChange={(e) => updateLocation({ state: e.target.value })}
 									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
