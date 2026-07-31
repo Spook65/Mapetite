@@ -126,7 +126,8 @@ From the repo root:
 pnpm run dev      # frontend dev server
 pnpm run build    # typecheck + production frontend build
 pnpm run test     # Vitest
-pnpm run check    # typecheck + Radix Select lint check
+pnpm run check    # read-only typecheck + Radix Select lint check
+pnpm run lint:radix:fix # autofix Radix Select lint issues
 ```
 
 From `server/`:

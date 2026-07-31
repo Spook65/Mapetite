@@ -236,19 +236,12 @@ export function Layout({ children }: LayoutProps) {
 										<span className="text-sm text-[var(--mapetite-text-soft)]">
 											{firstName}
 										</span>
-										<button
-											type="button"
-											onClick={() => {
-												console.log(
-												"Profile icon clicked - future feature: upload profile picture",
-											);
-										}}
+										<div
 											className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]"
-											aria-label="User profile"
-											title="Click to change profile picture (coming soon)"
+											aria-label="Signed-in user"
 										>
 											{userInitials}
-										</button>
+										</div>
 										<Button
 											onClick={logout}
 											variant="outline"
