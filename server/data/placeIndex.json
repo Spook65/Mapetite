@@ -217,6 +217,146 @@
       "timezone": "America/Los_Angeles"
     },
     {
+      "city": "San Diego",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 32.7157,
+      "longitude": -117.1611,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "Fresno",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 36.7378,
+      "longitude": -119.7871,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "Oakland",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 37.8044,
+      "longitude": -122.2712,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "Long Beach",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 33.7701,
+      "longitude": -118.1937,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "Houston",
+      "region": "Texas",
+      "regionCode": "TX",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 29.7604,
+      "longitude": -95.3698,
+      "timezone": "America/Chicago"
+    },
+    {
+      "city": "Phoenix",
+      "region": "Arizona",
+      "regionCode": "AZ",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 33.4484,
+      "longitude": -112.074,
+      "timezone": "America/Phoenix"
+    },
+    {
+      "city": "Philadelphia",
+      "region": "Pennsylvania",
+      "regionCode": "PA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 39.9526,
+      "longitude": -75.1652,
+      "timezone": "America/New_York"
+    },
+    {
+      "city": "San Antonio",
+      "region": "Texas",
+      "regionCode": "TX",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 29.4241,
+      "longitude": -98.4936,
+      "timezone": "America/Chicago"
+    },
+    {
+      "city": "Dallas",
+      "region": "Texas",
+      "regionCode": "TX",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 32.7767,
+      "longitude": -96.797,
+      "timezone": "America/Chicago"
+    },
+    {
+      "city": "Austin",
+      "region": "Texas",
+      "regionCode": "TX",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 30.2672,
+      "longitude": -97.7431,
+      "timezone": "America/Chicago"
+    },
+    {
+      "city": "Seattle",
+      "region": "Washington",
+      "regionCode": "WA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 47.6062,
+      "longitude": -122.3321,
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "city": "Boston",
+      "region": "Massachusetts",
+      "regionCode": "MA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 42.3601,
+      "longitude": -71.0589,
+      "timezone": "America/New_York"
+    },
+    {
+      "city": "Miami",
+      "region": "Florida",
+      "regionCode": "FL",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 25.7617,
+      "longitude": -80.1918,
+      "timezone": "America/New_York"
+    },
+    {
+      "city": "Las Vegas",
+      "region": "Nevada",
+      "regionCode": "NV",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 36.1716,
+      "longitude": -115.1391,
+      "timezone": "America/Los_Angeles"
+    },
+    {
       "city": "Toronto",
       "region": "Ontario",
       "regionCode": "ON",
@@ -227,6 +367,16 @@
       "timezone": "America/Toronto"
     },
     {
+      "city": "Vancouver",
+      "region": "British Columbia",
+      "regionCode": "BC",
+      "country": "Canada",
+      "countryCode": "CA",
+      "latitude": 49.2827,
+      "longitude": -123.1207,
+      "timezone": "America/Vancouver"
+    },
+    {
       "city": "Dubai",
       "region": "Dubai",
       "regionCode": "DU",
@@ -235,6 +385,26 @@
       "latitude": 25.2048,
       "longitude": 55.2708,
       "timezone": "Asia/Dubai"
+    },
+    {
+      "city": "Singapore",
+      "region": "Singapore",
+      "regionCode": "SG",
+      "country": "Singapore",
+      "countryCode": "SG",
+      "latitude": 1.3521,
+      "longitude": 103.8198,
+      "timezone": "Asia/Singapore"
+    },
+    {
+      "city": "Sydney",
+      "region": "New South Wales",
+      "regionCode": "NSW",
+      "country": "Australia",
+      "countryCode": "AU",
+      "latitude": -33.8688,
+      "longitude": 151.2093,
+      "timezone": "Australia/Sydney"
     },
     {
       "city": "Portland",

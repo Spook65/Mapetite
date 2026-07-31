@@ -60,15 +60,20 @@ function normalizeRegionToken(value) {
   const normalized = normalizePlaceToken(value);
   const aliases = {
     ca: "california",
+    az: "arizona",
+    fl: "florida",
     idf: "ile de france",
     il: "illinois",
     ma: "massachusetts",
     me: "maine",
     mo: "missouri",
+    nv: "nevada",
     ny: "new york",
     on: "ontario",
     or: "oregon",
+    pa: "pennsylvania",
     tx: "texas",
+    wa: "washington",
   };
 
   return aliases[normalized] || normalized;

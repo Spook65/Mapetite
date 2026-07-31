@@ -216,6 +216,15 @@ errors or lag behind geopolitical/place-name changes. Mapetite uses this data
 only to validate and canonicalize city/region/country searches before provider
 restaurant lookup; it does not verify restaurant listings.
 
+The current `server/data/placeIndex.json` file is a compact backend-only MVP
+index, not a full copy of the upstream database. Keep additions limited to
+common demo/search targets, preserve ambiguous city variants, and verify
+valid/invalid/ambiguous cases after edits. A future production pass should
+replace manual edits with a repeatable import script that reads upstream
+Countries States Cities data, keeps only city/region/country/code/coordinate
+fields needed for validation, and writes a compact backend index without
+shipping the full dataset to the frontend.
+
 ## Authentication Notes
 
 Local development uses the Vite mock API plugin for registration, login, profile, and favorite flows. Deployed portfolio demos can use the Express backend's memory-mode demo auth routes by setting `MAPETITE_STORAGE_MODE=memory` on the backend and `VITE_API_BASE_PATH` on Vercel.
