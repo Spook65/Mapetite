@@ -926,19 +926,10 @@ function RestaurantSearchPage() {
 									Start with a city. Add region or country when the place name is
 									shared.
 								</p>
-								{hasLocationInput ? (
-									<button
-										type="button"
-										onClick={handleClearLocation}
-										className="mt-3 rounded-full border border-[rgba(255,236,220,0.12)] px-3 py-1 text-xs font-medium text-[rgba(245,233,222,0.58)] transition-colors hover:border-[rgba(213,154,104,0.35)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)]"
-									>
-										Clear all
-									</button>
-								) : null}
 							</div>
 						</div>
 
-						<div className="mx-auto grid w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto_auto]">
+						<div className="mx-auto grid w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto]">
 							<div className="grid gap-2">
 								<Label
 									htmlFor="city"
@@ -987,26 +978,38 @@ function RestaurantSearchPage() {
 								/>
 							</div>
 
-							<Button
-								type="button"
-								onClick={handleSearch}
-								disabled={isSearching}
-								className="mapetite-accent-button h-12 w-full self-end justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none md:h-[52px] min-[1261px]:w-auto"
-							>
-								<Search className="mr-2 size-4" />
-								{isSearching ? "Searching..." : "Search restaurants"}
-							</Button>
+							<div className="grid gap-2 min-[1261px]:grid-cols-2 min-[1261px]:items-end">
+								<Button
+									type="button"
+									onClick={handleSearch}
+									disabled={isSearching}
+									className="mapetite-accent-button h-12 w-full justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none md:h-[52px] min-[1261px]:w-auto"
+								>
+									<Search className="mr-2 size-4" />
+									{isSearching ? "Searching..." : "Search restaurants"}
+								</Button>
 
-							<Button
-								type="button"
-								variant="outline"
-								onClick={handleGetCurrentLocation}
-								disabled={isGettingLocation}
-								className="mapetite-quiet-button h-12 w-full self-end justify-center rounded-[10px] px-5 text-[15px] shadow-none md:h-[52px] min-[1261px]:w-auto"
-							>
-								<Navigation className="mr-2 size-4" />
-								{isGettingLocation ? "Locating..." : "Use My Location"}
-							</Button>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={handleGetCurrentLocation}
+									disabled={isGettingLocation}
+									className="mapetite-quiet-button h-12 w-full justify-center rounded-[10px] px-5 text-[15px] shadow-none md:h-[52px] min-[1261px]:w-auto"
+								>
+									<Navigation className="mr-2 size-4" />
+									{isGettingLocation ? "Locating..." : "Use My Location"}
+								</Button>
+
+								{hasLocationInput ? (
+									<button
+										type="button"
+										onClick={handleClearLocation}
+										className="justify-self-center rounded-full border border-[rgba(255,236,220,0.12)] px-3 py-1 text-xs font-medium text-[rgba(245,233,222,0.58)] transition-colors hover:border-[rgba(213,154,104,0.35)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] min-[1261px]:col-span-2"
+									>
+										Clear all
+									</button>
+								) : null}
+							</div>
 						</div>
 					</section>
 
