@@ -3,12 +3,10 @@ import {
 	RestaurantSearchApiError,
 	searchRestaurantsApi,
 } from "@/lib/api/restaurants";
-import { fetchRestaurantsNearby } from "@/lib/api/overpass";
-import {
-	resolveCityLocation as nominatimResolveCity,
-	searchCities,
-} from "@/lib/api/nominatim";
 import type { LocationState, Restaurant } from "@/store/restaurant-search-store";
+
+const SEARCH_SERVICE_UNAVAILABLE_MESSAGE =
+	"We couldn't reach the restaurant search service. Please try again in a moment.";
 
 /**
  * Helper function to calculate distance between two coordinates (in miles)
@@ -62,7 +60,22 @@ export async function searchRestaurants(
 			throw error;
 		}
 
-		console.warn("Backend restaurant search failed; falling back to local OSM.", error);
+		if (!import.meta.env.DEV) {
+			throw new RestaurantSearchApiError(
+				SEARCH_SERVICE_UNAVAILABLE_MESSAGE,
+				"SEARCH_SERVICE_UNAVAILABLE",
+			);
+		}
+
+		console.warn(
+			"Backend restaurant search failed; using development-only local OSM fallback.",
+			error,
+		);
+		const { fetchRestaurantsNearby } = await import("@/lib/api/overpass");
+		const { resolveCityLocation: nominatimResolveCity } = await import(
+			"@/lib/api/nominatim"
+		);
+
 		if (location.latitude === undefined || location.longitude === undefined) {
 			const resolved = await nominatimResolveCity(
 				[location.city, location.state, location.country]
@@ -132,8 +145,8 @@ export async function getRestaurantById(
 export async function findLocationForCity(
 	cityName: string,
 ): Promise<LocationState | null> {
+	const { resolveCityLocation: nominatimResolveCity } = await import(
+		"@/lib/api/nominatim"
+	);
 	return nominatimResolveCity(cityName);
 }
-
-export { resolveCityLocation } from "@/lib/api/nominatim";
-export { searchCities } from "@/lib/api/nominatim";
