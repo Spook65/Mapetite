@@ -3,7 +3,6 @@ import {
   getRestaurantById,
   listKnownRestaurants,
   searchRestaurants,
-  upsertRestaurantFromSnapshot,
 } from "../services/restaurantCatalog.js";
 import { PlaceValidationError } from "../services/placeValidation.js";
 
@@ -107,15 +106,6 @@ router.get("/", async (req, res) => {
   }
 
   res.json({ restaurants: listKnownRestaurants() });
-});
-
-router.post("/", async (req, res) => {
-  try {
-    const restaurant = await upsertRestaurantFromSnapshot(req.body);
-    res.status(201).json({ restaurant });
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
 });
 
 export default router;
