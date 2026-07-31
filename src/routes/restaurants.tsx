@@ -1004,13 +1004,31 @@ function RestaurantSearchPage() {
 									<button
 										type="button"
 										onClick={handleClearLocation}
-										className="justify-self-center rounded-full border border-[rgba(255,236,220,0.12)] px-3 py-1 text-xs font-medium text-[rgba(245,233,222,0.58)] transition-colors hover:border-[rgba(213,154,104,0.35)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] min-[1261px]:absolute min-[1261px]:top-[calc(100%+0.5rem)] min-[1261px]:left-1/2 min-[1261px]:-translate-x-1/2"
+										className="justify-self-center rounded-full border border-[rgba(255,236,220,0.12)] px-3 py-1 text-xs font-medium text-[rgba(245,233,222,0.58)] transition-colors hover:border-[rgba(213,154,104,0.35)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] min-[1261px]:hidden"
 									>
 										Clear all
 									</button>
 								) : null}
 							</div>
 						</div>
+
+						{hasLocationInput ? (
+							<div className="hidden min-[1261px]:flex min-[1261px]:justify-end">
+								<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-1.5 text-xs text-[rgba(245,233,222,0.58)]">
+									<span>Location fields active</span>
+									<span aria-hidden="true" className="text-[rgba(245,233,222,0.28)]">
+										·
+									</span>
+									<button
+										type="button"
+										onClick={handleClearLocation}
+										className="font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:text-[var(--mapetite-text)]"
+									>
+										Clear all
+									</button>
+								</div>
+							</div>
+						) : null}
 					</section>
 
 					<section className="mapetite-panel-soft mb-4 grid gap-4 p-4 md:p-5">
