@@ -1001,13 +1001,22 @@ function RestaurantSearchPage() {
 								</Button>
 
 								{hasLocationInput ? (
-									<button
-										type="button"
-										onClick={handleClearLocation}
-										className="justify-self-center rounded-full border border-[rgba(255,236,220,0.12)] px-3 py-1 text-xs font-medium text-[rgba(245,233,222,0.58)] transition-colors hover:border-[rgba(213,154,104,0.35)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] min-[1261px]:hidden"
-									>
-										Clear all
-									</button>
+									<div className="inline-flex justify-self-center rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-1.5 text-xs text-[rgba(245,233,222,0.58)] min-[1261px]:hidden">
+										<span>Location fields active</span>
+										<span
+											aria-hidden="true"
+											className="px-2 text-[rgba(245,233,222,0.28)]"
+										>
+											·
+										</span>
+										<button
+											type="button"
+											onClick={handleClearLocation}
+											className="font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:text-[var(--mapetite-text)]"
+										>
+											Clear all
+										</button>
+									</div>
 								) : null}
 							</div>
 						</div>
