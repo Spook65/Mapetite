@@ -978,7 +978,7 @@ function RestaurantSearchPage() {
 								/>
 							</div>
 
-							<div className="grid gap-2 min-[1261px]:grid-cols-2 min-[1261px]:items-end">
+							<div className="relative grid gap-2 min-[1261px]:grid-cols-2 min-[1261px]:items-end">
 								<Button
 									type="button"
 									onClick={handleSearch}
@@ -1004,7 +1004,7 @@ function RestaurantSearchPage() {
 									<button
 										type="button"
 										onClick={handleClearLocation}
-										className="justify-self-center rounded-full border border-[rgba(255,236,220,0.12)] px-3 py-1 text-xs font-medium text-[rgba(245,233,222,0.58)] transition-colors hover:border-[rgba(213,154,104,0.35)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] min-[1261px]:col-span-2"
+										className="justify-self-center rounded-full border border-[rgba(255,236,220,0.12)] px-3 py-1 text-xs font-medium text-[rgba(245,233,222,0.58)] transition-colors hover:border-[rgba(213,154,104,0.35)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] min-[1261px]:absolute min-[1261px]:top-[calc(100%+0.5rem)] min-[1261px]:left-1/2 min-[1261px]:-translate-x-1/2"
 									>
 										Clear all
 									</button>
