@@ -88,10 +88,6 @@ function buildGalleryAttributions(restaurant: Restaurant) {
 	return [];
 }
 
-function isFallbackArtwork(url?: string | null) {
-	return typeof url === "string" && url.startsWith("data:image/svg+xml");
-}
-
 function buildMapEmbedUrl(restaurant: Restaurant) {
 	const delta = 0.01;
 	const bbox = [
@@ -285,9 +281,6 @@ function RestaurantDetailPage() {
 	const fullAddress = buildFullAddress(restaurant);
 	const galleryImages = buildGalleryImages(restaurant);
 	const galleryAttributions = buildGalleryAttributions(restaurant);
-	const fallbackArtworkUrl = isFallbackArtwork(restaurant.photoUrl)
-		? restaurant.photoUrl
-		: null;
 	const hasVerifiedGalleryImages = galleryImages.length > 0;
 	const hasHours = !!restaurant.hours;
 	const hasExplicitOpenStatus =
@@ -344,14 +337,14 @@ function RestaurantDetailPage() {
 				{
 					badge: "Photo coverage unavailable",
 					label: "Fallback artwork",
-					title: `Verified venue photos are not available for ${restaurant.name} yet.`,
+					title: "Verified venue photos are not available yet",
 					copy:
-						"Use the address, route, hours, and review details to decide while photo coverage is still limited.",
+						"Use the address, route, hours, reviews, and cuisine details to decide while photo coverage is limited.",
 					left:
 						locationLine || restaurant.categories[0] || "Restaurant detail",
 					right: hasMapCoordinates ? "Directions available" : "Address available",
 					summary: "A single fallback state instead of invented gallery coverage.",
-					image: fallbackArtworkUrl,
+					image: null,
 					attribution: [] as string[],
 				},
 		  ];
@@ -529,8 +522,9 @@ function RestaurantDetailPage() {
 												Gallery
 											</h2>
 											<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
-												Use the space, plating, and pace of service to decide whether it
-												matches the night you have in mind.
+												{hasVerifiedGalleryImages
+													? "Use the space, plating, and pace of service to decide whether it matches the night you have in mind."
+													: "Photo coverage is limited here, so Mapetite keeps the fallback honest instead of inventing a gallery."}
 											</p>
 										</div>
 									</div>
@@ -545,7 +539,10 @@ function RestaurantDetailPage() {
 									>
 										<div
 											className={cn(
-												"relative grid min-h-[420px] grid-rows-[auto_1fr_auto] gap-[14px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] p-[22px]",
+												"relative grid grid-rows-[auto_1fr_auto] gap-[14px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] p-[22px]",
+												hasVerifiedGalleryImages
+													? "min-h-[420px]"
+													: "min-h-[280px] sm:min-h-[320px]",
 												activeGalleryView.image
 													? "bg-black/10"
 													: "bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.26),rgba(180,108,67,0.08)_38%,rgba(17,13,11,0.2)_100%)]",
