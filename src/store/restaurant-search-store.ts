@@ -78,6 +78,12 @@ export interface Restaurant {
 	phone?: string;
 	website?: string;
 	menuUrl?: string;
+	cuisineHints?: {
+		source: "category_mapping";
+		label: string;
+		hints: string[];
+		disclaimer: string;
+	};
 	amenities?: string[];
 	paymentMethods?: string[];
 	source?: string;

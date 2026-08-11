@@ -177,6 +177,27 @@ const LOW_CONFIDENCE_NAMES = new Set([
   "food court",
 ]);
 
+const CUISINE_HINTS_BY_CATEGORY = {
+  bakery: ["pastries", "bread", "coffee"],
+  burger: ["burgers", "fries", "shakes"],
+  cafe: ["coffee", "pastries", "sandwiches"],
+  chinese: ["noodles", "dumplings", "rice dishes"],
+  dessert: ["ice cream", "cakes", "sweets"],
+  fast_food: ["burgers", "fries", "quick bites"],
+  indian: ["curry", "biryani", "naan"],
+  italian: ["pasta", "pizza", "salads"],
+  japanese: ["sushi", "ramen", "donburi"],
+  korean: ["barbecue", "bibimbap", "noodles"],
+  mediterranean: ["gyros", "hummus", "grilled plates"],
+  mexican: ["tacos", "burritos", "quesadillas"],
+  pizza: ["pizza", "salads", "sides"],
+  ramen: ["ramen", "gyoza", "rice bowls"],
+  seafood: ["fish", "shrimp", "chowder"],
+  sushi: ["sushi", "sashimi", "miso soup"],
+  thai: ["pad thai", "curries", "noodles"],
+  vietnamese: ["pho", "banh mi", "rice plates"],
+};
+
 function normalizeFoodCategoryLabel(value) {
   const key = String(value)
     .trim()
@@ -185,6 +206,32 @@ function normalizeFoodCategoryLabel(value) {
     .replace(/^_+|_+$/g, "");
 
   return FOOD_CATEGORY_LABELS[key] || titleCase(key);
+}
+
+function normalizeCuisineHintKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function buildCuisineHints(categories = []) {
+  for (const category of categories) {
+    const key = normalizeCuisineHintKey(category);
+    const hints = CUISINE_HINTS_BY_CATEGORY[key];
+    if (!hints) continue;
+
+    return {
+      source: "category_mapping",
+      label: "Cuisine hints",
+      hints,
+      disclaimer: "Based on category data, not a verified menu.",
+    };
+  }
+
+  return undefined;
 }
 
 function normalizeRankingToken(value) {
@@ -584,6 +631,7 @@ function mergeRestaurantRecords(primary, secondary) {
   if (!merged.website && secondary.website) merged.website = secondary.website;
   if (!merged.phone && secondary.phone) merged.phone = secondary.phone;
   if (!merged.menuUrl && secondary.menuUrl) merged.menuUrl = secondary.menuUrl;
+  merged.cuisineHints = buildCuisineHints(merged.categories) || merged.cuisineHints;
   if (!merged.hours && secondary.hours) merged.hours = secondary.hours;
   if (!merged.hoursSource && secondary.hoursSource) merged.hoursSource = secondary.hoursSource;
   if (!merged.geoapifyPlaceId && secondary.geoapifyPlaceId) {
@@ -892,6 +940,7 @@ function normalizeElement(element, locationContext = {}) {
     galleryImageUrls: [],
     chef: buildChefInfo(categories, name, locationContext),
     signatureDishes: buildSignatureDishes(categories, name),
+    cuisineHints: buildCuisineHints(categories),
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
     amenities: [
       tags.wifi === "yes" ? "Wi-Fi" : null,
@@ -1131,6 +1180,7 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
     galleryPhotoAttributions: [],
     chef: buildChefInfo(categories, `${city} ${categoryLabel} ${noun}`, locationContext),
     signatureDishes: buildSignatureDishes(categories, `${categoryLabel} ${noun}`),
+    cuisineHints: buildCuisineHints(categories),
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
     amenities: ["Wi-Fi", "Outdoor Seating"],
     paymentMethods: ["Cards", "Cash"],

@@ -72,6 +72,27 @@ const FOOD_CATEGORY_LABELS = {
 
 const SECONDARY_CATEGORY_LABELS = new Set(["Catering", "Restaurant", "Dining"]);
 
+const CUISINE_HINTS_BY_CATEGORY = {
+  bakery: ["pastries", "bread", "coffee"],
+  burger: ["burgers", "fries", "shakes"],
+  cafe: ["coffee", "pastries", "sandwiches"],
+  chinese: ["noodles", "dumplings", "rice dishes"],
+  dessert: ["ice cream", "cakes", "sweets"],
+  fast_food: ["burgers", "fries", "quick bites"],
+  indian: ["curry", "biryani", "naan"],
+  italian: ["pasta", "pizza", "salads"],
+  japanese: ["sushi", "ramen", "donburi"],
+  korean: ["barbecue", "bibimbap", "noodles"],
+  mediterranean: ["gyros", "hummus", "grilled plates"],
+  mexican: ["tacos", "burritos", "quesadillas"],
+  pizza: ["pizza", "salads", "sides"],
+  ramen: ["ramen", "gyoza", "rice bowls"],
+  seafood: ["fish", "shrimp", "chowder"],
+  sushi: ["sushi", "sashimi", "miso soup"],
+  thai: ["pad thai", "curries", "noodles"],
+  vietnamese: ["pho", "banh mi", "rice plates"],
+};
+
 const FOOD_NAME_KEYWORDS = [
   "bakery",
   "bar",
@@ -156,6 +177,32 @@ function normalizeCategoryToken(value) {
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
+}
+
+function normalizeCuisineHintKey(value) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+function buildCuisineHints(categories = []) {
+  for (const category of categories) {
+    const key = normalizeCuisineHintKey(category);
+    const hints = CUISINE_HINTS_BY_CATEGORY[key];
+    if (!hints) continue;
+
+    return {
+      source: "category_mapping",
+      label: "Cuisine hints",
+      hints,
+      disclaimer: "Based on category data, not a verified menu.",
+    };
+  }
+
+  return undefined;
 }
 
 function extractCategoryTokens(value) {
@@ -751,6 +798,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     galleryPhotoAttributions: [],
     chef: buildChefInfo(categories, name, locationContext),
     signatureDishes: buildSignatureDishes(categories, name),
+    cuisineHints: buildCuisineHints(categories),
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
     phone: normalizePhone(props.phone || props.phone_number || props.contact?.phone),
     website: normalizeWebsite(props.website || props.website_uri),

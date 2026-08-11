@@ -302,6 +302,7 @@ function RestaurantDetailPage() {
 	const hasPlanningActions = hasMenuUrl || hasWebsite || hasPhone;
 	const hasAmenities = !!restaurant.amenities?.length;
 	const hasPaymentMethods = !!restaurant.paymentMethods?.length;
+	const hasCuisineHints = !!restaurant.cuisineHints?.hints?.length;
 	const formattedHoursRange = formatHoursRange(restaurant.hours);
 	const ratingBreakdownRows = hasRatingBreakdown
 		? ([5, 4, 3, 2, 1] as const).map((score) => ({
@@ -694,6 +695,32 @@ function RestaurantDetailPage() {
 											</p>
 										</div>
 									</div>
+
+									{hasCuisineHints && restaurant.cuisineHints ? (
+										<div className="grid gap-3 rounded-[14px] border border-[rgba(213,154,104,0.18)] bg-[linear-gradient(180deg,rgba(255,248,242,0.035),rgba(255,248,242,0.018)),linear-gradient(145deg,rgba(213,154,104,0.12),rgba(180,108,67,0.025))] p-4 text-center md:text-left">
+											<div className="grid gap-1">
+												<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
+													{restaurant.cuisineHints.label}
+												</small>
+												<strong className="text-base font-semibold text-[var(--mapetite-text)]">
+													Often associated with this cuisine
+												</strong>
+											</div>
+											<div className="flex flex-wrap justify-center gap-2 md:justify-start">
+												{restaurant.cuisineHints.hints.map((hint) => (
+													<span
+														key={hint}
+														className="inline-flex items-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] px-[11px] py-2 text-[13px] text-[var(--mapetite-text)]"
+													>
+														{hint}
+													</span>
+												))}
+											</div>
+											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+												{restaurant.cuisineHints.disclaimer}
+											</p>
+										</div>
+									) : null}
 
 									{contextTags.length > 0 ? (
 										<div className="flex flex-wrap justify-center gap-2 md:justify-start">

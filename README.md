@@ -196,6 +196,8 @@ Known MVP limitations:
 - Some restaurants may lack website, phone, menu, hours, photos, or review depth.
 - Fallback artwork is used when verified venue photos are unavailable.
 - Menu links appear only when a reliable `menuUrl` is available.
+- Cuisine hints are generated from normalized cuisine/category labels. They are
+  not verified restaurant menu items.
 - Website and call actions appear only when data is available.
 - Hours are displayed when provider data exists.
 - Open-now claims are only trusted when the provider explicitly supplies open-now status.
