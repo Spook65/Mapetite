@@ -559,7 +559,12 @@ function RestaurantDetailPage() {
 															? `${restaurant.name} image ${selectedImageIndex + 1}`
 															: `${restaurant.name} fallback artwork`
 													}
-													className="absolute inset-0 h-full w-full object-cover"
+													className={cn(
+														"absolute inset-0 h-full w-full",
+														hasVerifiedGalleryImages
+															? "object-cover"
+															: "object-contain p-4 opacity-95 sm:p-6",
+													)}
 													loading="lazy"
 													referrerPolicy="no-referrer"
 												/>
