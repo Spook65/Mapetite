@@ -696,6 +696,31 @@ function RestaurantDetailPage() {
 										</div>
 									</div>
 
+									{hasMenuUrl ? (
+										<div className="grid gap-3 rounded-[14px] border border-[rgba(213,154,104,0.18)] bg-[linear-gradient(180deg,rgba(255,248,242,0.035),rgba(255,248,242,0.018)),linear-gradient(145deg,rgba(213,154,104,0.12),rgba(180,108,67,0.025))] p-4 text-center md:text-left">
+											<div className="grid gap-1">
+												<small className="text-[12px] uppercase tracking-[0.12em] text-[rgba(245,233,222,0.46)]">
+													Menu available
+												</small>
+												<strong className="text-base font-semibold text-[var(--mapetite-text)]">
+													Real menu link found
+												</strong>
+											</div>
+											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+												This link comes from provider/open-data menu fields. Restaurant coverage may vary.
+											</p>
+											<a
+												href={restaurant.menuUrl}
+												target="_blank"
+												rel="noreferrer"
+												className="inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] px-4 py-2 text-sm font-semibold text-[var(--mapetite-text)] transition-colors hover:border-[rgba(213,154,104,0.44)] hover:bg-[rgba(213,154,104,0.18)] md:justify-self-start"
+											>
+												<ExternalLink className="size-4" />
+												View menu
+											</a>
+										</div>
+									) : null}
+
 									{hasCuisineHints && restaurant.cuisineHints ? (
 										<div className="grid gap-3 rounded-[14px] border border-[rgba(213,154,104,0.18)] bg-[linear-gradient(180deg,rgba(255,248,242,0.035),rgba(255,248,242,0.018)),linear-gradient(145deg,rgba(213,154,104,0.12),rgba(180,108,67,0.025))] p-4 text-center md:text-left">
 											<div className="grid gap-1">

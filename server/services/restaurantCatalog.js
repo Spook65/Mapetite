@@ -7,7 +7,6 @@ import {
 import {
   buildRestaurantArtworkUrl,
   resolveRestaurantMedia,
-  resolveRestaurantMenuUrl,
 } from "./restaurantMedia.js";
 import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
 import { validatePlaceInput } from "./placeValidation.js";
@@ -107,9 +106,28 @@ function normalizePhone(value) {
 function normalizeMenuUrl(value, baseWebsite = "") {
   const raw = String(value || "").trim();
   if (!raw) return "";
+  if (/^(javascript|data|mailto|tel):/i.test(raw)) return "";
+
+  let candidate = raw;
+  if (!/^https?:\/\//i.test(raw)) {
+    if (!raw.startsWith("/") || !baseWebsite) {
+      return "";
+    }
+
+    const normalizedBase = normalizeWebsite(baseWebsite);
+    if (!normalizedBase) {
+      return "";
+    }
+
+    try {
+      candidate = new URL(raw, normalizedBase).toString();
+    } catch {
+      return "";
+    }
+  }
 
   try {
-    const parsed = new URL(raw, baseWebsite || undefined);
+    const parsed = new URL(candidate);
     if (!["http:", "https:"].includes(parsed.protocol)) {
       return "";
     }
@@ -117,6 +135,18 @@ function normalizeMenuUrl(value, baseWebsite = "") {
   } catch {
     return "";
   }
+}
+
+function extractMenuUrlFromOpenDataFields(tags = {}) {
+  const baseWebsite = tags.website || tags["contact:website"] || tags["website"] || "";
+
+  return (
+    normalizeMenuUrl(tags["website:menu"], baseWebsite) ||
+    normalizeMenuUrl(tags["contact:menu"], baseWebsite) ||
+    normalizeMenuUrl(tags.menu, baseWebsite) ||
+    normalizeMenuUrl(tags["url:menu"], baseWebsite) ||
+    ""
+  );
 }
 
 function titleCase(value) {
@@ -955,10 +985,7 @@ function normalizeElement(element, locationContext = {}) {
     ].filter(Boolean),
     phone: normalizePhone(tags.phone || tags["contact:phone"] || tags["contact:mobile"] || ""),
     website: normalizeWebsite(tags.website || tags["contact:website"] || tags["website"] || ""),
-    menuUrl: normalizeMenuUrl(
-      tags["website:menu"] || tags["contact:menu"] || tags.menu || "",
-      tags.website || tags["contact:website"] || tags["website"] || "",
-    ),
+    menuUrl: extractMenuUrlFromOpenDataFields(tags),
     source: "osm",
   };
 
@@ -1231,26 +1258,6 @@ async function ensureRestaurantMedia(restaurant) {
   return restaurant;
 }
 
-async function ensureRestaurantMenu(restaurant) {
-  if (!restaurant || restaurant.source === "demo") {
-    return restaurant;
-  }
-
-  if (restaurant.menuUrl || !restaurant.website) {
-    return restaurant;
-  }
-
-  const menuUrl = await resolveRestaurantMenuUrl({
-    website: restaurant.website,
-  });
-
-  if (menuUrl) {
-    restaurant.menuUrl = menuUrl;
-  }
-
-  return restaurant;
-}
-
 async function enrichSearchRestaurants(restaurants = [], limit = 16) {
   if (restaurants.length === 0) {
     return restaurants;
@@ -1500,7 +1507,6 @@ export async function getRestaurantById(restaurantId) {
   if (cached) {
     const { cachedAt, ...rest } = cached;
     const enriched = await ensureRestaurantMedia(rest);
-    await ensureRestaurantMenu(enriched);
     rememberRestaurants([enriched]);
     return enriched;
   }
@@ -1511,7 +1517,6 @@ export async function getRestaurantById(restaurantId) {
     );
     if (geoapifyRestaurant) {
       const enriched = await ensureRestaurantMedia(geoapifyRestaurant);
-      await ensureRestaurantMenu(enriched);
       rememberRestaurants([enriched]);
       return enriched;
     }
@@ -1540,7 +1545,6 @@ export async function getRestaurantById(restaurantId) {
   }
 
   const enriched = await ensureRestaurantMedia(restaurant);
-  await ensureRestaurantMenu(enriched);
 
   rememberRestaurants([enriched]);
   return enriched;

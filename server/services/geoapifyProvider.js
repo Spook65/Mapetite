@@ -159,9 +159,28 @@ function normalizePhone(value) {
 function normalizeMenuUrl(value, baseWebsite = "") {
   const raw = String(value || "").trim();
   if (!raw) return "";
+  if (/^(javascript|data|mailto|tel):/i.test(raw)) return "";
+
+  let candidate = raw;
+  if (!/^https?:\/\//i.test(raw)) {
+    if (!raw.startsWith("/") || !baseWebsite) {
+      return "";
+    }
+
+    const normalizedBase = normalizeWebsite(baseWebsite);
+    if (!normalizedBase) {
+      return "";
+    }
+
+    try {
+      candidate = new URL(raw, normalizedBase).toString();
+    } catch {
+      return "";
+    }
+  }
 
   try {
-    const parsed = new URL(raw, baseWebsite || undefined);
+    const parsed = new URL(candidate);
     if (!["http:", "https:"].includes(parsed.protocol)) {
       return "";
     }
@@ -169,6 +188,29 @@ function normalizeMenuUrl(value, baseWebsite = "") {
   } catch {
     return "";
   }
+}
+
+function extractGeoapifyMenuUrl(props = {}) {
+  const raw = props.datasource?.raw || props.raw || {};
+  const baseWebsite =
+    props.website ||
+    props.website_uri ||
+    raw.website ||
+    raw["contact:website"] ||
+    "";
+
+  return (
+    normalizeMenuUrl(props.menu_url, baseWebsite) ||
+    normalizeMenuUrl(props.menu, baseWebsite) ||
+    normalizeMenuUrl(props.website_menu, baseWebsite) ||
+    normalizeMenuUrl(props["website:menu"], baseWebsite) ||
+    normalizeMenuUrl(props["contact:menu"], baseWebsite) ||
+    normalizeMenuUrl(raw["website:menu"], baseWebsite) ||
+    normalizeMenuUrl(raw["contact:menu"], baseWebsite) ||
+    normalizeMenuUrl(raw.menu, baseWebsite) ||
+    normalizeMenuUrl(raw["url:menu"], baseWebsite) ||
+    ""
+  );
 }
 
 function normalizeCategoryToken(value) {
@@ -802,14 +844,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
     phone: normalizePhone(props.phone || props.phone_number || props.contact?.phone),
     website: normalizeWebsite(props.website || props.website_uri),
-    menuUrl: normalizeMenuUrl(
-      props.menu_url ||
-        props.menu ||
-        props.website_menu ||
-        props["website:menu"] ||
-        props["contact:menu"],
-      props.website || props.website_uri || "",
-    ),
+    menuUrl: extractGeoapifyMenuUrl(props),
     amenities: [
       props.wifi === "yes" ? "Wi-Fi" : null,
       props.outdoor_seating === "yes" ? "Outdoor Seating" : null,
