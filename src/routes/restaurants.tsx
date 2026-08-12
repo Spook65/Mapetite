@@ -137,6 +137,10 @@ function getPreviewImage(restaurant: Restaurant) {
 	return restaurant.photoUrl ?? restaurant.galleryImageUrls?.[0] ?? null;
 }
 
+function getSelectedPreviewImage(restaurant: Restaurant) {
+	return restaurant.galleryImageUrls?.[0] ?? null;
+}
+
 function getRestaurantInitials(restaurant: Restaurant) {
 	return restaurant.name
 		.split(/\s+/)
@@ -1734,10 +1738,10 @@ function RestaurantSearchPage() {
 											</h2>
 
 											<div className="grid h-[220px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)]">
-												{getPreviewImage(selectedRestaurant) ? (
+												{getSelectedPreviewImage(selectedRestaurant) ? (
 													<div className="relative h-full">
 														<img
-															src={getPreviewImage(selectedRestaurant) ?? ""}
+															src={getSelectedPreviewImage(selectedRestaurant) ?? ""}
 															alt={selectedRestaurant.name}
 															className="absolute inset-0 h-full w-full object-cover"
 															referrerPolicy="no-referrer"
