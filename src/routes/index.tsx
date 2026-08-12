@@ -1,6 +1,6 @@
 import { LogInModal } from "@/components/auth/LogInModal";
-import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { SignUpModal } from "@/components/auth/SignUpModal";
+import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { cn } from "@/lib/utils";
@@ -26,46 +26,30 @@ const cityStarts = [
 		key: "tokyo",
 		name: "Tokyo",
 		country: "Japan",
-		stageTag: "Example flow",
-		stageNote:
-			"A sample flow for comparing compact rooms, counter formats, and quieter plans.",
+		tone: "Counter dining, ramen, izakaya",
 		summary:
-			"Begin here when the night leans toward compact dining rooms, quieter service, and a shortlist that narrows quickly.",
-		focusTitle: "Tokyo keeps the shortlist tighter from the first result.",
-		focusSubtitle: "Counter dining · ramen · izakaya",
-		bestFor: "Counter dining and compact shortlist decisions.",
-		shortlistMood: "Compact, precise, and easy to narrow.",
-		naturalNextMove: "Open details when one room feels worth the trip.",
-		heroTitle: "Counter dining, ramen, izakaya",
-		shortlistLabel: "Example shortlist",
-		tags: ["Omakase", "Ramen", "Izakaya"],
+			"Compact rooms, sharper route decisions, and a shortlist that narrows quickly.",
 		restaurants: [
 			{
 				name: "Counter dining",
-				subtitle: "Counter dining · Shinjuku",
+				subtitle: "Omakase · Shinjuku",
 				signal: "Focused",
-				detail:
-					"A sample decision card for comparing pacing, room size, and neighborhood fit.",
-				imageLabel: "Preview artwork · counter-style context",
-				meta: ["Omakase", "Shinjuku", "Preview"],
+				detail: "Compare pacing, neighborhood fit, and whether the room feels worth the trip.",
+				meta: ["Omakase", "Shinjuku", "Route context"],
 			},
 			{
 				name: "Ramen room",
 				subtitle: "Ramen · Nakameguro",
 				signal: "Compact",
-				detail:
-					"A sample card for a simpler stop where route, neighborhood, and timing matter more than ceremony.",
-				imageLabel: "Preview artwork · neighborhood pace",
-				meta: ["Ramen", "Nakameguro", "Preview"],
+				detail: "A simpler stop where timing, distance, and neighborhood matter most.",
+				meta: ["Ramen", "Nakameguro", "Quick compare"],
 			},
 			{
 				name: "Izakaya option",
 				subtitle: "Izakaya · Ebisu",
 				signal: "Lively",
-				detail:
-					"A sample comparison point for a warmer, more social room in the shortlist.",
-				imageLabel: "Preview artwork · charcoal counter mood",
-				meta: ["Izakaya", "Ebisu", "Preview"],
+				detail: "A warmer, more social option when the night can stretch a little.",
+				meta: ["Izakaya", "Ebisu", "Save-ready"],
 			},
 		],
 	},
@@ -73,45 +57,30 @@ const cityStarts = [
 		key: "paris",
 		name: "Paris",
 		country: "France",
-		stageTag: "Long lunches",
-		stageNote: "Bistros, wine bars, and tasting rooms that reward a slower start.",
+		tone: "Bistros, wine bars, tasting menus",
 		summary:
-			"Start in Paris when the plan needs dining rooms with more ceremony and a shortlist built around lingering.",
-		focusTitle: "Paris opens into longer meals and stronger room character.",
-		focusSubtitle: "Bistros · wine bars · tasting menus",
-		bestFor: "Long lunches and wine-led evenings.",
-		shortlistMood: "Layered, elegant, and easy to stretch into the night.",
-		naturalNextMove: "Compare the room, then open details for the final call.",
-		heroTitle: "Bistros, wine bars, tasting menus",
-		shortlistLabel: "Example shortlist",
-		tags: ["Bistro", "Wine bar", "Tasting menu"],
+			"Longer meals, stronger room character, and options that reward a slower start.",
 		restaurants: [
 			{
 				name: "Bistro table",
 				subtitle: "Bistro · Saint-Germain",
 				signal: "Classic",
-				detail:
-					"A sample card for comparing room character, location, and a slower meal.",
-				imageLabel: "Preview artwork · bistro room context",
-				meta: ["Bistro", "Saint-Germain", "Preview"],
+				detail: "Use location, room character, and dinner pace before opening details.",
+				meta: ["Bistro", "Saint-Germain", "Hours listed"],
 			},
 			{
 				name: "Wine bar",
 				subtitle: "Wine bar · Le Marais",
 				signal: "Flexible",
-				detail:
-					"A sample option for lighter plans, smaller plates, and easier second stops.",
-				imageLabel: "Preview artwork · narrow room energy",
-				meta: ["Wine bar", "Le Marais", "Preview"],
+				detail: "A lighter plan with smaller plates and easier second-stop potential.",
+				meta: ["Wine bar", "Le Marais", "Website"],
 			},
 			{
 				name: "Tasting menu",
-				subtitle: "Tasting menu · 7th arrondissement",
+				subtitle: "Tasting menu · 7th",
 				signal: "Occasion",
-				detail:
-					"A sample card for when the night needs a more deliberate centerpiece.",
-				imageLabel: "Preview artwork · tasting room pace",
-				meta: ["Tasting menu", "7th arrondissement", "Preview"],
+				detail: "A more deliberate centerpiece when the meal needs confidence.",
+				meta: ["Tasting", "Occasion", "Directions"],
 			},
 		],
 	},
@@ -119,46 +88,30 @@ const cityStarts = [
 		key: "london",
 		name: "London",
 		country: "United Kingdom",
-		stageTag: "Dining rooms",
-		stageNote:
-			"Chef-led menus, polished dining rooms, and shortlist decisions that stay flexible.",
+		tone: "Dining rooms, gastropubs, chef-led menus",
 		summary:
-			"Choose London when the plan may start formal but still wants options that can pivot between classic and newer rooms.",
-		focusTitle: "London balances polished rooms with easier shortlist variety.",
-		focusSubtitle: "Dining rooms · gastropubs · chef-led menus",
-		bestFor: "Room-led dinners with range across neighborhoods.",
-		shortlistMood: "Balanced, flexible, and easy to compare.",
-		naturalNextMove: "Use the shortlist to narrow, then open details for confidence.",
-		heroTitle: "Dining rooms and chef-led menus",
-		shortlistLabel: "Example shortlist",
-		tags: ["Dining room", "Gastropub", "Chef-led"],
+			"Polished dining rooms and flexible neighborhood choices without the list getting noisy.",
 		restaurants: [
 			{
 				name: "Dining room",
-				subtitle: "Dining room · Marylebone",
+				subtitle: "Modern British · Marylebone",
 				signal: "Polished",
-				detail:
-					"A sample card for an occasion-ready room without forcing a heavy night.",
-				imageLabel: "Preview artwork · composed tables",
-				meta: ["Dining room", "Marylebone", "Preview"],
+				detail: "An occasion-ready room without forcing the night to become too heavy.",
+				meta: ["Dining room", "Marylebone", "Reviews"],
 			},
 			{
 				name: "Gastropub",
 				subtitle: "Gastropub · Notting Hill",
 				signal: "Relaxed",
-				detail:
-					"A sample option for relaxed pacing, neighborhood fit, and easier plans.",
-				imageLabel: "Preview artwork · corner pub glow",
-				meta: ["Gastropub", "Notting Hill", "Preview"],
+				detail: "A neighborhood option when route and pacing matter more than ceremony.",
+				meta: ["Gastropub", "Notting Hill", "Route"],
 			},
 			{
 				name: "Chef-led menu",
-				subtitle: "Chef-led menu · Shoreditch",
+				subtitle: "Chef-led · Shoreditch",
 				signal: "Focused",
-				detail:
-					"A sample card for sharper pacing when the shortlist needs a clearer standout.",
-				imageLabel: "Preview artwork · chef pass context",
-				meta: ["Chef-led", "Shoreditch", "Preview"],
+				detail: "A sharper shortlist candidate when one restaurant needs to stand out.",
+				meta: ["Chef-led", "Shoreditch", "Details"],
 			},
 		],
 	},
@@ -166,54 +119,57 @@ const cityStarts = [
 		key: "dubai",
 		name: "Dubai",
 		country: "UAE",
-		stageTag: "Rooftops",
-		stageNote:
-			"Hotel dining, rooftops, and bigger-room decisions with strong location context.",
+		tone: "Rooftops, hotel dining, destination rooms",
 		summary:
-			"Begin in Dubai when the setting matters as much as the menu and the shortlist needs stronger location cues.",
-		focusTitle: "Dubai turns the search toward rooms with bigger setting impact.",
-		focusSubtitle: "Rooftops · hotel dining · tasting menus",
-		bestFor: "Destination dinners and higher-context reservations.",
-		shortlistMood: "Wide, visual, and easier to compare by setting.",
-		naturalNextMove: "Open details once the room and route both feel right.",
-		heroTitle: "Rooftops, hotel dining, tasting menus",
-		shortlistLabel: "Example shortlist",
-		tags: ["Rooftop", "Hotel dining", "Tasting menu"],
+			"Bigger settings and stronger location context when the room matters as much as the food.",
 		restaurants: [
 			{
 				name: "Rooftop setting",
-				subtitle: "Rooftop dining · Dubai Marina",
+				subtitle: "Rooftop · Dubai Marina",
 				signal: "Scenic",
-				detail:
-					"A sample card for route-and-room decisions where the setting matters.",
-				imageLabel: "Preview artwork · skyline terrace mood",
-				meta: ["Rooftop", "Dubai Marina", "Preview"],
+				detail: "A route-and-room decision where setting carries extra weight.",
+				meta: ["Rooftop", "Marina", "Compare"],
 			},
 			{
 				name: "Hotel dining",
 				subtitle: "Hotel dining · Palm Jumeirah",
 				signal: "Composed",
-				detail:
-					"A sample option for calmer service, setting confidence, and easier comparison.",
-				imageLabel: "Preview artwork · waterfront dining mood",
-				meta: ["Hotel dining", "Palm Jumeirah", "Preview"],
+				detail: "A calmer service option with stronger setting confidence.",
+				meta: ["Hotel dining", "Palm", "Save"],
 			},
 			{
 				name: "Tasting room",
 				subtitle: "Tasting menu · DIFC",
 				signal: "Deliberate",
-				detail:
-					"A sample card for a more deliberate choice when the trip needs stronger context.",
-				imageLabel: "Preview artwork · city-light dining mood",
-				meta: ["Tasting menu", "DIFC", "Preview"],
+				detail: "A more intentional pick when the evening needs a clear anchor.",
+				meta: ["Tasting", "DIFC", "Directions"],
 			},
 		],
 	},
 ] as const;
 
+const howItWorks = [
+	{
+		step: "01",
+		title: "Pick a place",
+		copy: "Start from the city, region, or country that frames the night.",
+	},
+	{
+		step: "02",
+		title: "Compare cleaner results",
+		copy: "Mapetite normalizes provider data before it becomes a shortlist.",
+	},
+	{
+		step: "03",
+		title: "Decide with context",
+		copy: "Use cuisine, hours, ratings, route, and saved favorites when a place stands out.",
+	},
+] as const;
+
 function LandingPage() {
 	const navigate = useNavigate();
-	const [selectedCityKey, setSelectedCityKey] = useState<(typeof cityStarts)[number]["key"]>("tokyo");
+	const [selectedCityKey, setSelectedCityKey] =
+		useState<(typeof cityStarts)[number]["key"]>("tokyo");
 	const [selectedRestaurantIndex, setSelectedRestaurantIndex] = useState(0);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -227,7 +183,8 @@ function LandingPage() {
 	);
 
 	const featuredRestaurant =
-		selectedCity.restaurants[selectedRestaurantIndex] ?? selectedCity.restaurants[0];
+		selectedCity.restaurants[selectedRestaurantIndex] ??
+		selectedCity.restaurants[0];
 	const firstName = profile?.name ? profile.name.trim().split(/\s+/)[0] : "User";
 	const userInitial = profile?.name
 		? profile.name.trim().charAt(0).toUpperCase()
@@ -258,7 +215,7 @@ function LandingPage() {
 					{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
 					<aside
 						className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
-						onClick={(e) => e.stopPropagation()}
+						onClick={(event) => event.stopPropagation()}
 					>
 						<div className="flex h-full flex-col">
 							<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] p-4">
@@ -309,35 +266,35 @@ function LandingPage() {
 										Explore landing
 									</p>
 									<div className="mt-2 space-y-1">
-									<a
-										href="#discover"
-										onClick={closeMobileMenu}
-										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-									>
-										Discover
-									</a>
-									<a
-										href="#search"
-										onClick={closeMobileMenu}
-										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-									>
-										Search start
-									</a>
-									<a
-										href="#experience"
-										onClick={closeMobileMenu}
-										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-									>
-										Experience
-									</a>
-									<a
-										href="#city-starts"
-										onClick={closeMobileMenu}
-										className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-									>
-										City starts
-									</a>
-								</div>
+										<a
+											href="#discover"
+											onClick={closeMobileMenu}
+											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											Discover
+										</a>
+										<a
+											href="#search"
+											onClick={closeMobileMenu}
+											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											Search preview
+										</a>
+										<a
+											href="#experience"
+											onClick={closeMobileMenu}
+											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											How it works
+										</a>
+										<a
+											href="#city-starts"
+											onClick={closeMobileMenu}
+											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											Start searching
+										</a>
+									</div>
 								</div>
 
 								<div className="mt-6 space-y-2 border-t border-[var(--mapetite-border)] pt-4">
@@ -419,7 +376,6 @@ function LandingPage() {
 			</header>
 
 			<div className="mapetite-container px-4 pb-6 md:px-6 md:pt-2 md:pb-8">
-
 				<nav className="mapetite-panel-soft sticky top-14 z-20 mb-8 hidden items-center justify-between gap-3 px-4 py-3 backdrop-blur md:flex xl:gap-4 xl:px-5">
 					<div className="flex shrink-0 items-center gap-3 whitespace-nowrap text-sm font-medium text-[var(--mapetite-text)]">
 						<div className="flex size-9 shrink-0 items-center justify-center rounded-[10px] border border-[var(--mapetite-border-strong)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))]">
@@ -428,17 +384,29 @@ function LandingPage() {
 						<span>Mapetite</span>
 					</div>
 					<div className="hidden min-w-0 items-center gap-3 text-sm text-[var(--mapetite-text-soft)] lg:flex xl:gap-5">
-						<a href="#discover" className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]">
+						<a
+							href="#discover"
+							className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]"
+						>
 							Discover
 						</a>
-						<a href="#search" className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]">
-							Search start
+						<a
+							href="#search"
+							className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]"
+						>
+							Preview
 						</a>
-						<a href="#experience" className="hidden whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)] xl:inline">
-							Experience
+						<a
+							href="#experience"
+							className="hidden whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)] xl:inline"
+						>
+							How it works
 						</a>
-						<a href="#city-starts" className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]">
-							City starts
+						<a
+							href="#city-starts"
+							className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]"
+						>
+							Start
 						</a>
 					</div>
 					<div className="flex shrink-0 items-center gap-2 whitespace-nowrap">
@@ -494,152 +462,54 @@ function LandingPage() {
 
 				<section
 					id="discover"
-					className="scroll-mt-32 py-8 md:py-14 lg:py-16"
+					className="scroll-mt-32 py-8 text-center md:py-16 lg:py-20"
 				>
-					<div className="grid items-center gap-7 md:gap-10 lg:grid-cols-[minmax(0,1.05fr)_minmax(300px,0.95fr)] lg:gap-12">
-						<div className="mapetite-section-stack items-center text-center md:items-stretch md:text-left">
-							<div className="mapetite-eyebrow justify-center md:justify-start">
-								Restaurant discovery, built around place
-							</div>
-							<div className="grid justify-items-center md:justify-items-start">
-								<h1 className="max-w-[11ch] text-[clamp(2.65rem,13vw,4rem)] font-semibold leading-[0.94] tracking-[-0.06em] text-[var(--mapetite-text)] md:max-w-[10ch] md:text-6xl lg:text-[5rem] lg:leading-[0.94]">
-									<span className="md:hidden">Find restaurants worth the trip.</span>
-									<span className="hidden md:inline">
-										Find restaurants worth crossing the city for.
-									</span>
-								</h1>
-								<p className="mapetite-muted-copy mt-5 max-w-xl text-lg leading-8">
-									Start with a city, open a shortlist that fits the night, and go
-									deeper only when a restaurant feels worth the trip.
-								</p>
-							</div>
-
-							<div className="flex w-full flex-col items-center gap-3 md:w-auto md:flex-row md:flex-wrap md:items-center">
-								<Button
-									asChild
-									size="lg"
-									className="mapetite-accent-button w-full max-w-[350px] rounded-[10px] px-6 md:w-auto md:max-w-none"
-								>
-									<Link to="/restaurants">Search restaurants</Link>
-								</Button>
-								<Button
-									asChild
-									variant="outline"
-									size="lg"
-									className="mapetite-quiet-button w-full max-w-[350px] rounded-[10px] px-6 md:w-auto md:max-w-none"
-								>
-									<a href="#experience">See how it opens</a>
-								</Button>
-								<p className="mapetite-faint-copy basis-full text-center text-sm md:text-left">
-									Opens the full search page. City starts are separate.
-								</p>
-							</div>
+					<div className="mx-auto grid max-w-4xl justify-items-center">
+						<div className="mapetite-eyebrow justify-center">
+							Restaurant discovery, built around place
 						</div>
-
-						<div className="grid gap-4">
-							<div className="mapetite-panel overflow-hidden p-5 md:p-6">
-								<div className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-									Sample city flow
-								</div>
-								<div className="mt-4 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-									<strong className="text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-										{selectedCity.name}, {selectedCity.country}
-									</strong>
-									<div className="inline-flex w-fit items-center rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1 text-[13px] leading-5 text-[var(--mapetite-text-soft)]">
-										{selectedCity.stageTag}
-									</div>
-								</div>
-
-								<div className="mt-5 grid gap-3 sm:grid-cols-3">
-									{selectedCity.restaurants.map((restaurant, index) => (
-										<button
-											key={restaurant.name}
-											type="button"
-											onClick={() => setSelectedRestaurantIndex(index)}
-											aria-pressed={selectedRestaurantIndex === index}
-											className={cn(
-												"rounded-[10px] border px-4 py-3 text-left transition-colors",
-												selectedRestaurantIndex === index
-													? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)]"
-													: "border-[var(--mapetite-border)] bg-black/10 hover:bg-white/[0.04]",
-											)}
-										>
-											<strong className="block text-sm font-medium text-[var(--mapetite-text)]">
-												{restaurant.name}
-											</strong>
-											<span className="mapetite-muted-copy mt-1 block text-sm">
-												{restaurant.subtitle} · {restaurant.signal}
-											</span>
-										</button>
-									))}
-								</div>
-
-								<div className="mt-5 flex flex-wrap gap-2">
-									<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-										Favorite-ready
-									</div>
-									<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-										Detail context
-									</div>
-									<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.05] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-										Route-aware
-									</div>
-								</div>
-							</div>
-
-							<div className="grid gap-4 sm:grid-cols-2">
-								<div className="mapetite-panel-soft p-5">
-									<strong className="text-base font-medium text-[var(--mapetite-text)]">
-										Start with place
-									</strong>
-									<p className="mapetite-muted-copy mt-2 text-sm leading-6">
-										Pick the city first, then open the shortlist.
-									</p>
-								</div>
-								<div className="mapetite-panel-soft p-5">
-									<strong className="text-base font-medium text-[var(--mapetite-text)]">
-										Decide with less noise
-									</strong>
-									<p className="mapetite-muted-copy mt-2 text-sm leading-6">
-										Details, favorites, and directions stay close when one place
-										stands out.
-									</p>
-								</div>
-							</div>
+						<h1 className="mt-5 max-w-4xl text-[clamp(3rem,13vw,5rem)] font-semibold leading-[0.94] tracking-[-0.065em] text-[var(--mapetite-text)] md:text-[5.9rem]">
+							Find restaurants by city, without the noise.
+						</h1>
+						<p className="mapetite-muted-copy mt-6 max-w-2xl text-lg leading-8 md:text-xl md:leading-9">
+							Search a place, compare a cleaner shortlist, and open details only
+							when a restaurant feels worth the trip.
+						</p>
+						<div className="mt-8 flex w-full flex-col items-center justify-center gap-3 sm:w-auto sm:flex-row">
+							<Button
+								asChild
+								size="lg"
+								className="mapetite-accent-button w-full max-w-[340px] rounded-[10px] px-7 sm:w-auto"
+							>
+								<Link to="/restaurants">Search restaurants</Link>
+							</Button>
+							<Button
+								asChild
+								variant="outline"
+								size="lg"
+								className="mapetite-quiet-button w-full max-w-[340px] rounded-[10px] px-7 sm:w-auto"
+							>
+								<a href="#search">Preview the flow</a>
+							</Button>
 						</div>
 					</div>
 				</section>
 
-				<section
-					id="search"
-					className="scroll-mt-32 py-10 md:py-14 lg:py-16"
-				>
-					<div className="mapetite-panel p-5 md:p-7">
-						<div className="grid gap-4 lg:grid-cols-[minmax(0,0.7fr)_minmax(0,0.3fr)] lg:items-end">
-							<div>
-								<div className="mapetite-eyebrow">Start with a place</div>
-								<h2 className="mt-4 max-w-xl text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)] md:text-4xl">
-									Search from a city that fits the night.
-								</h2>
-							</div>
-							<p className="mapetite-muted-copy max-w-md text-sm leading-7 lg:justify-self-end">
-								Choose a city start if you want to begin from a place instead of a
-								blank search.
-							</p>
-						</div>
-
-						<div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)_auto]">
-							<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-5">
-								<div className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-									Starting point
+				<section id="search" className="scroll-mt-32 py-8 md:py-12">
+					<div className="mapetite-panel overflow-hidden p-5 md:p-7 lg:p-8">
+						<div className="grid gap-8 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:items-start">
+							<div className="mapetite-section-stack text-center lg:text-left">
+								<div className="mapetite-eyebrow justify-center lg:justify-start">
+									Product preview
 								</div>
-								<strong className="mt-2 block text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-									{selectedCity.name}, {selectedCity.country}
-								</strong>
-								<span className="mapetite-muted-copy mt-2 block text-sm leading-6">
-									{selectedCity.stageNote}
-								</span>
-								<div className="mt-5 flex flex-wrap gap-2.5">
+								<h2 className="text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)] md:text-4xl">
+									Start with a city. Let the shortlist get quieter.
+								</h2>
+								<p className="mapetite-muted-copy text-base leading-7">
+									Mapetite keeps search practical: normalized categories, useful
+									context, and actions close enough to decide.
+								</p>
+								<div className="flex flex-wrap justify-center gap-2 lg:justify-start">
 									{cityStarts.map((city) => (
 										<button
 											key={city.key}
@@ -657,130 +527,34 @@ function LandingPage() {
 										</button>
 									))}
 								</div>
-							</div>
-
-							<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-5">
-								<div className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-									Shortlist preview
-								</div>
-								<div className="mt-4 space-y-3">
-									{selectedCity.restaurants.map((restaurant, index) => (
-										<button
-											key={restaurant.name}
-											type="button"
-											onClick={() => setSelectedRestaurantIndex(index)}
-											aria-pressed={selectedRestaurantIndex === index}
-											className={cn(
-												"flex w-full items-center justify-between gap-4 rounded-[10px] border px-4 py-3 text-left transition-colors",
-												selectedRestaurantIndex === index
-													? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)]"
-													: "border-[var(--mapetite-border)] bg-white/[0.03] hover:bg-white/[0.06]",
-											)}
-										>
-											<div>
-												<strong className="block text-sm font-medium text-[var(--mapetite-text)]">
-													{restaurant.name}
-												</strong>
-												<span className="mapetite-muted-copy text-sm">
-													{restaurant.subtitle}
-												</span>
-											</div>
-											<div className="rounded-full border border-[var(--mapetite-border)] px-2.5 py-1 text-sm text-[var(--mapetite-text-soft)]">
-												{restaurant.signal}
-											</div>
-										</button>
-									))}
-								</div>
-							</div>
-
-							<div className="flex flex-col justify-between gap-3 xl:w-[220px]">
 								<Button
 									type="button"
 									size="lg"
 									onClick={() => handleCityStart(selectedCity.name)}
-									className="mapetite-accent-button h-auto min-h-12 rounded-[10px] px-5 py-3 text-base"
+									className="mapetite-accent-button mx-auto w-full max-w-[340px] rounded-[10px] px-6 lg:mx-0 lg:w-auto"
 								>
-									Use this city start
+									Search {selectedCity.name}
+									<ArrowRight className="ml-2 size-4" />
 								</Button>
-								<p className="mapetite-faint-copy text-sm leading-6">
-									For a city-led search if that shortcut flow is supported.
-								</p>
 							</div>
-						</div>
-					</div>
-				</section>
 
-				<section
-					id="experience"
-					className="scroll-mt-32 py-10 md:py-14 lg:py-16"
-				>
-					<div className="grid gap-8 lg:grid-cols-[minmax(0,0.42fr)_minmax(0,0.58fr)] lg:items-start">
-						<div className="mapetite-section-stack">
-							<div className="mapetite-eyebrow">From city to table</div>
-							<h2 className="max-w-md text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)] md:text-4xl">
-								Pick a place, keep the shortlist close, and open details when the
-								choice becomes real.
-							</h2>
-							<p className="mapetite-muted-copy max-w-md text-base leading-7">
-								A quick preview of what opens after search, without rebuilding the
-								restaurant page here.
-							</p>
-
-							<div className="space-y-3">
-								{[
-									["1", "Choose a city", "Let the city set the tone."],
-									[
-										"2",
-										"Open a shortlist",
-										"Compare a few strong options without losing the list.",
-									],
-									[
-										"3",
-										"Go deeper when one place stands out",
-										"Save it, check directions, and decide.",
-									],
-								].map(([step, title, copy]) => (
-									<div
-										key={step}
-										className="mapetite-panel-soft flex gap-4 p-4"
-									>
-										<div className="flex size-9 shrink-0 items-center justify-center rounded-full border border-[var(--mapetite-border)] bg-[var(--mapetite-accent-soft)] text-sm font-semibold text-[var(--mapetite-text)]">
-											{step}
-										</div>
-										<div>
-											<strong className="block text-sm font-medium text-[var(--mapetite-text)]">
-												{title}
-											</strong>
-											<p className="mapetite-muted-copy mt-1 text-sm leading-6">
-												{copy}
-											</p>
-										</div>
+							<div className="rounded-[16px] border border-[var(--mapetite-border)] bg-black/15 p-4 md:p-5">
+								<div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+									<div>
+										<p className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
+											{selectedCity.name}, {selectedCity.country}
+										</p>
+										<strong className="mt-2 block text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											{selectedCity.tone}
+										</strong>
 									</div>
-								))}
-							</div>
-						</div>
-
-						<div className="mapetite-panel overflow-hidden p-5 md:p-6">
-							<div className="flex flex-wrap items-center justify-between gap-3">
-								<strong className="text-xl font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
-									{selectedCity.name} shortlist
-								</strong>
-								<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.04] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-									{selectedCity.shortlistLabel}
+									<p className="mapetite-muted-copy max-w-sm text-sm leading-6">
+										{selectedCity.summary}
+									</p>
 								</div>
-							</div>
 
-							<div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
-								<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-									<div className="flex items-center justify-between gap-3">
-										<span className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-											Shortlist
-										</span>
-										<div className="rounded-full border border-[var(--mapetite-border)] px-2.5 py-1 text-xs text-[var(--mapetite-text-soft)]">
-											{selectedCity.restaurants.length} sample cards
-										</div>
-									</div>
-									<div className="mt-4 space-y-3">
+								<div className="mt-5 grid gap-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+									<div className="space-y-3">
 										{selectedCity.restaurants.map((restaurant, index) => (
 											<button
 												key={restaurant.name}
@@ -788,7 +562,7 @@ function LandingPage() {
 												onClick={() => setSelectedRestaurantIndex(index)}
 												aria-pressed={selectedRestaurantIndex === index}
 												className={cn(
-													"w-full rounded-[10px] border px-4 py-3 text-left transition-colors",
+													"w-full rounded-[12px] border px-4 py-3 text-left transition-colors",
 													selectedRestaurantIndex === index
 														? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)]"
 														: "border-[var(--mapetite-border)] bg-white/[0.03] hover:bg-white/[0.06]",
@@ -799,59 +573,47 @@ function LandingPage() {
 														<strong className="block text-sm font-medium text-[var(--mapetite-text)]">
 															{restaurant.name}
 														</strong>
-														<span className="mapetite-muted-copy text-sm">
+														<span className="mapetite-muted-copy mt-1 block text-sm">
 															{restaurant.subtitle}
 														</span>
 													</div>
-													<div className="text-sm font-medium text-[var(--mapetite-text)]">
+													<span className="rounded-full border border-[var(--mapetite-border)] px-2.5 py-1 text-xs text-[var(--mapetite-text-soft)]">
 														{restaurant.signal}
-													</div>
+													</span>
 												</div>
 											</button>
 										))}
 									</div>
-								</div>
 
-								<div className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4">
-									<div className="flex items-center justify-between gap-3">
-										<span className="mapetite-faint-copy text-xs uppercase tracking-[0.14em]">
-											Example detail
-										</span>
-										<div className="rounded-full border border-[var(--mapetite-border)] px-2.5 py-1 text-xs text-[var(--mapetite-text-soft)]">
-											{selectedCity.name}
+									<div className="rounded-[14px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.035)] p-4">
+										<div className="mapetite-media-fallback flex min-h-[190px] items-end rounded-[12px] p-4">
+											<span className="text-sm text-[var(--mapetite-text-soft)]">
+												Preview artwork · restaurant context
+											</span>
 										</div>
-									</div>
-
-									<div className="mapetite-media-fallback mt-4 flex min-h-[190px] items-end rounded-[12px] p-4">
-										<span className="text-sm text-[var(--mapetite-text-soft)]">
-											{featuredRestaurant.imageLabel}
-										</span>
-									</div>
-
-									<h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
-										{featuredRestaurant.name}
-									</h3>
-									<p className="mapetite-muted-copy mt-2 text-sm leading-7">
-										{featuredRestaurant.detail}
-									</p>
-
-									<div className="mt-4 flex flex-wrap gap-2">
-										{featuredRestaurant.meta.map((item) => (
-											<div
-												key={item}
-												className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.04] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]"
-											>
-												{item}
+										<h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
+											{featuredRestaurant.name}
+										</h3>
+										<p className="mapetite-muted-copy mt-2 text-sm leading-7">
+											{featuredRestaurant.detail}
+										</p>
+										<div className="mt-4 flex flex-wrap gap-2">
+											{featuredRestaurant.meta.map((item) => (
+												<span
+													key={item}
+													className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.04] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]"
+												>
+													{item}
+												</span>
+											))}
+										</div>
+										<div className="mt-5 grid gap-2 sm:grid-cols-2">
+											<div className="rounded-[10px] border border-[var(--mapetite-border)] px-3 py-2 text-center text-sm text-[var(--mapetite-text-soft)]">
+												Save
 											</div>
-										))}
-									</div>
-
-									<div className="mt-5 flex flex-wrap gap-2">
-										<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.04] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-											Favorite from search
-										</div>
-										<div className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.04] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]">
-											Directions in detail
+											<div className="rounded-[10px] border border-[var(--mapetite-border)] px-3 py-2 text-center text-sm text-[var(--mapetite-text-soft)]">
+												Directions
+											</div>
 										</div>
 									</div>
 								</div>
@@ -860,120 +622,44 @@ function LandingPage() {
 					</div>
 				</section>
 
-				<section
-					id="city-starts"
-					className="scroll-mt-32 py-10 md:py-14 lg:py-16"
-				>
-					<div className="grid gap-8 lg:grid-cols-[minmax(0,0.54fr)_minmax(0,0.46fr)]">
-						<div className="mapetite-section-stack">
-							<div className="mapetite-eyebrow">City starting points</div>
-							<h2 className="max-w-md text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)] md:text-4xl">
-								Each city changes the tone of the search.
+				<section id="experience" className="scroll-mt-32 py-8 md:py-12">
+					<div className="mx-auto max-w-5xl">
+						<div className="text-center">
+							<div className="mapetite-eyebrow justify-center">How it works</div>
+							<h2 className="mx-auto mt-4 max-w-2xl text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)] md:text-4xl">
+								Three steps, fewer distractions.
 							</h2>
-							<p className="mapetite-muted-copy max-w-lg text-base leading-7">
-								City starts stay separate from the blank search entry.
-							</p>
-
-							<div className="grid gap-3 sm:grid-cols-2">
-								{cityStarts.map((city) => (
-									<button
-										key={city.key}
-										type="button"
-										onClick={() => handleSelectCity(city.key)}
-										className={cn(
-											"rounded-[12px] border p-4 text-left transition-colors",
-											selectedCityKey === city.key
-												? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)]"
-												: "border-[var(--mapetite-border)] bg-white/[0.03] hover:bg-white/[0.05]",
-										)}
-									>
-										<p className="text-base font-medium text-[var(--mapetite-text)]">
-											{city.name}
-										</p>
-										<p className="mapetite-faint-copy mt-1 text-sm">
-											{city.country}
-										</p>
-										<p className="mapetite-muted-copy mt-4 text-sm leading-6">
-											{city.heroTitle}
-										</p>
-									</button>
-								))}
-							</div>
 						</div>
 
-						<div className="mapetite-panel p-5 md:p-6">
-							<div className="mapetite-eyebrow">Selected start</div>
-							<strong className="mt-4 block text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-								{selectedCity.name}, {selectedCity.country}
-							</strong>
-							<p className="mapetite-muted-copy mt-3 text-base leading-7">
-								{selectedCity.summary}
-							</p>
-
-							<div className="mt-6 space-y-3">
-								{[
-									["Best for", selectedCity.bestFor],
-									["Shortlist mood", selectedCity.shortlistMood],
-									["Natural next move", selectedCity.naturalNextMove],
-								].map(([label, value]) => (
-									<div
-										key={label}
-										className="rounded-[12px] border border-[var(--mapetite-border)] bg-black/10 p-4"
-									>
-										<span className="mapetite-faint-copy block text-xs uppercase tracking-[0.14em]">
-											{label}
-										</span>
-										<strong className="mt-2 block text-sm font-medium leading-6 text-[var(--mapetite-text)]">
-											{value}
-										</strong>
-									</div>
-								))}
-							</div>
-
-							<div className="mt-6 rounded-[12px] border border-[var(--mapetite-border)] bg-white/[0.03] p-4">
-								<strong className="block text-lg font-medium text-[var(--mapetite-text)]">
-									{selectedCity.focusTitle}
-								</strong>
-								<p className="mapetite-faint-copy mt-2 text-sm">
-									{selectedCity.focusSubtitle}
-								</p>
-								<div className="mt-4 flex flex-wrap gap-2">
-									{selectedCity.tags.map((tag) => (
-										<div
-											key={tag}
-											className="rounded-full border border-[var(--mapetite-border)] bg-white/[0.04] px-3 py-1.5 text-sm text-[var(--mapetite-text-soft)]"
-										>
-											{tag}
-										</div>
-									))}
+						<div className="mt-6 grid gap-4 md:grid-cols-3">
+							{howItWorks.map((item) => (
+								<div key={item.step} className="mapetite-panel-soft p-5">
+									<span className="mapetite-faint-copy text-xs font-medium tracking-[0.14em] uppercase">
+										{item.step}
+									</span>
+									<strong className="mt-4 block text-lg font-medium text-[var(--mapetite-text)]">
+										{item.title}
+									</strong>
+									<p className="mapetite-muted-copy mt-2 text-sm leading-6">
+										{item.copy}
+									</p>
 								</div>
-								<div className="mt-5">
-									<Button
-										type="button"
-										variant="outline"
-										onClick={() => handleCityStart(selectedCity.name)}
-										className="mapetite-quiet-button rounded-[10px] px-5"
-									>
-										Use this city start
-									</Button>
-								</div>
-							</div>
+							))}
 						</div>
 					</div>
 				</section>
 
-				<section className="py-12 md:py-16">
+				<section id="city-starts" className="scroll-mt-32 py-10 md:py-16">
 					<div className="mapetite-panel mx-auto max-w-4xl px-6 py-8 text-center md:px-10 md:py-10">
 						<div className="mapetite-eyebrow justify-center">
-							Open the full search
+							Ready to search your city?
 						</div>
 						<h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)] md:text-4xl">
-							Start with the city. Let the shortlist make the next decision
-							easier.
+							Open Mapetite and build a better shortlist.
 						</h2>
 						<p className="mapetite-muted-copy mx-auto mt-4 max-w-2xl text-base leading-7">
-							Open the full search page, or begin with a city start when the
-							night already has a direction.
+							Use live provider data where available, with honest fallbacks when
+							coverage is limited.
 						</p>
 						<div className="mt-6 flex flex-wrap items-center justify-center gap-3">
 							<Button
@@ -982,7 +668,7 @@ function LandingPage() {
 								className="mapetite-accent-button rounded-[10px] px-6"
 							>
 								<Link to="/restaurants">
-									Search restaurants
+									Start searching
 									<ArrowRight className="ml-2 size-4" />
 								</Link>
 							</Button>
