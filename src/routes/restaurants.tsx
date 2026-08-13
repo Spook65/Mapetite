@@ -214,12 +214,25 @@ function getSearchHoursLabel(restaurant: Restaurant) {
 	return hoursRange ? `Hours listed · ${hoursRange}` : "Hours unavailable";
 }
 
-function passesOpenNowFilter(restaurant: Restaurant) {
-	return (
-		restaurant.hoursStatus?.state === "confirmed_open" ||
-		restaurant.hoursStatus?.state === "listed_hours_open" ||
-		restaurant.isOpenNow === true
-	);
+function getOpenStatusPriority(restaurant: Restaurant) {
+	switch (restaurant.hoursStatus?.state) {
+		case "confirmed_open":
+			return 0;
+		case "listed_hours_open":
+			return 1;
+		case "listed_hours_unknown":
+			return 2;
+		case "unavailable":
+			return 3;
+		case "listed_hours_closed":
+			return 4;
+		case "confirmed_closed":
+			return 5;
+		default:
+			if (restaurant.isOpenNow === true) return 0;
+			if (restaurant.isOpenNow === false) return 5;
+			return 3;
+	}
 }
 
 function truncateCopy(copy: string | undefined, maxLength: number, fallback: string) {
@@ -751,28 +764,44 @@ function RestaurantSearchPage() {
 			return r.rating >= minRating;
 		});
 
-		// Open Now is intentionally strict: unknown/unconfirmed status does not pass.
-		if (openNowOnly) {
-			filtered = filtered.filter(passesOpenNowFilter);
-		}
-
 		// Apply sorting - handle undefined values gracefully
 		// Create a copy before sorting to avoid mutating the filtered array
 		const sorted = [...filtered];
+		if (openNowOnly) {
+			sorted.sort(
+				(a, b) => getOpenStatusPriority(a) - getOpenStatusPriority(b),
+			);
+		}
+
 		if (sortBy === "distance") {
 			sorted.sort((a, b) => {
+				if (openNowOnly) {
+					const openPriority =
+						getOpenStatusPriority(a) - getOpenStatusPriority(b);
+					if (openPriority !== 0) return openPriority;
+				}
 				const distA = a.distance ?? Infinity; // Put undefined at end
 				const distB = b.distance ?? Infinity;
 				return distA - distB;
 			});
 		} else if (sortBy === "rating") {
 			sorted.sort((a, b) => {
+				if (openNowOnly) {
+					const openPriority =
+						getOpenStatusPriority(a) - getOpenStatusPriority(b);
+					if (openPriority !== 0) return openPriority;
+				}
 				const ratingA = a.rating ?? -1; // Put undefined at start (lowest)
 				const ratingB = b.rating ?? -1;
 				return ratingB - ratingA; // Descending
 			});
 		} else if (sortBy === "reviews") {
 			sorted.sort((a, b) => {
+				if (openNowOnly) {
+					const openPriority =
+						getOpenStatusPriority(a) - getOpenStatusPriority(b);
+					if (openPriority !== 0) return openPriority;
+				}
 				const reviewsA = a.reviewCount ?? -1; // Put undefined at start (lowest)
 				const reviewsB = b.reviewCount ?? -1;
 				return reviewsB - reviewsA; // Descending
@@ -894,16 +923,10 @@ function RestaurantSearchPage() {
 	const matchingResultsCount = displayedRestaurants.length;
 	const shownResultsCount = visibleRestaurants.length;
 	const hasMoreResults = shownResultsCount < matchingResultsCount;
-	const openNowStatusCopy =
-		openNowOnly && matchingResultsCount === 0
-			? "No confirmed-open restaurants found."
-			: "Uses provider-confirmed current status when available.";
-	const filterEmptyStateTitle = openNowOnly
-		? "No confirmed-open restaurants found"
-		: "No matches for the current filters";
-	const filterEmptyStateMessage = openNowOnly
-		? "No open restaurants found from confirmed or listed hours. Try removing Open Now or searching another time."
-		: "Adjust the filters above or clear them to widen the search.";
+	const openNowStatusCopy = "Shows confirmed or likely-open places first.";
+	const filterEmptyStateTitle = "No matches for the current filters";
+	const filterEmptyStateMessage =
+		"Adjust the filters above or clear them to widen the search.";
 	const hasSearchResults = restaurants.length > 0;
 	const hasFavoriteResults = favoriteRestaurants.length > 0;
 	const hasResultsForCurrentView = showFavorites ? hasFavoriteResults : hasSearchResults;
@@ -1279,7 +1302,7 @@ function RestaurantSearchPage() {
 									<div className="flex items-center justify-between gap-4">
 										<div className="space-y-1">
 											<Label className="text-[var(--mapetite-text)]">
-												Open now
+												Prioritize open
 											</Label>
 											<p className="mapetite-muted-copy text-sm">
 												{openNowStatusCopy}
@@ -1406,7 +1429,7 @@ function RestaurantSearchPage() {
 									<div className="flex items-center justify-between gap-4">
 										<div className="space-y-1">
 											<Label className="text-[var(--mapetite-text)]">
-												Open now
+												Prioritize open
 											</Label>
 											<p className="mapetite-muted-copy text-sm">
 												{openNowStatusCopy}
@@ -1508,7 +1531,7 @@ function RestaurantSearchPage() {
 												className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
 											>
 												<Clock className="size-3" />
-												Open now
+												Prioritize open
 												<X className="size-3" />
 											</button>
 										)}
