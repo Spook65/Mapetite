@@ -170,6 +170,25 @@ function getFullAddressLine(restaurant: Restaurant) {
 		.join(", ");
 }
 
+function getSearchHoursLabel(restaurant: Restaurant) {
+	const hoursRange =
+		restaurant.hours?.open && restaurant.hours?.close
+			? `${restaurant.hours.open} - ${restaurant.hours.close}`
+			: null;
+
+	if (restaurant.isOpenNow === true) {
+		return restaurant.hours?.close
+			? `Open now · until ${restaurant.hours.close}`
+			: "Open now";
+	}
+
+	if (restaurant.isOpenNow === false) {
+		return hoursRange ? `Closed now · hours listed` : "Closed now";
+	}
+
+	return hoursRange ? `Hours listed · ${hoursRange}` : "Hours unavailable";
+}
+
 function truncateCopy(copy: string | undefined, maxLength: number, fallback: string) {
 	const value = copy?.trim();
 	if (!value) return fallback;
@@ -677,19 +696,6 @@ function RestaurantSearchPage() {
 		};
 	}, [favoriteIdList, favoriteRestaurantLookup, upsertFavoriteSnapshots]);
 
-	const currentViewRestaurants = showFavorites
-		? favoriteRestaurants
-		: restaurants;
-	const hasTrustedOpenNowData = currentViewRestaurants.some(
-		(restaurant) => typeof restaurant.isOpenNow === "boolean",
-	);
-
-	useEffect(() => {
-		if (openNowOnly && !hasTrustedOpenNowData) {
-			setOpenNowOnly(false);
-		}
-	}, [openNowOnly, hasTrustedOpenNowData, setOpenNowOnly]);
-
 	// Memoize filtered and sorted restaurant list to prevent unnecessary re-renders.
 	// This expensive operation (filtering + sorting large arrays) only runs when:
 	// - restaurants array changes (new search results)
@@ -712,8 +718,8 @@ function RestaurantSearchPage() {
 			return r.rating >= minRating;
 		});
 
-		// Only apply this filter when the provider supplied explicit current status.
-		if (openNowOnly && hasTrustedOpenNowData) {
+		// Open Now is intentionally strict: unknown/unconfirmed status does not pass.
+		if (openNowOnly) {
 			filtered = filtered.filter((r) => r.isOpenNow === true);
 		}
 
@@ -748,7 +754,6 @@ function RestaurantSearchPage() {
 		priceFilter,
 		minRating,
 		openNowOnly,
-		hasTrustedOpenNowData,
 		sortBy,
 	]);
 
@@ -856,11 +861,16 @@ function RestaurantSearchPage() {
 	const matchingResultsCount = displayedRestaurants.length;
 	const shownResultsCount = visibleRestaurants.length;
 	const hasMoreResults = shownResultsCount < matchingResultsCount;
-	const openNowStatusCopy = !hasTrustedOpenNowData
-		? "Open-now status unavailable for this search."
-		: openNowOnly && matchingResultsCount === 0
-			? "No restaurants are currently confirmed open."
-			: "Uses provider-confirmed current status.";
+	const openNowStatusCopy =
+		openNowOnly && matchingResultsCount === 0
+			? "No confirmed-open restaurants found."
+			: "Uses provider-confirmed current status when available.";
+	const filterEmptyStateTitle = openNowOnly
+		? "No confirmed-open restaurants found"
+		: "No matches for the current filters";
+	const filterEmptyStateMessage = openNowOnly
+		? "No confirmed-open restaurants found. Try removing Open Now or searching another time."
+		: "Adjust the filters above or clear them to widen the search.";
 	const hasSearchResults = restaurants.length > 0;
 	const hasFavoriteResults = favoriteRestaurants.length > 0;
 	const hasResultsForCurrentView = showFavorites ? hasFavoriteResults : hasSearchResults;
@@ -1243,8 +1253,7 @@ function RestaurantSearchPage() {
 											</p>
 										</div>
 										<Switch
-											checked={hasTrustedOpenNowData && openNowOnly}
-											disabled={!hasTrustedOpenNowData}
+											checked={openNowOnly}
 											onCheckedChange={setOpenNowOnly}
 										/>
 									</div>
@@ -1371,8 +1380,7 @@ function RestaurantSearchPage() {
 											</p>
 										</div>
 										<Switch
-											checked={hasTrustedOpenNowData && openNowOnly}
-											disabled={!hasTrustedOpenNowData}
+											checked={openNowOnly}
 											onCheckedChange={setOpenNowOnly}
 										/>
 									</div>
@@ -1491,11 +1499,7 @@ function RestaurantSearchPage() {
 										const priceLabel = restaurant.priceRange
 											? "$".repeat(restaurant.priceRange)
 											: null;
-										const openLabel = restaurant.hours
-											? restaurant.isOpenNow
-												? `Open until ${restaurant.hours.close}`
-												: `Hours ${restaurant.hours.open} - ${restaurant.hours.close}`
-											: null;
+										const openLabel = getSearchHoursLabel(restaurant);
 										const summary = truncateCopy(
 											restaurant.description,
 											110,
@@ -1698,10 +1702,10 @@ function RestaurantSearchPage() {
 											</div>
 											<div>
 												<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-													No matches for the current filters
+													{filterEmptyStateTitle}
 												</h3>
 												<p className="mapetite-muted-copy mt-2 text-sm">
-													Adjust the filters above or clear them to widen the search.
+													{filterEmptyStateMessage}
 												</p>
 											</div>
 											<div>
@@ -1798,11 +1802,9 @@ function RestaurantSearchPage() {
 														{"$".repeat(selectedRestaurant.priceRange)}
 													</span>
 												) : null}
-												{selectedRestaurant.hours ? (
+												{getSearchHoursLabel(selectedRestaurant) ? (
 													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-														{selectedRestaurant.isOpenNow
-															? `Open until ${selectedRestaurant.hours.close}`
-															: `${selectedRestaurant.hours.open} - ${selectedRestaurant.hours.close}`}
+														{getSearchHoursLabel(selectedRestaurant)}
 													</span>
 												) : null}
 											</div>
