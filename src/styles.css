@@ -40,7 +40,7 @@ a:focus:not(:focus-visible),
 button:focus-visible,
 a:focus-visible,
 [role="button"]:focus-visible {
-	outline: 2px solid rgba(213, 154, 104, 0.92);
+	outline: 2px solid var(--mapetite-focus-ring);
 	outline-offset: 3px;
 }
 
@@ -90,21 +90,26 @@ code {
 	--sidebar-border: oklch(0.27 0.01 255);
 	--sidebar-ring: oklch(0.74 0.11 167);
 
-	/* Mapetite premium foundation tokens: opt-in only, no live route behavior change */
-	--mapetite-bg: #15110e;
-	--mapetite-bg-elevated: #1b1511;
-	--mapetite-surface: rgba(36, 29, 23, 0.84);
-	--mapetite-surface-soft: rgba(255, 248, 242, 0.035);
-	--mapetite-surface-strong: rgba(255, 248, 242, 0.055);
-	--mapetite-border: rgba(255, 236, 220, 0.1);
-	--mapetite-border-strong: rgba(255, 236, 220, 0.18);
-	--mapetite-text: #f5e9de;
-	--mapetite-text-soft: rgba(245, 233, 222, 0.74);
-	--mapetite-text-faint: rgba(245, 233, 222, 0.48);
-	--mapetite-accent: #d59a68;
-	--mapetite-accent-strong: #b46c43;
-	--mapetite-accent-soft: rgba(213, 154, 104, 0.14);
-	--mapetite-shadow: 0 18px 40px rgba(0, 0, 0, 0.18);
+	/* Mapetite color roles: 60% espresso base, 30% roasted surfaces, 10% copper accent */
+	--mapetite-bg: #100c0a;
+	--mapetite-bg-elevated: #1a120f;
+	--mapetite-surface: rgba(40, 29, 23, 0.88);
+	--mapetite-surface-soft: rgba(46, 34, 27, 0.48);
+	--mapetite-surface-strong: rgba(58, 41, 31, 0.68);
+	--mapetite-border: rgba(246, 224, 204, 0.085);
+	--mapetite-border-strong: rgba(246, 224, 204, 0.16);
+	--mapetite-text: #f8ece1;
+	--mapetite-text-soft: rgba(248, 236, 225, 0.76);
+	--mapetite-text-faint: rgba(248, 236, 225, 0.54);
+	--mapetite-accent: #e3a66f;
+	--mapetite-accent-hover: #efbb88;
+	--mapetite-accent-active: #d6955d;
+	--mapetite-accent-strong: #b7673d;
+	--mapetite-accent-foreground: #1c100a;
+	--mapetite-accent-soft: rgba(227, 166, 111, 0.095);
+	--mapetite-focus-ring: rgba(227, 166, 111, 0.9);
+	--mapetite-trust: #9a9f72;
+	--mapetite-shadow: 0 20px 46px rgba(0, 0, 0, 0.24);
 	--mapetite-radius: 12px;
 	--mapetite-page-width: min(1360px, calc(100vw - 56px));
 }
@@ -222,10 +227,10 @@ code {
 		background:
 			radial-gradient(
 				circle at top center,
-				rgba(180, 108, 67, 0.16),
+				rgba(183, 103, 61, 0.12),
 				transparent 24%
 			),
-			linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
+			linear-gradient(180deg, #160f0c 0%, #100c0a 54%, #0c0908 100%);
 		color: var(--mapetite-text);
 	}
 
@@ -233,10 +238,10 @@ code {
 		background:
 			radial-gradient(
 				circle at top center,
-				rgba(180, 108, 67, 0.16),
+				rgba(183, 103, 61, 0.12),
 				transparent 24%
 			),
-			linear-gradient(180deg, #18120e 0%, #130f0d 54%, #110d0b 100%);
+			linear-gradient(180deg, #160f0c 0%, #100c0a 54%, #0c0908 100%);
 		color: var(--mapetite-text);
 	}
 
@@ -269,7 +274,9 @@ code {
 	.mapetite-panel {
 		border: 1px solid var(--mapetite-border);
 		border-radius: var(--mapetite-radius);
-		background: var(--mapetite-surface);
+		background:
+			linear-gradient(180deg, rgba(255, 248, 242, 0.018), transparent 34%),
+			var(--mapetite-surface);
 		box-shadow: var(--mapetite-shadow);
 	}
 
@@ -294,14 +301,14 @@ code {
 		font-size: 12px;
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
-		color: rgba(245, 233, 222, 0.56);
+		color: var(--mapetite-text-faint);
 	}
 
 	.mapetite-eyebrow::before {
 		content: "";
 		width: 28px;
 		height: 1px;
-		background: rgba(213, 154, 104, 0.58);
+		background: rgba(227, 166, 111, 0.46);
 	}
 
 	.mapetite-section-stack {
@@ -312,7 +319,7 @@ code {
 
 	.mapetite-accent-button {
 		background: var(--mapetite-accent);
-		color: #20140d;
+		color: var(--mapetite-accent-foreground);
 		border-color: transparent;
 		box-shadow: none;
 		transition:
@@ -323,17 +330,17 @@ code {
 	}
 
 	.mapetite-accent-button:hover {
-		background: #e0ab7c;
+		background: var(--mapetite-accent-hover);
 		transform: translateY(-1px);
 	}
 
 	.mapetite-accent-button:active {
-		background: #d8a06e;
+		background: var(--mapetite-accent-active);
 		transform: translateY(0) scale(0.99);
 	}
 
 	.mapetite-quiet-button {
-		background: rgba(255, 248, 242, 0.025);
+		background: rgba(255, 248, 242, 0.018);
 		color: var(--mapetite-text-soft);
 		border-color: var(--mapetite-border);
 		transition:
@@ -344,7 +351,7 @@ code {
 	}
 
 	.mapetite-quiet-button:hover {
-		background: rgba(255, 248, 242, 0.06);
+		background: rgba(255, 248, 242, 0.055);
 		color: var(--mapetite-text);
 		transform: translateY(-1px);
 	}
@@ -358,20 +365,20 @@ code {
 		background:
 			linear-gradient(
 				180deg,
-				rgba(255, 248, 242, 0.05),
-				rgba(255, 248, 242, 0.02)
+				rgba(255, 248, 242, 0.045),
+				rgba(255, 248, 242, 0.016)
 			),
 			linear-gradient(
 				135deg,
-				rgba(213, 154, 104, 0.22),
-				rgba(180, 108, 67, 0.06) 50%,
-				rgba(17, 13, 11, 0.16) 100%
+				rgba(227, 166, 111, 0.15),
+				rgba(154, 159, 114, 0.055) 46%,
+				rgba(16, 12, 10, 0.18) 100%
 			);
 		border: 1px solid var(--mapetite-border);
 	}
 
 	.mapetite-focus-ring {
-		outline: 2px solid rgba(213, 154, 104, 0.92);
+		outline: 2px solid var(--mapetite-focus-ring);
 		outline-offset: 3px;
 	}
 }
