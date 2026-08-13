@@ -90,25 +90,25 @@ code {
 	--sidebar-border: oklch(0.27 0.01 255);
 	--sidebar-ring: oklch(0.74 0.11 167);
 
-	/* Mapetite color roles: 60% espresso base, 30% roasted surfaces, 10% copper accent */
-	--mapetite-bg: #100c0a;
-	--mapetite-bg-elevated: #1a120f;
-	--mapetite-surface: rgba(40, 29, 23, 0.88);
-	--mapetite-surface-soft: rgba(46, 34, 27, 0.48);
-	--mapetite-surface-strong: rgba(58, 41, 31, 0.68);
-	--mapetite-border: rgba(246, 224, 204, 0.085);
-	--mapetite-border-strong: rgba(246, 224, 204, 0.16);
-	--mapetite-text: #f8ece1;
-	--mapetite-text-soft: rgba(248, 236, 225, 0.76);
-	--mapetite-text-faint: rgba(248, 236, 225, 0.54);
-	--mapetite-accent: #e3a66f;
-	--mapetite-accent-hover: #efbb88;
-	--mapetite-accent-active: #d6955d;
-	--mapetite-accent-strong: #b7673d;
-	--mapetite-accent-foreground: #1c100a;
-	--mapetite-accent-soft: rgba(227, 166, 111, 0.095);
-	--mapetite-focus-ring: rgba(227, 166, 111, 0.9);
-	--mapetite-trust: #9a9f72;
+	/* Mapetite color roles: 60% espresso base, 30% sage/olive surfaces, 10% apricot accent */
+	--mapetite-bg: #100d0a;
+	--mapetite-bg-elevated: #17130f;
+	--mapetite-surface: rgba(34, 38, 27, 0.88);
+	--mapetite-surface-soft: rgba(49, 55, 39, 0.5);
+	--mapetite-surface-strong: rgba(67, 75, 51, 0.62);
+	--mapetite-border: rgba(231, 228, 198, 0.105);
+	--mapetite-border-strong: rgba(231, 228, 198, 0.18);
+	--mapetite-text: #fbefe0;
+	--mapetite-text-soft: rgba(251, 239, 224, 0.77);
+	--mapetite-text-faint: rgba(251, 239, 224, 0.55);
+	--mapetite-accent: #efa96f;
+	--mapetite-accent-hover: #f5bd8d;
+	--mapetite-accent-active: #df995f;
+	--mapetite-accent-strong: #bd7047;
+	--mapetite-accent-foreground: #1d1109;
+	--mapetite-accent-soft: rgba(239, 169, 111, 0.095);
+	--mapetite-focus-ring: rgba(239, 169, 111, 0.9);
+	--mapetite-trust: #b7b176;
 	--mapetite-shadow: 0 20px 46px rgba(0, 0, 0, 0.24);
 	--mapetite-radius: 12px;
 	--mapetite-page-width: min(1360px, calc(100vw - 56px));
@@ -227,10 +227,10 @@ code {
 		background:
 			radial-gradient(
 				circle at top center,
-				rgba(183, 103, 61, 0.12),
+				rgba(183, 177, 118, 0.1),
 				transparent 24%
 			),
-			linear-gradient(180deg, #160f0c 0%, #100c0a 54%, #0c0908 100%);
+			linear-gradient(180deg, #17130f 0%, #100d0a 54%, #0c0907 100%);
 		color: var(--mapetite-text);
 	}
 
@@ -238,10 +238,10 @@ code {
 		background:
 			radial-gradient(
 				circle at top center,
-				rgba(183, 103, 61, 0.12),
+				rgba(183, 177, 118, 0.1),
 				transparent 24%
 			),
-			linear-gradient(180deg, #160f0c 0%, #100c0a 54%, #0c0908 100%);
+			linear-gradient(180deg, #17130f 0%, #100d0a 54%, #0c0907 100%);
 		color: var(--mapetite-text);
 	}
 
@@ -308,7 +308,7 @@ code {
 		content: "";
 		width: 28px;
 		height: 1px;
-		background: rgba(227, 166, 111, 0.46);
+		background: rgba(239, 169, 111, 0.48);
 	}
 
 	.mapetite-section-stack {
@@ -370,9 +370,9 @@ code {
 			),
 			linear-gradient(
 				135deg,
-				rgba(227, 166, 111, 0.15),
-				rgba(154, 159, 114, 0.055) 46%,
-				rgba(16, 12, 10, 0.18) 100%
+				rgba(239, 169, 111, 0.14),
+				rgba(183, 177, 118, 0.075) 46%,
+				rgba(16, 13, 10, 0.18) 100%
 			);
 		border: 1px solid var(--mapetite-border);
 	}

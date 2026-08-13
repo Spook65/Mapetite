@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Mapetite Palette Prototypes</title>
+		<style>
+			:root {
+				color-scheme: dark;
+				font-family:
+					Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+					"Segoe UI", sans-serif;
+				background: #0f0f0f;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			body {
+				margin: 0;
+				background: #0f0f0f;
+				color: #f8ece1;
+			}
+
+			a {
+				color: inherit;
+			}
+
+			.prototype-index {
+				max-width: 1180px;
+				margin: 0 auto;
+				padding: 32px 20px 8px;
+			}
+
+			.prototype-index h1 {
+				margin: 0;
+				font-size: clamp(2rem, 5vw, 4.25rem);
+				line-height: 0.96;
+				letter-spacing: -0.06em;
+			}
+
+			.prototype-index p {
+				max-width: 720px;
+				margin: 14px 0 0;
+				color: rgba(248, 236, 225, 0.72);
+				line-height: 1.7;
+			}
+
+			.palette {
+				--bg: #100c0a;
+				--bg-elevated: #1a120f;
+				--surface: rgba(40, 29, 23, 0.88);
+				--surface-soft: rgba(46, 34, 27, 0.48);
+				--surface-strong: rgba(58, 41, 31, 0.68);
+				--border: rgba(246, 224, 204, 0.085);
+				--border-strong: rgba(246, 224, 204, 0.16);
+				--text: #f8ece1;
+				--text-soft: rgba(248, 236, 225, 0.76);
+				--text-faint: rgba(248, 236, 225, 0.54);
+				--accent: #e3a66f;
+				--accent-hover: #efbb88;
+				--accent-foreground: #1c100a;
+				--accent-soft: rgba(227, 166, 111, 0.095);
+				--trust: #9a9f72;
+				--shadow: 0 20px 46px rgba(0, 0, 0, 0.24);
+
+				margin: 28px auto;
+				padding: clamp(18px, 3vw, 32px);
+				max-width: 1180px;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 24px;
+				background:
+					radial-gradient(circle at top center, var(--glow), transparent 26%),
+					linear-gradient(180deg, var(--bg-elevated), var(--bg) 54%, #090706);
+				color: var(--text);
+				box-shadow: 0 22px 80px rgba(0, 0, 0, 0.28);
+			}
+
+			.palette-b {
+				--bg: #0d0e0e;
+				--bg-elevated: #171717;
+				--surface: rgba(35, 35, 33, 0.9);
+				--surface-soft: rgba(48, 47, 43, 0.52);
+				--surface-strong: rgba(64, 60, 54, 0.72);
+				--border: rgba(246, 238, 224, 0.1);
+				--border-strong: rgba(246, 238, 224, 0.18);
+				--text: #f7efe4;
+				--text-soft: rgba(247, 239, 228, 0.77);
+				--text-faint: rgba(247, 239, 228, 0.55);
+				--accent: #e6a15f;
+				--accent-hover: #f1b980;
+				--accent-foreground: #18110c;
+				--accent-soft: rgba(230, 161, 95, 0.1);
+				--trust: #a4a37d;
+				--glow: rgba(230, 161, 95, 0.1);
+			}
+
+			.palette-c {
+				--bg: #100d0a;
+				--bg-elevated: #17130f;
+				--surface: rgba(34, 38, 27, 0.88);
+				--surface-soft: rgba(49, 55, 39, 0.5);
+				--surface-strong: rgba(67, 75, 51, 0.62);
+				--border: rgba(231, 228, 198, 0.105);
+				--border-strong: rgba(231, 228, 198, 0.18);
+				--text: #fbefe0;
+				--text-soft: rgba(251, 239, 224, 0.77);
+				--text-faint: rgba(251, 239, 224, 0.55);
+				--accent: #efa96f;
+				--accent-hover: #f5bd8d;
+				--accent-foreground: #1d1109;
+				--accent-soft: rgba(239, 169, 111, 0.095);
+				--trust: #b7b176;
+				--glow: rgba(183, 177, 118, 0.1);
+			}
+
+			.palette-d {
+				--bg: #120b0b;
+				--bg-elevated: #1a0f11;
+				--surface: rgba(43, 24, 31, 0.88);
+				--surface-soft: rgba(58, 32, 43, 0.52);
+				--surface-strong: rgba(78, 40, 56, 0.64);
+				--border: rgba(255, 226, 218, 0.1);
+				--border-strong: rgba(255, 226, 218, 0.18);
+				--text: #fff0e6;
+				--text-soft: rgba(255, 240, 230, 0.77);
+				--text-faint: rgba(255, 240, 230, 0.55);
+				--accent: #f0a978;
+				--accent-hover: #f5bd94;
+				--accent-foreground: #1d0d09;
+				--accent-soft: rgba(240, 169, 120, 0.095);
+				--trust: #b5a06e;
+				--glow: rgba(122, 52, 74, 0.18);
+			}
+
+			.palette-a {
+				--glow: rgba(183, 103, 61, 0.12);
+			}
+
+			.palette-header,
+			.mock-nav,
+			.hero,
+			.mock-grid,
+			.mobile-row {
+				max-width: 1040px;
+				margin-inline: auto;
+			}
+
+			.palette-header {
+				display: grid;
+				gap: 8px;
+				margin-bottom: 18px;
+			}
+
+			.palette-header h2 {
+				margin: 0;
+				font-size: clamp(1.75rem, 4vw, 3rem);
+				letter-spacing: -0.05em;
+			}
+
+			.palette-header p {
+				margin: 0;
+				color: var(--text-soft);
+				line-height: 1.6;
+			}
+
+			.mock-nav {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 18px;
+				margin-bottom: 28px;
+				padding: 14px 16px;
+				border: 1px solid var(--border);
+				border-radius: 14px;
+				background: var(--surface-soft);
+				backdrop-filter: blur(18px);
+			}
+
+			.brand,
+			.nav-links,
+			.auth-actions {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+			}
+
+			.logo {
+				display: grid;
+				place-items: center;
+				width: 38px;
+				height: 38px;
+				border: 1px solid var(--border-strong);
+				border-radius: 12px;
+				background: var(--accent-soft);
+				color: var(--text);
+			}
+
+			.nav-links {
+				color: var(--text-soft);
+				font-size: 14px;
+			}
+
+			.hero {
+				display: grid;
+				justify-items: center;
+				text-align: center;
+				padding: clamp(26px, 6vw, 64px) 0;
+			}
+
+			.eyebrow {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 12px;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+				color: var(--text-faint);
+			}
+
+			.eyebrow::before {
+				content: "";
+				width: 28px;
+				height: 1px;
+				background: color-mix(in srgb, var(--accent) 52%, transparent);
+			}
+
+			.hero h3 {
+				max-width: 760px;
+				margin: 18px 0 0;
+				font-size: clamp(2.75rem, 8vw, 5.5rem);
+				line-height: 0.94;
+				letter-spacing: -0.065em;
+			}
+
+			.hero p {
+				max-width: 620px;
+				margin: 18px 0 0;
+				color: var(--text-soft);
+				font-size: 18px;
+				line-height: 1.75;
+			}
+
+			.actions {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: center;
+				gap: 10px;
+				margin-top: 24px;
+			}
+
+			.button {
+				display: inline-flex;
+				min-height: 44px;
+				align-items: center;
+				justify-content: center;
+				border-radius: 12px;
+				padding: 0 18px;
+				border: 1px solid var(--border);
+				font-weight: 700;
+				text-decoration: none;
+			}
+
+			.button.primary {
+				border-color: transparent;
+				background: var(--accent);
+				color: var(--accent-foreground);
+			}
+
+			.button.secondary {
+				background: rgba(255, 255, 255, 0.025);
+				color: var(--text-soft);
+			}
+
+			.mock-grid {
+				display: grid;
+				gap: 16px;
+				grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+			}
+
+			.panel,
+			.soft-panel {
+				border: 1px solid var(--border);
+				border-radius: 16px;
+				background:
+					linear-gradient(180deg, rgba(255, 255, 255, 0.018), transparent 38%),
+					var(--surface);
+				box-shadow: var(--shadow);
+			}
+
+			.soft-panel {
+				background: var(--surface-soft);
+				box-shadow: none;
+			}
+
+			.search-form,
+			.result-card,
+			.detail-card,
+			.footer-card {
+				padding: 18px;
+			}
+
+			.search-form label {
+				display: block;
+				margin-bottom: 8px;
+				color: var(--text-faint);
+				font-size: 11px;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+			}
+
+			.field-grid {
+				display: grid;
+				gap: 10px;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+				margin-top: 14px;
+			}
+
+			.input {
+				min-height: 46px;
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				background: rgba(255, 255, 255, 0.035);
+				color: var(--text);
+				padding: 12px;
+			}
+
+			.chips,
+			.meta {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				margin-top: 14px;
+			}
+
+			.chip {
+				border: 1px solid var(--border);
+				border-radius: 999px;
+				background: rgba(255, 255, 255, 0.03);
+				color: var(--text-soft);
+				padding: 7px 10px;
+				font-size: 13px;
+			}
+
+			.chip.selected {
+				border-color: var(--border-strong);
+				background: var(--accent-soft);
+				color: var(--text);
+			}
+
+			.media {
+				min-height: 150px;
+				border: 1px solid var(--border);
+				border-radius: 14px;
+				background:
+					linear-gradient(
+						135deg,
+						color-mix(in srgb, var(--accent) 18%, transparent),
+						color-mix(in srgb, var(--trust) 8%, transparent) 48%,
+						rgba(0, 0, 0, 0.18)
+					),
+					linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent);
+			}
+
+			.result-card {
+				display: grid;
+				gap: 14px;
+			}
+
+			.result-card.selected {
+				border-color: color-mix(in srgb, var(--accent) 32%, var(--border));
+				background:
+					linear-gradient(
+						180deg,
+						color-mix(in srgb, var(--accent) 9%, transparent),
+						transparent 58%
+					),
+					var(--surface);
+			}
+
+			.result-card h4,
+			.detail-card h4 {
+				margin: 0;
+				color: var(--text);
+				font-size: 28px;
+				letter-spacing: -0.05em;
+			}
+
+			.result-card p,
+			.detail-card p,
+			.footer-card p {
+				margin: 0;
+				color: var(--text-soft);
+				line-height: 1.6;
+			}
+
+			.selected-preview {
+				padding: 18px;
+				backdrop-filter: blur(18px);
+				background:
+					linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 42%),
+					color-mix(in srgb, var(--surface) 78%, transparent);
+			}
+
+			.honesty-note {
+				border: 1px solid color-mix(in srgb, var(--trust) 34%, var(--border));
+				border-radius: 14px;
+				background: color-mix(in srgb, var(--trust) 10%, transparent);
+				color: var(--text-soft);
+				padding: 14px;
+			}
+
+			.mobile-row {
+				display: grid;
+				gap: 14px;
+				grid-template-columns: 0.72fr 0.28fr;
+				margin-top: 16px;
+			}
+
+			.mobile-card {
+				padding: 16px;
+			}
+
+			.swatches {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+				margin-top: 12px;
+			}
+
+			.swatch {
+				display: grid;
+				gap: 6px;
+				min-width: 112px;
+				color: var(--text-soft);
+				font-size: 12px;
+			}
+
+			.swatch::before {
+				content: "";
+				display: block;
+				height: 34px;
+				border: 1px solid var(--border);
+				border-radius: 10px;
+				background: var(--swatch);
+			}
+
+			@media (max-width: 780px) {
+				.palette {
+					margin: 18px 10px;
+					padding: 18px;
+					border-radius: 18px;
+				}
+
+				.mock-nav,
+				.nav-links,
+				.auth-actions,
+				.mock-grid,
+				.mobile-row,
+				.field-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.mock-nav {
+					align-items: flex-start;
+					flex-direction: column;
+				}
+
+				.hero {
+					padding: 26px 0;
+				}
+
+				.hero h3 {
+					font-size: clamp(2.5rem, 15vw, 4rem);
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<header class="prototype-index">
+			<h1>Mapetite palette prototypes</h1>
+			<p>
+				Standalone 60/30/10-inspired color studies. This file is not imported
+				by the app and does not change the production palette.
+			</p>
+		</header>
+
+		<section class="palette palette-a">
+			<div class="palette-header">
+				<h2>Variant A · Current refined espresso/copper baseline</h2>
+				<p>60% espresso/cocoa, 30% roasted brown surfaces, 10% copper/apricot.</p>
+				<div class="swatches">
+					<span class="swatch" style="--swatch: #100c0a">Base #100c0a</span>
+					<span class="swatch" style="--swatch: #281d17">Surface #281d17</span>
+					<span class="swatch" style="--swatch: #e3a66f">Accent #e3a66f</span>
+					<span class="swatch" style="--swatch: #f8ece1">Text #f8ece1</span>
+				</div>
+			</div>
+			<div class="mock-nav">
+				<div class="brand"><span class="logo">M</span><strong>Mapetite</strong></div>
+				<div class="nav-links"><span>Discover</span><span>Preview</span><span>Search</span></div>
+				<div class="auth-actions"><a class="button secondary" href="#">Log In</a><a class="button primary" href="#">Open search</a></div>
+			</div>
+			<div class="hero">
+				<span class="eyebrow">Restaurant discovery, built around place</span>
+				<h3>Find restaurants by city, without the noise.</h3>
+				<p>Search a place, compare a cleaner shortlist, and open details only when a restaurant feels worth the trip.</p>
+				<div class="actions"><a class="button primary" href="#">Search restaurants</a><a class="button secondary" href="#">Preview the flow</a></div>
+			</div>
+			<div class="mock-grid">
+				<div class="panel search-form">
+					<span class="eyebrow">Search card</span>
+					<div class="field-grid">
+						<div><label>City</label><div class="input">Stockton</div></div>
+						<div><label>State / Province / Region</label><div class="input">California</div></div>
+						<div><label>Country</label><div class="input">United States</div></div>
+					</div>
+					<div class="actions"><a class="button primary" href="#">Search restaurants</a><a class="button secondary" href="#">Use My Location</a></div>
+					<div class="chips"><span class="chip selected">Noodles</span><span class="chip">Vegetarian</span><span class="chip">Fast-Food</span></div>
+				</div>
+				<div class="panel result-card selected">
+					<div class="media"></div>
+					<h4>Cancun</h4>
+					<p>Mexican · Stockton, California. Stronger comparison context without pretending every data point is perfect.</p>
+					<div class="meta"><span class="chip selected">Selected</span><span class="chip">4.9 rating</span><span class="chip">155 reviews</span></div>
+					<div class="actions"><a class="button primary" href="#">View details</a><a class="button secondary" href="#">Directions</a></div>
+				</div>
+			</div>
+			<div class="mobile-row">
+				<div class="panel detail-card"><h4>Ready to decide?</h4><p>Hours, route, website, and save actions stay close when the shortlist gets narrow.</p><div class="honesty-note">Photo coverage unavailable · use address, route, and details while coverage is limited.</div></div>
+				<div class="soft-panel footer-card"><p>© 2026 Brandon Hann. Portfolio MVP demo. Data from OSM and Geoapify.</p></div>
+			</div>
+		</section>
+
+		<section class="palette palette-b">
+			<div class="palette-header">
+				<h2>Variant B · Charcoal cream copper</h2>
+				<p>60% charcoal, 30% warm graphite surfaces, 10% copper/apricot.</p>
+				<div class="swatches">
+					<span class="swatch" style="--swatch: #0d0e0e">Base #0d0e0e</span>
+					<span class="swatch" style="--swatch: #232321">Surface #232321</span>
+					<span class="swatch" style="--swatch: #e6a15f">Accent #e6a15f</span>
+					<span class="swatch" style="--swatch: #f7efe4">Text #f7efe4</span>
+				</div>
+			</div>
+			<div class="mock-nav"><div class="brand"><span class="logo">M</span><strong>Mapetite</strong></div><div class="nav-links"><span>Discover</span><span>Preview</span><span>Search</span></div><div class="auth-actions"><a class="button secondary" href="#">Log In</a><a class="button primary" href="#">Open search</a></div></div>
+			<div class="hero"><span class="eyebrow">Restaurant discovery, built around place</span><h3>Find restaurants by city, without the noise.</h3><p>Search a place, compare a cleaner shortlist, and open details only when a restaurant feels worth the trip.</p><div class="actions"><a class="button primary" href="#">Search restaurants</a><a class="button secondary" href="#">Preview the flow</a></div></div>
+			<div class="mock-grid"><div class="panel search-form"><span class="eyebrow">Search card</span><div class="field-grid"><div><label>City</label><div class="input">Stockton</div></div><div><label>State / Province / Region</label><div class="input">California</div></div><div><label>Country</label><div class="input">United States</div></div></div><div class="actions"><a class="button primary" href="#">Search restaurants</a><a class="button secondary" href="#">Use My Location</a></div><div class="chips"><span class="chip selected">Noodles</span><span class="chip">Vegetarian</span><span class="chip">Fast-Food</span></div></div><div class="panel result-card selected"><div class="media"></div><h4>Cancun</h4><p>Mexican · Stockton, California. Stronger comparison context without pretending every data point is perfect.</p><div class="meta"><span class="chip selected">Selected</span><span class="chip">4.9 rating</span><span class="chip">155 reviews</span></div><div class="actions"><a class="button primary" href="#">View details</a><a class="button secondary" href="#">Directions</a></div></div></div>
+			<div class="mobile-row"><div class="panel detail-card"><h4>Ready to decide?</h4><p>Hours, route, website, and save actions stay close when the shortlist gets narrow.</p><div class="honesty-note">Photo coverage unavailable · use address, route, and details while coverage is limited.</div></div><div class="soft-panel footer-card"><p>© 2026 Brandon Hann. Portfolio MVP demo. Data from OSM and Geoapify.</p></div></div>
+		</section>
+
+		<section class="palette palette-c">
+			<div class="palette-header">
+				<h2>Variant C · Espresso sage apricot</h2>
+				<p>60% espresso, 30% muted sage/olive surfaces, 10% apricot/copper.</p>
+				<div class="swatches">
+					<span class="swatch" style="--swatch: #100d0a">Base #100d0a</span>
+					<span class="swatch" style="--swatch: #22261b">Surface #22261b</span>
+					<span class="swatch" style="--swatch: #efa96f">Accent #efa96f</span>
+					<span class="swatch" style="--swatch: #fbefe0">Text #fbefe0</span>
+				</div>
+			</div>
+			<div class="mock-nav"><div class="brand"><span class="logo">M</span><strong>Mapetite</strong></div><div class="nav-links"><span>Discover</span><span>Preview</span><span>Search</span></div><div class="auth-actions"><a class="button secondary" href="#">Log In</a><a class="button primary" href="#">Open search</a></div></div>
+			<div class="hero"><span class="eyebrow">Restaurant discovery, built around place</span><h3>Find restaurants by city, without the noise.</h3><p>Search a place, compare a cleaner shortlist, and open details only when a restaurant feels worth the trip.</p><div class="actions"><a class="button primary" href="#">Search restaurants</a><a class="button secondary" href="#">Preview the flow</a></div></div>
+			<div class="mock-grid"><div class="panel search-form"><span class="eyebrow">Search card</span><div class="field-grid"><div><label>City</label><div class="input">Stockton</div></div><div><label>State / Province / Region</label><div class="input">California</div></div><div><label>Country</label><div class="input">United States</div></div></div><div class="actions"><a class="button primary" href="#">Search restaurants</a><a class="button secondary" href="#">Use My Location</a></div><div class="chips"><span class="chip selected">Noodles</span><span class="chip">Vegetarian</span><span class="chip">Fast-Food</span></div></div><div class="panel result-card selected"><div class="media"></div><h4>Cancun</h4><p>Mexican · Stockton, California. Stronger comparison context without pretending every data point is perfect.</p><div class="meta"><span class="chip selected">Selected</span><span class="chip">4.9 rating</span><span class="chip">155 reviews</span></div><div class="actions"><a class="button primary" href="#">View details</a><a class="button secondary" href="#">Directions</a></div></div></div>
+			<div class="mobile-row"><div class="panel detail-card"><h4>Ready to decide?</h4><p>Hours, route, website, and save actions stay close when the shortlist gets narrow.</p><div class="honesty-note">Photo coverage unavailable · use address, route, and details while coverage is limited.</div></div><div class="soft-panel footer-card"><p>© 2026 Brandon Hann. Portfolio MVP demo. Data from OSM and Geoapify.</p></div></div>
+		</section>
+
+		<section class="palette palette-d">
+			<div class="palette-header">
+				<h2>Variant D · Espresso wine peach</h2>
+				<p>60% espresso, 30% wine/plum surfaces, 10% peach/copper.</p>
+				<div class="swatches">
+					<span class="swatch" style="--swatch: #120b0b">Base #120b0b</span>
+					<span class="swatch" style="--swatch: #2b181f">Surface #2b181f</span>
+					<span class="swatch" style="--swatch: #f0a978">Accent #f0a978</span>
+					<span class="swatch" style="--swatch: #fff0e6">Text #fff0e6</span>
+				</div>
+			</div>
+			<div class="mock-nav"><div class="brand"><span class="logo">M</span><strong>Mapetite</strong></div><div class="nav-links"><span>Discover</span><span>Preview</span><span>Search</span></div><div class="auth-actions"><a class="button secondary" href="#">Log In</a><a class="button primary" href="#">Open search</a></div></div>
+			<div class="hero"><span class="eyebrow">Restaurant discovery, built around place</span><h3>Find restaurants by city, without the noise.</h3><p>Search a place, compare a cleaner shortlist, and open details only when a restaurant feels worth the trip.</p><div class="actions"><a class="button primary" href="#">Search restaurants</a><a class="button secondary" href="#">Preview the flow</a></div></div>
+			<div class="mock-grid"><div class="panel search-form"><span class="eyebrow">Search card</span><div class="field-grid"><div><label>City</label><div class="input">Stockton</div></div><div><label>State / Province / Region</label><div class="input">California</div></div><div><label>Country</label><div class="input">United States</div></div></div><div class="actions"><a class="button primary" href="#">Search restaurants</a><a class="button secondary" href="#">Use My Location</a></div><div class="chips"><span class="chip selected">Noodles</span><span class="chip">Vegetarian</span><span class="chip">Fast-Food</span></div></div><div class="panel result-card selected"><div class="media"></div><h4>Cancun</h4><p>Mexican · Stockton, California. Stronger comparison context without pretending every data point is perfect.</p><div class="meta"><span class="chip selected">Selected</span><span class="chip">4.9 rating</span><span class="chip">155 reviews</span></div><div class="actions"><a class="button primary" href="#">View details</a><a class="button secondary" href="#">Directions</a></div></div></div>
+			<div class="mobile-row"><div class="panel detail-card"><h4>Ready to decide?</h4><p>Hours, route, website, and save actions stay close when the shortlist gets narrow.</p><div class="honesty-note">Photo coverage unavailable · use address, route, and details while coverage is limited.</div></div><div class="soft-panel footer-card"><p>© 2026 Brandon Hann. Portfolio MVP demo. Data from OSM and Geoapify.</p></div></div>
+		</section>
+	</body>
+</html>
