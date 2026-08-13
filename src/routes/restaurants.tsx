@@ -171,6 +171,31 @@ function getFullAddressLine(restaurant: Restaurant) {
 }
 
 function getSearchHoursLabel(restaurant: Restaurant) {
+	if (restaurant.hoursStatus) {
+		if (
+			restaurant.hoursStatus.state === "confirmed_open" &&
+			restaurant.hoursStatus.closesAt
+		) {
+			return `Open now · until ${restaurant.hoursStatus.closesAt}`;
+		}
+
+		if (
+			restaurant.hoursStatus.state === "listed_hours_open" &&
+			restaurant.hoursStatus.closesAt
+		) {
+			return `Likely open · until ${restaurant.hoursStatus.closesAt}`;
+		}
+
+		if (
+			restaurant.hoursStatus.state === "listed_hours_closed" &&
+			restaurant.hoursStatus.opensAt
+		) {
+			return `Closed from listed hours · opens ${restaurant.hoursStatus.opensAt}`;
+		}
+
+		return restaurant.hoursStatus.label;
+	}
+
 	const hoursRange =
 		restaurant.hours?.open && restaurant.hours?.close
 			? `${restaurant.hours.open} - ${restaurant.hours.close}`
@@ -187,6 +212,14 @@ function getSearchHoursLabel(restaurant: Restaurant) {
 	}
 
 	return hoursRange ? `Hours listed · ${hoursRange}` : "Hours unavailable";
+}
+
+function passesOpenNowFilter(restaurant: Restaurant) {
+	return (
+		restaurant.hoursStatus?.state === "confirmed_open" ||
+		restaurant.hoursStatus?.state === "listed_hours_open" ||
+		restaurant.isOpenNow === true
+	);
 }
 
 function truncateCopy(copy: string | undefined, maxLength: number, fallback: string) {
@@ -720,7 +753,7 @@ function RestaurantSearchPage() {
 
 		// Open Now is intentionally strict: unknown/unconfirmed status does not pass.
 		if (openNowOnly) {
-			filtered = filtered.filter((r) => r.isOpenNow === true);
+			filtered = filtered.filter(passesOpenNowFilter);
 		}
 
 		// Apply sorting - handle undefined values gracefully
@@ -869,7 +902,7 @@ function RestaurantSearchPage() {
 		? "No confirmed-open restaurants found"
 		: "No matches for the current filters";
 	const filterEmptyStateMessage = openNowOnly
-		? "No confirmed-open restaurants found. Try removing Open Now or searching another time."
+		? "No open restaurants found from confirmed or listed hours. Try removing Open Now or searching another time."
 		: "Adjust the filters above or clear them to widen the search.";
 	const hasSearchResults = restaurants.length > 0;
 	const hasFavoriteResults = favoriteRestaurants.length > 0;

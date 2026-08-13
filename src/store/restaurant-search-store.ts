@@ -50,6 +50,21 @@ export interface Restaurant {
 		open: string;
 		close: string;
 	};
+	hoursStatus?: {
+		state:
+			| "confirmed_open"
+			| "confirmed_closed"
+			| "listed_hours_open"
+			| "listed_hours_closed"
+			| "listed_hours_unknown"
+			| "unavailable";
+		source: "provider" | "listed_hours" | "none";
+		confidence: "high" | "medium" | "low";
+		label: string;
+		closesAt?: string;
+		opensAt?: string;
+		timezone?: string;
+	};
 	photoUrl?: string;
 	photoAttributions?: string[];
 	galleryImageUrls?: string[];

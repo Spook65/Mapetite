@@ -8,6 +8,7 @@ import {
   buildRestaurantArtworkUrl,
   resolveRestaurantMedia,
 } from "./restaurantMedia.js";
+import { buildHoursStatus } from "./restaurantHours.js";
 import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
 import { validatePlaceInput } from "./placeValidation.js";
 
@@ -920,6 +921,12 @@ function normalizeElement(element, locationContext = {}) {
   const name = tags.name || tags.brand || tags.operator || "Restaurant";
   const categories = parseCategories(tags);
   const hours = parseHours(tags);
+  const hoursStatus = buildHoursStatus({
+    isOpenNow: undefined,
+    hours,
+    rawHours: tags.opening_hours,
+    timezone: locationContext.timezone,
+  });
   const rating = deriveRating(tags, id);
   const reviewCount = deriveReviewCount(tags, id);
   const priceRange = parsePriceRange(tags, categories);
@@ -961,6 +968,7 @@ function normalizeElement(element, locationContext = {}) {
     distance,
     isOpenNow: undefined,
     hours,
+    hoursStatus,
     hoursSource: hours ? "provider" : undefined,
     photoUrl: buildRestaurantArtworkUrl({
       categories,
@@ -1197,6 +1205,7 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
         : undefined,
     isOpenNow: undefined,
     hours: undefined,
+    hoursStatus: buildHoursStatus(),
     hoursSource: undefined,
     photoUrl: buildRestaurantArtworkUrl({
       categories,

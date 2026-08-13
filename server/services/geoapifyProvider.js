@@ -1,5 +1,6 @@
 import env from "../config/env.js";
 import { buildRestaurantArtworkUrl } from "./restaurantMedia.js";
+import { buildHoursStatus } from "./restaurantHours.js";
 
 const GEOAPIFY_BASE_URL = "https://api.geoapify.com";
 const GEOAPIFY_SEARCH_TIMEOUT_MS = 12000;
@@ -789,6 +790,18 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
   const rating = deriveRating(props, placeId);
   const reviewCount = deriveReviewCount(props, placeId);
   const openingHours = parseOpeningHours(props.opening_hours);
+  const isOpenNow =
+    typeof props.open_now === "boolean"
+      ? props.open_now
+      : typeof props.is_open_now === "boolean"
+        ? props.is_open_now
+        : undefined;
+  const hoursStatus = buildHoursStatus({
+    isOpenNow,
+    hours: openingHours,
+    rawHours: props.opening_hours,
+    timezone: locationContext.timezone,
+  });
   const reviews = buildReviews(name, rating, reviewCount, locationContext, categories);
   const distance =
     hasFiniteCoordinates(locationContext)
@@ -822,13 +835,9 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     longitude: lon,
     reviews,
     distance,
-    isOpenNow:
-      typeof props.open_now === "boolean"
-        ? props.open_now
-        : typeof props.is_open_now === "boolean"
-          ? props.is_open_now
-          : undefined,
+    isOpenNow,
     hours: openingHours,
+    hoursStatus,
     hoursSource: openingHours ? "provider" : undefined,
     photoUrl: buildRestaurantArtworkUrl({
       categories,

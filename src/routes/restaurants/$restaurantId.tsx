@@ -59,6 +59,75 @@ function formatHoursRange(
 	return `${open} – ${close}`;
 }
 
+function formatHoursTime(value?: string | null) {
+	return formatTimeToTwelveHour(value) ?? value ?? "";
+}
+
+function getDetailHoursLabel(
+	restaurant: Restaurant,
+	formattedHoursRange: string | null,
+) {
+	const status = restaurant.hoursStatus;
+
+	if (status?.state === "confirmed_open") {
+		return status.closesAt
+			? `Open now • until ${formatHoursTime(status.closesAt)}`
+			: "Open now";
+	}
+
+	if (status?.state === "confirmed_closed") {
+		return status.opensAt
+			? `Closed now • opens ${formatHoursTime(status.opensAt)}`
+			: "Closed now";
+	}
+
+	if (status?.state === "listed_hours_open") {
+		return status.closesAt
+			? `Likely open from listed hours • until ${formatHoursTime(status.closesAt)}`
+			: "Likely open from listed hours";
+	}
+
+	if (status?.state === "listed_hours_closed") {
+		return status.opensAt
+			? `Closed based on listed hours • opens ${formatHoursTime(status.opensAt)}`
+			: "Closed based on listed hours";
+	}
+
+	if (status?.state === "listed_hours_unknown") {
+		return formattedHoursRange ? `Hours listed • ${formattedHoursRange}` : "Hours listed";
+	}
+
+	if (status?.state === "unavailable") {
+		return "Hours unavailable";
+	}
+
+	if (restaurant.isOpenNow === true) {
+		return restaurant.hours?.close
+			? `Open now • until ${formatHoursTime(restaurant.hours.close)}`
+			: "Open now";
+	}
+
+	if (restaurant.isOpenNow === false) {
+		return "Closed now";
+	}
+
+	return formattedHoursRange ? `Hours listed • ${formattedHoursRange}` : "Hours unavailable";
+}
+
+function getDetailHoursBadge(restaurant: Restaurant) {
+	const state = restaurant.hoursStatus?.state;
+	if (state === "confirmed_open") return "Open now";
+	if (state === "confirmed_closed") return "Closed now";
+	if (state === "listed_hours_open") return "Likely open";
+	if (state === "listed_hours_closed") return "Listed closed";
+	if (state === "listed_hours_unknown") return "Hours listed";
+	if (state === "unavailable") return null;
+
+	if (restaurant.isOpenNow === true) return "Open now";
+	if (restaurant.isOpenNow === false) return "Closed now";
+	return restaurant.hours ? "Hours listed" : null;
+}
+
 function buildLocationLine(restaurant: Restaurant) {
 	return [restaurant.address.city, restaurant.address.state]
 		.filter(Boolean)
@@ -285,6 +354,9 @@ function RestaurantDetailPage() {
 	const hasHours = !!restaurant.hours;
 	const hasExplicitOpenStatus =
 		restaurant.isOpenNow === true || restaurant.isOpenNow === false;
+	const hasListedHoursStatus =
+		restaurant.hoursStatus?.state === "listed_hours_open" ||
+		restaurant.hoursStatus?.state === "listed_hours_closed";
 	const hasReviews = !!restaurant.reviews?.length;
 	const hasRatingBreakdown = !!restaurant.ratingBreakdown;
 	const hasMapCoordinates =
@@ -297,6 +369,8 @@ function RestaurantDetailPage() {
 	const hasPaymentMethods = !!restaurant.paymentMethods?.length;
 	const hasCuisineHints = !!restaurant.cuisineHints?.hints?.length;
 	const formattedHoursRange = formatHoursRange(restaurant.hours);
+	const detailHoursLabel = getDetailHoursLabel(restaurant, formattedHoursRange);
+	const detailHoursBadge = getDetailHoursBadge(restaurant);
 	const ratingBreakdownRows = hasRatingBreakdown
 		? ([5, 4, 3, 2, 1] as const).map((score) => ({
 				score,
@@ -354,30 +428,16 @@ function RestaurantDetailPage() {
 		] ?? galleryViews[0];
 	const contextTags = [
 		...restaurant.categories.slice(0, 3),
-		hasHours ? (restaurant.isOpenNow === true ? "Open now" : "Hours listed") : null,
+		detailHoursBadge,
 		locationLine || null,
 		...(restaurant.amenities?.slice(0, 2) ?? []),
 	].filter(Boolean) as string[];
-	const heroHoursLabel = hasHours
-		? restaurant.isOpenNow === true
-			? "Open now"
-			: "Hours listed"
-		: null;
+	const heroHoursLabel = detailHoursBadge;
 	const heroHoursValue =
-		hasHours && restaurant.hours
-			? restaurant.isOpenNow === true && restaurant.hours.close
-				? `until ${formatTimeToTwelveHour(restaurant.hours.close)}`
-				: formattedHoursRange
-			: null;
-	const tonightHoursLabel = hasHours
-		? restaurant.isOpenNow === true
-			? restaurant.hours?.close
-				? `Open until ${formatTimeToTwelveHour(restaurant.hours.close)}`
-				: "Open now"
-			: restaurant.hours
-				? `Hours ${formattedHoursRange}`
-				: "Hours listed"
-		: "Hours unavailable";
+		detailHoursBadge && detailHoursLabel !== detailHoursBadge
+			? detailHoursLabel.replace(`${detailHoursBadge} • `, "")
+			: formattedHoursRange;
+	const tonightHoursLabel = detailHoursLabel;
 	const reviewSummaryCopy = hasReviews
 		? "Use recent reviews and the overall rating together before you commit."
 		: "Rating data is available, even if written reviews are limited for this restaurant.";
@@ -670,14 +730,16 @@ function RestaurantDetailPage() {
 											</small>
 											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
 												{hasHours
-													? `${restaurant.isOpenNow === true ? "Open now" : "Hours listed"} • ${formattedHoursRange}`
+													? detailHoursLabel
 													: "Hours unavailable"}
 											</strong>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
 												{hasHours
 													? hasExplicitOpenStatus
 														? "Use the listed hours as one more signal before you leave the shortlist."
-														: hasWebsite
+														: hasListedHoursStatus
+															? "This status is estimated from simple listed hours and the searched place timezone."
+															: hasWebsite
 															? "Hours are listed, but confirm on the restaurant website before going."
 															: "Hours are available, but live open status is not confirmed for this restaurant right now."
 													: "Hours are not available for this restaurant right now."}
