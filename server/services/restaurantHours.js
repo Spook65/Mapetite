@@ -3,6 +3,7 @@ function normalizeTimeRange(value) {
 
   const match = value
     .trim()
+    .replace(/[\u2012\u2013\u2014\u2015]/g, "-")
     .match(/^(\d{1,2}):(\d{2})\s*-\s*(\d{1,2}):(\d{2})$/);
   if (!match) return null;
 
@@ -33,11 +34,25 @@ function normalizeTimeRange(value) {
   };
 }
 
-function isSimpleDailyHours(rawHours, hours) {
-  const normalizedRaw = String(rawHours || "").trim();
-  if (!normalizedRaw) return false;
+function extractSimpleDailyRange(rawHours) {
+  const normalizedRaw = String(rawHours || "")
+    .trim()
+    .replace(/[\u2012\u2013\u2014\u2015]/g, "-");
+  if (!normalizedRaw) return null;
 
-  const range = normalizeTimeRange(normalizedRaw);
+  const bareRange = normalizeTimeRange(normalizedRaw);
+  if (bareRange) return bareRange;
+
+  const allWeekMatch = normalizedRaw.match(
+    /^(?:Mo|Mon)\s*-\s*(?:Su|Sun)\s+(.+)$/i,
+  );
+  if (!allWeekMatch) return null;
+
+  return normalizeTimeRange(allWeekMatch[1]);
+}
+
+function isSimpleDailyHours(rawHours, hours) {
+  const range = extractSimpleDailyRange(rawHours);
   if (!range) return false;
 
   return hours?.open === range.open && hours?.close === range.close;
