@@ -51,11 +51,16 @@ function extractSimpleDailyRange(rawHours) {
   return normalizeTimeRange(allWeekMatch[1]);
 }
 
+function isAlwaysOpen(rawHours) {
+  return String(rawHours || "").trim().toLowerCase() === "24/7";
+}
+
 function isSimpleDailyHours(rawHours, hours) {
   const range = extractSimpleDailyRange(rawHours);
+  const normalizedHours = normalizeTimeRange(`${hours?.open || ""} - ${hours?.close || ""}`);
   if (!range) return false;
 
-  return hours?.open === range.open && hours?.close === range.close;
+  return normalizedHours?.open === range.open && normalizedHours?.close === range.close;
 }
 
 function getMinutesForTimezone(timezone) {
@@ -112,6 +117,16 @@ export function buildHoursStatus({
       confidence: "high",
       label: "Closed now",
       opensAt: hours?.open,
+      timezone,
+    };
+  }
+
+  if (isAlwaysOpen(rawHours)) {
+    return {
+      state: "listed_hours_open",
+      source: "listed_hours",
+      confidence: "medium",
+      label: "Likely open · 24 hours",
       timezone,
     };
   }
