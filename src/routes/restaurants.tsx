@@ -1552,13 +1552,10 @@ function RestaurantSearchPage() {
 										const displayCategory = getDisplayCategory(restaurant);
 										const previewImage = getPreviewImage(restaurant);
 										const isSelected = selectedRestaurantId === restaurant.id;
-										const priceLabel = restaurant.priceRange
-											? "$".repeat(restaurant.priceRange)
-											: null;
 										const openLabel = getSearchHoursLabel(restaurant);
 										const summary = truncateCopy(
 											restaurant.description,
-											110,
+											88,
 											"Restaurant discovered from your current search. Open the detail page once it feels worth the trip.",
 										);
 
@@ -1575,15 +1572,15 @@ function RestaurantSearchPage() {
 													}
 												}}
 												className={cn(
-												"grid gap-4 rounded-[14px] border p-4 text-center transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)] min-[981px]:grid-cols-[172px_minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:p-[18px] min-[981px]:text-left",
+													"grid gap-3 rounded-[14px] border p-4 text-center transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)] min-[981px]:grid-cols-[154px_minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:text-left",
 													isSelected
 														? "border-[rgba(213,154,104,0.24)] bg-[rgba(255,248,242,0.05)] shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
 														: "border-[rgba(255,236,220,0.08)] bg-[var(--mapetite-surface)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:border-[rgba(213,154,104,0.24)] hover:bg-[rgba(255,248,242,0.05)] hover:-translate-y-[1px]",
 												)}
 											>
-												<div className="grid min-h-[132px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[12px] border border-[rgba(255,236,220,0.08)]">
+												<div className="grid min-h-[116px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[12px] border border-[rgba(255,236,220,0.08)] min-[981px]:min-h-[132px]">
 													{previewImage ? (
-														<div className="relative h-full min-h-[132px]">
+														<div className="relative h-full min-h-[116px] min-[981px]:min-h-[132px]">
 															<img
 																src={previewImage}
 																alt={restaurant.name}
@@ -1591,7 +1588,7 @@ function RestaurantSearchPage() {
 																referrerPolicy="no-referrer"
 															/>
 															<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(19,15,13,0.08),rgba(19,15,13,0.74))]" />
-														<div className="relative grid h-full grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left">
+															<div className="relative grid h-full grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left">
 																<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[rgba(255,244,236,0.92)]">
 																	{getRestaurantInitials(restaurant)}
 																</strong>
@@ -1604,7 +1601,7 @@ function RestaurantSearchPage() {
 															</div>
 														</div>
 													) : (
-													<div className="mapetite-media-fallback grid h-full min-h-[132px] grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left">
+														<div className="mapetite-media-fallback grid h-full min-h-[116px] grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:min-h-[132px] min-[981px]:justify-items-start min-[981px]:text-left">
 															<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[rgba(255,244,236,0.92)]">
 																{getRestaurantInitials(restaurant)}
 															</strong>
@@ -1618,13 +1615,13 @@ function RestaurantSearchPage() {
 													)}
 												</div>
 
-												<div className="grid gap-[10px]">
-												<div className="flex flex-wrap items-center justify-center gap-3 min-[981px]:justify-between">
-													<div className="w-full min-[981px]:w-auto">
-															<h3 className="m-0 text-[clamp(1.8rem,2.2vw,2rem)] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+												<div className="grid content-start gap-2.5">
+													<div className="flex flex-wrap items-start justify-center gap-2.5 min-[981px]:justify-between">
+														<div className="w-full min-[981px]:w-auto">
+															<h3 className="m-0 text-[clamp(1.55rem,2vw,1.85rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[var(--mapetite-text)]">
 																{restaurant.name}
 															</h3>
-															<p className="mapetite-muted-copy mt-2 text-[15px]">
+															<p className="mapetite-muted-copy mt-1.5 text-[14px]">
 																{displayCategory
 																	? `${displayCategory} · ${getLocationHint(restaurant)}`
 																	: getLocationHint(restaurant)}
@@ -1640,38 +1637,23 @@ function RestaurantSearchPage() {
 														</span>
 													</div>
 
-													<p className="m-0 text-[15px] leading-[1.6] text-[var(--mapetite-text-soft)]">
+													<p className="m-0 overflow-hidden text-[14px] leading-[1.55] text-[var(--mapetite-text-soft)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
 														{summary}
 													</p>
 
-											<div className="flex flex-wrap justify-center gap-2 min-[981px]:justify-start">
-														{priceLabel ? (
-															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-																{priceLabel}
-															</span>
-														) : null}
-														{displayCategory ? (
-															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-																{displayCategory}
-															</span>
-														) : null}
+													<div className="flex flex-wrap justify-center gap-2 min-[981px]:justify-start">
 														{openLabel ? (
-															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+															<span className="rounded-full border border-[rgba(255,236,220,0.09)] bg-[rgba(255,248,242,0.025)] px-3 py-1.5 text-[12px] text-[var(--mapetite-text-soft)]">
 																{openLabel}
-															</span>
-														) : null}
-														{restaurant.reviewCount != null ? (
-															<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-																{restaurant.reviewCount.toLocaleString()} reviews
 															</span>
 														) : null}
 													</div>
 												</div>
 
-												<div className="grid content-start gap-2 min-[981px]:min-w-[120px] min-[981px]:justify-items-end">
+												<div className="grid grid-cols-2 content-start gap-2 min-[981px]:grid-cols-1 min-[981px]:min-w-[118px] min-[981px]:justify-items-end">
 													<Button
 														asChild
-														className="mapetite-accent-button h-11 w-full justify-center rounded-full px-4 text-[15px] font-semibold text-[#20140d] shadow-none min-[981px]:w-auto"
+														className="mapetite-accent-button col-span-2 h-11 w-full justify-center rounded-full px-4 text-[15px] font-semibold text-[#20140d] shadow-none min-[981px]:col-span-1 min-[981px]:w-[118px] min-[981px]:px-3.5"
 														onClick={(event) => event.stopPropagation()}
 													>
 														<Link
@@ -1691,7 +1673,7 @@ function RestaurantSearchPage() {
 														}}
 														disabled={isTogglingFavorite}
 														className={cn(
-															"mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-[112px] min-[981px]:px-3.5",
+															"mapetite-quiet-button h-10 w-full justify-center gap-1.5 rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5",
 															favoriteIds.has(restaurant.id) &&
 																"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 														)}
@@ -1708,7 +1690,7 @@ function RestaurantSearchPage() {
 													<Button
 														asChild
 														variant="outline"
-														className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 shadow-none min-[981px]:h-10 min-[981px]:w-[112px] min-[981px]:px-3.5"
+														className="mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5"
 														onClick={(event) => event.stopPropagation()}
 													>
 														<a
@@ -1721,7 +1703,7 @@ function RestaurantSearchPage() {
 													</Button>
 
 													{isSelected ? (
-														<span className="hidden h-10 w-[112px] items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3.5 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:inline-flex">
+														<span className="hidden h-10 w-[118px] items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3.5 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:inline-flex">
 															Previewing
 														</span>
 													) : null}
