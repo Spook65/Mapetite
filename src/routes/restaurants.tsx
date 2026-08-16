@@ -1779,7 +1779,7 @@ function RestaurantSearchPage() {
 												{selectedRestaurant.name}
 											</h2>
 
-											<div className="grid h-[220px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)]">
+											<div className="h-[172px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)]">
 												{getSelectedPreviewImage(selectedRestaurant) ? (
 													<div className="relative h-full">
 														<img
