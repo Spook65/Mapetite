@@ -128,6 +128,26 @@ function getDetailHoursBadge(restaurant: Restaurant) {
 	return restaurant.hours ? "Hours listed" : null;
 }
 
+function getDetailHoursNote(restaurant: Restaurant, hasWebsite: boolean) {
+	const state = restaurant.hoursStatus?.state;
+
+	if (state === "confirmed_open" || state === "confirmed_closed") {
+		return "Open status is from the available public listing data. Confirm with the restaurant before making a special trip.";
+	}
+
+	if (state === "listed_hours_open" || state === "listed_hours_closed") {
+		return "Based on simple listed public hours and the searched place timezone. Confirm before going.";
+	}
+
+	if (state === "listed_hours_unknown") {
+		return hasWebsite
+			? "Hours are listed, but Mapetite is not treating them as live open status. Check the restaurant website before going."
+			: "Hours are listed, but live open status is not confirmed for this restaurant right now.";
+	}
+
+	return "Hours were not available from the current public listing source.";
+}
+
 function buildLocationLine(restaurant: Restaurant) {
 	return [restaurant.address.city, restaurant.address.state]
 		.filter(Boolean)
@@ -351,12 +371,6 @@ function RestaurantDetailPage() {
 	const galleryImages = buildGalleryImages(restaurant);
 	const galleryAttributions = buildGalleryAttributions(restaurant);
 	const hasVerifiedGalleryImages = galleryImages.length > 0;
-	const hasHours = !!restaurant.hours;
-	const hasExplicitOpenStatus =
-		restaurant.isOpenNow === true || restaurant.isOpenNow === false;
-	const hasListedHoursStatus =
-		restaurant.hoursStatus?.state === "listed_hours_open" ||
-		restaurant.hoursStatus?.state === "listed_hours_closed";
 	const hasReviews = !!restaurant.reviews?.length;
 	const hasRatingBreakdown = !!restaurant.ratingBreakdown;
 	const hasMapCoordinates =
@@ -365,12 +379,11 @@ function RestaurantDetailPage() {
 	const hasWebsite = !!restaurant.website;
 	const hasPhone = !!restaurant.phone;
 	const hasPlanningActions = hasMenuUrl || hasWebsite || hasPhone;
-	const hasAmenities = !!restaurant.amenities?.length;
-	const hasPaymentMethods = !!restaurant.paymentMethods?.length;
 	const hasCuisineHints = !!restaurant.cuisineHints?.hints?.length;
 	const formattedHoursRange = formatHoursRange(restaurant.hours);
 	const detailHoursLabel = getDetailHoursLabel(restaurant, formattedHoursRange);
 	const detailHoursBadge = getDetailHoursBadge(restaurant);
+	const primaryCategory = restaurant.categories[0] ?? null;
 	const ratingBreakdownRows = hasRatingBreakdown
 		? ([5, 4, 3, 2, 1] as const).map((score) => ({
 				score,
@@ -438,9 +451,36 @@ function RestaurantDetailPage() {
 			? detailHoursLabel.replace(`${detailHoursBadge} • `, "")
 			: formattedHoursRange;
 	const tonightHoursLabel = detailHoursLabel;
+	const hoursNote = getDetailHoursNote(restaurant, hasWebsite);
 	const reviewSummaryCopy = hasReviews
 		? "Use recent reviews and the overall rating together before you commit."
 		: "Rating data is available, even if written reviews are limited for this restaurant.";
+	const publicListingFacts = [
+		{
+			label: "Address",
+			value: fullAddress ? "Available" : "Not available from source",
+		},
+		{
+			label: "Hours",
+			value: detailHoursBadge ?? "Unavailable",
+		},
+		{
+			label: "Photos",
+			value: hasVerifiedGalleryImages
+				? `${galleryImages.length} available`
+				: "Verified photos unavailable",
+		},
+		{
+			label: "Menu",
+			value: hasMenuUrl ? "Menu link available" : "Menu link unavailable",
+		},
+		{
+			label: "Contact",
+			value: [hasWebsite ? "Website" : null, hasPhone ? "Phone" : null]
+				.filter(Boolean)
+				.join(" / ") || "Limited",
+		},
+	];
 
 	return (
 		<Layout>
@@ -481,9 +521,9 @@ function RestaurantDetailPage() {
 											</strong>
 											<span>{restaurant.reviewCount} reviews</span>
 										</div>
-										{restaurant.categories.length > 0 ? (
+										{primaryCategory ? (
 											<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-												<span>{restaurant.categories.join(" • ")}</span>
+												<span>{primaryCategory}</span>
 											</div>
 										) : null}
 										{locationLine ? (
@@ -491,15 +531,10 @@ function RestaurantDetailPage() {
 												<span>{locationLine}</span>
 											</div>
 										) : null}
-										{priceRangeLabel ? (
-											<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-												<span>{priceRangeLabel}</span>
-											</div>
-										) : null}
-										{hasHours ? (
+										{detailHoursLabel ? (
 											<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 												<strong className="font-semibold text-[var(--mapetite-text)]">
-													{heroHoursLabel}
+													{heroHoursLabel ?? "Hours"}
 												</strong>
 												{heroHoursValue ? <span>{heroHoursValue}</span> : null}
 											</div>
@@ -539,35 +574,29 @@ function RestaurantDetailPage() {
 
 								<aside className="grid justify-items-center gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-[18px] text-center lg:justify-items-start lg:text-left">
 									<small className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.46)]">
-										Decision cues
+										Available public listing data
 									</small>
 									<strong className="text-lg font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
-										Easy to compare, strong enough to commit.
+										What Mapetite can show right now.
 									</strong>
 									<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-										Photo coverage, tonight&apos;s hours, address, and review
-										confidence stay visible without turning the page into a dashboard.
+										This is a practical summary of fields returned by current public
+										sources, not a claimed-business profile.
 									</p>
-									<div className="flex flex-wrap justify-center gap-2 lg:justify-start">
-										{[
-											hasMapCoordinates ? "Nearby map" : null,
-											hasReviews || hasRatingBreakdown ? "Review summary" : null,
-											"Back to shortlist",
-										]
-											.filter(Boolean)
-											.map((tag, index) => (
-												<span
-													key={tag}
-													className={cn(
-														"inline-flex items-center rounded-full border px-[11px] py-2 text-[13px]",
-														index === 0
-															? "border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]"
-															: "border-[rgba(255,236,220,0.1)] bg-white/[0.03] text-[var(--mapetite-text-soft)]",
-													)}
-												>
-													{tag}
+									<div className="grid w-full gap-2">
+										{publicListingFacts.map((fact) => (
+											<div
+												key={fact.label}
+												className="flex items-center justify-between gap-3 rounded-[10px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-3 py-2 text-left"
+											>
+												<span className="text-[13px] font-medium text-[var(--mapetite-text)]">
+													{fact.label}
 												</span>
-											))}
+												<span className="text-right text-[13px] text-[var(--mapetite-text-soft)]">
+													{fact.value}
+												</span>
+											</div>
+										))}
 									</div>
 								</aside>
 							</div>
@@ -691,11 +720,10 @@ function RestaurantDetailPage() {
 								<section id="context" className="mapetite-panel grid gap-[18px] p-[22px]">
 									<div className="text-center md:text-left">
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-											Restaurant context
+											What to know
 										</h2>
 										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
-											Keep the details useful: where it is, how it&apos;s priced, when
-											it&apos;s open, and what makes it worth opening the route for.
+											Useful listing details, kept separate from anything Mapetite cannot verify.
 										</p>
 									</div>
 
@@ -709,8 +737,8 @@ function RestaurantDetailPage() {
 											</strong>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
 												{locationLine
-													? `Close enough to keep ${locationLine} in the plan without losing the search context.`
-													: "Keep the full address close before opening the route."}
+													? `Located in ${locationLine}. Use directions to confirm the exact route.`
+													: "Use the full address before opening the route."}
 											</p>
 										</div>
 										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
@@ -718,10 +746,10 @@ function RestaurantDetailPage() {
 												Kitchen
 											</small>
 											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
-												{restaurant.categories.join(" • ")}
+												{restaurant.categories.join(" • ") || "Category unavailable"}
 											</strong>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-												{restaurant.description}
+												Category data helps frame the restaurant, but it is not a verified menu.
 											</p>
 										</div>
 										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
@@ -729,20 +757,10 @@ function RestaurantDetailPage() {
 												Hours
 											</small>
 											<strong className="text-base font-semibold text-[var(--mapetite-text)]">
-												{hasHours
-													? detailHoursLabel
-													: "Hours unavailable"}
+												{detailHoursLabel}
 											</strong>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-												{hasHours
-													? hasExplicitOpenStatus
-														? "Use the listed hours as one more signal before you leave the shortlist."
-														: hasListedHoursStatus
-															? "This status is estimated from simple listed hours and the searched place timezone."
-															: hasWebsite
-															? "Hours are listed, but confirm on the restaurant website before going."
-															: "Hours are available, but live open status is not confirmed for this restaurant right now."
-													: "Hours are not available for this restaurant right now."}
+												{hoursNote}
 											</p>
 										</div>
 										<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
@@ -754,8 +772,8 @@ function RestaurantDetailPage() {
 											</strong>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
 												{priceRangeLabel
-													? "A quick spend check before you commit to the route."
-													: "Use the rest of the detail signals to decide whether the place still fits."}
+													? "A quick spend signal from available listing data."
+													: "Price was not available from the current listing source."}
 											</p>
 										</div>
 									</div>
