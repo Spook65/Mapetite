@@ -448,6 +448,9 @@ function RestaurantSearchPage() {
 	const [selectedRestaurantId, setSelectedRestaurantId] = useState<string | null>(
 		null,
 	);
+	const [failedResultImageKeys, setFailedResultImageKeys] = useState<Set<string>>(
+		() => new Set(),
+	);
 	const [favoriteSnapshots, setFavoriteSnapshots] = useState<
 		Record<string, Restaurant>
 	>(() => loadFavoriteSnapshotsFromStorage());
@@ -580,6 +583,15 @@ function RestaurantSearchPage() {
 	const toggleFavorite = useCallback((restaurantId: string) => {
 		toggleFavoriteMutate({ restaurant_id: restaurantId });
 	}, [toggleFavoriteMutate]);
+
+	const handleResultImageError = useCallback((imageKey: string) => {
+		setFailedResultImageKeys((previous) => {
+			if (previous.has(imageKey)) return previous;
+			const next = new Set(previous);
+			next.add(imageKey);
+			return next;
+		});
+	}, []);
 
 	const buildDirectionsUrl = useCallback((restaurant: Restaurant) => {
 		const hasCoordinates =
@@ -1551,6 +1563,14 @@ function RestaurantSearchPage() {
 									visibleRestaurants.map((restaurant) => {
 										const displayCategory = getDisplayCategory(restaurant);
 										const previewImage = getPreviewImage(restaurant);
+										const previewImageKey = previewImage
+											? `${restaurant.id}:${previewImage}`
+											: null;
+										const shouldShowPreviewImage = Boolean(
+											previewImage &&
+												previewImageKey &&
+												!failedResultImageKeys.has(previewImageKey),
+										);
 										const isSelected = selectedRestaurantId === restaurant.id;
 										const openLabel = getSearchHoursLabel(restaurant);
 										const summary = truncateCopy(
@@ -1579,13 +1599,18 @@ function RestaurantSearchPage() {
 												)}
 											>
 												<div className="grid min-h-[116px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[12px] border border-[rgba(255,236,220,0.08)] min-[981px]:min-h-[132px]">
-													{previewImage ? (
+													{shouldShowPreviewImage ? (
 														<div className="relative h-full min-h-[116px] min-[981px]:min-h-[132px]">
 															<img
-																src={previewImage}
+																src={previewImage ?? ""}
 																alt={restaurant.name}
 																className="absolute inset-0 h-full w-full object-cover"
 																referrerPolicy="no-referrer"
+																onError={() => {
+																	if (previewImageKey) {
+																		handleResultImageError(previewImageKey);
+																	}
+																}}
 															/>
 															<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(19,15,13,0.08),rgba(19,15,13,0.74))]" />
 															<div className="relative grid h-full grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left">
@@ -2059,7 +2084,7 @@ function RestaurantSearchPage() {
 							<div className="mt-3 grid grid-cols-2 gap-2">
 								<Button
 									asChild
-									className="mapetite-accent-button h-11 w-full justify-center rounded-full px-4 text-[14px] font-semibold text-[#20140d] shadow-none"
+									className="mapetite-accent-button col-span-2 h-11 w-full justify-center rounded-full px-4 text-[14px] font-semibold text-[#20140d] shadow-none"
 								>
 									<Link
 										to="/restaurants/$restaurantId"
@@ -2067,6 +2092,26 @@ function RestaurantSearchPage() {
 									>
 										View details
 									</Link>
+								</Button>
+
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => toggleFavorite(selectedRestaurant.id)}
+									disabled={isTogglingFavorite}
+									className={cn(
+										"mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-[14px] shadow-none",
+										favoriteIds.has(selectedRestaurant.id) &&
+											"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+									)}
+								>
+									<Heart
+										className={cn(
+											"size-4",
+											favoriteIds.has(selectedRestaurant.id) && "fill-current",
+										)}
+									/>
+									{favoriteIds.has(selectedRestaurant.id) ? "Saved" : "Save"}
 								</Button>
 
 								<Button
