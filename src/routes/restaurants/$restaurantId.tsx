@@ -403,8 +403,7 @@ function RestaurantDetailPage() {
 						? `Photo coverage for ${restaurant.name}`
 						: `Additional venue image ${index + 1}`,
 				copy:
-					restaurant.description ||
-					"A verified venue image to support the address, route, and review details on this page.",
+					"Photos are available from public listing data. Use them as a quick visual reference, not a guarantee of current conditions.",
 				left:
 					restaurant.categories.slice(0, 2).join(" • ") ||
 					restaurant.categories[0] ||
@@ -439,12 +438,6 @@ function RestaurantDetailPage() {
 		galleryViews[
 			Math.min(selectedImageIndex, Math.max(galleryViews.length - 1, 0))
 		] ?? galleryViews[0];
-	const contextTags = [
-		...restaurant.categories.slice(0, 3),
-		detailHoursBadge,
-		locationLine || null,
-		...(restaurant.amenities?.slice(0, 2) ?? []),
-	].filter(Boolean) as string[];
 	const heroHoursLabel = detailHoursBadge;
 	const heroHoursValue =
 		detailHoursBadge && detailHoursLabel !== detailHoursBadge
@@ -607,14 +600,14 @@ function RestaurantDetailPage() {
 								<section id="gallery" className="mapetite-panel grid gap-[18px] p-[22px]">
 									<div className="flex flex-wrap items-end justify-between gap-4">
 										<div className="w-full text-center md:text-left">
-											<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-												Gallery
-											</h2>
-											<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
-												{hasVerifiedGalleryImages
-													? "Use the space, plating, and pace of service to decide whether it matches the night you have in mind."
-													: "Photo coverage is limited here, so Mapetite keeps the fallback honest instead of inventing a gallery."}
-											</p>
+										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											Photos
+										</h2>
+										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
+											{hasVerifiedGalleryImages
+												? "Photos are available from public listing data. Treat them as a quick visual reference, not a guarantee of current conditions."
+												: "Photo coverage is limited here, so Mapetite keeps the fallback honest instead of inventing a gallery."}
+										</p>
 										</div>
 									</div>
 
@@ -630,8 +623,8 @@ function RestaurantDetailPage() {
 											className={cn(
 												"relative grid grid-rows-[auto_1fr_auto] gap-[14px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] p-[22px]",
 												hasVerifiedGalleryImages
-													? "min-h-[420px]"
-													: "min-h-[280px] sm:min-h-[320px]",
+													? "min-h-[360px] sm:min-h-[390px]"
+													: "min-h-[240px] sm:min-h-[280px]",
 												activeGalleryView.image
 													? "bg-black/10"
 													: "bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.26),rgba(180,108,67,0.08)_38%,rgba(17,13,11,0.2)_100%)]",
@@ -720,10 +713,10 @@ function RestaurantDetailPage() {
 								<section id="context" className="mapetite-panel grid gap-[18px] p-[22px]">
 									<div className="text-center md:text-left">
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-											What to know
+											Practical details
 										</h2>
 										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
-											Useful listing details, kept separate from anything Mapetite cannot verify.
+											The useful facts behind the shortlist: location, category, hours, price, and only the links that public data provides.
 										</p>
 									</div>
 
@@ -789,7 +782,7 @@ function RestaurantDetailPage() {
 												</strong>
 											</div>
 											<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-												This link comes from provider/open-data menu fields. Restaurant coverage may vary.
+												This link comes from provider/open-data menu fields. If the restaurant changes its menu, the external page is the source to trust.
 											</p>
 											<a
 												href={restaurant.menuUrl}
@@ -829,29 +822,12 @@ function RestaurantDetailPage() {
 										</div>
 									) : null}
 
-									{contextTags.length > 0 ? (
-										<div className="flex flex-wrap justify-center gap-2 md:justify-start">
-											{contextTags.map((tag, index) => (
-												<span
-													key={`${tag}-${index}`}
-													className={cn(
-														"inline-flex items-center gap-2 rounded-full border px-[11px] py-2 text-[13px]",
-														index === 0
-															? "border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]"
-															: "border-[rgba(255,236,220,0.1)] bg-white/[0.03] text-[var(--mapetite-text-soft)]",
-													)}
-												>
-													{tag}
-												</span>
-											))}
-										</div>
-									) : null}
 								</section>
 
 								<section id="reviews" className="mapetite-panel grid gap-[18px] p-[22px]">
 									<div className="text-center md:text-left">
 										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-											Reviews and confidence
+											Rating context
 										</h2>
 										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
 											{reviewSummaryCopy}
@@ -980,8 +956,7 @@ function RestaurantDetailPage() {
 												{fullAddress}
 											</strong>
 											<p className="text-sm leading-7 text-[var(--mapetite-text-soft)]">
-												Keep the address, route, and final decision close once the
-												restaurant feels worth the trip.
+												Use the address and map preview as a route check before you leave the shortlist.
 											</p>
 											<div className="flex flex-wrap justify-center gap-2 md:justify-start">
 												{[
@@ -1012,12 +987,10 @@ function RestaurantDetailPage() {
 							<aside className="min-[1181px]:sticky min-[1181px]:top-[94px] min-[1181px]:self-start">
 								<div className="mapetite-panel grid gap-5 p-5 md:p-6">
 									<h3 className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-										Ready to decide?
+										Plan your visit
 									</h3>
 									<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-										Keep the actions close to the facts you need most: where it is,
-										whether it&apos;s open, and how to get back if you want another
-										option.
+										Quick actions stay here so the profile remains useful after you scan the photos, hours, and route.
 									</p>
 
 									<div className="grid gap-3">
