@@ -34,21 +34,21 @@ const cityStarts = [
 				name: "Counter dining",
 				subtitle: "Omakase · Shinjuku",
 				signal: "Focused",
-				detail: "Compare pacing, neighborhood fit, and whether the room feels worth the trip.",
+				detail: "Compare location context, timing, and whether the listing feels worth opening.",
 				meta: ["Omakase", "Shinjuku", "Route context"],
 			},
 			{
 				name: "Ramen room",
 				subtitle: "Ramen · Nakameguro",
 				signal: "Compact",
-				detail: "A simpler stop where timing, distance, and neighborhood matter most.",
+				detail: "A simpler stop where timing, distance, and neighborhood context matter most.",
 				meta: ["Ramen", "Nakameguro", "Quick compare"],
 			},
 			{
 				name: "Izakaya option",
 				subtitle: "Izakaya · Ebisu",
 				signal: "Lively",
-				detail: "A warmer, more social option when the night can stretch a little.",
+				detail: "A flexible option when the route and timing can stretch a little.",
 				meta: ["Izakaya", "Ebisu", "Save-ready"],
 			},
 		],
@@ -65,21 +65,21 @@ const cityStarts = [
 				name: "Bistro table",
 				subtitle: "Bistro · Saint-Germain",
 				signal: "Classic",
-				detail: "Use location, room character, and dinner pace before opening details.",
+				detail: "Use location, category, and listed-hours context before opening details.",
 				meta: ["Bistro", "Saint-Germain", "Hours listed"],
 			},
 			{
 				name: "Wine bar",
 				subtitle: "Wine bar · Le Marais",
 				signal: "Flexible",
-				detail: "A lighter plan with smaller plates and easier second-stop potential.",
+				detail: "A lighter plan where route and website context can help narrow the list.",
 				meta: ["Wine bar", "Le Marais", "Website"],
 			},
 			{
 				name: "Tasting menu",
 				subtitle: "Tasting menu · 7th",
 				signal: "Occasion",
-				detail: "A more deliberate centerpiece when the meal needs confidence.",
+				detail: "A more deliberate option when the listing details need a closer look.",
 				meta: ["Tasting", "Occasion", "Directions"],
 			},
 		],
@@ -96,21 +96,21 @@ const cityStarts = [
 				name: "Dining room",
 				subtitle: "Modern British · Marylebone",
 				signal: "Polished",
-				detail: "An occasion-ready room without forcing the night to become too heavy.",
+				detail: "A higher-intent listing where reviews and route context matter.",
 				meta: ["Dining room", "Marylebone", "Reviews"],
 			},
 			{
 				name: "Gastropub",
 				subtitle: "Gastropub · Notting Hill",
 				signal: "Relaxed",
-				detail: "A neighborhood option when route and pacing matter more than ceremony.",
+				detail: "A neighborhood option when route and listed hours matter most.",
 				meta: ["Gastropub", "Notting Hill", "Route"],
 			},
 			{
 				name: "Chef-led menu",
 				subtitle: "Chef-led · Shoreditch",
 				signal: "Focused",
-				detail: "A sharper shortlist candidate when one restaurant needs to stand out.",
+				detail: "A sharper shortlist candidate when one listing needs a closer comparison.",
 				meta: ["Chef-led", "Shoreditch", "Details"],
 			},
 		],
@@ -127,21 +127,21 @@ const cityStarts = [
 				name: "Rooftop setting",
 				subtitle: "Rooftop · Dubai Marina",
 				signal: "Scenic",
-				detail: "A route-and-room decision where setting carries extra weight.",
+				detail: "A route-and-location decision where the listing context carries extra weight.",
 				meta: ["Rooftop", "Marina", "Compare"],
 			},
 			{
 				name: "Hotel dining",
 				subtitle: "Hotel dining · Palm Jumeirah",
 				signal: "Composed",
-				detail: "A calmer service option with stronger setting confidence.",
+				detail: "A calmer listing to compare through address, website, and route details.",
 				meta: ["Hotel dining", "Palm", "Save"],
 			},
 			{
 				name: "Tasting room",
 				subtitle: "Tasting menu · DIFC",
 				signal: "Deliberate",
-				detail: "A more intentional pick when the evening needs a clear anchor.",
+				detail: "A more intentional pick when the shortlist needs a clear comparison point.",
 				meta: ["Tasting", "DIFC", "Directions"],
 			},
 		],
@@ -588,7 +588,7 @@ function LandingPage() {
 									<div className="rounded-[14px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.035)] p-4">
 										<div className="mapetite-media-fallback flex min-h-[190px] items-end rounded-[12px] p-4">
 											<span className="text-sm text-[var(--mapetite-text-soft)]">
-												Preview artwork · restaurant context
+												Public listing preview
 											</span>
 										</div>
 										<h3 className="mt-4 text-2xl font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">

@@ -600,14 +600,14 @@ function RestaurantDetailPage() {
 								<section id="gallery" className="mapetite-panel grid gap-[18px] p-[22px]">
 									<div className="flex flex-wrap items-end justify-between gap-4">
 										<div className="w-full text-center md:text-left">
-										<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-											Photos
-										</h2>
-										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
-											{hasVerifiedGalleryImages
-												? "Photos are available from public listing data. Treat them as a quick visual reference, not a guarantee of current conditions."
-												: "Photo coverage is limited here, so Mapetite keeps the fallback honest instead of inventing a gallery."}
-										</p>
+											<h2 className="text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+												Photos
+											</h2>
+											<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
+												{hasVerifiedGalleryImages
+													? "Photos are available from public listing data. Treat them as a quick visual reference, not a guarantee of current conditions."
+													: "Photo coverage is limited here, so Mapetite keeps the fallback honest instead of inventing a gallery."}
+											</p>
 										</div>
 									</div>
 
@@ -926,8 +926,7 @@ function RestaurantDetailPage() {
 											Location and route
 										</h2>
 										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[620px] text-sm leading-6 md:mx-0">
-											Leave with the exact address, a grounded location preview, and a
-											clear next action.
+											Use the available address, map preview, and route action before you leave the shortlist.
 										</p>
 									</div>
 
@@ -995,7 +994,7 @@ function RestaurantDetailPage() {
 
 									<div className="grid gap-3">
 										<div className="flex items-center justify-between gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-4 py-3">
-											<strong className="text-sm text-[var(--mapetite-text)]">Tonight</strong>
+											<strong className="text-sm text-[var(--mapetite-text)]">Hours</strong>
 											<span className="text-sm text-[var(--mapetite-text-soft)]">
 												{tonightHoursLabel}
 											</span>
@@ -1110,8 +1109,8 @@ function RestaurantDetailPage() {
 									Keep searching if the fit is close, not final.
 								</strong>
 								<p className="mapetite-muted-copy mt-2 max-w-2xl text-sm leading-6">
-									The detail page should help you commit with confidence, while
-									keeping the route back to the shortlist clear and easy.
+									The detail page should help you decide with clearer context, while
+									keeping the route back to the shortlist clear.
 								</p>
 							</div>
 							<Button asChild className="mapetite-accent-button rounded-[10px] px-5">

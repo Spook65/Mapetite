@@ -1993,7 +1993,7 @@ function RestaurantSearchPage() {
 										Search for restaurants
 									</h3>
 									<p className="mapetite-muted-copy mt-2 text-sm">
-										Enter a city, state, or country above to open the list.
+										Enter a city, then add state, province, region, or country if it helps.
 									</p>
 								</div>
 							</div>
