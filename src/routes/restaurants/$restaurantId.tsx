@@ -502,11 +502,11 @@ function RestaurantDetailPage() {
 						</div>
 
 						<section className="mapetite-panel p-6 md:p-7">
-							<div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
-								<div className="grid justify-items-center gap-4 text-center lg:justify-items-start lg:text-left">
-									<div className="mapetite-eyebrow justify-center lg:justify-start">Restaurant detail</div>
-									<div className="grid justify-items-center lg:justify-items-start">
-										<h1 className="max-w-[10ch] text-[clamp(34px,4vw,52px)] font-semibold leading-none tracking-[-0.06em] text-[var(--mapetite-text)]">
+							<div className="grid gap-6">
+								<div className="grid justify-items-center gap-4 text-center">
+									<div className="mapetite-eyebrow justify-center">Restaurant detail</div>
+									<div className="grid justify-items-center">
+										<h1 className="max-w-[12ch] text-[clamp(34px,4vw,52px)] font-semibold leading-none tracking-[-0.06em] text-[var(--mapetite-text)]">
 											{restaurant.name}
 										</h1>
 										<p className="mapetite-muted-copy mt-4 max-w-[620px] text-[15px] leading-7">
@@ -514,7 +514,7 @@ function RestaurantDetailPage() {
 										</p>
 									</div>
 
-									<div className="flex flex-wrap items-center justify-center gap-2.5 lg:justify-start">
+									<div className="flex flex-wrap items-center justify-center gap-2.5">
 										<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.03] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 											<strong className="font-semibold text-[var(--mapetite-text)]">
 												{restaurant.rating.toFixed(1)}
@@ -541,7 +541,7 @@ function RestaurantDetailPage() {
 										) : null}
 									</div>
 
-									<div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center lg:justify-start">
+									<div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center">
 										<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
 											<a href={directionsUrl} target="_blank" rel="noreferrer">
 												<Navigation className="mr-2 size-4" />
@@ -572,27 +572,27 @@ function RestaurantDetailPage() {
 									</div>
 								</div>
 
-								<aside className="grid justify-items-center gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-[18px] text-center lg:justify-items-start lg:text-left">
+								<aside className="grid gap-4 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:p-[18px]">
 									<small className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.46)]">
 										Available public listing data
 									</small>
 									<strong className="text-lg font-semibold tracking-[-0.03em] text-[var(--mapetite-text)]">
 										What Mapetite can show right now.
 									</strong>
-									<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
+									<p className="mx-auto max-w-[720px] text-sm leading-6 text-[var(--mapetite-text-soft)]">
 										This is a practical summary of fields returned by current public
 										sources, not a claimed-business profile.
 									</p>
-									<div className="grid w-full gap-2">
+									<div className="grid w-full gap-2 sm:grid-cols-2 lg:grid-cols-5">
 										{publicListingFacts.map((fact) => (
 											<div
 												key={fact.label}
-												className="flex items-center justify-between gap-3 rounded-[10px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-3 py-2 text-left"
+												className="grid gap-1 rounded-[10px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-3 py-2 text-center"
 											>
 												<span className="text-[13px] font-medium text-[var(--mapetite-text)]">
 													{fact.label}
 												</span>
-												<span className="text-right text-[13px] text-[var(--mapetite-text-soft)]">
+												<span className="text-[13px] text-[var(--mapetite-text-soft)]">
 													{fact.value}
 												</span>
 											</div>
