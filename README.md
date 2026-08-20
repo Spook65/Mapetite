@@ -1,50 +1,62 @@
 # Mapetite
 
-Mapetite is a restaurant discovery app that helps users search by place, compare curated restaurant results, save favorites, and open detail pages with practical decision cues.
+Mapetite is a full-stack restaurant discovery MVP that helps users search by
+city, compare cleaner restaurant options, save a shortlist, and open detail
+pages with practical context before deciding where to go.
 
-The goal is not to perfectly declare the single "best" restaurant. Mapetite helps people compare with less noise, find restaurants worth considering, and make a better dining decision from the data available.
+It is not trying to be Google Maps, Yelp, or an official restaurant data source.
+The project focuses on a smaller product promise:
 
-## Product Positioning
+> Search a place, compare useful restaurant signals, and show missing or
+> uncertain public data honestly instead of filling gaps with fake claims.
 
-Mapetite is built for broad restaurant discovery, not only date nights. It supports different dining contexts, from casual meals to special nights out, by focusing on practical signals that are available from the current provider stack:
+## Live Demo
 
-- location and distance context
-- restaurant-like category confidence
-- rating and review confidence when available
-- hours and open-now status when provider-backed
-- website, phone, menu, and directions availability
-- media coverage or honest fallback artwork
-- favorites for keeping a shortlist
+- Frontend: [https://mapetite-nine.vercel.app](https://mapetite-nine.vercel.app)
+- Backend health check: [https://mapetite-y04j.onrender.com/health](https://mapetite-y04j.onrender.com/health)
 
-Future versions may add occasion-based recommendation modes such as first-date fit, casual dinner, group night, quick bite, and worth-the-trip searches. Those modes are roadmap items, not current ranking behavior.
+The deployed app is a portfolio MVP demo. Accounts and favorites may reset
+because the demo backend can run in memory mode.
 
-## Features
+## Why This Project Matters
 
-- Place-based restaurant search by city, region, country, or coordinates.
-- Geoapify primary provider with OSM/Overpass fallback.
-- Normalized restaurant data so raw provider categories do not leak directly into the UI.
-- Quality-weighted default ranking using restaurant-likeness, rating/review confidence, category relevance, location relevance, data completeness, and media trust.
-- Category chips, price/rating/sort controls, favorites-only mode, and Show More batching.
-- Open-now handling only when provider data explicitly supports it.
-- Desktop selected restaurant preview rail.
-- Mobile selected restaurant bottom bar.
-- Detail pages with gallery fallback states, website/menu/call/directions actions, hours formatting, and save controls.
-- Favorites backed by the app auth flow, with local snapshot rehydration for MVP resilience.
-- Responsive mobile navigation and sticky mobile navbars.
-- Credibility-safe landing page sample content that demonstrates product flow without pretending sample restaurants are live provider data.
+Mapetite is designed as a serious CS/internship portfolio project, not just a
+restaurant-themed landing page. It demonstrates:
 
-## Current Ranking Philosophy
+- a separated React/Vite frontend and Express backend deployment
+- provider/open-data integration with Geoapify and OSM/Overpass fallback
+- backend place validation so fake or ambiguous city searches do not silently
+  resolve to unrelated locations
+- data normalization from raw provider JSON into app-specific restaurant objects
+- ranking signals based on rating confidence, review depth, category relevance,
+  location quality, and listing completeness
+- honest UI labels for hours, menus, photos, cuisine hints, and unavailable data
+- demo auth/favorites, CORS, rate limits, security headers, and privacy notes
 
-Mapetite's current best-match ranking favors restaurants that look useful and trustworthy given free/low-cost data:
+## Core Features
 
-- stronger restaurant/food category confidence
-- provider-backed ratings and review counts when available
-- weighted rating confidence instead of raw rating alone
-- searched-location relevance and reasonable distance when available
-- useful completeness signals such as address, valid coordinates, hours, website, phone, menu URL, and real media coverage
-- penalties for weak names, suspicious/non-food categories, missing coordinates, and very low trust signals
-
-Mapetite does not currently rank by romance, lighting, noise level, first-date fit, service pacing, or ambiance quality. Those signals would require richer data and are intentionally left for future product work.
+- City, state/province/region, country, and coordinate-based restaurant search.
+- Backend place validation for known city/region/country combinations.
+- Clear invalid-place and ambiguous-place responses.
+- Geoapify as the primary restaurant/location provider.
+- OSM/Overpass fallback when primary provider data is unavailable or thin.
+- Normalized restaurant cards with rating, review count, cuisine/category,
+  hours status, route, save, and detail actions.
+- "Prioritize open" soft ordering that moves confirmed or likely-open places up
+  without hiding every restaurant when hours data is incomplete.
+- Detail pages with practical actions: directions, save, website, menu, and
+  phone when those fields are available.
+- Real menu links only when provider/open-data fields explicitly include a menu
+  URL.
+- Photo galleries when venue photos are available, plus honest no-photo states
+  when verified venue photos are unavailable.
+- Category-based cuisine hints that are labeled as hints, not verified menu
+  items.
+- Demo registration/login/logout and favorites backed by the Express demo API in
+  memory mode.
+- Responsive landing, search, selected-preview, and detail-page layouts.
+- Footer attribution, MVP disclosure, privacy baseline, and optional feedback
+  link.
 
 ## Tech Stack
 
@@ -57,7 +69,7 @@ Frontend:
 - TanStack Query
 - Zustand
 - Tailwind CSS
-- Radix/shadcn-style UI components
+- Radix/shadcn-style UI primitives
 - Vitest
 
 Backend:
@@ -65,27 +77,184 @@ Backend:
 - Node.js
 - Express
 - Geoapify
-- OSM/Overpass fallback
+- OpenStreetMap / Overpass fallback
+- Countries States Cities Database-derived compact place index
 - In-memory TTL caches for search, geocoding, detail, and media enrichment
-- Optional MongoDB connection hooks
-- Prisma/Postgres configuration for production-oriented persistence paths
+- Memory-mode demo auth/favorites
+- Optional Mongo connection hook and database-mode configuration path
 
-Auth:
+Deployment:
 
-- MVP/dev auth is served by the Vite mock API plugin during local frontend development.
-- Deployed portfolio demo auth/favorites are served by the Express backend when `MAPETITE_STORAGE_MODE=memory`.
-- Auth tokens are stored client-side in `localStorage` under `creao_auth_token`.
-- This is sufficient for portfolio/MVP flows, but production auth still needs hardening, HTTPS, durable user storage, email verification, secure token/session handling, and deployment-specific review.
+- Vercel for the static frontend
+- Render for the Express backend
 
-## Requirements
+## Architecture
+
+```text
+User
+  |
+  v
+Vercel React frontend
+  |
+  | REST API calls
+  v
+Render Express backend
+  |
+  | place validation, provider search, normalization, caching
+  v
+Geoapify primary provider + OSM/Overpass fallback
+```
+
+Repository map:
+
+```text
+src/
+  routes/                 React route pages for landing, search, and detail
+  components/             Layout, footer, auth modal, and UI pieces
+  lib/api/                Frontend API clients for restaurants, auth, favorites
+  store/                  Zustand restaurant search state
+
+server/
+  routes/                 Express routes for restaurants, auth, health, maps
+  services/               Provider, catalog, ranking, hours, media, validation
+  data/                   Compact backend-only place validation index
+  config/                 Environment and logging helpers
+```
+
+Key files:
+
+- `src/routes/index.tsx` - landing page and product preview
+- `src/routes/restaurants.tsx` - search form, filters, result cards, selected preview
+- `src/routes/restaurants/$restaurantId.tsx` - restaurant detail page
+- `src/lib/api/restaurants.ts` - frontend restaurant API client
+- `src/store/restaurant-search-store.ts` - persisted search/filter UI state
+- `server/routes/restaurants.js` - search/detail route handling
+- `server/services/placeValidation.js` - city/region/country validation
+- `server/services/restaurantCatalog.js` - provider orchestration, normalization, ranking, cache
+- `server/services/geoapifyProvider.js` - Geoapify search/detail normalization
+- `server/services/restaurantHours.js` - conservative hours-status labeling
+- `server/routes/demoAuth.js` - memory-mode demo auth/favorites API
+
+## Data Pipeline
+
+1. The user enters a place such as "Stockton, California, United States".
+2. The backend validates and canonicalizes that place against a compact
+   backend-only location index.
+3. Invalid places return `PLACE_NOT_FOUND`; ambiguous places return
+   `PLACE_AMBIGUOUS` with suggestions instead of silently guessing.
+4. The backend searches Geoapify first.
+5. If needed, the backend can use OSM/Overpass fallback data.
+6. Raw provider JSON is normalized into Mapetite restaurant objects.
+7. The catalog layer deduplicates, scores, ranks, and caches the result set.
+8. The frontend renders results with honest labels for available, unavailable,
+   and uncertain data.
+9. Detail pages load normalized restaurant data by ID and show practical actions
+   and missing-data states.
+
+In plain English: provider data can be incomplete, so Mapetite separates "we
+have this data" from "we do not know" instead of inventing missing content.
+
+## Ranking and Data Quality
+
+Mapetite's default ranking is not an official quality score. It is a practical
+MVP ranking that favors listings that are more useful for a search experience.
+
+Signals include:
+
+- restaurant/category confidence
+- rating and review-count confidence
+- searched-location relevance
+- coordinate/address completeness
+- website, phone, menu URL, and hours availability
+- photo/media availability
+- penalties for weak names, suspicious non-food categories, missing coordinates,
+  or very low data-completeness signals
+
+The app does not rank by ambience, noise level, service quality, romance,
+authenticity, or "local favorite" status because those signals are not available
+from the current provider stack.
+
+## Hours and Open Status
+
+Mapetite treats hours carefully:
+
+- `Open now` / `Closed now` are used when provider data explicitly confirms
+  status.
+- `Likely open` / `Closed based on listed hours` can be used for simple
+  same-hours schedules that Mapetite can safely evaluate in the restaurant
+  location's timezone.
+- `Hours listed` is used when hours exist but the schedule is too complex or
+  uncertain for the lightweight parser.
+- `Hours unavailable` is used when the current data source does not provide
+  usable hours.
+- `Prioritize open` is soft ordering, not a hard filter. Restaurants with
+  incomplete hours remain visible lower in the list.
+
+Users should still confirm hours before going, especially when provider/open
+data is incomplete or stale.
+
+## Menus, Photos, and Cuisine Hints
+
+Mapetite avoids fake certainty:
+
+- Menu links appear only when provider/open-data fields explicitly include a
+  menu URL, such as menu-specific OSM-style fields.
+- Generic restaurant websites are not converted into menu links.
+- Cuisine hints are generated from normalized category/cuisine labels and are
+  not verified menu items.
+- Verified venue photos are shown when available.
+- Fallback artwork and no-photo states are clearly treated as fallback UI, not
+  real venue photography.
+
+## Known MVP Limitations
+
+- Public provider/open-data coverage varies by city and country.
+- Some restaurants may lack hours, photos, phone numbers, menu URLs, websites,
+  ratings, or review depth.
+- Complex hours schedules are intentionally conservative until a production
+  parser such as `opening_hours.js` is evaluated.
+- The compact place index is not a full global autocomplete database.
+- Demo auth/favorites in `MAPETITE_STORAGE_MODE=memory` reset when the backend
+  restarts.
+- Auth tokens are stored in browser `localStorage`, which is acceptable for a
+  demo but should be revisited before serving real users.
+- There is no claimed-business flow, owner verification, moderation tooling, or
+  official restaurant data partnership.
+- Mapetite is not a replacement for official restaurant websites, Google Maps,
+  Yelp, OpenTable, or Resy.
+- This repository includes privacy/security baseline notes, not formal legal
+  compliance review.
+
+## Privacy and Security Baseline
+
+See [PRIVACY.md](./PRIVACY.md) for the MVP privacy baseline.
+
+Current safeguards and boundaries:
+
+- Backend secrets such as `GEOAPIFY_API_KEY`, `DATABASE_URL`, and Mongo URLs stay
+  server-side in environment variables.
+- The frontend uses `VITE_RESTAURANTS_API_BASE_URL` and `VITE_API_BASE_PATH` to
+  target the deployed backend.
+- The Express backend disables `x-powered-by`, sends basic security headers, and
+  limits JSON request bodies to 1 MB.
+- Production deployments should set `CORS_ORIGIN` to the deployed frontend URL.
+- The backend includes lightweight in-memory rate limiting for `/api` and
+  restaurant search routes.
+- Demo passwords are hashed with Node crypto `scrypt` before being stored in the
+  memory-mode demo auth map.
+- Memory-mode accounts, sessions, favorites, and caches reset on backend restart.
+
+Before real users, Mapetite would need production auth, durable storage, email
+verification, password reset, account deletion/export, token/session review, and
+deployment-specific legal/privacy review.
+
+## Local Development
+
+Requirements:
 
 - Node `^20.19.0 || >=22.12.0`
 - pnpm `>=10`
-- Geoapify API key recommended for primary restaurant search
-- Backend defaults to `127.0.0.1:5001`
-- Frontend defaults to `127.0.0.1:3000` or the next available Vite port
-
-## Local Setup
+- Geoapify API key recommended for primary provider results
 
 Install frontend dependencies from the repo root:
 
@@ -100,7 +269,8 @@ cp .env.example .env
 cp .env.example server/.env
 ```
 
-Fill in any values you need locally. At minimum, set `GEOAPIFY_API_KEY` for primary Geoapify results. Without it, the backend falls back to OSM/Overpass where possible.
+Set `GEOAPIFY_API_KEY` for primary Geoapify results. Without it, the backend
+warns and falls back to OSM/Overpass where possible.
 
 Start the backend:
 
@@ -116,25 +286,27 @@ In another terminal, start the frontend from the repo root:
 pnpm run dev
 ```
 
-Open the frontend at `http://127.0.0.1:3000`. If that port is busy, Vite will choose the next available port.
+Open the frontend at `http://127.0.0.1:3000`. If that port is busy, Vite may use
+the next available port.
 
 ## Commands
 
 From the repo root:
 
 ```sh
-pnpm run dev      # frontend dev server
-pnpm run build    # typecheck + production frontend build
-pnpm run test     # Vitest
-pnpm run check    # read-only typecheck + Radix Select lint check
-pnpm run lint:radix:fix # autofix Radix Select lint issues
+pnpm run dev              # frontend dev server
+pnpm run build            # typecheck + production frontend build
+pnpm run test             # Vitest test suite
+pnpm run check            # read-only typecheck + Radix Select lint check
+pnpm run lint:radix:fix   # autofix Radix Select lint issues
+pnpm run format           # Biome write/format pass
 ```
 
 From `server/`:
 
 ```sh
-pnpm run dev      # backend with nodemon
-pnpm run start    # backend with node
+pnpm run dev              # backend with nodemon
+pnpm run start            # backend with node
 ```
 
 ## Environment Variables
@@ -145,158 +317,158 @@ Frontend variables:
 
 | Variable | Required | Notes |
 | --- | --- | --- |
-| `VITE_RESTAURANTS_API_BASE_URL` | Optional locally | Backend base URL. Defaults to `http://127.0.0.1:5001`. Set this in production. |
-| `VITE_AUTH_DEBUG` | Optional | Enables auth integration debug logging in development only when `true`. |
-| `VITE_MOCK_API_DEBUG` | Optional | Enables Vite mock API debug logs when `true`. |
-| `VITE_APP_CONFIG_DEBUG` | Optional | Enables app config debug logs in development only when `true`. |
-| `TENANT_ID` | Optional | Used by Vite base path logic for hosted tenant-style paths. |
+| `VITE_RESTAURANTS_API_BASE_URL` | Required in production | Backend base URL for restaurant search/detail. Defaults to `http://127.0.0.1:5001` in development. |
+| `VITE_API_BASE_PATH` | Required for deployed demo auth | Auth/favorites API base URL. Leave blank for local Vite mock auth. Set to the Render backend URL for the deployed portfolio demo. |
+| `VITE_FEEDBACK_URL` | Optional | External form URL used by the footer's "Send feedback" link. Hidden when empty. |
+| `VITE_AUTH_DEBUG` | Optional | Auth integration debug logging when explicitly enabled. Keep `false` in deployed demos. |
+| `VITE_MOCK_API_DEBUG` | Optional | Vite mock API debug logs when explicitly enabled. Keep `false` in deployed demos. |
+| `VITE_APP_CONFIG_DEBUG` | Optional | App config debug logs when explicitly enabled. Keep `false` in deployed demos. |
 | `VITE_MCP_API_BASE_PATH` | Optional/legacy | Used by remaining generated MCP SDK helpers if those paths are exercised. |
-| `VITE_API_BASE_PATH` | Required for deployed demo auth | Auth/favorites API base URL. Leave blank for local Vite mock auth. For the deployed portfolio demo, set it to the Render backend URL. |
+| `TENANT_ID` | Optional | Used by Vite base-path logic for hosted tenant-style paths. |
 
 Backend variables:
 
 | Variable | Required | Notes |
 | --- | --- | --- |
-| `MAPETITE_STORAGE_MODE` | Recommended | Use `memory` for portfolio/MVP demo deployments. Use `database` only when deploying persistent storage. Defaults to `memory`. |
+| `MAPETITE_STORAGE_MODE` | Recommended | Use `memory` for portfolio/MVP demo deployments. Use `database` only when persistent storage is configured. Defaults to `memory`. |
 | `GEOAPIFY_API_KEY` | Recommended | Primary restaurant/geocoding provider. If missing, search falls back to OSM/Overpass where possible. |
+| `HOST` | Optional | Defaults to `127.0.0.1`. Use `0.0.0.0` on Render-style hosts. |
 | `PORT` | Optional | Defaults to `5001`. |
-| `HOST` | Optional | Defaults to `127.0.0.1`. |
-| `CORS_ORIGIN` | Recommended in production | Comma-separated frontend origins allowed by the backend. Leave unset for permissive local MVP behavior. |
+| `CORS_ORIGIN` | Recommended in production | Comma-separated frontend origins allowed by the backend. |
 | `RATE_LIMIT_WINDOW_MS` | Optional | Backend API rate-limit window. Defaults to 15 minutes. |
 | `RATE_LIMIT_MAX` | Optional | General `/api` requests per IP per window. Defaults to `300`. |
 | `SEARCH_RATE_LIMIT_MAX` | Optional | `/api/restaurants/search` requests per IP per window. Defaults to `60`. |
-| `DATABASE_URL` | Required for `MAPETITE_STORAGE_MODE=database` | Prisma/Postgres connection. Not required for `memory` demo deployments. |
-| `MONGODB_URI` / `MONGO_URI` | Optional | Optional Mongo connection. The app logs a warning and continues if unavailable. |
-| `MAPETITE_SEARCH_DEBUG` | Optional | Backend search diagnostics when `true`. |
-| `SEARCH_DEBUG` | Optional | Legacy alias for backend search diagnostics. |
+| `DATABASE_URL` | Required only for `MAPETITE_STORAGE_MODE=database` | Prisma/Postgres connection. Not required for memory-mode portfolio demos. |
+| `MONGODB_URI` / `MONGO_URI` | Optional | Optional Mongo connection hook. The app logs a warning and continues if unavailable in database mode. |
+| `MAPETITE_SEARCH_DEBUG` | Optional | Backend search diagnostics when `true`. Keep `false` in deployed demos. |
+| `SEARCH_DEBUG` | Optional | Legacy alias for backend search diagnostics. Keep `false` in deployed demos. |
 
-## Data Sources
+## Deployment
 
-- Geoapify is the primary restaurant and location provider.
-- OSM/Overpass is the fallback when Geoapify is unavailable or returns too little usable data.
-- City/region/country searches are validated against a compact backend-only
-  location index derived from the Countries States Cities Database before
-  provider restaurant search runs. Invalid places return a clear not-found
-  response instead of being silently geocoded to an unrelated place.
-- Geoapify's primary search cap is separate from the OSM fallback cap.
-- OSM fallback is capped to the top 100 results after normalization, filtering, deduplication, and ranking so large cities do not send thousands of results to the frontend.
-- In-memory TTL caches reduce repeated provider calls:
-  - search results: 1 hour for successful results, 10 minutes for empty/negative results
-  - geocode/location: 24 hours for successful results, 10 minutes for misses
-  - detail objects: 6 hours
-  - media enrichment: 24 hours for successful results, 1 hour for no-image results
-- When cache TTL expires, Mapetite recomputes a fresh ranked result set from providers. It does not paginate through result 101+ yet.
+Recommended portfolio deployment:
 
-## Data Honesty and Limitations
+- Frontend: Vercel
+- Backend: Render, Railway, Fly.io, or another Node/Express host
 
-Mapetite uses free/low-cost provider data, so coverage varies by city and country.
+Vercel frontend settings:
 
-Known MVP limitations:
+```text
+Framework preset: Vite
+Build command: pnpm run build
+Output directory: dist
+```
 
-- Some restaurants may lack website, phone, menu, hours, photos, or review depth.
-- Fallback artwork is used when verified venue photos are unavailable.
-- Menu links appear only when provider/open-data fields include a menu URL; generic websites remain website links.
-- Cuisine hints are generated from normalized cuisine/category labels. They are
-  not verified restaurant menu items.
-- Website and call actions appear only when data is available.
-- Hours are displayed when provider data exists.
-- Open-now claims are only trusted when the provider explicitly supplies open-now status.
-- Ratings/reviews can be incomplete or derived depending on provider data.
-- Free Geoapify/OSM coverage will not match paid Yelp or Google Places coverage.
-- The compact MVP location-validation index is not a full global autocomplete
-  database. It should be regenerated from the upstream Countries States Cities
-  Database before broad production use.
-- The landing preview content is sample/product-flow content, not live provider restaurant data.
-- First-date/date-night ranking and occasion modes are not implemented yet.
-- Backend favorites still benefit from stronger future snapshot persistence; the MVP uses frontend local snapshots to help rehydrate favorites across searches.
+Vercel environment:
 
-## Location Validation Attribution
+```text
+VITE_RESTAURANTS_API_BASE_URL=https://your-backend-url
+VITE_API_BASE_PATH=https://your-backend-url
+VITE_FEEDBACK_URL=https://your-feedback-form-url   # optional
+```
 
-Location validation data is derived from the
-[Countries States Cities Database](https://github.com/dr5hn/countries-states-cities-database),
-licensed under ODbL v1.0. The data is community-maintained and may contain
-errors or lag behind geopolitical/place-name changes. Mapetite uses this data
-only to validate and canonicalize city/region/country searches before provider
-restaurant lookup; it does not verify restaurant listings.
+Backend environment for a Render demo:
 
-The current `server/data/placeIndex.json` file is a compact backend-only MVP
-index, not a full copy of the upstream database. Keep additions limited to
-common demo/search targets, preserve ambiguous city variants, and verify
-valid/invalid/ambiguous cases after edits. A future production pass should
-replace manual edits with a repeatable import script that reads upstream
-Countries States Cities data, keeps only city/region/country/code/coordinate
-fields needed for validation, and writes a compact backend index without
-shipping the full dataset to the frontend.
+```text
+NODE_ENV=production
+MAPETITE_STORAGE_MODE=memory
+GEOAPIFY_API_KEY=...
+HOST=0.0.0.0
+CORS_ORIGIN=https://your-vercel-url
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX=300
+SEARCH_RATE_LIMIT_MAX=60
+MAPETITE_SEARCH_DEBUG=false
+SEARCH_DEBUG=false
+```
 
-## Authentication Notes
+Notes:
 
-Local development uses the Vite mock API plugin for registration, login, profile, and favorite flows. Deployed portfolio demos can use the Express backend's memory-mode demo auth routes by setting `MAPETITE_STORAGE_MODE=memory` on the backend and `VITE_API_BASE_PATH` on Vercel.
+- Do not convert the current Express backend to Vercel serverless functions for
+  this MVP deployment.
+- The committed `vercel.json` rewrites route requests to `index.html` so direct
+  visits to frontend routes work on Vercel.
+- `DATABASE_URL` is not required for `MAPETITE_STORAGE_MODE=memory`.
+- Memory-mode demo accounts/favorites and in-memory caches reset on backend
+  restart.
+- The backend health route is `GET /health`.
 
-Important production gaps:
+## Verification
 
-- Replace mock auth with a production auth service or hardened backend auth.
-- Store users and sessions durably.
-- Add email verification and password reset flows.
-- Serve only over HTTPS.
-- Review token lifetime, storage, refresh, logout, and CSRF/CORS behavior before real users.
+Automated checks from the repo root:
 
-## Privacy and Security Baseline
+```sh
+pnpm run check
+pnpm run build
+pnpm run test
+```
 
-See [PRIVACY.md](./PRIVACY.md) for the MVP privacy baseline.
+Manual smoke tests that represent the current MVP:
 
-Current release-readiness notes:
+- Search `Stockton, California, United States`.
+- Search `San Diego, California, United States`.
+- Search `fakecity` and confirm a clean place-not-found message.
+- Search `Springfield` and confirm an ambiguous-place response.
+- Toggle `Prioritize open` and confirm results are reordered, not hidden by
+  default.
+- Open a restaurant detail page.
+- Confirm Save/Favorite works while logged in.
+- Confirm Directions opens a route URL.
+- Confirm website/menu actions appear only when those links exist.
+- Confirm no-photo and failed-photo states do not look like verified venue
+  photos.
 
-- The app stores auth tokens in browser `localStorage`; this is acceptable for an MVP demo but should be revisited for production users.
-- The backend sends basic security headers and limits JSON request bodies to 1 MB.
-- Production deployments should set `CORS_ORIGIN` instead of relying on permissive local CORS.
-- Do not expose `GEOAPIFY_API_KEY`, `DATABASE_URL`, or other backend secrets to the frontend.
-- A development-only JWT diagnostic route exists at `/jwt-debug`, but it does not expose token details in production builds.
+## Data Attribution
 
-## Deployment Notes
+- Restaurant and location data: OpenStreetMap contributors and Geoapify-powered
+  provider data where available.
+- Place validation data: [Countries States Cities Database](https://github.com/dr5hn/countries-states-cities-database),
+  licensed under ODbL v1.0.
 
-Recommended deployment mode: portfolio demo with a public URL. Mapetite is suitable to show as an MVP/portfolio project when the limitations below are disclosed. It is not ready to treat as production auth or a real public consumer service.
+The compact `server/data/placeIndex.json` is backend-only and intended for MVP
+validation coverage. A future production pass should generate it from upstream
+data with a repeatable import script instead of relying on manual additions.
 
-- Deploy the frontend and backend separately. Do not convert the Express backend to Vercel serverless functions for the current MVP.
-- Frontend target: Vercel.
-  - Framework preset: `Vite`
-  - Build command: `pnpm run build`
-  - Output directory: `dist`
-  - Environment variable: `VITE_RESTAURANTS_API_BASE_URL=https://your-backend-url`
-  - Environment variable: `VITE_API_BASE_PATH=https://your-backend-url`
-  - Current demo backend value: `https://mapetite-y04j.onrender.com`
-- Backend target: Render, Railway, Fly.io, or another Node/Express host.
-  - `NODE_ENV=production`
-  - `MAPETITE_STORAGE_MODE=memory`
-  - `GEOAPIFY_API_KEY=...`
-  - `HOST=0.0.0.0`
-  - `CORS_ORIGIN=https://your-vercel-url`
-  - Current demo frontend value: `https://mapetite-nine.vercel.app`
-  - `RATE_LIMIT_WINDOW_MS=900000`
-  - `RATE_LIMIT_MAX=300`
-  - `SEARCH_RATE_LIMIT_MAX=60`
-  - `DATABASE_URL=...` only if `MAPETITE_STORAGE_MODE=database`
-- The committed `vercel.json` rewrites app routes to `index.html` so direct visits to routes like `/restaurants/:id` work on Vercel.
-- Keep `MAPETITE_SEARCH_DEBUG`, `SEARCH_DEBUG`, `VITE_AUTH_DEBUG`, `VITE_MOCK_API_DEBUG`, and `VITE_APP_CONFIG_DEBUG` set to `false` for deployed demos.
-- The backend includes lightweight in-memory rate limiting. Tune `RATE_LIMIT_MAX` and `SEARCH_RATE_LIMIT_MAX` for the deployed host and expected demo traffic.
-- In-memory caches reset when the backend restarts. Use a persistent cache later if refresh stability becomes important.
-- `MAPETITE_STORAGE_MODE=memory` is demo-only. Runtime state, in-memory caches, and any memory-backed account/favorite behavior reset on restart.
-- Demo users should not use sensitive passwords. Memory-mode demo auth is for portfolio evaluation only.
-- Production auth/storage needs hardening before real users. The Vite mock auth endpoints are local development behavior, not a real production auth service.
-- Free provider data quality varies by region; this is acceptable for MVP/portfolio, but should be documented in demos.
+## Screenshots
 
-## Future Roadmap
+No screenshot files are currently committed.
 
-- Occasion-based recommendation modes:
-  - first-date fit
-  - casual dinner
-  - group night
-  - quick bite
-  - worth the trip
-- Backend favorite restaurant snapshots.
-- Production auth and email verification.
-- Persistent database-backed cache.
-- Admin/manual restaurant overrides.
-- Richer media/menu provider integrations.
-- Optional paid provider support later.
-- Deployment hardening.
-- Location autocomplete and place suggestions.
+Recommended portfolio screenshots to add later:
+
+- Landing page, desktop
+- Search results, desktop
+- Search results, mobile with selected sticky card
+- Restaurant detail page, desktop
+- Restaurant detail page, mobile
+- No-photo/detail fallback state
+
+## Portfolio Highlights
+
+Use these points when explaining the project:
+
+- Built a full-stack restaurant discovery MVP with React, TypeScript, Vite,
+  Node.js, Express, and public provider/open-data sources.
+- Designed a provider normalization pipeline that converts raw Geoapify/OSM data
+  into consistent restaurant objects with ranking, data-completeness signals,
+  hours labels, media fallback states, and menu-link validation.
+- Implemented backend place validation so invalid or ambiguous city searches do
+  not silently geocode to unrelated locations.
+- Reworked "Open Now" into a data-honest "Prioritize open" experience that keeps
+  restaurants visible when provider hours are incomplete.
+- Shipped responsive search/detail flows with saved favorites, selected previews,
+  demo auth, route actions, no-photo states, and honest missing-data copy.
+- Deployed a separated Vercel frontend and Render Express backend with CORS,
+  rate limiting, security headers, environment-based configuration, and health
+  checks.
+
+## Roadmap
+
+Small, realistic next steps:
+
+- Generate the compact place index from upstream data with a repeatable script.
+- Evaluate `opening_hours.js` for richer OSM schedule parsing.
+- Add durable production auth and persistent favorite snapshots.
+- Add screenshots and short demo GIFs for the portfolio page.
+- Expand automated backend tests around provider normalization and place
+  validation.
+- Add optional location autocomplete without shipping a massive city database to
+  the frontend.
