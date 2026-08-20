@@ -9,11 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SavedRouteImport } from './routes/saved'
 import { Route as RestaurantsRouteImport } from './routes/restaurants'
 import { Route as JwtDebugRouteImport } from './routes/jwt-debug'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RestaurantsRestaurantIdRouteImport } from './routes/restaurants/$restaurantId'
 
+const SavedRoute = SavedRouteImport.update({
+  id: '/saved',
+  path: '/saved',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RestaurantsRoute = RestaurantsRouteImport.update({
   id: '/restaurants',
   path: '/restaurants',
@@ -39,12 +45,14 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/jwt-debug': typeof JwtDebugRoute
   '/restaurants': typeof RestaurantsRouteWithChildren
+  '/saved': typeof SavedRoute
   '/restaurants/$restaurantId': typeof RestaurantsRestaurantIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/jwt-debug': typeof JwtDebugRoute
   '/restaurants': typeof RestaurantsRouteWithChildren
+  '/saved': typeof SavedRoute
   '/restaurants/$restaurantId': typeof RestaurantsRestaurantIdRoute
 }
 export interface FileRoutesById {
@@ -52,18 +60,30 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/jwt-debug': typeof JwtDebugRoute
   '/restaurants': typeof RestaurantsRouteWithChildren
+  '/saved': typeof SavedRoute
   '/restaurants/$restaurantId': typeof RestaurantsRestaurantIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/jwt-debug' | '/restaurants' | '/restaurants/$restaurantId'
+  fullPaths:
+    | '/'
+    | '/jwt-debug'
+    | '/restaurants'
+    | '/saved'
+    | '/restaurants/$restaurantId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/jwt-debug' | '/restaurants' | '/restaurants/$restaurantId'
+  to:
+    | '/'
+    | '/jwt-debug'
+    | '/restaurants'
+    | '/saved'
+    | '/restaurants/$restaurantId'
   id:
     | '__root__'
     | '/'
     | '/jwt-debug'
     | '/restaurants'
+    | '/saved'
     | '/restaurants/$restaurantId'
   fileRoutesById: FileRoutesById
 }
@@ -71,10 +91,18 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   JwtDebugRoute: typeof JwtDebugRoute
   RestaurantsRoute: typeof RestaurantsRouteWithChildren
+  SavedRoute: typeof SavedRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/saved': {
+      id: '/saved'
+      path: '/saved'
+      fullPath: '/saved'
+      preLoaderRoute: typeof SavedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/restaurants': {
       id: '/restaurants'
       path: '/restaurants'
@@ -122,6 +150,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   JwtDebugRoute: JwtDebugRoute,
   RestaurantsRoute: RestaurantsRouteWithChildren,
+  SavedRoute: SavedRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

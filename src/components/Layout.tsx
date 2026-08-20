@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
 	Home,
+	Heart,
 	LogIn,
 	LogOut,
 	Menu,
@@ -60,10 +61,13 @@ export function Layout({ children }: LayoutProps) {
 	const navItems = [
 		{ path: "/", label: "Home", icon: Home },
 		{ path: "/restaurants", label: "Search", icon: Utensils },
+		{ path: "/saved", label: "Saved", icon: Heart },
 	];
 	const currentSectionLabel =
 		location.pathname === "/"
 			? "Home"
+			: location.pathname.startsWith("/saved")
+				? "Saved"
 			: location.pathname.startsWith("/restaurants/")
 				? "Detail"
 				: "Search";
@@ -209,6 +213,8 @@ export function Layout({ children }: LayoutProps) {
 									const isActive =
 										item.path === "/"
 											? location.pathname === item.path
+											: item.path === "/saved"
+												? location.pathname === item.path
 											: location.pathname === item.path ||
 												location.pathname.startsWith("/restaurants/");
 

@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { reverseGeocode } from "@/lib/api/nominatim";
 import { RestaurantSearchApiError } from "@/lib/api/restaurants";
+import { isAuthenticatedSync } from "@/lib/auth-integration";
 import { getRestaurantById, searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
@@ -581,6 +582,14 @@ function RestaurantSearchPage() {
 	// Memoize handlers with useCallback to prevent unnecessary re-renders of child components.
 	// These functions are passed as props to RestaurantCard, so stable references prevent re-renders.
 	const toggleFavorite = useCallback((restaurantId: string) => {
+		if (!isAuthenticatedSync()) {
+			toast.error("Sign in to save places", {
+				description:
+					"Create a demo account or log in to keep a saved restaurant shortlist.",
+			});
+			return;
+		}
+
 		toggleFavoriteMutate({ restaurant_id: restaurantId });
 	}, [toggleFavoriteMutate]);
 

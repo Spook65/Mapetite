@@ -54,6 +54,8 @@ restaurant-themed landing page. It demonstrates:
   items.
 - Demo registration/login/logout and favorites backed by the Express demo API in
   memory mode.
+- Saved Places page for viewing, opening, getting directions to, and removing
+  saved restaurants from a demo shortlist.
 - Responsive landing, search, selected-preview, and detail-page layouts.
 - Footer attribution, MVP disclosure, privacy baseline, and optional feedback
   link.
@@ -412,6 +414,7 @@ Manual smoke tests that represent the current MVP:
   default.
 - Open a restaurant detail page.
 - Confirm Save/Favorite works while logged in.
+- Open Saved Places and confirm saved restaurants can be viewed and removed.
 - Confirm Directions opens a route URL.
 - Confirm website/menu actions appear only when those links exist.
 - Confirm no-photo and failed-photo states do not look like verified venue
@@ -455,7 +458,8 @@ Use these points when explaining the project:
 - Reworked "Open Now" into a data-honest "Prioritize open" experience that keeps
   restaurants visible when provider hours are incomplete.
 - Shipped responsive search/detail flows with saved favorites, selected previews,
-  demo auth, route actions, no-photo states, and honest missing-data copy.
+  a Saved Places shortlist, demo auth, route actions, no-photo states, and
+  honest missing-data copy.
 - Deployed a separated Vercel frontend and Render Express backend with CORS,
   rate limiting, security headers, environment-based configuration, and health
   checks.
