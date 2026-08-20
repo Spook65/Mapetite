@@ -221,8 +221,11 @@ export function createDemoAuthRouter() {
     });
   });
 
-  router.post("/auth/logout", requireUser, (req, res) => {
-    sessions.delete(req.demoToken);
+  router.post("/auth/logout", (req, res) => {
+    const token = getBearerToken(req);
+    if (token) {
+      sessions.delete(token);
+    }
     return res.json({ status: "Success" });
   });
 

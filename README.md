@@ -245,6 +245,8 @@ Current safeguards and boundaries:
 - Demo passwords are hashed with Node crypto `scrypt` before being stored in the
   memory-mode demo auth map.
 - Memory-mode accounts, sessions, saved places, and caches reset on backend restart.
+- The frontend clears stale demo auth locally when the backend reports an invalid
+  or expired session, so users are not left appearing signed in after a restart.
 
 Before real users, Mapetite would need production auth, durable storage, email
 verification, password reset, account deletion/export, token/session review, and

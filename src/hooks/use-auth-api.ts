@@ -12,11 +12,19 @@ import {
 	type RegisterResponse,
 	type UserProfileResponse,
 	getUserProfile,
+	isAuthSessionError,
 	loginUser,
+	logoutUser,
 	registerUser,
 } from "@/lib/api/auth";
-import { clearAuth, setAuthToken } from "@/lib/auth-integration";
+import {
+	addAuthStateListener,
+	clearAuth,
+	getAuthState,
+	setAuthToken,
+} from "@/lib/auth-integration";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
 // Query keys for authentication
 export const AUTH_QUERY_KEYS = {
@@ -179,14 +187,13 @@ export function useAuthManager(authToken: string | null) {
  */
 export function useAuthState() {
 	const queryClient = useQueryClient();
+	const [authSnapshot, setAuthSnapshot] = useState(() => getAuthState());
 
-	// Get initial token from localStorage
-	const getToken = () =>
-		typeof window !== "undefined"
-			? localStorage.getItem("creao_auth_token")
-			: null;
+	useEffect(() => {
+		return addAuthStateListener(setAuthSnapshot);
+	}, []);
 
-	const authToken = getToken();
+	const authToken = authSnapshot.token;
 
 	const profileQuery = useUserProfile(authToken || "", {
 		enabled: !!authToken,
@@ -206,18 +213,33 @@ export function useAuthState() {
 		},
 	});
 
-	const logout = () => {
+	useEffect(() => {
+		if (!isAuthSessionError(profileQuery.error)) return;
+
 		void clearAuth();
 		queryClient.removeQueries({ queryKey: ["user"] });
-		// Force re-render
-		queryClient.invalidateQueries();
+	}, [profileQuery.error, queryClient]);
+
+	const logout = () => {
+		const tokenToInvalidate = authToken;
+
+		void logoutUser(tokenToInvalidate).catch((error) => {
+			if (import.meta.env.DEV) {
+				console.warn("Demo logout request failed; cleared local auth state.", error);
+			}
+		});
+
+		void clearAuth();
+		queryClient.removeQueries({ queryKey: ["user"] });
 	};
 
 	return {
 		authToken,
 		profile: profileQuery.data,
-		isAuthenticated: !!authToken && !!profileQuery.data,
+		isAuthenticated:
+			authSnapshot.status === "authenticated" && !!authToken && !!profileQuery.data,
 		isLoading:
+			authSnapshot.status === "loading" ||
 			profileQuery.isLoading ||
 			registerMutation.isPending ||
 			loginMutation.isPending,

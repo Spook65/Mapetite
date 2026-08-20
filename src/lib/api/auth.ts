@@ -12,6 +12,24 @@
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_PATH || "";
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const AUTH_REQUEST_TIMEOUT_MS = 15_000;
+
+export class AuthApiError extends Error {
+	status?: number;
+
+	constructor(message: string, status?: number) {
+		super(message);
+		this.name = "AuthApiError";
+		this.status = status;
+	}
+}
+
+export function isAuthSessionError(error: unknown): boolean {
+	return (
+		error instanceof AuthApiError &&
+		(error.status === 401 || error.status === 403)
+	);
+}
 
 function normalizeAuthEmail(email: string): string {
 	return email.trim().toLowerCase();
@@ -31,7 +49,40 @@ async function readAuthJson<T>(response: Response): Promise<T> {
 	try {
 		return (await response.json()) as T;
 	} catch {
-		throw new Error("Auth service is unavailable. Please try again later.");
+		throw new AuthApiError(
+			"Auth service is unavailable. Please try again later.",
+			response.status,
+		);
+	}
+}
+
+async function authFetch(
+	url: string,
+	options: RequestInit = {},
+): Promise<Response> {
+	const controller = new AbortController();
+	const timeoutId = globalThis.setTimeout(
+		() => controller.abort(),
+		AUTH_REQUEST_TIMEOUT_MS,
+	);
+
+	try {
+		return await fetch(url, {
+			...options,
+			signal: controller.signal,
+		});
+	} catch (error) {
+		if (error instanceof DOMException && error.name === "AbortError") {
+			throw new AuthApiError(
+				"The demo backend may be waking up. Please try again in a moment.",
+			);
+		}
+
+		throw new AuthApiError(
+			"Auth service is unavailable. Please try again later.",
+		);
+	} finally {
+		globalThis.clearTimeout(timeoutId);
 	}
 }
 
@@ -105,7 +156,7 @@ export async function registerUser(
 		throw new Error("Enter a password.");
 	}
 
-	const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
+	const response = await authFetch(`${API_BASE_URL}/api/auth/register`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -116,8 +167,9 @@ export async function registerUser(
 	const data = await readAuthJson<RegisterResponse>(response);
 
 	if (!response.ok) {
-		throw new Error(
+		throw new AuthApiError(
 			data.message || `Registration failed: ${response.statusText}`,
+			response.status,
 		);
 	}
 
@@ -184,7 +236,7 @@ export async function loginUser(request: LoginRequest): Promise<LoginResponse> {
 		throw new Error("Enter a password.");
 	}
 
-	const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+	const response = await authFetch(`${API_BASE_URL}/api/auth/login`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -195,7 +247,10 @@ export async function loginUser(request: LoginRequest): Promise<LoginResponse> {
 	const data = await readAuthJson<LoginResponse>(response);
 
 	if (!response.ok) {
-		throw new Error(data.message || `Login failed: ${response.statusText}`);
+		throw new AuthApiError(
+			data.message || `Login failed: ${response.statusText}`,
+			response.status,
+		);
 	}
 
 	return data;
@@ -248,7 +303,7 @@ export interface UserProfileResponse {
 export async function getUserProfile(
 	authToken: string,
 ): Promise<UserProfileResponse> {
-	const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
+	const response = await authFetch(`${API_BASE_URL}/api/user/profile`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
@@ -259,8 +314,9 @@ export async function getUserProfile(
 	const data = await readAuthJson<UserProfileResponse>(response);
 
 	if (!response.ok) {
-		throw new Error(
+		throw new AuthApiError(
 			data.message || `Failed to fetch profile: ${response.statusText}`,
+			response.status,
 		);
 	}
 
@@ -268,6 +324,33 @@ export async function getUserProfile(
 }
 
 // ==================== Helper Functions ====================
+
+/**
+ * Request backend session invalidation for the current token.
+ *
+ * The frontend still clears local auth state even if this request fails.
+ */
+export async function logoutUser(authToken: string | null): Promise<void> {
+	if (!authToken) return;
+
+	const response = await authFetch(`${API_BASE_URL}/api/auth/logout`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
+			Authorization: `Bearer ${authToken}`,
+		},
+	});
+
+	if (!response.ok) {
+		const data: { message?: string } = await readAuthJson<{
+			message?: string;
+		}>(response).catch(() => ({}));
+		throw new AuthApiError(
+			data.message || `Logout failed: ${response.statusText}`,
+			response.status,
+		);
+	}
+}
 
 /**
  * Check if a user is authenticated by validating their token

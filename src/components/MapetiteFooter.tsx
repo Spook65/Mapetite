@@ -45,7 +45,7 @@ export function MapetiteFooter() {
 							 Mapetite is not affiliated with listed restaurants.
 						</p>
 						<p>
-							Portfolio MVP demo. Results may vary by region. Accounts and favorites
+							Portfolio MVP demo. Results may vary by region. Accounts and saved places
 							 are demo-level and may reset.
 						</p>
 					</div>

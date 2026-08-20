@@ -58,7 +58,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 						Create Account
 					</DialogTitle>
 					<DialogDescription className="max-w-sm text-sm leading-6 text-[var(--mapetite-text-soft)]">
-						Create an account to save favorites and return to them later.
+						Create a demo account to save places and return to them later.
 					</DialogDescription>
 				</DialogHeader>
 

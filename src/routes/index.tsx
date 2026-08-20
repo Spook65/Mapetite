@@ -162,7 +162,7 @@ const howItWorks = [
 	{
 		step: "03",
 		title: "Decide with context",
-		copy: "Use cuisine, hours, ratings, route, and saved favorites when a place stands out.",
+		copy: "Use cuisine, hours, ratings, route, and saved places when a place stands out.",
 	},
 ] as const;
 

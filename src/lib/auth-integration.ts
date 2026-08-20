@@ -32,6 +32,7 @@ interface AuthState {
 const API_BASE_URL = import.meta.env.VITE_API_BASE_PATH || "";
 const AUTH_DEBUG =
 	import.meta.env.DEV && import.meta.env.VITE_AUTH_DEBUG === "true";
+const AUTH_VALIDATION_TIMEOUT_MS = 15_000;
 
 function logAuth(...args: unknown[]): void {
 	if (AUTH_DEBUG) {
@@ -164,9 +165,16 @@ class AuthIntegration {
 			return false;
 		}
 
+		const controller = new AbortController();
+		const timeoutId = globalThis.setTimeout(
+			() => controller.abort(),
+			AUTH_VALIDATION_TIMEOUT_MS,
+		);
+
 		try {
 			const response = await fetch(`${API_BASE_URL}/api/user/profile`, {
 				method: "GET",
+				signal: controller.signal,
 				headers: {
 					Authorization: `Bearer ${token}`,
 					"Content-Type": "application/json",
@@ -178,6 +186,8 @@ class AuthIntegration {
 		} catch (error) {
 			console.warn("Token validation failed:", error);
 			return false;
+		} finally {
+			globalThis.clearTimeout(timeoutId);
 		}
 	}
 
@@ -395,17 +405,23 @@ class AuthIntegration {
 			url: string,
 			options: RequestInit = {},
 		): Promise<Response> => {
-			const token = this.getAuthToken();
+			const token = await this.getAuthToken();
 
 			const headers = new Headers(options.headers);
 			if (token) {
 				headers.set("Authorization", `Bearer ${token}`);
 			}
 
-			return fetch(url, {
+			const response = await fetch(url, {
 				...options,
 				headers,
 			});
+
+			if (response.status === 401 || response.status === 403) {
+				await this.clearAuth();
+			}
+
+			return response;
 		};
 	}
 
@@ -603,10 +619,16 @@ export async function authenticatedFetch(
 	);
 	logAuth("[authenticatedFetch] Request URL:", url);
 
-	return fetch(url, {
+	const response = await fetch(url, {
 		...options,
 		headers,
 	});
+
+	if (response.status === 401 || response.status === 403) {
+		await authIntegration.clearAuth();
+	}
+
+	return response;
 }
 
 /**
