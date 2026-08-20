@@ -15,7 +15,7 @@ The project focuses on a smaller product promise:
 - Frontend: [https://mapetite-nine.vercel.app](https://mapetite-nine.vercel.app)
 - Backend health check: [https://mapetite-y04j.onrender.com/health](https://mapetite-y04j.onrender.com/health)
 
-The deployed app is a portfolio MVP demo. Accounts and favorites may reset
+The deployed app is a portfolio MVP demo. Accounts and saved places may reset
 because the demo backend can run in memory mode.
 
 ## Why This Project Matters
@@ -31,7 +31,7 @@ restaurant-themed landing page. It demonstrates:
 - ranking signals based on rating confidence, review depth, category relevance,
   location quality, and listing completeness
 - honest UI labels for hours, menus, photos, cuisine hints, and unavailable data
-- demo auth/favorites, CORS, rate limits, security headers, and privacy notes
+- demo auth/saved-place behavior, CORS, rate limits, security headers, and privacy notes
 
 ## Core Features
 
@@ -52,8 +52,8 @@ restaurant-themed landing page. It demonstrates:
   when verified venue photos are unavailable.
 - Category-based cuisine hints that are labeled as hints, not verified menu
   items.
-- Demo registration/login/logout and favorites backed by the Express demo API in
-  memory mode.
+- Demo registration/login/logout and saved-place behavior backed by the
+  Express demo favorites API in memory mode.
 - Saved Places page for viewing, opening, getting directions to, and removing
   saved restaurants from a demo shortlist.
 - Responsive landing, search, selected-preview, and detail-page layouts.
@@ -82,7 +82,7 @@ Backend:
 - OpenStreetMap / Overpass fallback
 - Countries States Cities Database-derived compact place index
 - In-memory TTL caches for search, geocoding, detail, and media enrichment
-- Memory-mode demo auth/favorites
+- Memory-mode demo auth/saved places
 - Optional Mongo connection hook and database-mode configuration path
 
 Deployment:
@@ -173,8 +173,8 @@ Signals include:
   or very low data-completeness signals
 
 The app does not rank by ambience, noise level, service quality, romance,
-authenticity, or "local favorite" status because those signals are not available
-from the current provider stack.
+authenticity, or local popularity because those signals are not available from
+the current provider stack.
 
 ## Hours and Open Status
 
@@ -216,7 +216,7 @@ Mapetite avoids fake certainty:
 - Complex hours schedules are intentionally conservative until a production
   parser such as `opening_hours.js` is evaluated.
 - The compact place index is not a full global autocomplete database.
-- Demo auth/favorites in `MAPETITE_STORAGE_MODE=memory` reset when the backend
+- Demo auth/saved places in `MAPETITE_STORAGE_MODE=memory` reset when the backend
   restarts.
 - Auth tokens are stored in browser `localStorage`, which is acceptable for a
   demo but should be revisited before serving real users.
@@ -244,7 +244,7 @@ Current safeguards and boundaries:
   restaurant search routes.
 - Demo passwords are hashed with Node crypto `scrypt` before being stored in the
   memory-mode demo auth map.
-- Memory-mode accounts, sessions, favorites, and caches reset on backend restart.
+- Memory-mode accounts, sessions, saved places, and caches reset on backend restart.
 
 Before real users, Mapetite would need production auth, durable storage, email
 verification, password reset, account deletion/export, token/session review, and
@@ -320,7 +320,7 @@ Frontend variables:
 | Variable | Required | Notes |
 | --- | --- | --- |
 | `VITE_RESTAURANTS_API_BASE_URL` | Required in production | Backend base URL for restaurant search/detail. Defaults to `http://127.0.0.1:5001` in development. |
-| `VITE_API_BASE_PATH` | Required for deployed demo auth | Auth/favorites API base URL. Leave blank for local Vite mock auth. Set to the Render backend URL for the deployed portfolio demo. |
+| `VITE_API_BASE_PATH` | Required for deployed demo auth | Auth/saved-place API base URL. Leave blank for local Vite mock auth. Set to the Render backend URL for the deployed portfolio demo. |
 | `VITE_FEEDBACK_URL` | Optional | External form URL used by the footer's "Send feedback" link. Hidden when empty. |
 | `VITE_AUTH_DEBUG` | Optional | Auth integration debug logging when explicitly enabled. Keep `false` in deployed demos. |
 | `VITE_MOCK_API_DEBUG` | Optional | Vite mock API debug logs when explicitly enabled. Keep `false` in deployed demos. |
@@ -390,7 +390,7 @@ Notes:
 - The committed `vercel.json` rewrites route requests to `index.html` so direct
   visits to frontend routes work on Vercel.
 - `DATABASE_URL` is not required for `MAPETITE_STORAGE_MODE=memory`.
-- Memory-mode demo accounts/favorites and in-memory caches reset on backend
+- Memory-mode demo accounts, saved places, and in-memory caches reset on backend
   restart.
 - The backend health route is `GET /health`.
 
@@ -413,7 +413,7 @@ Manual smoke tests that represent the current MVP:
 - Toggle `Prioritize open` and confirm results are reordered, not hidden by
   default.
 - Open a restaurant detail page.
-- Confirm Save/Favorite works while logged in.
+- Confirm Save/Saved works while logged in.
 - Open Saved Places and confirm saved restaurants can be viewed and removed.
 - Confirm Directions opens a route URL.
 - Confirm website/menu actions appear only when those links exist.
@@ -457,7 +457,7 @@ Use these points when explaining the project:
   not silently geocode to unrelated locations.
 - Reworked "Open Now" into a data-honest "Prioritize open" experience that keeps
   restaurants visible when provider hours are incomplete.
-- Shipped responsive search/detail flows with saved favorites, selected previews,
+- Shipped responsive search/detail flows with Saved Places, selected previews,
   a Saved Places shortlist, demo auth, route actions, no-photo states, and
   honest missing-data copy.
 - Deployed a separated Vercel frontend and Render Express backend with CORS,
@@ -470,7 +470,7 @@ Small, realistic next steps:
 
 - Generate the compact place index from upstream data with a repeatable script.
 - Evaluate `opening_hours.js` for richer OSM schedule parsing.
-- Add durable production auth and persistent favorite snapshots.
+- Add durable production auth and persistent saved-place snapshots.
 - Add screenshots and short demo GIFs for the portfolio page.
 - Expand automated backend tests around provider normalization and place
   validation.

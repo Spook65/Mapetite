@@ -214,18 +214,18 @@ function RestaurantDetailPage() {
 		useToggleFavorite({
 			onSuccess: (data) => {
 				if (data.action === "added") {
-					toast.success("Added to favorites", {
-						description: `${restaurantName} has been added to your favorites.`,
+					toast.success("Saved restaurant", {
+						description: `${restaurantName} has been added to Saved Places.`,
 					});
 				} else {
-					toast.success("Removed from favorites", {
-						description: `${restaurantName} has been removed from your favorites.`,
+					toast.success("Removed from saved places", {
+						description: `${restaurantName} has been removed from Saved Places.`,
 					});
 				}
 			},
 			onError: (error) => {
 				console.error("Failed to toggle favorite:", error);
-				toast.error("Failed to update favorites", {
+				toast.error("Could not update saved places", {
 					description:
 						error.message ||
 						"Something went wrong. Please try again in a moment.",
@@ -289,9 +289,9 @@ function RestaurantDetailPage() {
 
 	const toggleFavorite = (targetRestaurantId: string) => {
 		if (!isAuthenticatedSync()) {
-			toast.error("Please log in to save favorites", {
+			toast.error("Sign in to save places", {
 				description:
-					"You need to be logged in to add restaurants to your favorites.",
+					"Create a demo account or log in to keep a saved restaurant shortlist.",
 			});
 			return;
 		}

@@ -419,19 +419,19 @@ function RestaurantSearchPage() {
 
 				// Show success toast based on action
 				if (data.action === "added") {
-					toast.success("Added to favorites", {
-						description: `${restaurantName} has been added to your favorites.`,
+					toast.success("Saved restaurant", {
+						description: `${restaurantName} has been added to Saved Places.`,
 					});
 				} else {
-					toast.success("Removed from favorites", {
-						description: `${restaurantName} has been removed from your favorites.`,
+					toast.success("Removed from saved places", {
+						description: `${restaurantName} has been removed from Saved Places.`,
 					});
 				}
 			},
 			onError: (error) => {
 				// Show error toast and log the error
 				console.error("Failed to toggle favorite:", error);
-				toast.error("Failed to update favorites", {
+				toast.error("Could not update saved places", {
 					description:
 						error.message ||
 						"Something went wrong. Please try again in a moment.",
@@ -1204,7 +1204,7 @@ function RestaurantSearchPage() {
 										<Heart
 											className={cn("size-4", showFavorites && "fill-current")}
 										/>
-										{showFavorites ? "Viewing favorites" : "Favorites only"}
+										{showFavorites ? "Viewing saved places" : "Saved only"}
 									</Button>
 								</div>
 
@@ -1488,8 +1488,8 @@ function RestaurantSearchPage() {
 										<p className="mapetite-muted-copy mt-1 text-sm">
 											{showFavorites
 												? hasMoreResults
-													? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} favorite matches`
-													: `${matchingResultsCount.toLocaleString()} favorite matches`
+													? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} saved matches`
+													: `${matchingResultsCount.toLocaleString()} saved matches`
 												: matchingResultsCount !== totalResultsCount
 													? hasMoreResults
 														? `Showing ${shownResultsCount.toLocaleString()} of ${matchingResultsCount.toLocaleString()} matching restaurants • ${totalResultsCount.toLocaleString()} results found`
@@ -1912,7 +1912,7 @@ function RestaurantSearchPage() {
 													/>
 													{favoriteIds.has(selectedRestaurant.id)
 														? "Saved"
-														: "Save favorite"}
+														: "Save"}
 												</Button>
 												<Button
 													asChild
@@ -2018,12 +2018,12 @@ function RestaurantSearchPage() {
 										<div>
 											<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 												{favoriteIdList.length === 0
-													? "No favorites yet"
-													: "No favorite matches for these filters"}
+													? "No saved places yet"
+													: "No saved matches for these filters"}
 											</h3>
 											<p className="mapetite-muted-copy mt-2 text-sm">
 												{favoriteIdList.length === 0
-													? "Save restaurants from the list to collect them here."
+													? "Save restaurants from the list to build a shortlist."
 													: "Try adjusting filters or sort to widen your saved shortlist."}
 											</p>
 										</div>
@@ -2047,7 +2047,7 @@ function RestaurantSearchPage() {
 									<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
 									<div>
 										<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-											Loading saved favorites
+											Loading saved places
 										</h3>
 										<p className="mapetite-muted-copy mt-2 text-sm">
 											Retrieving saved restaurants that are outside the current search list.
