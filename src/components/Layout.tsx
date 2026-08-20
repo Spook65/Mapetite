@@ -12,6 +12,7 @@ import {
 	LogOut,
 	Menu,
 	UserPlus,
+	UserRound,
 	Utensils,
 	X,
 } from "lucide-react";
@@ -66,6 +67,8 @@ export function Layout({ children }: LayoutProps) {
 	const currentSectionLabel =
 		location.pathname === "/"
 			? "Home"
+			: location.pathname.startsWith("/account")
+				? "Account"
 			: location.pathname.startsWith("/saved")
 				? "Saved"
 			: location.pathname.startsWith("/restaurants/")
@@ -139,14 +142,19 @@ export function Layout({ children }: LayoutProps) {
 								<div className="mt-6 space-y-2 border-t border-[var(--mapetite-border)] pt-4">
 									{isAuthenticated ? (
 										<>
-											<div className="rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] p-3">
+											<Link
+												to="/account"
+												onClick={closeMobileMenu}
+												className="block rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] p-3 transition-colors hover:bg-[rgba(255,248,242,0.07)]"
+											>
 												<p className="text-xs text-[var(--mapetite-text-faint)]">
 													Signed in as
 												</p>
-												<p className="mt-1 text-sm font-medium text-[var(--mapetite-text)]">
-													{firstName}
+												<p className="mt-1 flex items-center gap-2 text-sm font-medium text-[var(--mapetite-text)]">
+													<UserRound className="size-4" />
+													<span>{firstName}</span>
 												</p>
-											</div>
+											</Link>
 											<Button
 												onClick={() => {
 													closeMobileMenu();
@@ -239,15 +247,16 @@ export function Layout({ children }: LayoutProps) {
 								<div className="hidden items-center gap-2 md:flex">
 								{isAuthenticated ? (
 									<>
-										<span className="text-sm text-[var(--mapetite-text-soft)]">
-											{firstName}
-										</span>
-										<div
-											className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]"
-											aria-label="Signed-in user"
+										<Link
+											to="/account"
+											className="inline-flex items-center gap-2 rounded-[10px] px-2 py-1.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+											aria-label="Open account"
 										>
-											{userInitials}
-										</div>
+											<span>{firstName}</span>
+											<span className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]">
+												{userInitials}
+											</span>
+										</Link>
 										<Button
 											onClick={logout}
 											variant="outline"

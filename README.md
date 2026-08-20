@@ -56,6 +56,8 @@ restaurant-themed landing page. It demonstrates:
   Express demo favorites API in memory mode.
 - Saved Places page for viewing, opening, getting directions to, and removing
   saved restaurants from a demo shortlist.
+- Demo Account page for viewing session identity, saved-place count, logout, and
+  MVP account limitations.
 - Responsive landing, search, selected-preview, and detail-page layouts.
 - Footer attribution, MVP disclosure, privacy baseline, and optional feedback
   link.

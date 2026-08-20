@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as RestaurantsRouteImport } from './routes/restaurants'
 import { Route as JwtDebugRouteImport } from './routes/jwt-debug'
+import { Route as AccountRouteImport } from './routes/account'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as RestaurantsRestaurantIdRouteImport } from './routes/restaurants/$restaurantId'
 
@@ -30,6 +31,11 @@ const JwtDebugRoute = JwtDebugRouteImport.update({
   path: '/jwt-debug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -43,6 +49,7 @@ const RestaurantsRestaurantIdRoute = RestaurantsRestaurantIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/jwt-debug': typeof JwtDebugRoute
   '/restaurants': typeof RestaurantsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/jwt-debug': typeof JwtDebugRoute
   '/restaurants': typeof RestaurantsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/account': typeof AccountRoute
   '/jwt-debug': typeof JwtDebugRoute
   '/restaurants': typeof RestaurantsRouteWithChildren
   '/saved': typeof SavedRoute
@@ -67,6 +76,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/account'
     | '/jwt-debug'
     | '/restaurants'
     | '/saved'
@@ -74,6 +84,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/account'
     | '/jwt-debug'
     | '/restaurants'
     | '/saved'
@@ -81,6 +92,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/account'
     | '/jwt-debug'
     | '/restaurants'
     | '/saved'
@@ -89,6 +101,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AccountRoute: typeof AccountRoute
   JwtDebugRoute: typeof JwtDebugRoute
   RestaurantsRoute: typeof RestaurantsRouteWithChildren
   SavedRoute: typeof SavedRoute
@@ -115,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/jwt-debug'
       fullPath: '/jwt-debug'
       preLoaderRoute: typeof JwtDebugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -148,6 +168,7 @@ const RestaurantsRouteWithChildren = RestaurantsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AccountRoute: AccountRoute,
   JwtDebugRoute: JwtDebugRoute,
   RestaurantsRoute: RestaurantsRouteWithChildren,
   SavedRoute: SavedRoute,
