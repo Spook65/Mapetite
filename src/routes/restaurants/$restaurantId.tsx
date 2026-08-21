@@ -2,6 +2,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
+import { getRestaurantResultReasons } from "@/lib/restaurant-result-reasons";
 import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
@@ -448,6 +449,7 @@ function RestaurantDetailPage() {
 	const reviewSummaryCopy = hasReviews
 		? "Use recent reviews and the overall rating together before you commit."
 		: "Rating data is available, even if written reviews are limited for this restaurant.";
+	const resultReasons = getRestaurantResultReasons(restaurant);
 	const publicListingFacts = [
 		{
 			label: "Address",
@@ -822,6 +824,58 @@ function RestaurantDetailPage() {
 										</div>
 									) : null}
 
+								</section>
+
+								<section id="why-this-result" className="mapetite-panel grid gap-[18px] p-[22px]">
+									<div className="text-center md:text-left">
+										<div className="mapetite-eyebrow justify-center md:justify-start">
+											Why this result?
+										</div>
+										<h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+											Useful listing signals
+										</h2>
+										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[640px] text-sm leading-6 md:mx-0">
+											{resultReasons.summary}
+										</p>
+									</div>
+
+									<div className="grid gap-4 md:grid-cols-2">
+										<div className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
+											<h3 className="text-base font-semibold text-[var(--mapetite-text)]">
+												Helpful signals
+											</h3>
+											<div className="flex flex-wrap justify-center gap-2 md:justify-start">
+												{resultReasons.helpful.map((reason) => (
+													<span
+														key={reason}
+														className="inline-flex items-center rounded-full border border-[rgba(213,154,104,0.22)] bg-[var(--mapetite-accent-soft)] px-[11px] py-2 text-[13px] text-[var(--mapetite-text)]"
+													>
+														{reason}
+													</span>
+												))}
+											</div>
+										</div>
+
+										<div className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
+											<h3 className="text-base font-semibold text-[var(--mapetite-text)]">
+												What to double-check
+											</h3>
+											<div className="flex flex-wrap justify-center gap-2 md:justify-start">
+												{resultReasons.cautions.map((reason) => (
+													<span
+														key={reason}
+														className="inline-flex items-center rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.025] px-[11px] py-2 text-[13px] text-[var(--mapetite-text-soft)]"
+													>
+														{reason}
+													</span>
+												))}
+											</div>
+										</div>
+									</div>
+
+									<p className="text-center text-sm leading-6 text-[var(--mapetite-text-soft)] md:text-left">
+										{resultReasons.note}
+									</p>
 								</section>
 
 								<section id="reviews" className="mapetite-panel grid gap-[18px] p-[22px]">
