@@ -7,8 +7,8 @@ export interface RestaurantResultReasons {
 	note: string;
 }
 
-const MAX_HELPFUL_REASONS = 6;
-const MAX_CAUTION_REASONS = 4;
+const MAX_HELPFUL_REASONS = 4;
+const MAX_CAUTION_REASONS = 3;
 
 function hasText(value?: string | null) {
 	return typeof value === "string" && value.trim().length > 0;
@@ -84,39 +84,44 @@ export function getRestaurantResultReasons(
 ): RestaurantResultReasons {
 	const helpful: string[] = [];
 	const cautions: string[] = [];
+	const hasAddress = hasText(restaurant.address?.street) && hasText(restaurant.address?.city);
+	const canRoute = hasCoordinates(restaurant);
 
 	addHoursReason(restaurant, helpful, cautions);
 
-	if (Number.isFinite(restaurant.rating)) {
+	if (Number.isFinite(restaurant.rating) && restaurant.reviewCount > 0) {
+		addUnique(
+			helpful,
+			`${restaurant.rating.toFixed(1)} rating · ${restaurant.reviewCount.toLocaleString()} reviews`,
+		);
+	} else if (Number.isFinite(restaurant.rating)) {
 		addUnique(helpful, `${restaurant.rating.toFixed(1)} rating available`);
-	}
-
-	if (restaurant.reviewCount >= 100) {
-		addUnique(helpful, `${restaurant.reviewCount.toLocaleString()} reviews available`);
 	} else if (restaurant.reviewCount > 0) {
 		addUnique(helpful, `${restaurant.reviewCount.toLocaleString()} reviews available`);
 	} else {
 		addUnique(cautions, "Review count limited");
 	}
 
-	if (hasText(restaurant.address?.street) && hasText(restaurant.address?.city)) {
+	if (hasAddress && canRoute) {
+		addUnique(helpful, "Address + directions available");
+	} else if (hasAddress) {
 		addUnique(helpful, "Address available");
 	} else {
 		addUnique(cautions, "Address details limited");
 	}
 
-	if (hasCoordinates(restaurant)) {
+	if (!hasAddress && canRoute) {
 		addUnique(helpful, "Directions available");
-	}
-
-	if ((restaurant.categories ?? []).length > 0) {
-		addUnique(helpful, "Matches restaurant category");
 	}
 
 	if ((restaurant.galleryImageUrls ?? []).filter(Boolean).length > 0) {
 		addUnique(helpful, "Photos available");
 	} else {
 		addUnique(cautions, "Limited photo coverage");
+	}
+
+	if ((restaurant.categories ?? []).length > 0) {
+		addUnique(helpful, "Matches restaurant category");
 	}
 
 	if (restaurant.menuUrl) {
@@ -145,7 +150,7 @@ export function getRestaurantResultReasons(
 	return {
 		helpful: helpful.slice(0, MAX_HELPFUL_REASONS),
 		cautions: cappedCautions,
-		summary: "Mapetite surfaced this place because the public listing has useful decision signals.",
-		note: "Based on available public listing data. Confirm details before going.",
+		summary: "Based on available public listing data.",
+		note: "Confirm details before going.",
 	};
 }

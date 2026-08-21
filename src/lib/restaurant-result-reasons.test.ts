@@ -44,8 +44,8 @@ describe("restaurant result reasons", () => {
 		const reasons = getRestaurantResultReasons(baseRestaurant);
 
 		expect(reasons.helpful).toContain("Likely open from listed hours");
-		expect(reasons.helpful).toContain("174 reviews available");
-		expect(reasons.helpful).toContain("Address available");
+		expect(reasons.helpful).toContain("4.4 rating · 174 reviews");
+		expect(reasons.helpful).toContain("Address + directions available");
 		expect(reasons.helpful).not.toContain("Best choice");
 		expect(reasons.cautions).not.toContain("Menu link unavailable");
 	});
@@ -100,7 +100,7 @@ describe("restaurant result reasons", () => {
 	it("caps reasons so the detail page stays compact", () => {
 		const reasons = getRestaurantResultReasons(baseRestaurant);
 
-		expect(reasons.helpful.length).toBeLessThanOrEqual(6);
-		expect(reasons.cautions.length).toBeLessThanOrEqual(4);
+		expect(reasons.helpful.length).toBeLessThanOrEqual(4);
+		expect(reasons.cautions.length).toBeLessThanOrEqual(3);
 	});
 });
