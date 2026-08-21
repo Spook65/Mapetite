@@ -826,54 +826,53 @@ function RestaurantDetailPage() {
 
 								</section>
 
-								<section id="why-this-result" className="mapetite-panel grid gap-[18px] p-[22px]">
-									<div className="text-center md:text-left">
-										<div className="mapetite-eyebrow justify-center md:justify-start">
+								<section id="why-this-result" className="mapetite-panel grid gap-4 p-[18px] md:p-[22px]">
+									<div>
+										<div className="mapetite-eyebrow">
 											Why this result?
 										</div>
-										<h2 className="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-											Useful listing signals
-										</h2>
-										<p className="mapetite-muted-copy mx-auto mt-2 max-w-[640px] text-sm leading-6 md:mx-0">
+										<p className="mapetite-muted-copy mt-2 max-w-[640px] text-sm leading-6">
 											{resultReasons.summary}
 										</p>
 									</div>
 
 									<div className="grid gap-4 md:grid-cols-2">
-										<div className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
-											<h3 className="text-base font-semibold text-[var(--mapetite-text)]">
+										<div className="grid gap-2">
+											<h3 className="text-sm font-semibold text-[var(--mapetite-text)]">
 												Helpful signals
 											</h3>
-											<div className="flex flex-wrap justify-center gap-2 md:justify-start">
+											<ul className="grid gap-2">
 												{resultReasons.helpful.map((reason) => (
-													<span
+													<li
 														key={reason}
-														className="inline-flex items-center rounded-full border border-[rgba(213,154,104,0.22)] bg-[var(--mapetite-accent-soft)] px-[11px] py-2 text-[13px] text-[var(--mapetite-text)]"
+														className="flex items-start gap-2 text-sm leading-6 text-[var(--mapetite-text-soft)]"
 													>
-														{reason}
-													</span>
+														<span className="mt-[0.55rem] size-1.5 shrink-0 rounded-full bg-[var(--mapetite-accent)]" />
+														<span>{reason}</span>
+													</li>
 												))}
-											</div>
+											</ul>
 										</div>
 
-										<div className="grid gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-4 text-center md:text-left">
-											<h3 className="text-base font-semibold text-[var(--mapetite-text)]">
-												What to double-check
+										<div className="grid gap-2">
+											<h3 className="text-sm font-semibold text-[var(--mapetite-text)]">
+												Double-check before going
 											</h3>
-											<div className="flex flex-wrap justify-center gap-2 md:justify-start">
+											<ul className="grid gap-2">
 												{resultReasons.cautions.map((reason) => (
-													<span
+													<li
 														key={reason}
-														className="inline-flex items-center rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.025] px-[11px] py-2 text-[13px] text-[var(--mapetite-text-soft)]"
+														className="flex items-start gap-2 text-sm leading-6 text-[var(--mapetite-text-soft)]"
 													>
-														{reason}
-													</span>
+														<span className="mt-[0.55rem] size-1.5 shrink-0 rounded-full border border-[rgba(245,233,222,0.28)]" />
+														<span>{reason}</span>
+													</li>
 												))}
-											</div>
+											</ul>
 										</div>
 									</div>
 
-									<p className="text-center text-sm leading-6 text-[var(--mapetite-text-soft)] md:text-left">
+									<p className="border-t border-[rgba(255,236,220,0.08)] pt-3 text-sm leading-6 text-[var(--mapetite-text-faint)]">
 										{resultReasons.note}
 									</p>
 								</section>

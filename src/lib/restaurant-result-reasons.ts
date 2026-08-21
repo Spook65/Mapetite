@@ -88,13 +88,13 @@ export function getRestaurantResultReasons(
 	addHoursReason(restaurant, helpful, cautions);
 
 	if (Number.isFinite(restaurant.rating)) {
-		addUnique(helpful, "Rating available");
+		addUnique(helpful, `${restaurant.rating.toFixed(1)} rating available`);
 	}
 
 	if (restaurant.reviewCount >= 100) {
-		addUnique(helpful, "Good review volume");
+		addUnique(helpful, `${restaurant.reviewCount.toLocaleString()} reviews available`);
 	} else if (restaurant.reviewCount > 0) {
-		addUnique(helpful, "Review history available");
+		addUnique(helpful, `${restaurant.reviewCount.toLocaleString()} reviews available`);
 	} else {
 		addUnique(cautions, "Review count limited");
 	}
@@ -106,11 +106,11 @@ export function getRestaurantResultReasons(
 	}
 
 	if (hasCoordinates(restaurant)) {
-		addUnique(helpful, "Route details available");
+		addUnique(helpful, "Directions available");
 	}
 
 	if ((restaurant.categories ?? []).length > 0) {
-		addUnique(helpful, "Category fits restaurant search");
+		addUnique(helpful, "Matches restaurant category");
 	}
 
 	if ((restaurant.galleryImageUrls ?? []).filter(Boolean).length > 0) {
@@ -145,7 +145,7 @@ export function getRestaurantResultReasons(
 	return {
 		helpful: helpful.slice(0, MAX_HELPFUL_REASONS),
 		cautions: cappedCautions,
-		summary: "This place has several useful public listing signals.",
-		note: "These notes are based on available public listing data, not a claimed-business profile. Confirm details before going.",
+		summary: "Mapetite surfaced this place because the public listing has useful decision signals.",
+		note: "Based on available public listing data. Confirm details before going.",
 	};
 }

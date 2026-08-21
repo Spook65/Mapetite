@@ -44,7 +44,7 @@ describe("restaurant result reasons", () => {
 		const reasons = getRestaurantResultReasons(baseRestaurant);
 
 		expect(reasons.helpful).toContain("Likely open from listed hours");
-		expect(reasons.helpful).toContain("Good review volume");
+		expect(reasons.helpful).toContain("174 reviews available");
 		expect(reasons.helpful).toContain("Address available");
 		expect(reasons.helpful).not.toContain("Best choice");
 		expect(reasons.cautions).not.toContain("Menu link unavailable");
