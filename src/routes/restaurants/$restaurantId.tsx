@@ -837,7 +837,7 @@ function RestaurantDetailPage() {
 									</div>
 
 									<div className="grid gap-3 md:grid-cols-2 md:gap-4">
-										<div className="grid gap-2">
+										<div className="grid content-start gap-2 self-start">
 											<h3 className="text-sm font-semibold text-[var(--mapetite-text)]">
 												Helpful signals
 											</h3>
@@ -854,7 +854,7 @@ function RestaurantDetailPage() {
 											</div>
 										</div>
 
-										<div className="grid gap-2">
+										<div className="grid content-start gap-2 self-start">
 											<h3 className="text-sm font-semibold text-[var(--mapetite-text)]">
 												Double-check before going
 											</h3>
