@@ -3,6 +3,7 @@ import { SignUpModal } from "@/components/auth/SignUpModal";
 import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
+import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
 import { cn } from "@/lib/utils";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
@@ -186,10 +187,8 @@ function LandingPage() {
 	const featuredRestaurant =
 		selectedCity.restaurants[selectedRestaurantIndex] ??
 		selectedCity.restaurants[0];
-	const firstName = profile?.name ? profile.name.trim().split(/\s+/)[0] : "User";
-	const userInitial = profile?.name
-		? profile.name.trim().charAt(0).toUpperCase()
-		: "U";
+	const firstName = getAccountFirstName(profile);
+	const userInitial = getAccountInitials(profile);
 
 	const handleCityStart = (cityName: string) => {
 		navigate({

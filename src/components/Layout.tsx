@@ -3,6 +3,7 @@ import { SignUpModal } from "@/components/auth/SignUpModal";
 import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
+import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
@@ -22,30 +23,6 @@ interface LayoutProps {
 	children: React.ReactNode;
 }
 
-/**
- * Extract user initials from full name
- * @param name - User's full name
- * @returns Initials (e.g., "JD" for "John Doe")
- */
-function getUserInitials(name: string): string {
-	const nameParts = name.trim().split(/\s+/);
-	if (nameParts.length === 0) return "U";
-	if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
-	// Get first and last name initials
-	const firstInitial = nameParts[0].charAt(0).toUpperCase();
-	const lastInitial = nameParts[nameParts.length - 1].charAt(0).toUpperCase();
-	return `${firstInitial}${lastInitial}`;
-}
-
-/**
- * Extract first name from full name
- * @param name - User's full name
- * @returns First name
- */
-function getFirstName(name: string): string {
-	return name.trim().split(/\s+/)[0];
-}
-
 export function Layout({ children }: LayoutProps) {
 	const location = useLocation();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -56,8 +33,8 @@ export function Layout({ children }: LayoutProps) {
 	const { isAuthenticated, profile, logout } = useAuthState();
 
 	// Get user display data
-	const userInitials = profile?.name ? getUserInitials(profile.name) : "U";
-	const firstName = profile?.name ? getFirstName(profile.name) : "User";
+	const userInitials = getAccountInitials(profile);
+	const firstName = getAccountFirstName(profile);
 
 	const navItems = [
 		{ path: "/", label: "Home", icon: Home },

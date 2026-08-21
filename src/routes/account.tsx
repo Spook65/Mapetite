@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { useFavorites } from "@/hooks/use-favorites";
+import { getAccountInitials } from "@/lib/account-display";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Heart, LogOut, Search, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
@@ -11,15 +12,6 @@ import { useState } from "react";
 export const Route = createFileRoute("/account")({
 	component: AccountPage,
 });
-
-function getUserInitials(name: string) {
-	const nameParts = name.trim().split(/\s+/).filter(Boolean);
-	if (nameParts.length === 0) return "U";
-	if (nameParts.length === 1) return nameParts[0].charAt(0).toUpperCase();
-	return `${nameParts[0].charAt(0)}${nameParts[
-		nameParts.length - 1
-	].charAt(0)}`.toUpperCase();
-}
 
 function AccountPage() {
 	const { isAuthenticated, isLoading, profile, logout } = useAuthState();
@@ -33,7 +25,7 @@ function AccountPage() {
 		favoritesData?.count ?? profile?.favorite_restaurant_ids?.length ?? 0;
 	const displayName = profile?.name || "Mapetite user";
 	const displayEmail = profile?.email || "Email unavailable";
-	const initials = getUserInitials(displayName);
+	const initials = getAccountInitials(profile);
 
 	return (
 		<Layout>
