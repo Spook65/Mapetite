@@ -260,6 +260,16 @@ function LandingPage() {
 										<Utensils className="size-4" />
 										<span>Search restaurants</span>
 									</Link>
+									{isAuthenticated ? (
+										<Link
+											to="/account"
+											onClick={closeMobileMenu}
+											className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										>
+											<UserRound className="size-4" />
+											<span>Account</span>
+										</Link>
+									) : null}
 								</div>
 
 								<div className="mt-6 border-t border-[var(--mapetite-border)] pt-4">
@@ -312,9 +322,6 @@ function LandingPage() {
 												<p className="mt-1 flex items-center gap-2 text-sm font-medium text-[var(--mapetite-text)]">
 													<UserRound className="size-4" />
 													<span>{firstName}</span>
-													<span className="text-[var(--mapetite-text-faint)]">
-														· Account
-													</span>
 												</p>
 											</Link>
 											<Button
@@ -426,7 +433,6 @@ function LandingPage() {
 									className="inline-flex items-center gap-2 rounded-[10px] border border-transparent px-2 py-1.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(255,236,220,0.1)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 									aria-label="Open account"
 								>
-									<span className="hidden xl:inline">Account</span>
 									<span className="hidden xl:inline">{firstName}</span>
 									<span className="inline-flex size-9 shrink-0 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]">
 										{userInitial}

@@ -260,7 +260,6 @@ export function Layout({ children }: LayoutProps) {
 											)}
 											aria-label="Open account"
 										>
-											<span className="hidden lg:inline">Account</span>
 											<span>{firstName}</span>
 											<span className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]">
 												{userInitials}
