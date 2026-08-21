@@ -64,6 +64,9 @@ export function Layout({ children }: LayoutProps) {
 		{ path: "/restaurants", label: "Search", icon: Utensils },
 		{ path: "/saved", label: "Saved", icon: Heart },
 	];
+	const mobileNavItems = isAuthenticated
+		? [...navItems, { path: "/account", label: "Account", icon: UserRound }]
+		: navItems;
 	const currentSectionLabel =
 		location.pathname === "/"
 			? "Home"
@@ -116,7 +119,7 @@ export function Layout({ children }: LayoutProps) {
 
 							<nav className="flex-1 px-3 py-4">
 								<div className="space-y-1">
-									{navItems.map((item) => {
+									{mobileNavItems.map((item) => {
 										const Icon = item.icon;
 										const isActive = location.pathname === item.path;
 
@@ -249,9 +252,15 @@ export function Layout({ children }: LayoutProps) {
 									<>
 										<Link
 											to="/account"
-											className="inline-flex items-center gap-2 rounded-[10px] px-2 py-1.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+											className={cn(
+												"inline-flex items-center gap-2 rounded-[10px] border px-2 py-1.5 text-sm transition-colors",
+												location.pathname.startsWith("/account")
+													? "border-[rgba(213,154,104,0.28)] bg-[rgba(213,154,104,0.1)] text-[var(--mapetite-text)]"
+													: "border-transparent text-[var(--mapetite-text-soft)] hover:border-[rgba(255,236,220,0.1)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]",
+											)}
 											aria-label="Open account"
 										>
+											<span className="hidden lg:inline">Account</span>
 											<span>{firstName}</span>
 											<span className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-sm font-medium text-[var(--mapetite-text)]">
 												{userInitials}
