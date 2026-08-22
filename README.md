@@ -42,6 +42,8 @@ restaurant-themed landing page. It demonstrates:
 - OSM/Overpass fallback when primary provider data is unavailable or thin.
 - Normalized restaurant cards with rating, review count, cuisine/category,
   hours status, route, save, and detail actions.
+- Optional MapLibre map view for the current search results when listings
+  include usable coordinates.
 - "Prioritize open" soft ordering that moves confirmed or likely-open places up
   without hiding every restaurant when hours data is incomplete.
 - Detail pages with practical actions: directions, save, website, menu, and
@@ -326,6 +328,7 @@ Frontend variables:
 | `VITE_RESTAURANTS_API_BASE_URL` | Required in production | Backend base URL for restaurant search/detail. Defaults to `http://127.0.0.1:5001` in development. |
 | `VITE_API_BASE_PATH` | Required for deployed demo auth | Auth/saved-place API base URL. Leave blank for local Vite mock auth. Set to the Render backend URL for the deployed portfolio demo. |
 | `VITE_FEEDBACK_URL` | Optional | External form URL used by the footer's "Send feedback" link. Hidden when empty. |
+| `VITE_MAP_STYLE_URL` | Optional | MapLibre style URL for the optional search results map. Defaults to OpenFreeMap's no-token Liberty style. |
 | `VITE_AUTH_DEBUG` | Optional | Auth integration debug logging when explicitly enabled. Keep `false` in deployed demos. |
 | `VITE_MOCK_API_DEBUG` | Optional | Vite mock API debug logs when explicitly enabled. Keep `false` in deployed demos. |
 | `VITE_APP_CONFIG_DEBUG` | Optional | App config debug logs when explicitly enabled. Keep `false` in deployed demos. |
@@ -370,6 +373,7 @@ Vercel environment:
 VITE_RESTAURANTS_API_BASE_URL=https://your-backend-url
 VITE_API_BASE_PATH=https://your-backend-url
 VITE_FEEDBACK_URL=https://your-feedback-form-url   # optional
+VITE_MAP_STYLE_URL=https://tiles.openfreemap.org/styles/liberty   # optional
 ```
 
 Backend environment for a Render demo:
@@ -428,6 +432,8 @@ Manual smoke tests that represent the current MVP:
 
 - Restaurant and location data: OpenStreetMap contributors and Geoapify-powered
   provider data where available.
+- Optional map tiles/style: OpenFreeMap/OpenStreetMap-compatible public tile
+  data by default, or the configured `VITE_MAP_STYLE_URL` provider.
 - Place validation data: [Countries States Cities Database](https://github.com/dr5hn/countries-states-cities-database),
   licensed under ODbL v1.0.
 

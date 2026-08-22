@@ -30,7 +30,15 @@ import {
 	Utensils,
 	X,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+	Suspense,
+	lazy,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from "react";
 import { toast } from "sonner";
 import {
 	Select,
@@ -39,6 +47,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { getRestaurantMapPins } from "@/lib/restaurant-map";
 
 // Define search params schema for the route
 type RestaurantsSearch = {
@@ -49,6 +58,11 @@ const INITIAL_VISIBLE_RESULTS = 36;
 const RESULTS_BATCH_SIZE = 36;
 const FAVORITE_SNAPSHOTS_STORAGE_KEY = "mapetite-favorite-snapshots-v1";
 const GEOLOCATION_TIMEOUT_MS = 10_000;
+const SearchResultsMap = lazy(() =>
+	import("@/components/SearchResultsMap").then((module) => ({
+		default: module.SearchResultsMap,
+	})),
+);
 
 function loadFavoriteSnapshotsFromStorage(): Record<string, Restaurant> {
 	if (typeof window === "undefined") return {};
@@ -443,6 +457,7 @@ function RestaurantSearchPage() {
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
 	const [isSearching, setIsSearching] = useState(false);
 	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
+	const [isMapOpen, setIsMapOpen] = useState(false);
 	const [visibleResultsCount, setVisibleResultsCount] = useState(
 		INITIAL_VISIBLE_RESULTS,
 	);
@@ -868,6 +883,10 @@ function RestaurantSearchPage() {
 		() => displayedRestaurants.slice(0, visibleResultsCount),
 		[displayedRestaurants, visibleResultsCount],
 	);
+	const mappedRestaurantsCount = useMemo(
+		() => getRestaurantMapPins(displayedRestaurants).length,
+		[displayedRestaurants],
+	);
 
 	const handleShowMoreResults = useCallback(() => {
 		setVisibleResultsCount((current) =>
@@ -981,6 +1000,12 @@ function RestaurantSearchPage() {
 	const handleSelectRestaurant = useCallback((restaurantId: string) => {
 		setSelectedRestaurantId(restaurantId);
 	}, []);
+
+	useEffect(() => {
+		if (displayedRestaurants.length === 0) {
+			setIsMapOpen(false);
+		}
+	}, [displayedRestaurants.length]);
 
 	return (
 		<Layout>
@@ -1207,6 +1232,29 @@ function RestaurantSearchPage() {
 										{showFavorites ? "Viewing saved places" : "Saved only"}
 									</Button>
 								</div>
+
+								{hasResultsForCurrentView && (
+									<div className="grid gap-1.5 min-[981px]:block">
+										<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[981px]:hidden">
+											Map
+										</div>
+										<Button
+											type="button"
+											variant="outline"
+											onClick={() => setIsMapOpen((current) => !current)}
+											aria-pressed={isMapOpen}
+											className={cn(
+												"mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none min-[981px]:h-10 min-[981px]:w-auto",
+												isMapOpen
+													? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+													: null,
+											)}
+										>
+											<MapPinned className="size-4" />
+											{isMapOpen ? "Hide map" : "Map"}
+										</Button>
+									</div>
+								)}
 
 								{hasResultsForCurrentView && (
 									<Button
@@ -1480,6 +1528,28 @@ function RestaurantSearchPage() {
 						{hasResultsForCurrentView && (
 							<section className="grid gap-6 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] min-[1261px]:items-start">
 							<div className="grid gap-4">
+								{isMapOpen && displayedRestaurants.length > 0 ? (
+									<Suspense
+										fallback={
+											<section className="mapetite-panel grid min-h-[220px] place-items-center p-5 text-center">
+												<div>
+													<MapPinned className="mx-auto size-6 text-[var(--mapetite-text-soft)]" />
+													<p className="mapetite-muted-copy mt-3 text-sm">
+														Loading map view…
+													</p>
+												</div>
+											</section>
+										}
+									>
+										<SearchResultsMap
+											restaurants={displayedRestaurants}
+											selectedRestaurantId={selectedRestaurantId}
+											onSelectRestaurant={handleSelectRestaurant}
+											onClose={() => setIsMapOpen(false)}
+										/>
+									</Suspense>
+								) : null}
+
 								<div className="mapetite-panel flex flex-wrap items-center justify-between gap-3 px-5 py-4">
 									<div>
 										<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
@@ -1500,7 +1570,9 @@ function RestaurantSearchPage() {
 										</p>
 									</div>
 									<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-										{matchingResultsCount.toLocaleString()} matching
+										{isMapOpen
+											? `${mappedRestaurantsCount.toLocaleString()} mapped`
+											: `${matchingResultsCount.toLocaleString()} matching`}
 									</span>
 								</div>
 

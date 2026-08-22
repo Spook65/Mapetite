@@ -381,6 +381,73 @@ code {
 		outline: 2px solid var(--mapetite-focus-ring);
 		outline-offset: 3px;
 	}
+
+	.mapetite-map-marker {
+		position: relative;
+		width: 18px;
+		height: 18px;
+		padding: 0;
+		border: 2px solid rgba(255, 248, 242, 0.9);
+		border-radius: 999px 999px 999px 3px;
+		background: var(--mapetite-accent);
+		box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32);
+		cursor: pointer;
+		transform: rotate(-45deg);
+		transition:
+			transform 160ms ease,
+			box-shadow 160ms ease,
+			background 160ms ease;
+	}
+
+	.mapetite-map-marker::after {
+		content: "";
+		position: absolute;
+		inset: 4px;
+		border-radius: 999px;
+		background: rgba(16, 13, 10, 0.78);
+	}
+
+	.mapetite-map-marker:hover,
+	.mapetite-map-marker:focus-visible {
+		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+		transform: rotate(-45deg) scale(1.12);
+	}
+
+	.mapetite-map-marker.is-selected {
+		width: 22px;
+		height: 22px;
+		background: #ffd1a3;
+		box-shadow:
+			0 0 0 5px rgba(213, 154, 104, 0.22),
+			0 14px 30px rgba(0, 0, 0, 0.38);
+	}
+
+	.mapetite-map-popup {
+		display: grid;
+		gap: 4px;
+		color: #20140d;
+		font-family: inherit;
+	}
+
+	.mapetite-map-popup strong {
+		font-size: 14px;
+		line-height: 1.25;
+	}
+
+	.mapetite-map-popup span {
+		font-size: 12px;
+		line-height: 1.35;
+		color: rgba(32, 20, 13, 0.72);
+	}
+
+	.mapetite-map-popup a {
+		margin-top: 4px;
+		font-size: 12px;
+		font-weight: 700;
+		color: #7a3f1f;
+		text-decoration: underline;
+		text-underline-offset: 3px;
+	}
 }
 
 /* Mobile-specific styles for "Your Expedition Begins" search container */
