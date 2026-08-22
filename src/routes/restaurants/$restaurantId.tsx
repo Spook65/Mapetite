@@ -826,7 +826,7 @@ function RestaurantDetailPage() {
 
 								</section>
 
-								<section id="why-this-result" className="mapetite-panel grid gap-4 p-[18px] md:p-[22px]">
+								<section id="why-this-result" className="mapetite-panel grid gap-3 p-4 md:p-[18px]">
 									<div>
 										<div className="mapetite-eyebrow">
 											Why this result?
@@ -836,16 +836,16 @@ function RestaurantDetailPage() {
 										</p>
 									</div>
 
-									<div className="grid gap-3 md:grid-cols-2 md:gap-4">
-										<div className="grid content-start gap-2 self-start">
+									<div className="grid gap-3 md:grid-cols-2 md:gap-[14px]">
+										<div className="grid content-start gap-1.5 self-start">
 											<h3 className="text-sm font-semibold text-[var(--mapetite-text)]">
 												Helpful signals
 											</h3>
-											<div className="grid gap-1.5">
+											<div className="grid gap-1">
 												{resultReasons.helpful.map((reason) => (
 													<div
 														key={reason}
-														className="flex items-center gap-2 rounded-[10px] border border-[rgba(213,154,104,0.12)] bg-white/[0.018] px-3 py-2 text-sm leading-5 text-[var(--mapetite-text-soft)]"
+														className="flex items-center gap-2 rounded-[8px] border border-[rgba(213,154,104,0.08)] bg-white/[0.01] px-2.5 py-1.5 text-sm leading-5 text-[var(--mapetite-text-soft)]"
 													>
 														<span className="size-1.5 shrink-0 rounded-full bg-[var(--mapetite-accent)]" />
 														<span>{reason}</span>
@@ -854,15 +854,15 @@ function RestaurantDetailPage() {
 											</div>
 										</div>
 
-										<div className="grid content-start gap-2 self-start">
+										<div className="grid content-start gap-1.5 self-start">
 											<h3 className="text-sm font-semibold text-[var(--mapetite-text)]">
 												Double-check before going
 											</h3>
-											<div className="grid gap-1.5">
+											<div className="grid gap-1">
 												{resultReasons.cautions.map((reason) => (
 													<div
 														key={reason}
-														className="flex items-center gap-2 rounded-[10px] border border-[rgba(255,236,220,0.08)] bg-white/[0.012] px-3 py-2 text-sm leading-5 text-[var(--mapetite-text-soft)]"
+														className="flex items-center gap-2 rounded-[8px] border border-[rgba(255,236,220,0.06)] bg-transparent px-2.5 py-1.5 text-sm leading-5 text-[var(--mapetite-text-soft)]"
 													>
 														<span className="size-1.5 shrink-0 rounded-full border border-[rgba(245,233,222,0.28)]" />
 														<span>{reason}</span>
