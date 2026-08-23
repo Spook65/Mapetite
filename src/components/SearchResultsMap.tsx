@@ -16,7 +16,7 @@ import { MapPinned, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
+const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/dark";
 const MAP_STYLE_URL =
 	import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_MAP_STYLE_URL;
 
