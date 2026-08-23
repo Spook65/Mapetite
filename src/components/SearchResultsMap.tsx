@@ -92,13 +92,22 @@ export function SearchResultsMap({
 			}),
 			"top-right",
 		);
-		map.on("load", () => setIsMapReady(true));
+		const markMapReady = () => setIsMapReady(true);
+		map.once("styledata", markMapReady);
+		map.once("load", markMapReady);
+		map.once("idle", markMapReady);
 		map.on("error", () => {
-			setMapError("Map tiles are unavailable right now. The shortlist still works.");
+			if (!map.isStyleLoaded()) {
+				setMapError("Map could not load right now. Restaurant results are still available in the list.");
+			}
+			setIsMapReady(true);
 		});
 		mapRef.current = map;
 
 		return () => {
+			map.off("styledata", markMapReady);
+			map.off("load", markMapReady);
+			map.off("idle", markMapReady);
 			popupRef.current?.remove();
 			markersRef.current.forEach((marker) => marker.remove());
 			markersRef.current.clear();
@@ -146,6 +155,7 @@ export function SearchResultsMap({
 
 			markersRef.current.set(pin.id, marker);
 		}
+		setIsMapReady(true);
 	}, [pins, selectedRestaurantId, onSelectRestaurant]);
 
 	useEffect(() => {
@@ -188,7 +198,7 @@ export function SearchResultsMap({
 
 	return (
 		<section
-			className="mapetite-panel grid gap-4 overflow-hidden p-4 md:p-5"
+			className="mapetite-panel grid gap-3 overflow-hidden p-4 md:p-5"
 			aria-label="Search results map"
 		>
 			<div className="flex flex-wrap items-start justify-between gap-3">
@@ -216,14 +226,14 @@ export function SearchResultsMap({
 			</div>
 
 			{pins.length > 0 ? (
-				<div className="relative overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] bg-black/20">
+				<div className="mapetite-map-frame relative overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.035),rgba(255,248,242,0.01)),linear-gradient(145deg,rgba(183,177,118,0.12),rgba(16,13,10,0.42))]">
 					<div
 						ref={mapContainerRef}
 						className="h-[320px] w-full md:h-[380px]"
 					/>
 					{!isMapReady && !mapError ? (
-						<div className="pointer-events-none absolute inset-0 grid place-items-center bg-[rgba(16,14,12,0.7)] text-sm text-[var(--mapetite-text-soft)]">
-							Loading map…
+						<div className="pointer-events-none absolute inset-0 grid place-items-center bg-[rgba(16,14,12,0.54)] text-sm text-[var(--mapetite-text-soft)] backdrop-blur-[1px]">
+							Preparing map…
 						</div>
 					) : null}
 					{mapError ? (

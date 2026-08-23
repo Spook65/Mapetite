@@ -448,6 +448,48 @@ code {
 		text-decoration: underline;
 		text-underline-offset: 3px;
 	}
+
+	.mapetite-map-frame .maplibregl-canvas {
+		background: transparent;
+	}
+
+	.mapetite-map-frame .maplibregl-ctrl-group {
+		overflow: hidden;
+		border: 1px solid rgba(255, 236, 220, 0.12);
+		border-radius: 10px;
+		background: rgba(20, 16, 13, 0.82);
+		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.24);
+		backdrop-filter: blur(10px);
+	}
+
+	.mapetite-map-frame .maplibregl-ctrl-group button {
+		background-color: transparent;
+		color: var(--mapetite-text);
+	}
+
+	.mapetite-map-frame .maplibregl-ctrl-group button + button {
+		border-top: 1px solid rgba(255, 236, 220, 0.1);
+	}
+
+	.mapetite-map-frame .maplibregl-ctrl-group button:hover {
+		background-color: rgba(255, 248, 242, 0.08);
+	}
+
+	.mapetite-map-frame .maplibregl-ctrl-icon {
+		filter: invert(1) sepia(0.18) saturate(0.8);
+	}
+
+	.mapetite-map-frame .maplibregl-ctrl-attrib {
+		border: 1px solid rgba(255, 236, 220, 0.12);
+		border-radius: 999px;
+		background: rgba(20, 16, 13, 0.78);
+		color: rgba(245, 233, 222, 0.72);
+		backdrop-filter: blur(10px);
+	}
+
+	.mapetite-map-frame .maplibregl-ctrl-attrib a {
+		color: rgba(255, 209, 163, 0.86);
+	}
 }
 
 /* Mobile-specific styles for "Your Expedition Begins" search container */
