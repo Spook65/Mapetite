@@ -422,6 +422,26 @@ code {
 			0 14px 30px rgba(0, 0, 0, 0.38);
 	}
 
+	.mapetite-map-user-marker {
+		position: relative;
+		width: 16px;
+		height: 16px;
+		border: 2px solid rgba(255, 248, 242, 0.96);
+		border-radius: 999px;
+		background: #8fb8ff;
+		box-shadow:
+			0 0 0 6px rgba(143, 184, 255, 0.18),
+			0 12px 26px rgba(0, 0, 0, 0.28);
+	}
+
+	.mapetite-map-user-marker::after {
+		content: "";
+		position: absolute;
+		inset: 4px;
+		border-radius: 999px;
+		background: rgba(16, 13, 10, 0.42);
+	}
+
 	.mapetite-map-popup {
 		display: grid;
 		gap: 4px;
@@ -574,4 +594,76 @@ code {
 
 html {
 	background: var(--background);
+}
+
+/* MapLibre's stylesheet loads with the lazy map chunk, so these unlayered
+   overrides keep Mapetite popups readable on both light and dark tile styles. */
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup {
+	color: var(--mapetite-text);
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-content {
+	border: 1px solid rgba(255, 236, 220, 0.14);
+	border-radius: 14px;
+	background: rgba(24, 20, 16, 0.96);
+	box-shadow: 0 18px 40px rgba(0, 0, 0, 0.36);
+	color: var(--mapetite-text);
+	padding: 10px 12px;
+	backdrop-filter: blur(10px);
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-close-button {
+	color: var(--mapetite-text-soft);
+	font-size: 16px;
+	padding: 4px 7px;
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-close-button:hover {
+	background: rgba(255, 248, 242, 0.08);
+	color: var(--mapetite-text);
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup {
+	display: grid;
+	gap: 4px;
+	min-width: 155px;
+	color: var(--mapetite-text);
+	font-family: inherit;
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup strong {
+	font-size: 14px;
+	line-height: 1.25;
+	color: var(--mapetite-text);
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup span {
+	font-size: 12px;
+	line-height: 1.35;
+	color: var(--mapetite-text-soft);
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup a {
+	margin-top: 4px;
+	font-size: 12px;
+	font-weight: 700;
+	color: var(--mapetite-accent-strong);
+	text-decoration: underline;
+	text-underline-offset: 3px;
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup.maplibregl-popup-anchor-top .maplibregl-popup-tip {
+	border-bottom-color: rgba(24, 20, 16, 0.96);
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup.maplibregl-popup-anchor-bottom .maplibregl-popup-tip {
+	border-top-color: rgba(24, 20, 16, 0.96);
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup.maplibregl-popup-anchor-left .maplibregl-popup-tip {
+	border-right-color: rgba(24, 20, 16, 0.96);
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
+	border-left-color: rgba(24, 20, 16, 0.96);
 }

@@ -11,18 +11,22 @@ export interface RestaurantMapPin {
 	longitude: number;
 }
 
-export function hasValidRestaurantCoordinates(restaurant: Restaurant) {
-	const { latitude, longitude } = restaurant;
-
+export function hasValidMapCoordinate(latitude?: number, longitude?: number) {
 	return (
 		Number.isFinite(latitude) &&
 		Number.isFinite(longitude) &&
-		latitude >= -90 &&
-		latitude <= 90 &&
-		longitude >= -180 &&
-		longitude <= 180 &&
+		latitude! >= -90 &&
+		latitude! <= 90 &&
+		longitude! >= -180 &&
+		longitude! <= 180 &&
 		!(latitude === 0 && longitude === 0)
 	);
+}
+
+export function hasValidRestaurantCoordinates(restaurant: Restaurant) {
+	const { latitude, longitude } = restaurant;
+
+	return hasValidMapCoordinate(latitude, longitude);
 }
 
 export function getRestaurantMapPins(restaurants: Restaurant[]): RestaurantMapPin[] {

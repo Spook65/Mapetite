@@ -1,6 +1,7 @@
 import {
 	getRestaurantMapCenter,
 	getRestaurantMapPins,
+	hasValidMapCoordinate,
 	hasValidRestaurantCoordinates,
 } from "@/lib/restaurant-map";
 import type { Restaurant } from "@/store/restaurant-search-store";
@@ -27,6 +28,13 @@ const restaurant = {
 } satisfies Restaurant;
 
 describe("restaurant map helpers", () => {
+	it("validates reusable map coordinates", () => {
+		expect(hasValidMapCoordinate(37.9577, -121.2908)).toBe(true);
+		expect(hasValidMapCoordinate(undefined, -121.2908)).toBe(false);
+		expect(hasValidMapCoordinate(37.9577, Number.NaN)).toBe(false);
+		expect(hasValidMapCoordinate(0, 0)).toBe(false);
+	});
+
 	it("accepts finite coordinates inside valid latitude and longitude ranges", () => {
 		expect(hasValidRestaurantCoordinates(restaurant)).toBe(true);
 	});

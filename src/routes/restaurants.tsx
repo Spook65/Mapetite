@@ -458,6 +458,10 @@ function RestaurantSearchPage() {
 	const [isSearching, setIsSearching] = useState(false);
 	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
 	const [isMapOpen, setIsMapOpen] = useState(false);
+	const [mapUserLocation, setMapUserLocation] = useState<{
+		latitude: number;
+		longitude: number;
+	} | null>(null);
 	const [visibleResultsCount, setVisibleResultsCount] = useState(
 		INITIAL_VISIBLE_RESULTS,
 	);
@@ -480,6 +484,7 @@ function RestaurantSearchPage() {
 
 	const handleClearLocation = useCallback(() => {
 		setLocation({ city: "", state: "", country: "" });
+		setMapUserLocation(null);
 		window.setTimeout(() => {
 			document.getElementById("city")?.focus();
 		}, 0);
@@ -495,6 +500,7 @@ function RestaurantSearchPage() {
 					state: "",
 					country: "",
 				};
+				setMapUserLocation(null);
 				setLocation(requestedLocation);
 				setRestaurants([]);
 				try {
@@ -528,6 +534,7 @@ function RestaurantSearchPage() {
 		}
 		const searchId = ++activeSearchIdRef.current;
 		setIsSearching(true);
+		setMapUserLocation(null);
 		setRestaurants([]);
 		try {
 			const { restaurants: results, location: resolvedLocation } =
@@ -554,6 +561,7 @@ function RestaurantSearchPage() {
 
 	const handleGetCurrentLocation = async () => {
 		setIsGettingLocation(true);
+		setMapUserLocation(null);
 		const searchId = ++activeSearchIdRef.current;
 
 		try {
@@ -579,6 +587,7 @@ function RestaurantSearchPage() {
 			if (searchId !== activeSearchIdRef.current) {
 				return;
 			}
+			setMapUserLocation({ latitude, longitude });
 			setLocation(resolvedLocation ?? resolved);
 			setRestaurants(results);
 			setShowFavorites(false);
@@ -1544,6 +1553,7 @@ function RestaurantSearchPage() {
 										<SearchResultsMap
 											restaurants={displayedRestaurants}
 											selectedRestaurantId={selectedRestaurantId}
+											userLocation={mapUserLocation}
 											onSelectRestaurant={handleSelectRestaurant}
 											onClose={() => setIsMapOpen(false)}
 										/>

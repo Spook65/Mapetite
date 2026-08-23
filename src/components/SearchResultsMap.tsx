@@ -1,6 +1,7 @@
 import {
 	getRestaurantMapCenter,
 	getRestaurantMapPins,
+	hasValidMapCoordinate,
 	type RestaurantMapPin,
 } from "@/lib/restaurant-map";
 import type { Restaurant } from "@/store/restaurant-search-store";
@@ -23,6 +24,10 @@ const MAP_STYLE_URL =
 interface SearchResultsMapProps {
 	restaurants: Restaurant[];
 	selectedRestaurantId: string | null;
+	userLocation?: {
+		latitude: number;
+		longitude: number;
+	} | null;
 	onSelectRestaurant: (restaurantId: string) => void;
 	onClose: () => void;
 }
@@ -61,6 +66,7 @@ function buildPopupContent(pin: RestaurantMapPin) {
 
 function buildPopup(pin: RestaurantMapPin, closeButton = false) {
 	return new Popup({
+		className: "mapetite-restaurant-popup",
 		closeButton,
 		closeOnClick: false,
 		maxWidth: "240px",
@@ -73,20 +79,30 @@ function buildPopup(pin: RestaurantMapPin, closeButton = false) {
 export function SearchResultsMap({
 	restaurants,
 	selectedRestaurantId,
+	userLocation,
 	onSelectRestaurant,
 	onClose,
 }: SearchResultsMapProps) {
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 	const mapRef = useRef<MapLibreMap | null>(null);
 	const markersRef = useRef<globalThis.Map<string, Marker>>(new globalThis.Map());
+	const userMarkerRef = useRef<Marker | null>(null);
 	const popupRef = useRef<Popup | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [mapError, setMapError] = useState<string | null>(null);
 	const pins = useMemo(() => getRestaurantMapPins(restaurants), [restaurants]);
 	const center = useMemo(() => getRestaurantMapCenter(pins), [pins]);
+	const validUserLocation =
+		userLocation &&
+		hasValidMapCoordinate(userLocation.latitude, userLocation.longitude)
+			? userLocation
+			: null;
 	const pinBoundsKey = pins
 		.map((pin) => `${pin.id}:${pin.latitude}:${pin.longitude}`)
 		.join("|");
+	const userLocationKey = validUserLocation
+		? `${validUserLocation.latitude}:${validUserLocation.longitude}`
+		: "";
 
 	useEffect(() => {
 		if (!mapContainerRef.current || mapRef.current || pins.length === 0 || !center) {
@@ -128,6 +144,8 @@ export function SearchResultsMap({
 			popupRef.current?.remove();
 			markersRef.current.forEach((marker) => marker.remove());
 			markersRef.current.clear();
+			userMarkerRef.current?.remove();
+			userMarkerRef.current = null;
 			map.remove();
 			mapRef.current = null;
 			setIsMapReady(false);
@@ -187,9 +205,34 @@ export function SearchResultsMap({
 
 	useEffect(() => {
 		const map = mapRef.current;
+		if (!map) return;
+
+		userMarkerRef.current?.remove();
+		userMarkerRef.current = null;
+
+		if (!validUserLocation) return;
+
+		const markerElement = document.createElement("div");
+		markerElement.className = "mapetite-map-user-marker";
+		markerElement.setAttribute("role", "img");
+		markerElement.setAttribute("aria-label", "Your location");
+		markerElement.title = "Your location";
+
+		const marker = new Marker({
+			element: markerElement,
+			anchor: "center",
+		})
+			.setLngLat([validUserLocation.longitude, validUserLocation.latitude])
+			.addTo(map);
+
+		userMarkerRef.current = marker;
+	}, [userLocationKey]);
+
+	useEffect(() => {
+		const map = mapRef.current;
 		if (!map || pins.length === 0) return;
 
-		if (pins.length === 1) {
+		if (pins.length === 1 && !validUserLocation) {
 			map.easeTo({
 				center: [pins[0].longitude, pins[0].latitude],
 				zoom: 13,
@@ -202,13 +245,16 @@ export function SearchResultsMap({
 		for (const pin of pins) {
 			bounds.extend([pin.longitude, pin.latitude]);
 		}
+		if (validUserLocation) {
+			bounds.extend([validUserLocation.longitude, validUserLocation.latitude]);
+		}
 
 		map.fitBounds(bounds, {
 			padding: 54,
 			maxZoom: 14,
 			duration: 450,
 		});
-	}, [pinBoundsKey, pins]);
+	}, [pinBoundsKey, pins, userLocationKey]);
 
 	useEffect(() => {
 		const map = mapRef.current;
