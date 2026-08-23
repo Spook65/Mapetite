@@ -393,6 +393,7 @@ code {
 		box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32);
 		cursor: pointer;
 		transform: rotate(-45deg);
+		z-index: 2;
 		transition:
 			transform 160ms ease,
 			box-shadow 160ms ease,
@@ -420,6 +421,7 @@ code {
 		box-shadow:
 			0 0 0 5px rgba(213, 154, 104, 0.22),
 			0 14px 30px rgba(0, 0, 0, 0.38);
+		z-index: 3;
 	}
 
 	.mapetite-map-user-marker {
@@ -432,6 +434,7 @@ code {
 		box-shadow:
 			0 0 0 6px rgba(143, 184, 255, 0.18),
 			0 12px 26px rgba(0, 0, 0, 0.28);
+		z-index: 4;
 	}
 
 	.mapetite-map-user-marker::after {

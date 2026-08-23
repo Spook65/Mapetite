@@ -85,7 +85,9 @@ export function SearchResultsMap({
 }: SearchResultsMapProps) {
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 	const mapRef = useRef<MapLibreMap | null>(null);
-	const markersRef = useRef<globalThis.Map<string, Marker>>(new globalThis.Map());
+	const restaurantMarkersRef = useRef<globalThis.Map<string, Marker>>(
+		new globalThis.Map(),
+	);
 	const userMarkerRef = useRef<Marker | null>(null);
 	const popupRef = useRef<Popup | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
@@ -142,8 +144,8 @@ export function SearchResultsMap({
 			map.off("load", markMapReady);
 			map.off("idle", markMapReady);
 			popupRef.current?.remove();
-			markersRef.current.forEach((marker) => marker.remove());
-			markersRef.current.clear();
+			restaurantMarkersRef.current.forEach((marker) => marker.remove());
+			restaurantMarkersRef.current.clear();
 			userMarkerRef.current?.remove();
 			userMarkerRef.current = null;
 			map.remove();
@@ -156,8 +158,8 @@ export function SearchResultsMap({
 		const map = mapRef.current;
 		if (!map || pins.length === 0) return;
 
-		markersRef.current.forEach((marker) => marker.remove());
-		markersRef.current.clear();
+		restaurantMarkersRef.current.forEach((marker) => marker.remove());
+		restaurantMarkersRef.current.clear();
 
 		for (const pin of pins) {
 			const markerElement = document.createElement("button");
@@ -198,7 +200,7 @@ export function SearchResultsMap({
 				.setLngLat([pin.longitude, pin.latitude])
 				.addTo(map);
 
-			markersRef.current.set(pin.id, marker);
+			restaurantMarkersRef.current.set(pin.id, marker);
 		}
 		setIsMapReady(true);
 	}, [pins, selectedRestaurantId, onSelectRestaurant]);
