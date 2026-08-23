@@ -16,7 +16,7 @@ import { MapPinned, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
-const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/dark";
+const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 const MAP_STYLE_URL =
 	import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_MAP_STYLE_URL;
 
@@ -45,12 +45,29 @@ function buildPopupContent(pin: RestaurantMapPin) {
 		container.append(rating);
 	}
 
+	if (pin.hoursLabel) {
+		const hours = document.createElement("span");
+		hours.textContent = pin.hoursLabel;
+		container.append(hours);
+	}
+
 	const link = document.createElement("a");
 	link.href = `/restaurants/${encodeURIComponent(pin.id)}`;
 	link.textContent = "View details";
 	container.append(link);
 
 	return container;
+}
+
+function buildPopup(pin: RestaurantMapPin, closeButton = false) {
+	return new Popup({
+		closeButton,
+		closeOnClick: false,
+		maxWidth: "240px",
+		offset: 18,
+	})
+		.setDOMContent(buildPopupContent(pin))
+		.setLngLat([pin.longitude, pin.latitude]);
 }
 
 export function SearchResultsMap({
@@ -132,18 +149,28 @@ export function SearchResultsMap({
 					? "mapetite-map-marker is-selected"
 					: "mapetite-map-marker";
 			markerElement.setAttribute("aria-label", `Select ${pin.name}`);
+			const showPopup = (closeButton = false) => {
+				popupRef.current?.remove();
+				popupRef.current = buildPopup(pin, closeButton).addTo(map);
+			};
+			const closeHoverPopup = () => {
+				if (pin.id === selectedRestaurantId) return;
+				popupRef.current?.remove();
+				popupRef.current = null;
+			};
+			markerElement.addEventListener("pointerenter", (event) => {
+				if (event.pointerType === "touch") return;
+				showPopup();
+			});
+			markerElement.addEventListener("pointerleave", (event) => {
+				if (event.pointerType === "touch") return;
+				closeHoverPopup();
+			});
+			markerElement.addEventListener("focus", () => showPopup());
+			markerElement.addEventListener("blur", closeHoverPopup);
 			markerElement.addEventListener("click", () => {
 				onSelectRestaurant(pin.id);
-				popupRef.current?.remove();
-				popupRef.current = new Popup({
-					closeButton: true,
-					closeOnClick: false,
-					maxWidth: "220px",
-					offset: 18,
-				})
-					.setDOMContent(buildPopupContent(pin))
-					.setLngLat([pin.longitude, pin.latitude])
-					.addTo(map);
+				showPopup(true);
 			});
 
 			const marker = new Marker({
@@ -194,6 +221,8 @@ export function SearchResultsMap({
 			center: [selectedPin.longitude, selectedPin.latitude],
 			duration: 350,
 		});
+		popupRef.current?.remove();
+		popupRef.current = buildPopup(selectedPin, true).addTo(map);
 	}, [selectedRestaurantId, pins]);
 
 	return (

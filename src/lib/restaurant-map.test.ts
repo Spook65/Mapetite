@@ -65,10 +65,31 @@ describe("restaurant map helpers", () => {
 				name: "Mapetite Cafe",
 				category: "Cafe",
 				city: "Stockton",
+				hoursLabel: null,
 				latitude: 37.9577,
 				longitude: -121.2908,
 			}),
 		]);
+	});
+
+	it("adds compact hours context to pins when listing hours are available", () => {
+		const pins = getRestaurantMapPins([
+			{
+				...restaurant,
+				hoursStatus: {
+					state: "listed_hours_open",
+					source: "listed_hours",
+					confidence: "medium",
+					label: "Likely open · until 10:00 PM",
+				},
+			},
+		]);
+
+		expect(pins[0]).toEqual(
+			expect.objectContaining({
+				hoursLabel: "Likely open · until 10:00 PM",
+			}),
+		);
 	});
 
 	it("calculates a simple center from mapped pins", () => {
@@ -79,6 +100,7 @@ describe("restaurant map helpers", () => {
 				category: null,
 				city: null,
 				rating: null,
+				hoursLabel: null,
 				latitude: 10,
 				longitude: 20,
 			},
@@ -88,6 +110,7 @@ describe("restaurant map helpers", () => {
 				category: null,
 				city: null,
 				rating: null,
+				hoursLabel: null,
 				latitude: 30,
 				longitude: 40,
 			},

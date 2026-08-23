@@ -6,6 +6,7 @@ export interface RestaurantMapPin {
 	category: string | null;
 	city: string | null;
 	rating: number | null;
+	hoursLabel: string | null;
 	latitude: number;
 	longitude: number;
 }
@@ -33,9 +34,31 @@ export function getRestaurantMapPins(restaurants: Restaurant[]): RestaurantMapPi
 			category: restaurant.categories?.[0] ?? null,
 			city: restaurant.address?.city ?? null,
 			rating: Number.isFinite(restaurant.rating) ? restaurant.rating : null,
+			hoursLabel: getRestaurantMapHoursLabel(restaurant),
 			latitude: restaurant.latitude,
 			longitude: restaurant.longitude,
 		}));
+}
+
+function getRestaurantMapHoursLabel(restaurant: Restaurant) {
+	if (restaurant.hoursStatus?.label) return restaurant.hoursStatus.label;
+
+	const hoursRange =
+		restaurant.hours?.open && restaurant.hours?.close
+			? `${restaurant.hours.open} - ${restaurant.hours.close}`
+			: null;
+
+	if (restaurant.isOpenNow === true) {
+		return restaurant.hours?.close
+			? `Open now · until ${restaurant.hours.close}`
+			: "Open now";
+	}
+
+	if (restaurant.isOpenNow === false) {
+		return hoursRange ? "Closed now · hours listed" : "Closed now";
+	}
+
+	return hoursRange ? `Hours listed · ${hoursRange}` : null;
 }
 
 export function getRestaurantMapCenter(pins: RestaurantMapPin[]) {

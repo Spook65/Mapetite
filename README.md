@@ -328,7 +328,7 @@ Frontend variables:
 | `VITE_RESTAURANTS_API_BASE_URL` | Required in production | Backend base URL for restaurant search/detail. Defaults to `http://127.0.0.1:5001` in development. |
 | `VITE_API_BASE_PATH` | Required for deployed demo auth | Auth/saved-place API base URL. Leave blank for local Vite mock auth. Set to the Render backend URL for the deployed portfolio demo. |
 | `VITE_FEEDBACK_URL` | Optional | External form URL used by the footer's "Send feedback" link. Hidden when empty. |
-| `VITE_MAP_STYLE_URL` | Optional | MapLibre style URL for the optional search results map. Defaults to OpenFreeMap's no-token Dark style. Use `https://tiles.openfreemap.org/styles/liberty` as the documented light fallback. |
+| `VITE_MAP_STYLE_URL` | Optional | MapLibre style URL for the optional search results map. Defaults to OpenFreeMap's no-token Liberty style for clearer roads/labels. Use `https://tiles.openfreemap.org/styles/dark` for a moodier dark override. |
 | `VITE_AUTH_DEBUG` | Optional | Auth integration debug logging when explicitly enabled. Keep `false` in deployed demos. |
 | `VITE_MOCK_API_DEBUG` | Optional | Vite mock API debug logs when explicitly enabled. Keep `false` in deployed demos. |
 | `VITE_APP_CONFIG_DEBUG` | Optional | App config debug logs when explicitly enabled. Keep `false` in deployed demos. |
@@ -373,7 +373,7 @@ Vercel environment:
 VITE_RESTAURANTS_API_BASE_URL=https://your-backend-url
 VITE_API_BASE_PATH=https://your-backend-url
 VITE_FEEDBACK_URL=https://your-feedback-form-url   # optional
-VITE_MAP_STYLE_URL=https://tiles.openfreemap.org/styles/dark   # optional; Liberty fallback: https://tiles.openfreemap.org/styles/liberty
+VITE_MAP_STYLE_URL=https://tiles.openfreemap.org/styles/liberty   # optional; dark override: https://tiles.openfreemap.org/styles/dark
 ```
 
 Backend environment for a Render demo:
@@ -432,10 +432,10 @@ Manual smoke tests that represent the current MVP:
 
 - Restaurant and location data: OpenStreetMap contributors and Geoapify-powered
   provider data where available.
-- Optional map tiles/style: OpenFreeMap Dark by default, with OpenStreetMap/OpenMapTiles
-  attribution visible in the map control. `VITE_MAP_STYLE_URL` can point to
-  another MapLibre-compatible style, and OpenFreeMap Liberty is the documented
-  light fallback.
+- Optional map tiles/style: OpenFreeMap Liberty by default, with
+  OpenStreetMap/OpenMapTiles attribution visible in the map control.
+  `VITE_MAP_STYLE_URL` can point to another MapLibre-compatible style, and
+  OpenFreeMap Dark is the documented moody override.
 - Place validation data: [Countries States Cities Database](https://github.com/dr5hn/countries-states-cities-database),
   licensed under ODbL v1.0.
 
