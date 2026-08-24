@@ -1,4 +1,6 @@
 import {
+	calculateDistanceMiles,
+	formatApproxDistanceMiles,
 	getRestaurantMapCenter,
 	getRestaurantMapPins,
 	hasValidMapCoordinate,
@@ -74,6 +76,7 @@ describe("restaurant map helpers", () => {
 				category: "Cafe",
 				city: "Stockton",
 				hoursLabel: null,
+				distanceLabel: null,
 				latitude: 37.9577,
 				longitude: -121.2908,
 			}),
@@ -100,6 +103,50 @@ describe("restaurant map helpers", () => {
 		);
 	});
 
+	it("adds approximate distance context when a valid origin is available", () => {
+		const pins = getRestaurantMapPins([restaurant], {
+			latitude: 37.9577,
+			longitude: -121.2908,
+			label: "you",
+		});
+
+		expect(pins[0]).toEqual(
+			expect.objectContaining({
+				distanceLabel: "nearby · from you",
+			}),
+		);
+	});
+
+	it("omits distance context when the origin is invalid", () => {
+		const pins = getRestaurantMapPins([restaurant], {
+			latitude: 0,
+			longitude: 0,
+			label: "search area",
+		});
+
+		expect(pins[0]).toEqual(
+			expect.objectContaining({
+				distanceLabel: null,
+			}),
+		);
+	});
+
+	it("calculates and formats approximate miles for map context", () => {
+		const distance = calculateDistanceMiles(
+			37.9577,
+			-121.2908,
+			37.9677,
+			-121.3008,
+		);
+
+		expect(distance).toBeGreaterThan(0);
+		expect(formatApproxDistanceMiles(0.05)).toBe("nearby");
+		expect(formatApproxDistanceMiles(0.84)).toBe("0.8 mi");
+		expect(formatApproxDistanceMiles(12.4)).toBe("12 mi");
+		expect(formatApproxDistanceMiles(Number.NaN)).toBeNull();
+		expect(formatApproxDistanceMiles(-1)).toBeNull();
+	});
+
 	it("calculates a simple center from mapped pins", () => {
 		const center = getRestaurantMapCenter([
 			{
@@ -109,6 +156,7 @@ describe("restaurant map helpers", () => {
 				city: null,
 				rating: null,
 				hoursLabel: null,
+				distanceLabel: null,
 				latitude: 10,
 				longitude: 20,
 			},
@@ -119,6 +167,7 @@ describe("restaurant map helpers", () => {
 				city: null,
 				rating: null,
 				hoursLabel: null,
+				distanceLabel: null,
 				latitude: 30,
 				longitude: 40,
 			},

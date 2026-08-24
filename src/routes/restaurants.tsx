@@ -47,7 +47,11 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { getRestaurantMapPins } from "@/lib/restaurant-map";
+import {
+	getRestaurantMapPins,
+	hasValidMapCoordinate,
+	type RestaurantMapDistanceOrigin,
+} from "@/lib/restaurant-map";
 
 // Define search params schema for the route
 type RestaurantsSearch = {
@@ -993,6 +997,28 @@ function RestaurantSearchPage() {
 					: null,
 		[selectedRestaurantId, displayedRestaurants, favoriteRestaurants, restaurants],
 	);
+	const mapDistanceOrigin = useMemo<RestaurantMapDistanceOrigin | null>(() => {
+		if (
+			mapUserLocation &&
+			hasValidMapCoordinate(mapUserLocation.latitude, mapUserLocation.longitude)
+		) {
+			return {
+				latitude: mapUserLocation.latitude,
+				longitude: mapUserLocation.longitude,
+				label: "you",
+			};
+		}
+
+		if (hasValidMapCoordinate(location.latitude, location.longitude)) {
+			return {
+				latitude: location.latitude as number,
+				longitude: location.longitude as number,
+				label: "search area",
+			};
+		}
+
+		return null;
+	}, [location.latitude, location.longitude, mapUserLocation]);
 	const hasActiveFilters =
 		selectedCategories.size > 0 ||
 		priceFilter.length < 4 ||
@@ -1554,6 +1580,7 @@ function RestaurantSearchPage() {
 											restaurants={displayedRestaurants}
 											selectedRestaurantId={selectedRestaurantId}
 											userLocation={mapUserLocation}
+											distanceOrigin={mapDistanceOrigin}
 											onSelectRestaurant={handleSelectRestaurant}
 											onClose={() => setIsMapOpen(false)}
 										/>

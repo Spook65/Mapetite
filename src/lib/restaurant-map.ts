@@ -7,9 +7,18 @@ export interface RestaurantMapPin {
 	city: string | null;
 	rating: number | null;
 	hoursLabel: string | null;
+	distanceLabel: string | null;
 	latitude: number;
 	longitude: number;
 }
+
+export interface RestaurantMapDistanceOrigin {
+	latitude: number;
+	longitude: number;
+	label: "you" | "search area";
+}
+
+const EARTH_RADIUS_MILES = 3958.8;
 
 export function hasValidMapCoordinate(latitude?: number, longitude?: number) {
 	return (
@@ -29,7 +38,10 @@ export function hasValidRestaurantCoordinates(restaurant: Restaurant) {
 	return hasValidMapCoordinate(latitude, longitude);
 }
 
-export function getRestaurantMapPins(restaurants: Restaurant[]): RestaurantMapPin[] {
+export function getRestaurantMapPins(
+	restaurants: Restaurant[],
+	distanceOrigin?: RestaurantMapDistanceOrigin | null,
+): RestaurantMapPin[] {
 	return restaurants
 		.filter(hasValidRestaurantCoordinates)
 		.map((restaurant) => ({
@@ -39,9 +51,73 @@ export function getRestaurantMapPins(restaurants: Restaurant[]): RestaurantMapPi
 			city: restaurant.address?.city ?? null,
 			rating: Number.isFinite(restaurant.rating) ? restaurant.rating : null,
 			hoursLabel: getRestaurantMapHoursLabel(restaurant),
+			distanceLabel: getRestaurantMapDistanceLabel(restaurant, distanceOrigin),
 			latitude: restaurant.latitude,
 			longitude: restaurant.longitude,
 		}));
+}
+
+export function calculateDistanceMiles(
+	originLatitude: number,
+	originLongitude: number,
+	destinationLatitude: number,
+	destinationLongitude: number,
+) {
+	const originLatRadians = toRadians(originLatitude);
+	const destinationLatRadians = toRadians(destinationLatitude);
+	const latitudeDelta = toRadians(destinationLatitude - originLatitude);
+	const longitudeDelta = toRadians(destinationLongitude - originLongitude);
+
+	const haversine =
+		Math.sin(latitudeDelta / 2) ** 2 +
+		Math.cos(originLatRadians) *
+			Math.cos(destinationLatRadians) *
+			Math.sin(longitudeDelta / 2) ** 2;
+
+	return (
+		EARTH_RADIUS_MILES *
+		2 *
+		Math.atan2(Math.sqrt(haversine), Math.sqrt(1 - haversine))
+	);
+}
+
+export function formatApproxDistanceMiles(distanceMiles: number) {
+	if (!Number.isFinite(distanceMiles) || distanceMiles < 0) return null;
+	if (distanceMiles < 0.1) return "nearby";
+	if (distanceMiles < 10) return `${distanceMiles.toFixed(1)} mi`;
+	return `${Math.round(distanceMiles).toLocaleString()} mi`;
+}
+
+function getRestaurantMapDistanceLabel(
+	restaurant: Restaurant,
+	origin?: RestaurantMapDistanceOrigin | null,
+) {
+	if (
+		!origin ||
+		!hasValidMapCoordinate(origin.latitude, origin.longitude) ||
+		!hasValidRestaurantCoordinates(restaurant)
+	) {
+		return null;
+	}
+
+	const distance = calculateDistanceMiles(
+		origin.latitude,
+		origin.longitude,
+		restaurant.latitude,
+		restaurant.longitude,
+	);
+	const formattedDistance = formatApproxDistanceMiles(distance);
+	if (!formattedDistance) return null;
+
+	const originLabel =
+		origin.label === "you" ? "from you" : "from search area";
+	return formattedDistance === "nearby"
+		? `nearby · ${originLabel}`
+		: `approx. ${formattedDistance} ${originLabel}`;
+}
+
+function toRadians(degrees: number) {
+	return (degrees * Math.PI) / 180;
 }
 
 function getRestaurantMapHoursLabel(restaurant: Restaurant) {

@@ -2,6 +2,7 @@ import {
 	getRestaurantMapCenter,
 	getRestaurantMapPins,
 	hasValidMapCoordinate,
+	type RestaurantMapDistanceOrigin,
 	type RestaurantMapPin,
 } from "@/lib/restaurant-map";
 import type { Restaurant } from "@/store/restaurant-search-store";
@@ -28,6 +29,7 @@ interface SearchResultsMapProps {
 		latitude: number;
 		longitude: number;
 	} | null;
+	distanceOrigin?: RestaurantMapDistanceOrigin | null;
 	onSelectRestaurant: (restaurantId: string) => void;
 	onClose: () => void;
 }
@@ -48,6 +50,12 @@ function buildPopupContent(pin: RestaurantMapPin) {
 		const rating = document.createElement("span");
 		rating.textContent = `${pin.rating.toFixed(1)} rating`;
 		container.append(rating);
+	}
+
+	if (pin.distanceLabel) {
+		const distance = document.createElement("span");
+		distance.textContent = pin.distanceLabel;
+		container.append(distance);
 	}
 
 	if (pin.hoursLabel) {
@@ -80,6 +88,7 @@ export function SearchResultsMap({
 	restaurants,
 	selectedRestaurantId,
 	userLocation,
+	distanceOrigin,
 	onSelectRestaurant,
 	onClose,
 }: SearchResultsMapProps) {
@@ -92,7 +101,18 @@ export function SearchResultsMap({
 	const popupRef = useRef<Popup | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [mapError, setMapError] = useState<string | null>(null);
-	const pins = useMemo(() => getRestaurantMapPins(restaurants), [restaurants]);
+	const validDistanceOrigin =
+		distanceOrigin &&
+		hasValidMapCoordinate(distanceOrigin.latitude, distanceOrigin.longitude)
+			? distanceOrigin
+			: null;
+	const distanceOriginKey = validDistanceOrigin
+		? `${validDistanceOrigin.latitude}:${validDistanceOrigin.longitude}:${validDistanceOrigin.label}`
+		: "";
+	const pins = useMemo(
+		() => getRestaurantMapPins(restaurants, validDistanceOrigin),
+		[restaurants, distanceOriginKey],
+	);
 	const center = useMemo(() => getRestaurantMapCenter(pins), [pins]);
 	const validUserLocation =
 		userLocation &&
