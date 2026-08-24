@@ -30,6 +30,7 @@ interface SearchResultsMapProps {
 		longitude: number;
 	} | null;
 	distanceOrigin?: RestaurantMapDistanceOrigin | null;
+	searchAreaLabel?: string | null;
 	onSelectRestaurant: (restaurantId: string) => void;
 	onClose: () => void;
 }
@@ -72,6 +73,23 @@ function buildPopupContent(pin: RestaurantMapPin) {
 	return container;
 }
 
+function buildOriginPopupContent(title: string, label?: string | null) {
+	const container = document.createElement("div");
+	container.className = "mapetite-map-popup mapetite-map-origin-popup";
+
+	const heading = document.createElement("strong");
+	heading.textContent = title;
+	container.append(heading);
+
+	if (label) {
+		const copy = document.createElement("span");
+		copy.textContent = label;
+		container.append(copy);
+	}
+
+	return container;
+}
+
 function buildPopup(pin: RestaurantMapPin, closeButton = false) {
 	return new Popup({
 		className: "mapetite-restaurant-popup",
@@ -89,6 +107,7 @@ export function SearchResultsMap({
 	selectedRestaurantId,
 	userLocation,
 	distanceOrigin,
+	searchAreaLabel,
 	onSelectRestaurant,
 	onClose,
 }: SearchResultsMapProps) {
@@ -98,7 +117,9 @@ export function SearchResultsMap({
 		new globalThis.Map(),
 	);
 	const userMarkerRef = useRef<Marker | null>(null);
+	const searchAreaMarkerRef = useRef<Marker | null>(null);
 	const popupRef = useRef<Popup | null>(null);
+	const originPopupRef = useRef<Popup | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [mapError, setMapError] = useState<string | null>(null);
 	const validDistanceOrigin =
@@ -119,11 +140,18 @@ export function SearchResultsMap({
 		hasValidMapCoordinate(userLocation.latitude, userLocation.longitude)
 			? userLocation
 			: null;
+	const validSearchAreaOrigin =
+		validDistanceOrigin?.label === "search area"
+			? validDistanceOrigin
+			: null;
 	const pinBoundsKey = pins
 		.map((pin) => `${pin.id}:${pin.latitude}:${pin.longitude}`)
 		.join("|");
 	const userLocationKey = validUserLocation
 		? `${validUserLocation.latitude}:${validUserLocation.longitude}`
+		: "";
+	const searchAreaOriginKey = validSearchAreaOrigin
+		? `${validSearchAreaOrigin.latitude}:${validSearchAreaOrigin.longitude}:${searchAreaLabel ?? ""}`
 		: "";
 
 	useEffect(() => {
@@ -164,10 +192,13 @@ export function SearchResultsMap({
 			map.off("load", markMapReady);
 			map.off("idle", markMapReady);
 			popupRef.current?.remove();
+			originPopupRef.current?.remove();
 			restaurantMarkersRef.current.forEach((marker) => marker.remove());
 			restaurantMarkersRef.current.clear();
 			userMarkerRef.current?.remove();
 			userMarkerRef.current = null;
+			searchAreaMarkerRef.current?.remove();
+			searchAreaMarkerRef.current = null;
 			map.remove();
 			mapRef.current = null;
 			setIsMapReady(false);
@@ -190,6 +221,8 @@ export function SearchResultsMap({
 					: "mapetite-map-marker";
 			markerElement.setAttribute("aria-label", `Select ${pin.name}`);
 			const showPopup = (closeButton = false) => {
+				originPopupRef.current?.remove();
+				originPopupRef.current = null;
 				popupRef.current?.remove();
 				popupRef.current = buildPopup(pin, closeButton).addTo(map);
 			};
@@ -252,6 +285,69 @@ export function SearchResultsMap({
 
 	useEffect(() => {
 		const map = mapRef.current;
+		if (!map) return;
+
+		originPopupRef.current?.remove();
+		originPopupRef.current = null;
+		searchAreaMarkerRef.current?.remove();
+		searchAreaMarkerRef.current = null;
+
+		if (!validSearchAreaOrigin) return;
+
+		const markerElement = document.createElement("button");
+		markerElement.type = "button";
+		markerElement.className = "mapetite-map-search-area-marker";
+		markerElement.setAttribute("aria-label", "Search area");
+		markerElement.title = "Search area";
+		const showOriginPopup = () => {
+			originPopupRef.current?.remove();
+			originPopupRef.current = new Popup({
+				className: "mapetite-restaurant-popup",
+				closeButton: false,
+				closeOnClick: false,
+				maxWidth: "220px",
+				offset: 14,
+			})
+				.setDOMContent(
+					buildOriginPopupContent("Search area", searchAreaLabel),
+				)
+				.setLngLat([
+					validSearchAreaOrigin.longitude,
+					validSearchAreaOrigin.latitude,
+				])
+				.addTo(map);
+		};
+		const closeOriginPopup = () => {
+			originPopupRef.current?.remove();
+			originPopupRef.current = null;
+		};
+		markerElement.addEventListener("pointerenter", (event) => {
+			if (event.pointerType === "touch") return;
+			showOriginPopup();
+		});
+		markerElement.addEventListener("pointerleave", (event) => {
+			if (event.pointerType === "touch") return;
+			closeOriginPopup();
+		});
+		markerElement.addEventListener("focus", showOriginPopup);
+		markerElement.addEventListener("blur", closeOriginPopup);
+		markerElement.addEventListener("click", showOriginPopup);
+
+		const marker = new Marker({
+			element: markerElement,
+			anchor: "center",
+		})
+			.setLngLat([
+				validSearchAreaOrigin.longitude,
+				validSearchAreaOrigin.latitude,
+			])
+			.addTo(map);
+
+		searchAreaMarkerRef.current = marker;
+	}, [searchAreaOriginKey]);
+
+	useEffect(() => {
+		const map = mapRef.current;
 		if (!map || pins.length === 0) return;
 
 		if (pins.length === 1 && !validUserLocation) {
@@ -270,13 +366,19 @@ export function SearchResultsMap({
 		if (validUserLocation) {
 			bounds.extend([validUserLocation.longitude, validUserLocation.latitude]);
 		}
+		if (validSearchAreaOrigin) {
+			bounds.extend([
+				validSearchAreaOrigin.longitude,
+				validSearchAreaOrigin.latitude,
+			]);
+		}
 
 		map.fitBounds(bounds, {
 			padding: 54,
 			maxZoom: 14,
 			duration: 450,
 		});
-	}, [pinBoundsKey, pins, userLocationKey]);
+	}, [pinBoundsKey, pins, userLocationKey, searchAreaOriginKey]);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -358,8 +460,8 @@ export function SearchResultsMap({
 
 			<p className="text-sm leading-6 text-[var(--mapetite-text-faint)]">
 				Some listings may not include coordinates and may not appear on the map.
-				Map tiles are provided by OpenFreeMap/OpenStreetMap-compatible public
-				tile data.
+				Distances are approximate straight-line estimates from the resolved
+				search area, or from you after Use My Location.
 			</p>
 		</section>
 	);

@@ -24,6 +24,7 @@ import {
 	Heart,
 	MapPinned,
 	Navigation,
+	RefreshCw,
 	Search,
 	SlidersHorizontal,
 	Star,
@@ -607,6 +608,42 @@ function RestaurantSearchPage() {
 		}
 	};
 
+	const handleRefreshResults = async () => {
+		if (!location.city) {
+			toast.error("Add a city to refresh results");
+			return;
+		}
+
+		const searchId = ++activeSearchIdRef.current;
+		setIsSearching(true);
+
+		try {
+			const { restaurants: results, location: resolvedLocation } =
+				await searchRestaurants(location, Array.from(selectedCategories));
+			if (searchId !== activeSearchIdRef.current) {
+				return;
+			}
+			setLocation(resolvedLocation ?? location);
+			setRestaurants(results);
+			setShowFavorites(false);
+			toast.success("Results refreshed", {
+				description:
+					"Map pins and the shortlist now reflect the current search response.",
+			});
+		} catch (error) {
+			if (!isExpectedPlaceValidationError(error)) {
+				console.error("Search refresh failed", error);
+			}
+			toast.error(getSearchErrorTitle(error), {
+				description: getSearchErrorDescription(error),
+			});
+		} finally {
+			if (searchId === activeSearchIdRef.current) {
+				setIsSearching(false);
+			}
+		}
+	};
+
 	// Memoize handlers with useCallback to prevent unnecessary re-renders of child components.
 	// These functions are passed as props to RestaurantCard, so stable references prevent re-renders.
 	const toggleFavorite = useCallback((restaurantId: string) => {
@@ -1019,6 +1056,13 @@ function RestaurantSearchPage() {
 
 		return null;
 	}, [location.latitude, location.longitude, mapUserLocation]);
+	const searchAreaLabel = useMemo(
+		() =>
+			[location.city, location.state || location.country]
+				.filter(Boolean)
+				.join(", "),
+		[location.city, location.country, location.state],
+	);
 	const hasActiveFilters =
 		selectedCategories.size > 0 ||
 		priceFilter.length < 4 ||
@@ -1287,6 +1331,24 @@ function RestaurantSearchPage() {
 										>
 											<MapPinned className="size-4" />
 											{isMapOpen ? "Hide map" : "Map"}
+										</Button>
+									</div>
+								)}
+
+								{hasResultsForCurrentView && (
+									<div className="grid gap-1.5 min-[981px]:block">
+										<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[981px]:hidden">
+											Refresh
+										</div>
+										<Button
+											type="button"
+											variant="outline"
+											onClick={handleRefreshResults}
+											disabled={isSearching}
+											className="mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none min-[981px]:h-10 min-[981px]:w-auto"
+										>
+											<RefreshCw className={cn("size-4", isSearching && "animate-spin")} />
+											{isSearching ? "Refreshing..." : "Refresh results"}
 										</Button>
 									</div>
 								)}
@@ -1581,6 +1643,7 @@ function RestaurantSearchPage() {
 											selectedRestaurantId={selectedRestaurantId}
 											userLocation={mapUserLocation}
 											distanceOrigin={mapDistanceOrigin}
+											searchAreaLabel={searchAreaLabel || null}
 											onSelectRestaurant={handleSelectRestaurant}
 											onClose={() => setIsMapOpen(false)}
 										/>

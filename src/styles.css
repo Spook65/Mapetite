@@ -445,6 +445,37 @@ code {
 		background: rgba(16, 13, 10, 0.42);
 	}
 
+	.mapetite-map-search-area-marker {
+		position: relative;
+		width: 18px;
+		height: 18px;
+		padding: 0;
+		border: 2px solid rgba(255, 248, 242, 0.94);
+		border-radius: 6px;
+		background: rgba(183, 177, 118, 0.9);
+		box-shadow:
+			0 0 0 6px rgba(183, 177, 118, 0.16),
+			0 12px 26px rgba(0, 0, 0, 0.28);
+		cursor: help;
+		transform: rotate(45deg);
+		z-index: 1;
+	}
+
+	.mapetite-map-search-area-marker::after {
+		content: "";
+		position: absolute;
+		inset: 5px;
+		border-radius: 999px;
+		background: rgba(16, 13, 10, 0.54);
+	}
+
+	.mapetite-map-search-area-marker:hover,
+	.mapetite-map-search-area-marker:focus-visible {
+		box-shadow:
+			0 0 0 7px rgba(183, 177, 118, 0.2),
+			0 14px 30px rgba(0, 0, 0, 0.34);
+	}
+
 	.mapetite-map-popup {
 		display: grid;
 		gap: 4px;
