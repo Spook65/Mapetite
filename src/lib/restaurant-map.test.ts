@@ -121,12 +121,41 @@ describe("restaurant map helpers", () => {
 		const pins = getRestaurantMapPins([restaurant], {
 			latitude: 0,
 			longitude: 0,
-			label: "search area",
+			label: "search center",
 		});
 
 		expect(pins[0]).toEqual(
 			expect.objectContaining({
 				distanceLabel: null,
+			}),
+		);
+	});
+
+	it("uses a clean place-center label for resolved search origins", () => {
+		const pins = getRestaurantMapPins([restaurant], {
+			latitude: 37.9577,
+			longitude: -121.2908,
+			label: "search center",
+			displayName: "Lodi",
+		});
+
+		expect(pins[0]).toEqual(
+			expect.objectContaining({
+				distanceLabel: "nearby · from Lodi center",
+			}),
+		);
+	});
+
+	it("falls back to search center when the resolved origin has no clean name", () => {
+		const pins = getRestaurantMapPins([restaurant], {
+			latitude: 37.9577,
+			longitude: -121.2908,
+			label: "search center",
+		});
+
+		expect(pins[0]).toEqual(
+			expect.objectContaining({
+				distanceLabel: "nearby · from search center",
 			}),
 		);
 	});

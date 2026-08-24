@@ -628,7 +628,7 @@ function RestaurantSearchPage() {
 			setShowFavorites(false);
 			toast.success("Results refreshed", {
 				description:
-					"Map pins and the shortlist now reflect the current search response.",
+					"Refreshes current provider data. Results may stay the same.",
 			});
 		} catch (error) {
 			if (!isExpectedPlaceValidationError(error)) {
@@ -1050,13 +1050,14 @@ function RestaurantSearchPage() {
 			return {
 				latitude: location.latitude as number,
 				longitude: location.longitude as number,
-				label: "search area",
+				label: "search center",
+				displayName: location.city || null,
 			};
 		}
 
 		return null;
 	}, [location.latitude, location.longitude, mapUserLocation]);
-	const searchAreaLabel = useMemo(
+	const searchCenterLabel = useMemo(
 		() =>
 			[location.city, location.state || location.country]
 				.filter(Boolean)
@@ -1345,10 +1346,12 @@ function RestaurantSearchPage() {
 											variant="outline"
 											onClick={handleRefreshResults}
 											disabled={isSearching}
+											title="Refreshes current provider data. Results may stay the same."
+											aria-label="Refresh current search results"
 											className="mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none min-[981px]:h-10 min-[981px]:w-auto"
 										>
 											<RefreshCw className={cn("size-4", isSearching && "animate-spin")} />
-											{isSearching ? "Refreshing..." : "Refresh results"}
+											{isSearching ? "Refreshing..." : "Refresh current search"}
 										</Button>
 									</div>
 								)}
@@ -1643,7 +1646,7 @@ function RestaurantSearchPage() {
 											selectedRestaurantId={selectedRestaurantId}
 											userLocation={mapUserLocation}
 											distanceOrigin={mapDistanceOrigin}
-											searchAreaLabel={searchAreaLabel || null}
+											searchCenterLabel={searchCenterLabel || null}
 											onSelectRestaurant={handleSelectRestaurant}
 											onClose={() => setIsMapOpen(false)}
 										/>

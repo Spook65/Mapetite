@@ -15,7 +15,8 @@ export interface RestaurantMapPin {
 export interface RestaurantMapDistanceOrigin {
 	latitude: number;
 	longitude: number;
-	label: "you" | "search area";
+	label: "you" | "search center";
+	displayName?: string | null;
 }
 
 const EARTH_RADIUS_MILES = 3958.8;
@@ -110,7 +111,11 @@ function getRestaurantMapDistanceLabel(
 	if (!formattedDistance) return null;
 
 	const originLabel =
-		origin.label === "you" ? "from you" : "from search area";
+		origin.label === "you"
+			? "from you"
+			: origin.displayName
+				? `from ${origin.displayName} center`
+				: "from search center";
 	return formattedDistance === "nearby"
 		? `nearby · ${originLabel}`
 		: `approx. ${formattedDistance} ${originLabel}`;

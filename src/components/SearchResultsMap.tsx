@@ -30,7 +30,7 @@ interface SearchResultsMapProps {
 		longitude: number;
 	} | null;
 	distanceOrigin?: RestaurantMapDistanceOrigin | null;
-	searchAreaLabel?: string | null;
+	searchCenterLabel?: string | null;
 	onSelectRestaurant: (restaurantId: string) => void;
 	onClose: () => void;
 }
@@ -107,7 +107,7 @@ export function SearchResultsMap({
 	selectedRestaurantId,
 	userLocation,
 	distanceOrigin,
-	searchAreaLabel,
+	searchCenterLabel,
 	onSelectRestaurant,
 	onClose,
 }: SearchResultsMapProps) {
@@ -140,8 +140,8 @@ export function SearchResultsMap({
 		hasValidMapCoordinate(userLocation.latitude, userLocation.longitude)
 			? userLocation
 			: null;
-	const validSearchAreaOrigin =
-		validDistanceOrigin?.label === "search area"
+	const validSearchCenterOrigin =
+		validDistanceOrigin?.label === "search center"
 			? validDistanceOrigin
 			: null;
 	const pinBoundsKey = pins
@@ -150,8 +150,8 @@ export function SearchResultsMap({
 	const userLocationKey = validUserLocation
 		? `${validUserLocation.latitude}:${validUserLocation.longitude}`
 		: "";
-	const searchAreaOriginKey = validSearchAreaOrigin
-		? `${validSearchAreaOrigin.latitude}:${validSearchAreaOrigin.longitude}:${searchAreaLabel ?? ""}`
+	const searchCenterOriginKey = validSearchCenterOrigin
+		? `${validSearchCenterOrigin.latitude}:${validSearchCenterOrigin.longitude}:${searchCenterLabel ?? ""}`
 		: "";
 
 	useEffect(() => {
@@ -221,12 +221,14 @@ export function SearchResultsMap({
 					: "mapetite-map-marker";
 			markerElement.setAttribute("aria-label", `Select ${pin.name}`);
 			const showPopup = (closeButton = false) => {
+				markerElement.classList.add("is-hovered");
 				originPopupRef.current?.remove();
 				originPopupRef.current = null;
 				popupRef.current?.remove();
 				popupRef.current = buildPopup(pin, closeButton).addTo(map);
 			};
 			const closeHoverPopup = () => {
+				markerElement.classList.remove("is-hovered");
 				if (pin.id === selectedRestaurantId) return;
 				popupRef.current?.remove();
 				popupRef.current = null;
@@ -292,13 +294,13 @@ export function SearchResultsMap({
 		searchAreaMarkerRef.current?.remove();
 		searchAreaMarkerRef.current = null;
 
-		if (!validSearchAreaOrigin) return;
+		if (!validSearchCenterOrigin) return;
 
 		const markerElement = document.createElement("button");
 		markerElement.type = "button";
 		markerElement.className = "mapetite-map-search-area-marker";
-		markerElement.setAttribute("aria-label", "Search area");
-		markerElement.title = "Search area";
+		markerElement.setAttribute("aria-label", "Search center");
+		markerElement.title = "Search center";
 		const showOriginPopup = () => {
 			originPopupRef.current?.remove();
 			originPopupRef.current = new Popup({
@@ -309,11 +311,11 @@ export function SearchResultsMap({
 				offset: 14,
 			})
 				.setDOMContent(
-					buildOriginPopupContent("Search area", searchAreaLabel),
+					buildOriginPopupContent("Search center", searchCenterLabel),
 				)
 				.setLngLat([
-					validSearchAreaOrigin.longitude,
-					validSearchAreaOrigin.latitude,
+					validSearchCenterOrigin.longitude,
+					validSearchCenterOrigin.latitude,
 				])
 				.addTo(map);
 		};
@@ -338,13 +340,13 @@ export function SearchResultsMap({
 			anchor: "center",
 		})
 			.setLngLat([
-				validSearchAreaOrigin.longitude,
-				validSearchAreaOrigin.latitude,
+				validSearchCenterOrigin.longitude,
+				validSearchCenterOrigin.latitude,
 			])
 			.addTo(map);
 
 		searchAreaMarkerRef.current = marker;
-	}, [searchAreaOriginKey]);
+	}, [searchCenterOriginKey]);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -366,10 +368,10 @@ export function SearchResultsMap({
 		if (validUserLocation) {
 			bounds.extend([validUserLocation.longitude, validUserLocation.latitude]);
 		}
-		if (validSearchAreaOrigin) {
+		if (validSearchCenterOrigin) {
 			bounds.extend([
-				validSearchAreaOrigin.longitude,
-				validSearchAreaOrigin.latitude,
+				validSearchCenterOrigin.longitude,
+				validSearchCenterOrigin.latitude,
 			]);
 		}
 
@@ -378,7 +380,7 @@ export function SearchResultsMap({
 			maxZoom: 14,
 			duration: 450,
 		});
-	}, [pinBoundsKey, pins, userLocationKey, searchAreaOriginKey]);
+	}, [pinBoundsKey, pins, userLocationKey, searchCenterOriginKey]);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -461,7 +463,7 @@ export function SearchResultsMap({
 			<p className="text-sm leading-6 text-[var(--mapetite-text-faint)]">
 				Some listings may not include coordinates and may not appear on the map.
 				Distances are approximate straight-line estimates from the resolved
-				search area, or from you after Use My Location.
+				place center, or from your shared location after Use My Location.
 			</p>
 		</section>
 	);

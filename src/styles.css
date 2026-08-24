@@ -409,9 +409,11 @@ code {
 	}
 
 	.mapetite-map-marker:hover,
-	.mapetite-map-marker:focus-visible {
+	.mapetite-map-marker:focus-visible,
+	.mapetite-map-marker.is-hovered {
 		box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
 		transform: rotate(-45deg) scale(1.12);
+		z-index: 5;
 	}
 
 	.mapetite-map-marker.is-selected {
@@ -421,7 +423,7 @@ code {
 		box-shadow:
 			0 0 0 5px rgba(213, 154, 104, 0.22),
 			0 14px 30px rgba(0, 0, 0, 0.38);
-		z-index: 3;
+		z-index: 6;
 	}
 
 	.mapetite-map-user-marker {
@@ -634,6 +636,7 @@ html {
    overrides keep Mapetite popups readable on both light and dark tile styles. */
 .mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup {
 	color: var(--mapetite-text);
+	z-index: 10;
 }
 
 .mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-content {
