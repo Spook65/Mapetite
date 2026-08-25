@@ -460,7 +460,7 @@ code {
 			0 12px 26px rgba(0, 0, 0, 0.28);
 		cursor: help;
 		transform: rotate(45deg);
-		z-index: 1;
+		z-index: 3;
 	}
 
 	.mapetite-map-search-area-marker::after {
@@ -703,4 +703,40 @@ html {
 
 .mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup.maplibregl-popup-anchor-right .maplibregl-popup-tip {
 	border-left-color: rgba(24, 20, 16, 0.96);
+}
+
+@media (max-width: 640px) {
+	.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup {
+		max-width: min(210px, calc(100vw - 48px)) !important;
+	}
+
+	.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-content {
+		border-radius: 12px;
+		padding: 8px 10px;
+	}
+
+	.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-close-button {
+		font-size: 14px;
+		padding: 2px 6px;
+	}
+
+	.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup {
+		gap: 2px;
+		min-width: 130px;
+	}
+
+	.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup strong {
+		font-size: 13px;
+		line-height: 1.2;
+	}
+
+	.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup span,
+	.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup a {
+		font-size: 11px;
+		line-height: 1.28;
+	}
+
+	.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup a {
+		margin-top: 3px;
+	}
 }

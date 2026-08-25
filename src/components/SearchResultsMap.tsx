@@ -117,7 +117,7 @@ export function SearchResultsMap({
 		new globalThis.Map(),
 	);
 	const userMarkerRef = useRef<Marker | null>(null);
-	const searchAreaMarkerRef = useRef<Marker | null>(null);
+	const searchCenterMarkerRef = useRef<Marker | null>(null);
 	const popupRef = useRef<Popup | null>(null);
 	const originPopupRef = useRef<Popup | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
@@ -197,8 +197,8 @@ export function SearchResultsMap({
 			restaurantMarkersRef.current.clear();
 			userMarkerRef.current?.remove();
 			userMarkerRef.current = null;
-			searchAreaMarkerRef.current?.remove();
-			searchAreaMarkerRef.current = null;
+			searchCenterMarkerRef.current?.remove();
+			searchCenterMarkerRef.current = null;
 			map.remove();
 			mapRef.current = null;
 			setIsMapReady(false);
@@ -291,8 +291,8 @@ export function SearchResultsMap({
 
 		originPopupRef.current?.remove();
 		originPopupRef.current = null;
-		searchAreaMarkerRef.current?.remove();
-		searchAreaMarkerRef.current = null;
+		searchCenterMarkerRef.current?.remove();
+		searchCenterMarkerRef.current = null;
 
 		if (!validSearchCenterOrigin) return;
 
@@ -345,7 +345,7 @@ export function SearchResultsMap({
 			])
 			.addTo(map);
 
-		searchAreaMarkerRef.current = marker;
+		searchCenterMarkerRef.current = marker;
 	}, [searchCenterOriginKey]);
 
 	useEffect(() => {
@@ -389,12 +389,9 @@ export function SearchResultsMap({
 		const selectedPin = pins.find((pin) => pin.id === selectedRestaurantId);
 		if (!selectedPin) return;
 
-		map.easeTo({
-			center: [selectedPin.longitude, selectedPin.latitude],
-			duration: 350,
+		map.panTo([selectedPin.longitude, selectedPin.latitude], {
+			duration: 300,
 		});
-		popupRef.current?.remove();
-		popupRef.current = buildPopup(selectedPin, true).addTo(map);
 	}, [selectedRestaurantId, pins]);
 
 	return (
