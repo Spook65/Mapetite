@@ -12,8 +12,10 @@ import {
 	Marker,
 	NavigationControl,
 	Popup,
+	setWorkerUrl,
 } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { MapPinned, X } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -21,6 +23,8 @@ import { Button } from "@/components/ui/button";
 const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 const MAP_STYLE_URL =
 	import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_MAP_STYLE_URL;
+
+setWorkerUrl(maplibreWorkerUrl);
 
 interface SearchResultsMapProps {
 	restaurants: Restaurant[];
@@ -116,9 +120,11 @@ export function SearchResultsMap({
 	const restaurantMarkersRef = useRef<globalThis.Map<string, Marker>>(
 		new globalThis.Map(),
 	);
+	const selectedRestaurantIdRef = useRef<string | null>(selectedRestaurantId);
 	const userMarkerRef = useRef<Marker | null>(null);
 	const searchCenterMarkerRef = useRef<Marker | null>(null);
 	const popupRef = useRef<Popup | null>(null);
+	const popupPinIdRef = useRef<string | null>(null);
 	const originPopupRef = useRef<Popup | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [mapError, setMapError] = useState<string | null>(null);
@@ -153,6 +159,10 @@ export function SearchResultsMap({
 	const searchCenterOriginKey = validSearchCenterOrigin
 		? `${validSearchCenterOrigin.latitude}:${validSearchCenterOrigin.longitude}:${searchCenterLabel ?? ""}`
 		: "";
+
+	useEffect(() => {
+		selectedRestaurantIdRef.current = selectedRestaurantId;
+	}, [selectedRestaurantId]);
 
 	useEffect(() => {
 		if (!mapContainerRef.current || mapRef.current || pins.length === 0 || !center) {
@@ -192,6 +202,7 @@ export function SearchResultsMap({
 			map.off("load", markMapReady);
 			map.off("idle", markMapReady);
 			popupRef.current?.remove();
+			popupPinIdRef.current = null;
 			originPopupRef.current?.remove();
 			restaurantMarkersRef.current.forEach((marker) => marker.remove());
 			restaurantMarkersRef.current.clear();
@@ -226,12 +237,14 @@ export function SearchResultsMap({
 				originPopupRef.current = null;
 				popupRef.current?.remove();
 				popupRef.current = buildPopup(pin, closeButton).addTo(map);
+				popupPinIdRef.current = pin.id;
 			};
 			const closeHoverPopup = () => {
 				markerElement.classList.remove("is-hovered");
-				if (pin.id === selectedRestaurantId) return;
+				if (pin.id === selectedRestaurantIdRef.current) return;
 				popupRef.current?.remove();
 				popupRef.current = null;
+				popupPinIdRef.current = null;
 			};
 			markerElement.addEventListener("pointerenter", (event) => {
 				if (event.pointerType === "touch") return;
@@ -258,7 +271,20 @@ export function SearchResultsMap({
 			restaurantMarkersRef.current.set(pin.id, marker);
 		}
 		setIsMapReady(true);
-	}, [pins, selectedRestaurantId, onSelectRestaurant]);
+	}, [pins, onSelectRestaurant]);
+
+	useEffect(() => {
+		for (const [restaurantId, marker] of restaurantMarkersRef.current) {
+			const markerElement = marker.getElement();
+			markerElement.classList.toggle(
+				"is-selected",
+				restaurantId === selectedRestaurantId,
+			);
+			if (restaurantId !== selectedRestaurantId) {
+				markerElement.classList.remove("is-hovered");
+			}
+		}
+	}, [selectedRestaurantId, pinBoundsKey]);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -388,6 +414,16 @@ export function SearchResultsMap({
 
 		const selectedPin = pins.find((pin) => pin.id === selectedRestaurantId);
 		if (!selectedPin) return;
+
+		if (
+			popupRef.current &&
+			popupPinIdRef.current &&
+			popupPinIdRef.current !== selectedRestaurantId
+		) {
+			popupRef.current.remove();
+			popupRef.current = null;
+			popupPinIdRef.current = null;
+		}
 
 		map.panTo([selectedPin.longitude, selectedPin.latitude], {
 			duration: 300,

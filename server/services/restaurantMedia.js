@@ -278,11 +278,29 @@ function normalizeUrl(candidate, baseUrl) {
   }
 }
 
+export function normalizeRestaurantMediaUrl(candidate, baseUrl) {
+  const normalized = normalizeUrl(candidate, baseUrl);
+  if (!normalized) return null;
+
+  try {
+    const parsed = new URL(normalized);
+    if (parsed.protocol === "http:") {
+      parsed.protocol = "https:";
+    }
+    if (parsed.protocol !== "https:") {
+      return null;
+    }
+    return parsed.toString();
+  } catch {
+    return null;
+  }
+}
+
 function isUsefulImageUrl(url) {
   if (!url) return false;
 
   const value = String(url).toLowerCase();
-  if (!/^https?:\/\//.test(value)) return false;
+  if (!/^https:\/\//.test(value)) return false;
   if (/\.(svg|ico|gif)(?:[?#].*)?$/.test(value)) return false;
   if (value.includes(".pdf")) return false;
   if (value.includes("%3csvg") || value.includes("<svg")) return false;
@@ -497,7 +515,7 @@ function extractOpenverseImageCandidates(payload, profile = {}, query = "") {
 
   return results
     .map((result) => {
-      const url = result?.url || result?.thumbnail || "";
+      const url = normalizeRestaurantMediaUrl(result?.url || result?.thumbnail || "");
       if (!url || !isUsefulImageUrl(url)) {
         return null;
       }
@@ -562,7 +580,7 @@ function extractWikimediaImageCandidates(payload, profile = {}, query = "") {
   return pages
     .map((page) => {
       const imageInfo = Array.isArray(page?.imageinfo) ? page.imageinfo[0] : null;
-      const url = imageInfo?.thumburl || imageInfo?.url || "";
+      const url = normalizeRestaurantMediaUrl(imageInfo?.thumburl || imageInfo?.url || "");
       if (!url || !isUsefulImageUrl(url)) {
         return null;
       }
@@ -660,7 +678,7 @@ function extractImageCandidatesFromHtml(html, baseUrl, profile = {}) {
 
   const normalized = [];
   for (const candidate of candidates) {
-    const url = normalizeUrl(candidate.url, baseUrl);
+    const url = normalizeRestaurantMediaUrl(candidate.url, baseUrl);
     if (!url || !isUsefulImageUrl(url)) continue;
 
     const parsed = new URL(url);
@@ -808,8 +826,9 @@ async function fetchRestaurantImagesFromPage(pageUrl, profile = buildCuisineProf
   if (!absolute) return [];
 
   const directImage = await fetchDirectImageUrl(absolute);
-  if (directImage && isUsefulImageUrl(directImage)) {
-    return [directImage];
+  const safeDirectImage = normalizeRestaurantMediaUrl(directImage);
+  if (safeDirectImage && isUsefulImageUrl(safeDirectImage)) {
+    return [safeDirectImage];
   }
 
   const html = await fetchText(absolute);

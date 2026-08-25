@@ -320,7 +320,7 @@ function countVerifiedGalleryImages(restaurant = {}) {
   return restaurant.galleryImageUrls.filter(
     (imageUrl) =>
       typeof imageUrl === "string" &&
-      /^https?:\/\//i.test(imageUrl),
+      /^https:\/\//i.test(imageUrl),
   ).length;
 }
 
@@ -683,9 +683,9 @@ function mergeRestaurantRecords(primary, secondary) {
   ];
 
   if (
-    (!merged.photoUrl || !/^https?:\/\//i.test(merged.photoUrl)) &&
+    (!merged.photoUrl || !/^https:\/\//i.test(merged.photoUrl)) &&
     secondary.photoUrl &&
-    /^https?:\/\//i.test(secondary.photoUrl)
+    /^https:\/\//i.test(secondary.photoUrl)
   ) {
     merged.photoUrl = secondary.photoUrl;
   }
