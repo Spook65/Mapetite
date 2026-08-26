@@ -99,11 +99,12 @@ function buildOriginPopupContent(title: string, label?: string | null) {
 	return container;
 }
 
-function buildPopup(pin: RestaurantMapPin, closeButton = false) {
+function buildPopup(pin: RestaurantMapPin, closeButton = true) {
 	return new Popup({
 		className: "mapetite-restaurant-popup",
 		closeButton,
 		closeOnClick: false,
+		focusAfterOpen: false,
 		maxWidth: "240px",
 		offset: 18,
 	})
@@ -289,7 +290,13 @@ export function SearchResultsMap({
 				originPopupRef.current?.remove();
 				originPopupRef.current = null;
 				popupRef.current?.remove();
-				popupRef.current = buildPopup(pin, closeButton).addTo(map);
+				const popup = buildPopup(pin, closeButton).addTo(map);
+				popup.on("close", () => {
+					if (popupRef.current !== popup) return;
+					popupRef.current = null;
+					popupPinIdRef.current = null;
+				});
+				popupRef.current = popup;
 				popupPinIdRef.current = pin.id;
 			};
 			const closeHoverPopup = () => {
@@ -386,6 +393,7 @@ export function SearchResultsMap({
 				className: "mapetite-restaurant-popup",
 				closeButton: false,
 				closeOnClick: false,
+				focusAfterOpen: false,
 				maxWidth: "220px",
 				offset: 14,
 			})
@@ -430,13 +438,20 @@ export function SearchResultsMap({
 	useEffect(() => {
 		if (!mapRef.current || pins.length === 0) return;
 		if (fittedViewportSignatureRef.current === viewportSignature) return;
-		fitMapToCurrentResults();
 		fittedViewportSignatureRef.current = viewportSignature;
+		fitMapToCurrentResults();
 	}, [fitMapToCurrentResults, pins.length, viewportSignature]);
 
 	useEffect(() => {
 		const map = mapRef.current;
-		if (!map || !selectedRestaurantId) return;
+		if (!map) return;
+
+		if (!selectedRestaurantId) {
+			popupRef.current?.remove();
+			popupRef.current = null;
+			popupPinIdRef.current = null;
+			return;
+		}
 
 		const selectedPin = pins.find((pin) => pin.id === selectedRestaurantId);
 		if (!selectedPin) return;

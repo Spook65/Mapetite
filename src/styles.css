@@ -436,7 +436,7 @@ code {
 		box-shadow:
 			0 0 0 6px rgba(143, 184, 255, 0.18),
 			0 12px 26px rgba(0, 0, 0, 0.28);
-		z-index: 4;
+		z-index: 8;
 	}
 
 	.mapetite-map-user-marker::after {
@@ -460,7 +460,7 @@ code {
 			0 12px 26px rgba(0, 0, 0, 0.28);
 		cursor: help;
 		transform: rotate(45deg);
-		z-index: 3;
+		z-index: 7;
 	}
 
 	.mapetite-map-search-area-marker::after {
