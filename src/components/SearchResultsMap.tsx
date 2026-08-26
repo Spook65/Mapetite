@@ -17,12 +17,17 @@ import {
 import "maplibre-gl/dist/maplibre-gl.css";
 import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import { MapPinned, X } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 const MAP_STYLE_URL =
 	import.meta.env.VITE_MAP_STYLE_URL || DEFAULT_MAP_STYLE_URL;
+const TRANSPARENT_STYLE_IMAGE = {
+	width: 1,
+	height: 1,
+	data: new Uint8Array([0, 0, 0, 0]),
+};
 
 setWorkerUrl(maplibreWorkerUrl);
 
@@ -126,6 +131,7 @@ export function SearchResultsMap({
 	const popupRef = useRef<Popup | null>(null);
 	const popupPinIdRef = useRef<string | null>(null);
 	const originPopupRef = useRef<Popup | null>(null);
+	const fittedViewportSignatureRef = useRef<string | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [mapError, setMapError] = useState<string | null>(null);
 	const validDistanceOrigin =
@@ -159,6 +165,48 @@ export function SearchResultsMap({
 	const searchCenterOriginKey = validSearchCenterOrigin
 		? `${validSearchCenterOrigin.latitude}:${validSearchCenterOrigin.longitude}:${searchCenterLabel ?? ""}`
 		: "";
+	const viewportSignature = [
+		pinBoundsKey,
+		userLocationKey,
+		searchCenterOriginKey,
+	].join("::");
+
+	const fitMapToCurrentResults = useCallback(
+		(duration = 450) => {
+			const map = mapRef.current;
+			if (!map || pins.length === 0) return;
+
+			if (pins.length === 1 && !validUserLocation && !validSearchCenterOrigin) {
+				map.easeTo({
+					center: [pins[0].longitude, pins[0].latitude],
+					zoom: 13,
+					duration,
+				});
+				return;
+			}
+
+			const bounds = new LngLatBounds();
+			for (const pin of pins) {
+				bounds.extend([pin.longitude, pin.latitude]);
+			}
+			if (validUserLocation) {
+				bounds.extend([validUserLocation.longitude, validUserLocation.latitude]);
+			}
+			if (validSearchCenterOrigin) {
+				bounds.extend([
+					validSearchCenterOrigin.longitude,
+					validSearchCenterOrigin.latitude,
+				]);
+			}
+
+			map.fitBounds(bounds, {
+				padding: 54,
+				maxZoom: 14,
+				duration,
+			});
+		},
+		[pins, validUserLocation, validSearchCenterOrigin],
+	);
 
 	useEffect(() => {
 		selectedRestaurantIdRef.current = selectedRestaurantId;
@@ -177,6 +225,11 @@ export function SearchResultsMap({
 			attributionControl: {
 				compact: true,
 			},
+		});
+		map.setMissingStyleImageResolver((id) => {
+			if (!map.hasImage(id)) {
+				map.addImage(id, TRANSPARENT_STYLE_IMAGE);
+			}
 		});
 
 		map.addControl(
@@ -375,38 +428,11 @@ export function SearchResultsMap({
 	}, [searchCenterOriginKey]);
 
 	useEffect(() => {
-		const map = mapRef.current;
-		if (!map || pins.length === 0) return;
-
-		if (pins.length === 1 && !validUserLocation) {
-			map.easeTo({
-				center: [pins[0].longitude, pins[0].latitude],
-				zoom: 13,
-				duration: 450,
-			});
-			return;
-		}
-
-		const bounds = new LngLatBounds();
-		for (const pin of pins) {
-			bounds.extend([pin.longitude, pin.latitude]);
-		}
-		if (validUserLocation) {
-			bounds.extend([validUserLocation.longitude, validUserLocation.latitude]);
-		}
-		if (validSearchCenterOrigin) {
-			bounds.extend([
-				validSearchCenterOrigin.longitude,
-				validSearchCenterOrigin.latitude,
-			]);
-		}
-
-		map.fitBounds(bounds, {
-			padding: 54,
-			maxZoom: 14,
-			duration: 450,
-		});
-	}, [pinBoundsKey, pins, userLocationKey, searchCenterOriginKey]);
+		if (!mapRef.current || pins.length === 0) return;
+		if (fittedViewportSignatureRef.current === viewportSignature) return;
+		fitMapToCurrentResults();
+		fittedViewportSignatureRef.current = viewportSignature;
+	}, [fitMapToCurrentResults, pins.length, viewportSignature]);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -425,9 +451,6 @@ export function SearchResultsMap({
 			popupPinIdRef.current = null;
 		}
 
-		map.panTo([selectedPin.longitude, selectedPin.latitude], {
-			duration: 300,
-		});
 	}, [selectedRestaurantId, pins]);
 
 	return (
@@ -448,15 +471,29 @@ export function SearchResultsMap({
 						{restaurants.length.toLocaleString()} results.
 					</p>
 				</div>
-				<Button
-					type="button"
-					variant="ghost"
-					onClick={onClose}
-					className="rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-				>
-					<X className="mr-2 size-4" />
-					Hide map
-				</Button>
+				<div className="flex flex-wrap items-center gap-2">
+					<Button
+						type="button"
+						variant="ghost"
+						onClick={() => {
+							fitMapToCurrentResults();
+							fittedViewportSignatureRef.current = viewportSignature;
+						}}
+						className="rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+					>
+						<MapPinned className="mr-2 size-4" />
+						Show all
+					</Button>
+					<Button
+						type="button"
+						variant="ghost"
+						onClick={onClose}
+						className="rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+					>
+						<X className="mr-2 size-4" />
+						Hide map
+					</Button>
+				</div>
 			</div>
 
 			{pins.length > 0 ? (
