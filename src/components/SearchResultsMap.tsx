@@ -147,6 +147,7 @@ export function SearchResultsMap({
 		() => getRestaurantMapPins(restaurants, validDistanceOrigin),
 		[restaurants, distanceOriginKey],
 	);
+	const hasMappablePins = pins.length > 0;
 	const center = useMemo(() => getRestaurantMapCenter(pins), [pins]);
 	const validUserLocation =
 		userLocation &&
@@ -214,7 +215,7 @@ export function SearchResultsMap({
 	}, [selectedRestaurantId]);
 
 	useEffect(() => {
-		if (!mapContainerRef.current || mapRef.current || pins.length === 0 || !center) {
+		if (!mapContainerRef.current || mapRef.current || !hasMappablePins || !center) {
 			return;
 		}
 
@@ -268,7 +269,7 @@ export function SearchResultsMap({
 			mapRef.current = null;
 			setIsMapReady(false);
 		};
-	}, [center, pins.length]);
+	}, [hasMappablePins]);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -285,12 +286,12 @@ export function SearchResultsMap({
 					? "mapetite-map-marker is-selected"
 					: "mapetite-map-marker";
 			markerElement.setAttribute("aria-label", `Select ${pin.name}`);
-			const showPopup = (closeButton = false) => {
+			const showPopup = () => {
 				markerElement.classList.add("is-hovered");
 				originPopupRef.current?.remove();
 				originPopupRef.current = null;
 				popupRef.current?.remove();
-				const popup = buildPopup(pin, closeButton).addTo(map);
+				const popup = buildPopup(pin).addTo(map);
 				popup.on("close", () => {
 					if (popupRef.current !== popup) return;
 					popupRef.current = null;
@@ -318,7 +319,7 @@ export function SearchResultsMap({
 			markerElement.addEventListener("blur", closeHoverPopup);
 			markerElement.addEventListener("click", () => {
 				onSelectRestaurant(pin.id);
-				showPopup(true);
+				showPopup();
 			});
 
 			const marker = new Marker({
@@ -369,7 +370,7 @@ export function SearchResultsMap({
 			.addTo(map);
 
 		userMarkerRef.current = marker;
-	}, [userLocationKey]);
+	}, [userLocationKey, hasMappablePins]);
 
 	useEffect(() => {
 		const map = mapRef.current;
@@ -433,7 +434,7 @@ export function SearchResultsMap({
 			.addTo(map);
 
 		searchCenterMarkerRef.current = marker;
-	}, [searchCenterOriginKey]);
+	}, [searchCenterOriginKey, hasMappablePins]);
 
 	useEffect(() => {
 		if (!mapRef.current || pins.length === 0) return;
