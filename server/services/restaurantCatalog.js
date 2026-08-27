@@ -1419,6 +1419,7 @@ export async function searchRestaurants(params = {}) {
           resolvedLocation,
         );
         payload.restaurants = cityScoped.restaurants;
+        payload.count = payload.restaurants.length;
         payload.meta = {
           ...(payload.meta || {}),
           cityScope: cityScoped.meta,

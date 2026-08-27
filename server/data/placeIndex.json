@@ -27,6 +27,16 @@
       "timezone": "America/Los_Angeles"
     },
     {
+      "city": "Manteca",
+      "region": "California",
+      "regionCode": "CA",
+      "country": "United States",
+      "countryCode": "US",
+      "latitude": 37.7974,
+      "longitude": -121.2161,
+      "timezone": "America/Los_Angeles"
+    },
+    {
       "city": "New York",
       "region": "New York",
       "regionCode": "NY",

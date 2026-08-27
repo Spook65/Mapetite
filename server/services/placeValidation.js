@@ -1,13 +1,23 @@
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
+import { existsSync, readFileSync } from "node:fs";
+import { resolve } from "node:path";
 
 const MAX_SUGGESTIONS = 5;
-const placeIndex = JSON.parse(
-  readFileSync(
-    fileURLToPath(new URL("../data/placeIndex.json", import.meta.url)),
-    "utf8",
-  ),
-);
+
+function getPlaceIndexPath() {
+  const candidates = [
+    resolve(process.cwd(), "server/data/placeIndex.json"),
+    resolve(process.cwd(), "data/placeIndex.json"),
+  ];
+
+  const indexPath = candidates.find((candidate) => existsSync(candidate));
+  if (!indexPath) {
+    throw new Error("Could not find server/data/placeIndex.json.");
+  }
+
+  return indexPath;
+}
+
+const placeIndex = JSON.parse(readFileSync(getPlaceIndexPath(), "utf8"));
 
 export class PlaceValidationError extends Error {
   constructor(code, message, suggestions = []) {
