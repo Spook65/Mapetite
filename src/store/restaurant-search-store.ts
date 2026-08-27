@@ -36,6 +36,10 @@ export interface Restaurant {
 		country: string;
 		zipCode: string;
 	};
+	cityScope?: {
+		state: "exact_city" | "nearby_city" | "city_unknown" | "out_of_area";
+		label: string;
+	};
 	rating: number;
 	reviewCount: number;
 	categories: string[];

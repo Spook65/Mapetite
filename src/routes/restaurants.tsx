@@ -178,6 +178,12 @@ function getLocationHint(restaurant: Restaurant) {
 	return restaurant.address.street || restaurant.address.country || "Location set in details";
 }
 
+function getCityScopeLabel(restaurant: Restaurant) {
+	return restaurant.cityScope?.state === "nearby_city"
+		? restaurant.cityScope.label
+		: null;
+}
+
 function getFullAddressLine(restaurant: Restaurant) {
 	return [
 		restaurant.address.street,
@@ -1072,7 +1078,11 @@ function RestaurantSearchPage() {
 	const resultHeading = showFavorites
 		? "Saved restaurants"
 		: location.city
-			? `${location.city} results`
+			? displayedRestaurants.some(
+					(restaurant) => restaurant.cityScope?.state === "nearby_city",
+				)
+				? `${location.city} area results`
+				: `${location.city} results`
 			: location.country
 				? `${location.country} results`
 				: "Search results";
@@ -1757,6 +1767,7 @@ function RestaurantSearchPage() {
 										);
 										const isSelected = selectedRestaurantId === restaurant.id;
 										const openLabel = getSearchHoursLabel(restaurant);
+										const cityScopeLabel = getCityScopeLabel(restaurant);
 										const summary = truncateCopy(
 											restaurant.description,
 											88,
@@ -1851,6 +1862,11 @@ function RestaurantSearchPage() {
 													</p>
 
 													<div className="flex flex-wrap justify-center gap-2 min-[981px]:justify-start">
+														{cityScopeLabel ? (
+															<span className="rounded-full border border-[rgba(183,177,118,0.18)] bg-[rgba(183,177,118,0.08)] px-3 py-1.5 text-[12px] text-[var(--mapetite-text-soft)]">
+																{cityScopeLabel}
+															</span>
+														) : null}
 														{openLabel ? (
 															<span className="rounded-full border border-[rgba(255,236,220,0.09)] bg-[rgba(255,248,242,0.025)] px-3 py-1.5 text-[12px] text-[var(--mapetite-text-soft)]">
 																{openLabel}
@@ -2042,6 +2058,11 @@ function RestaurantSearchPage() {
 												{selectedRestaurant.address.city ? (
 													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 														{selectedRestaurant.address.city}
+													</span>
+												) : null}
+												{getCityScopeLabel(selectedRestaurant) ? (
+													<span className="rounded-full border border-[rgba(183,177,118,0.18)] bg-[rgba(183,177,118,0.08)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+														{getCityScopeLabel(selectedRestaurant)}
 													</span>
 												) : null}
 												{selectedRestaurant.priceRange ? (
@@ -2253,6 +2274,11 @@ function RestaurantSearchPage() {
 											? `${getDisplayCategory(selectedRestaurant)} · ${getLocationHint(selectedRestaurant)}`
 											: getLocationHint(selectedRestaurant)}
 									</p>
+									{getCityScopeLabel(selectedRestaurant) ? (
+										<p className="mt-1 text-[12px] font-medium text-[var(--mapetite-text-soft)]">
+											{getCityScopeLabel(selectedRestaurant)}
+										</p>
+									) : null}
 								</div>
 
 								<button

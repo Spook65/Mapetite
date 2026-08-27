@@ -9,6 +9,7 @@ import {
   resolveRestaurantMedia,
 } from "./restaurantMedia.js";
 import { buildHoursStatus } from "./restaurantHours.js";
+import { applyRestaurantCityScope } from "./restaurantCityScope.js";
 import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
 import { validatePlaceInput } from "./placeValidation.js";
 
@@ -1413,17 +1414,33 @@ export async function searchRestaurants(params = {}) {
       geoapifyMeta = payload.meta;
       if (payload.restaurants.length > 0) {
         payload.restaurants = deduplicateRestaurants(payload.restaurants);
-        payload.restaurants = rankRestaurantsForSearch(payload.restaurants, {
-          selectedCategories: params.categories,
-          location: resolvedLocation,
-        });
-        payload.restaurants = await enrichSearchRestaurants(payload.restaurants);
-        writeSearchCache(cacheKey, payload);
-        rememberRestaurants(payload.restaurants);
-        return payload;
+        const cityScoped = applyRestaurantCityScope(
+          payload.restaurants,
+          resolvedLocation,
+        );
+        payload.restaurants = cityScoped.restaurants;
+        payload.meta = {
+          ...(payload.meta || {}),
+          cityScope: cityScoped.meta,
+        };
+        if (payload.restaurants.length === 0) {
+          debugSearch("Geoapify restaurants were outside requested city scope; falling back to OpenStreetMap.", {
+            geoapify: payload.meta,
+          });
+          geoapifyMeta = payload.meta;
+        } else {
+          payload.restaurants = rankRestaurantsForSearch(payload.restaurants, {
+            selectedCategories: params.categories,
+            location: resolvedLocation,
+          });
+          payload.restaurants = await enrichSearchRestaurants(payload.restaurants);
+          writeSearchCache(cacheKey, payload);
+          rememberRestaurants(payload.restaurants);
+          return payload;
+        }
       }
 
-      debugSearch("Geoapify returned no restaurants; falling back to OpenStreetMap.", {
+      debugSearch("Geoapify returned no in-scope restaurants; falling back to OpenStreetMap.", {
         geoapify: payload.meta,
       });
     } catch (error) {
@@ -1464,6 +1481,8 @@ export async function searchRestaurants(params = {}) {
 
     restaurants = deduplicateRestaurants(restaurants);
     const deduplicatedCount = restaurants.length;
+    const cityScoped = applyRestaurantCityScope(restaurants, resolvedLocation);
+    restaurants = cityScoped.restaurants;
     restaurants = rankRestaurantsForSearch(restaurants, {
       selectedCategories: params.categories,
       location: resolvedLocation,
@@ -1482,6 +1501,7 @@ export async function searchRestaurants(params = {}) {
           normalizedCount,
           categoryFilteredCount,
           deduplicatedCount,
+          cityScope: cityScoped.meta,
           returnedCount: restaurants.length,
           capped: deduplicatedCount > OSM_FALLBACK_MAX_RESULTS,
           maxResults: OSM_FALLBACK_MAX_RESULTS,
