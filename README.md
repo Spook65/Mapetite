@@ -160,6 +160,30 @@ Key files:
 In plain English: provider data can be incomplete, so Mapetite separates "we
 have this data" from "we do not know" instead of inventing missing content.
 
+## Place Validation Coverage
+
+Mapetite currently uses a compact backend-only `placeIndex.json` for MVP place
+validation. This keeps fake searches and ambiguous city-only searches from
+silently reaching provider restaurant search, but it is not broad consumer
+coverage.
+
+The committed index is manually curated from Countries States Cities
+Database-style fields and covers the portfolio demo cities plus a small set of
+common U.S. and international places. Real cities that are not in the compact
+index can still return `PLACE_NOT_FOUND`.
+
+Scalable next step:
+
+- generate the backend index from the upstream Countries States Cities Database
+  with a repeatable script
+- keep only compact fields needed by the backend: city, region, region code,
+  country, country code, coordinates, and timezone
+- preserve ambiguity behavior for city-only searches such as Paris, Portland,
+  San Jose, and Springfield
+- keep the generated data backend-only so a large global city dataset is not
+  shipped to the browser
+- keep the existing ODbL attribution visible in project documentation
+
 ## Ranking and Data Quality
 
 Mapetite's default ranking is not an official quality score. It is a practical
