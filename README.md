@@ -84,7 +84,7 @@ Backend:
 - Express
 - Geoapify
 - OpenStreetMap / Overpass fallback
-- Countries States Cities Database-derived compact place index
+- Countries States Cities Database-derived generated place index
 - In-memory TTL caches for search, geocoding, detail, and media enrichment
 - Memory-mode demo auth/saved places
 - Optional Mongo connection hook and database-mode configuration path
@@ -144,7 +144,7 @@ Key files:
 ## Data Pipeline
 
 1. The user enters a place such as "Stockton, California, United States".
-2. The backend validates and canonicalizes that place against a compact
+2. The backend validates and canonicalizes that place against a generated
    backend-only location index.
 3. Invalid places return `PLACE_NOT_FOUND`; ambiguous places return
    `PLACE_AMBIGUOUS` with suggestions instead of silently guessing.
@@ -162,27 +162,30 @@ have this data" from "we do not know" instead of inventing missing content.
 
 ## Place Validation Coverage
 
-Mapetite currently uses a compact backend-only `placeIndex.json` for MVP place
-validation. This keeps fake searches and ambiguous city-only searches from
-silently reaching provider restaurant search, but it is not broad consumer
-coverage.
+Mapetite uses a generated backend-only `placeIndex.json` for place validation.
+This keeps fake searches and ambiguous city-only searches from silently reaching
+provider restaurant search while supporting many more real cities than the
+original hand-curated MVP index.
 
-The committed index is manually curated from Countries States Cities
-Database-style fields and covers the portfolio demo cities plus a small set of
-common U.S. and international places. Real cities that are not in the compact
-index can still return `PLACE_NOT_FOUND`.
+The generated index is built from the Countries States Cities Database release
+export with:
 
-Scalable next step:
+```sh
+pnpm run generate:place-index -- <json-countries+states+cities.json[.gz]>
+```
 
-- generate the backend index from the upstream Countries States Cities Database
-  with a repeatable script
-- keep only compact fields needed by the backend: city, region, region code,
-  country, country code, coordinates, and timezone
-- preserve ambiguity behavior for city-only searches such as Paris, Portland,
-  San Jose, and Springfield
-- keep the generated data backend-only so a large global city dataset is not
-  shipped to the browser
-- keep the existing ODbL attribution visible in project documentation
+The committed output keeps only backend validation fields: city, normalized city
+key, region, region code, country, country code, coordinates, timezone, and a few
+safe aliases for common user input such as "New York" and "Ile-de-France".
+
+Important boundaries:
+
+- city-only searches remain ambiguous when multiple indexed places share a name
+- fake strings still return `PLACE_NOT_FOUND` before provider restaurant search
+- the generated data is backend-only and is not shipped to the browser
+- the source is community-maintained public data, so critical location data
+  should still be verified for production use
+- ODbL attribution remains documented below
 
 ## Ranking and Data Quality
 
@@ -243,7 +246,8 @@ Mapetite avoids fake certainty:
   ratings, or review depth.
 - Complex hours schedules are intentionally conservative until a production
   parser such as `opening_hours.js` is evaluated.
-- The compact place index is not a full global autocomplete database.
+- The generated place index improves validation coverage but is not a full
+  typo-tolerant global autocomplete experience.
 - Demo auth/saved places in `MAPETITE_STORAGE_MODE=memory` reset when the backend
   restarts.
 - Auth tokens are stored in browser `localStorage`, which is acceptable for a
@@ -463,9 +467,8 @@ Manual smoke tests that represent the current MVP:
 - Place validation data: [Countries States Cities Database](https://github.com/dr5hn/countries-states-cities-database),
   licensed under ODbL v1.0.
 
-The compact `server/data/placeIndex.json` is backend-only and intended for MVP
-validation coverage. A future production pass should generate it from upstream
-data with a repeatable import script instead of relying on manual additions.
+The generated `server/data/placeIndex.json` is backend-only and should be
+regenerated from the upstream release export when updating validation coverage.
 
 ## Screenshots
 
@@ -504,11 +507,10 @@ Use these points when explaining the project:
 
 Small, realistic next steps:
 
-- Generate the compact place index from upstream data with a repeatable script.
+- Consider adding optional location autocomplete without shipping the generated
+  place index to the frontend.
 - Evaluate `opening_hours.js` for richer OSM schedule parsing.
 - Add durable production auth and persistent saved-place snapshots.
 - Add screenshots and short demo GIFs for the portfolio page.
 - Expand automated backend tests around provider normalization and place
   validation.
-- Add optional location autocomplete without shipping a massive city database to
-  the frontend.

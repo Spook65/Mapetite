@@ -16,6 +16,7 @@
     "typecheck": "tsc --noEmit",
     "check": "pnpm run typecheck && pnpm run lint:radix",
     "check:safe": "pnpm run typecheck",
+    "generate:place-index": "node server/scripts/generatePlaceIndex.js",
     "format": "biome check --write --unsafe",
     "format:quiet": "biome check --write --unsafe --log-level=warn",
     "lint:radix": "grep -l -r '<SelectItem' src | xargs eslint --config config/eslint/eslint.radix.config.js",

@@ -4,14 +4,26 @@ import { describe, expect, it } from "vitest";
 import { PlaceValidationError, validatePlaceInput } from "./placeValidation.js";
 
 describe("place validation", () => {
-  it("accepts currently indexed portfolio search cities", () => {
+  it("accepts generated-index California search cities", () => {
     const supportedPlaces = [
       ["Stockton", "California", "United States"],
       ["Lodi", "California", "United States"],
       ["Manteca", "California", "United States"],
+      ["Modesto", "California", "United States"],
+      ["Tracy", "California", "United States"],
+      ["Sacramento", "California", "United States"],
+      ["San Francisco", "California", "United States"],
+      ["San Jose", "California", "United States"],
+      ["Fresno", "California", "United States"],
+      ["Bakersfield", "California", "United States"],
+      ["Oakland", "California", "United States"],
+      ["Berkeley", "California", "United States"],
+      ["Los Angeles", "California", "United States"],
       ["San Diego", "California", "United States"],
-      ["Tokyo", "Tokyo", "Japan"],
-      ["London", "England", "United Kingdom"],
+      ["Irvine", "California", "United States"],
+      ["Anaheim", "California", "United States"],
+      ["Riverside", "California", "United States"],
+      ["Long Beach", "California", "United States"],
     ];
 
     for (const [city, state, country] of supportedPlaces) {
@@ -20,6 +32,29 @@ describe("place validation", () => {
         state,
         country,
       });
+    }
+  });
+
+  it("accepts generated-index international search cities", () => {
+    const supportedPlaces = [
+      ["Tokyo", "Tokyo", "Japan"],
+      ["Kyoto", "Kyoto", "Japan"],
+      ["Osaka", "Osaka", "Japan"],
+      ["Paris", "Ile-de-France", "France"],
+      ["London", "England", "United Kingdom"],
+      ["Toronto", "Ontario", "Canada"],
+      ["Vancouver", "British Columbia", "Canada"],
+      ["Dubai", "Dubai", "United Arab Emirates"],
+      ["Singapore", "", "Singapore"],
+      ["Phnom Penh", "Phnom Penh", "Cambodia"],
+      ["Siem Reap", "Siem Reap", "Cambodia"],
+      ["Sydney", "New South Wales", "Australia"],
+    ];
+
+    for (const [city, state, country] of supportedPlaces) {
+      const result = validatePlaceInput({ city, state, country });
+      expect(result.city).toBeTruthy();
+      expect(result.country).toBe(country);
     }
   });
 
@@ -40,7 +75,7 @@ describe("place validation", () => {
     });
   });
 
-  it("rejects fake cities that are not in the compact validation index", () => {
+  it("rejects fake cities that are not in the generated validation index", () => {
     expect(() =>
       validatePlaceInput({
         city: "fakecity",
@@ -50,31 +85,20 @@ describe("place validation", () => {
     ).toThrow(PlaceValidationError);
   });
 
-  it("documents likely false negatives while the MVP index is compact", () => {
-    const missingRealPlaces = [
-      ["Modesto", "California", "United States"],
-      ["Tracy", "California", "United States"],
-      ["Kyoto", "Kyoto", "Japan"],
-      ["Siem Reap", "Siem Reap", "Cambodia"],
-    ];
-
-    for (const [city, state, country] of missingRealPlaces) {
-      expect(() =>
-        validatePlaceInput({
-          city,
-          state,
-          country,
-        }),
-      ).toThrow(expect.objectContaining({ code: "PLACE_NOT_FOUND" }));
-    }
-  });
-
   it("keeps ambiguous city-only searches blocked until region or country is supplied", () => {
     expect(() =>
       validatePlaceInput({
         city: "Springfield",
       }),
     ).toThrow(expect.objectContaining({ code: "PLACE_AMBIGUOUS" }));
+  });
+
+  it("rejects nonsense strings that are not exact generated-index matches", () => {
+    expect(() =>
+      validatePlaceInput({
+        city: "asdfasdf",
+      }),
+    ).toThrow(expect.objectContaining({ code: "PLACE_NOT_FOUND" }));
   });
 
   it("resolves ambiguous names when region and country identify one indexed place", () => {

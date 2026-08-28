@@ -92,10 +92,16 @@ function normalizeRegionToken(value) {
 function buildPlaceRecord(rawPlace) {
   return {
     ...rawPlace,
-    normalizedCity: normalizePlaceToken(rawPlace.city),
-    normalizedRegion: normalizeRegionToken(rawPlace.region),
+    normalizedCity: rawPlace.cityKey || normalizePlaceToken(rawPlace.city),
+    normalizedCityAliases: Array.isArray(rawPlace.cityAliases)
+      ? rawPlace.cityAliases.map(normalizePlaceToken).filter(Boolean)
+      : [],
+    normalizedRegion: rawPlace.regionKey || normalizeRegionToken(rawPlace.region),
+    normalizedRegionAliases: Array.isArray(rawPlace.regionAliases)
+      ? rawPlace.regionAliases.map(normalizeRegionToken).filter(Boolean)
+      : [],
     normalizedRegionCode: normalizeRegionToken(rawPlace.regionCode),
-    normalizedCountry: normalizeCountryToken(rawPlace.country),
+    normalizedCountry: rawPlace.countryKey || normalizeCountryToken(rawPlace.country),
     normalizedCountryCode: normalizeCountryToken(rawPlace.countryCode),
   };
 }
@@ -103,6 +109,17 @@ function buildPlaceRecord(rawPlace) {
 const places = Array.isArray(placeIndex.places)
   ? placeIndex.places.map(buildPlaceRecord)
   : [];
+
+const placesByCity = new Map();
+
+for (const place of places) {
+  const cityKeys = [place.normalizedCity, ...place.normalizedCityAliases];
+  for (const cityKey of cityKeys) {
+    const matches = placesByCity.get(cityKey) || [];
+    matches.push(place);
+    placesByCity.set(cityKey, matches);
+  }
+}
 
 function toSuggestion(place) {
   return {
@@ -147,7 +164,15 @@ function isRegionMatch(place, regionInput) {
   const normalizedRegion = normalizeRegionToken(regionInput);
   return (
     place.normalizedRegion === normalizedRegion ||
-    place.normalizedRegionCode === normalizedRegion
+    place.normalizedRegionCode === normalizedRegion ||
+    place.normalizedRegionAliases.includes(normalizedRegion)
+  );
+}
+
+function isCityMatch(place, cityInput) {
+  return (
+    place.normalizedCity === cityInput ||
+    place.normalizedCityAliases.includes(cityInput)
   );
 }
 
@@ -176,7 +201,7 @@ export function validatePlaceInput(locationInput = {}) {
     );
   }
 
-  const cityMatches = places.filter((place) => place.normalizedCity === city);
+  const cityMatches = placesByCity.get(city) || [];
   if (cityMatches.length === 0) {
     throw new PlaceValidationError(
       "PLACE_NOT_FOUND",
