@@ -63,7 +63,7 @@ function isSimpleDailyHours(rawHours, hours) {
   return normalizedHours?.open === range.open && normalizedHours?.close === range.close;
 }
 
-function getMinutesForTimezone(timezone) {
+function getMinutesForTimezone(timezone, referenceDate = new Date()) {
   if (!timezone || typeof timezone !== "string") return null;
 
   try {
@@ -73,7 +73,7 @@ function getMinutesForTimezone(timezone) {
       hour12: false,
       hourCycle: "h23",
       timeZone: timezone,
-    }).formatToParts(new Date());
+    }).formatToParts(referenceDate);
     const hour = Number(parts.find((part) => part.type === "hour")?.value);
     const minute = Number(parts.find((part) => part.type === "minute")?.value);
 
@@ -98,6 +98,7 @@ export function buildHoursStatus({
   hours,
   rawHours,
   timezone,
+  referenceDate,
 } = {}) {
   if (isOpenNow === true) {
     return {
@@ -141,7 +142,7 @@ export function buildHoursStatus({
   }
 
   const range = normalizeTimeRange(`${hours.open} - ${hours.close}`);
-  const currentMinutes = getMinutesForTimezone(timezone);
+  const currentMinutes = getMinutesForTimezone(timezone, referenceDate);
   if (!range || !isSimpleDailyHours(rawHours, hours) || currentMinutes === null) {
     return {
       state: "listed_hours_unknown",

@@ -4,6 +4,11 @@ import { buildHoursStatus } from "./restaurantHours.js";
 const HOURS = { open: "10:00", close: "22:00" };
 const TIMEZONE = "America/Los_Angeles";
 const ACCEPTED_STATES = ["listed_hours_open", "listed_hours_closed"];
+const PACIFIC_MIDDAY = new Date("2026-08-29T19:00:00.000Z");
+const PACIFIC_AFTER_CLOSE = new Date("2026-08-30T06:00:00.000Z");
+const PACIFIC_OVERNIGHT_EVENING = new Date("2026-08-30T05:00:00.000Z");
+const PACIFIC_OVERNIGHT_AFTER_MIDNIGHT = new Date("2026-08-30T07:30:00.000Z");
+const PACIFIC_OVERNIGHT_AFTER_CLOSE = new Date("2026-08-30T09:00:00.000Z");
 
 describe("buildHoursStatus listed hours parsing", () => {
   it("treats exact 24/7 as likely open from listed hours", () => {
@@ -34,11 +39,28 @@ describe("buildHoursStatus listed hours parsing", () => {
         .replace(/\\u2013/g, "\u2013")
         .replace(/\\u2014/g, "\u2014"),
       timezone: TIMEZONE,
+      referenceDate: PACIFIC_MIDDAY,
     });
 
-    expect(ACCEPTED_STATES).toContain(status.state);
+    expect(status.state).toBe("listed_hours_open");
     expect(status.source).toBe("listed_hours");
     expect(status.confidence).toBe("medium");
+    expect(status.closesAt).toBe("22:00");
+    expect(status.timezone).toBe(TIMEZONE);
+  });
+
+  it("reports a simple all-week range as closed after close", () => {
+    const status = buildHoursStatus({
+      hours: HOURS,
+      rawHours: "Mo-Su 10:00-22:00",
+      timezone: TIMEZONE,
+      referenceDate: PACIFIC_AFTER_CLOSE,
+    });
+
+    expect(status.state).toBe("listed_hours_closed");
+    expect(status.source).toBe("listed_hours");
+    expect(status.confidence).toBe("medium");
+    expect(status.opensAt).toBe("10:00");
     expect(status.timezone).toBe(TIMEZONE);
   });
 
@@ -52,12 +74,37 @@ describe("buildHoursStatus listed hours parsing", () => {
       hours,
       rawHours,
       timezone: TIMEZONE,
+      referenceDate: PACIFIC_OVERNIGHT_EVENING,
     });
 
-    expect(ACCEPTED_STATES).toContain(status.state);
+    expect(status.state).toBe("listed_hours_open");
     expect(status.source).toBe("listed_hours");
     expect(status.confidence).toBe("medium");
-    expect([status.closesAt, status.opensAt]).toContain("01:00");
+    expect(status.closesAt).toBe("01:00");
+  });
+
+  it("keeps overnight ranges open after midnight before close", () => {
+    const status = buildHoursStatus({
+      hours: { open: "07:00", close: "1:00" },
+      rawHours: "Mo-Su 07:00-1:00",
+      timezone: TIMEZONE,
+      referenceDate: PACIFIC_OVERNIGHT_AFTER_MIDNIGHT,
+    });
+
+    expect(status.state).toBe("listed_hours_open");
+    expect(status.closesAt).toBe("01:00");
+  });
+
+  it("reports overnight ranges as closed after the overnight close time", () => {
+    const status = buildHoursStatus({
+      hours: { open: "07:00", close: "1:00" },
+      rawHours: "Mo-Su 07:00-1:00",
+      timezone: TIMEZONE,
+      referenceDate: PACIFIC_OVERNIGHT_AFTER_CLOSE,
+    });
+
+    expect(status.state).toBe("listed_hours_closed");
+    expect(status.opensAt).toBe("07:00");
   });
 
   it.each([
