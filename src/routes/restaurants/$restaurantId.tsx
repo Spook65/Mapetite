@@ -2,6 +2,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
+import { hasValidMapCoordinate } from "@/lib/restaurant-map";
 import { getRestaurantResultReasons } from "@/lib/restaurant-result-reasons";
 import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
@@ -17,12 +18,18 @@ import {
 	Star,
 	Utensils,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { lazy, Suspense, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/restaurants/$restaurantId")({
 	component: RestaurantDetailPage,
 });
+
+const VenueMiniMap = lazy(() =>
+	import("@/components/VenueMiniMap").then((module) => ({
+		default: module.VenueMiniMap,
+	})),
+);
 
 function formatPriceRange(priceRange?: number | null) {
 	if (!priceRange || priceRange < 1) return null;
@@ -178,20 +185,6 @@ function buildGalleryAttributions(restaurant: Restaurant) {
 	return [];
 }
 
-function buildMapEmbedUrl(restaurant: Restaurant) {
-	const delta = 0.01;
-	const bbox = [
-		restaurant.longitude - delta,
-		restaurant.latitude - delta,
-		restaurant.longitude + delta,
-		restaurant.latitude + delta,
-	]
-		.map((n) => n.toFixed(6))
-		.join(",");
-
-	return `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${restaurant.latitude}%2C${restaurant.longitude}`;
-}
-
 function RestaurantDetailPage() {
 	const params = Route.useParams();
 	const restaurantId = params.restaurantId as string;
@@ -301,9 +294,10 @@ function RestaurantDetailPage() {
 	};
 
 	const buildDirectionsUrl = (targetRestaurant: Restaurant) => {
-		const hasCoordinates =
-			Number.isFinite(targetRestaurant.latitude) &&
-			Number.isFinite(targetRestaurant.longitude);
+		const hasCoordinates = hasValidMapCoordinate(
+			targetRestaurant.latitude,
+			targetRestaurant.longitude,
+		);
 
 		return hasCoordinates
 			? `https://www.openstreetmap.org/?mlat=${targetRestaurant.latitude}&mlon=${targetRestaurant.longitude}#map=18/${targetRestaurant.latitude}/${targetRestaurant.longitude}`
@@ -374,8 +368,10 @@ function RestaurantDetailPage() {
 	const hasVerifiedGalleryImages = galleryImages.length > 0;
 	const hasReviews = !!restaurant.reviews?.length;
 	const hasRatingBreakdown = !!restaurant.ratingBreakdown;
-	const hasMapCoordinates =
-		Number.isFinite(restaurant.latitude) && Number.isFinite(restaurant.longitude);
+	const hasMapCoordinates = hasValidMapCoordinate(
+		restaurant.latitude,
+		restaurant.longitude,
+	);
 	const hasMenuUrl = !!restaurant.menuUrl;
 	const hasWebsite = !!restaurant.website;
 	const hasPhone = !!restaurant.phone;
@@ -986,18 +982,20 @@ function RestaurantDetailPage() {
 									<div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.95fr)] lg:items-start">
 										<div className="overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] bg-black/10">
 											{hasMapCoordinates ? (
-												<iframe
-													title="Map preview"
-													src={buildMapEmbedUrl(restaurant)}
-													className="h-[320px] w-full"
-													loading="lazy"
-													referrerPolicy="no-referrer"
-												/>
+												<Suspense
+													fallback={
+														<div className="grid min-h-[280px] place-items-center bg-[linear-gradient(180deg,rgba(255,248,242,0.035),rgba(255,248,242,0.01)),linear-gradient(145deg,rgba(183,177,118,0.12),rgba(16,13,10,0.42))] text-sm text-[var(--mapetite-text-soft)] md:min-h-[320px]">
+															Preparing map…
+														</div>
+													}
+												>
+													<VenueMiniMap restaurant={restaurant} />
+												</Suspense>
 											) : (
 												<div className="flex min-h-[320px] items-end bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.26),rgba(180,108,67,0.08)_38%,rgba(17,13,11,0.2)_100%)] p-5">
 													<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
-														Use directions to open the route even when a full map preview
-														isn&apos;t available for this restaurant.
+														Map unavailable. This public listing did not include usable
+														coordinates, but directions can still open a route search.
 													</p>
 												</div>
 											)}
