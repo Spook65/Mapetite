@@ -174,6 +174,33 @@ function buildFullAddress(restaurant: Restaurant) {
 		.join(", ");
 }
 
+function buildDirectionsDestination(restaurant: Restaurant) {
+	if (hasValidMapCoordinate(restaurant.latitude, restaurant.longitude)) {
+		return `${restaurant.latitude},${restaurant.longitude}`;
+	}
+
+	const address = buildFullAddress(restaurant);
+	return address || null;
+}
+
+function buildGoogleMapsDirectionsUrl(restaurant: Restaurant) {
+	const destination = buildDirectionsDestination(restaurant);
+	if (!destination) return null;
+
+	return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+}
+
+function buildOpenStreetMapLocationUrl(restaurant: Restaurant) {
+	if (hasValidMapCoordinate(restaurant.latitude, restaurant.longitude)) {
+		return `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`;
+	}
+
+	const address = buildFullAddress(restaurant);
+	if (!address) return null;
+
+	return `https://www.openstreetmap.org/search?query=${encodeURIComponent(address)}`;
+}
+
 function buildGalleryImages(restaurant: Restaurant) {
 	return restaurant.galleryImageUrls?.filter(Boolean) ?? [];
 }
@@ -293,17 +320,6 @@ function RestaurantDetailPage() {
 		toggleFavoriteMutate({ restaurant_id: targetRestaurantId });
 	};
 
-	const buildDirectionsUrl = (targetRestaurant: Restaurant) => {
-		const hasCoordinates = hasValidMapCoordinate(
-			targetRestaurant.latitude,
-			targetRestaurant.longitude,
-		);
-
-		return hasCoordinates
-			? `https://www.openstreetmap.org/?mlat=${targetRestaurant.latitude}&mlon=${targetRestaurant.longitude}#map=18/${targetRestaurant.latitude}/${targetRestaurant.longitude}`
-			: `https://www.openstreetmap.org/search?query=${encodeURIComponent(targetRestaurant.name)}`;
-	};
-
 	if (!restaurant && isLoadingRestaurant) {
 		return (
 			<Layout>
@@ -358,7 +374,8 @@ function RestaurantDetailPage() {
 		);
 	}
 
-	const directionsUrl = buildDirectionsUrl(restaurant);
+	const directionsUrl = buildGoogleMapsDirectionsUrl(restaurant);
+	const openStreetMapUrl = buildOpenStreetMapLocationUrl(restaurant);
 	const isFavorite = favoriteIds.has(restaurant.id);
 	const priceRangeLabel = formatPriceRange(restaurant.priceRange);
 	const locationLine = buildLocationLine(restaurant);
@@ -533,12 +550,19 @@ function RestaurantDetailPage() {
 									</div>
 
 									<div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center">
-										<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
-											<a href={directionsUrl} target="_blank" rel="noreferrer">
+										{directionsUrl ? (
+											<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
+												<a href={directionsUrl} target="_blank" rel="noreferrer">
+													<Navigation className="mr-2 size-4" />
+													Open directions
+												</a>
+											</Button>
+										) : (
+											<Button disabled className="mapetite-accent-button rounded-[10px] px-5 opacity-60">
 												<Navigation className="mr-2 size-4" />
-												Get directions
-											</a>
-										</Button>
+												Directions unavailable
+											</Button>
+										)}
 										<Button
 											type="button"
 											variant="outline"
@@ -995,7 +1019,10 @@ function RestaurantDetailPage() {
 												<div className="flex min-h-[320px] items-end bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.26),rgba(180,108,67,0.08)_38%,rgba(17,13,11,0.2)_100%)] p-5">
 													<p className="text-sm leading-6 text-[var(--mapetite-text-soft)]">
 														Map unavailable. This public listing did not include usable
-														coordinates, but directions can still open a route search.
+														coordinates
+														{directionsUrl
+															? ", but directions can still open a maps destination."
+															: " or enough address detail to prefill directions."}
 													</p>
 												</div>
 											)}
@@ -1023,11 +1050,37 @@ function RestaurantDetailPage() {
 														</span>
 													))}
 											</div>
-											<Button asChild className="mapetite-quiet-button w-fit rounded-[10px] px-5">
-												<a href={directionsUrl} target="_blank" rel="noreferrer">
-													Check route details
+											{directionsUrl ? (
+												<Button asChild className="mapetite-quiet-button w-fit rounded-[10px] px-5">
+													<a href={directionsUrl} target="_blank" rel="noreferrer">
+														Open directions
+													</a>
+												</Button>
+											) : (
+												<Button disabled className="mapetite-quiet-button w-fit rounded-[10px] px-5 opacity-60">
+													Directions unavailable
+												</Button>
+											)}
+											{directionsUrl ? (
+												<p className="text-sm leading-6 text-[var(--mapetite-text-faint)]">
+													Opens your maps app with this restaurant filled in.
+												</p>
+											) : (
+												<p className="text-sm leading-6 text-[var(--mapetite-text-faint)]">
+													This public listing did not include enough location detail to
+													prefill a maps destination.
+												</p>
+											)}
+											{openStreetMapUrl ? (
+												<a
+													href={openStreetMapUrl}
+													target="_blank"
+													rel="noreferrer"
+													className="text-sm font-semibold text-[var(--mapetite-accent-strong)] underline underline-offset-4 transition hover:text-[var(--mapetite-text)]"
+												>
+													Open in OpenStreetMap
 												</a>
-											</Button>
+											) : null}
 										</div>
 									</div>
 								</section>
@@ -1081,12 +1134,19 @@ function RestaurantDetailPage() {
 									</div>
 
 									<div className="grid gap-3">
-										<Button asChild size="lg" className="mapetite-accent-button rounded-[10px] px-5">
-											<a href={directionsUrl} target="_blank" rel="noreferrer">
+										{directionsUrl ? (
+											<Button asChild size="lg" className="mapetite-accent-button rounded-[10px] px-5">
+												<a href={directionsUrl} target="_blank" rel="noreferrer">
+													<Navigation className="mr-2 size-4" />
+													Open directions
+												</a>
+											</Button>
+										) : (
+											<Button disabled size="lg" className="mapetite-accent-button rounded-[10px] px-5 opacity-60">
 												<Navigation className="mr-2 size-4" />
-												Get directions
-											</a>
-										</Button>
+												Directions unavailable
+											</Button>
+										)}
 										<Button
 											type="button"
 											variant="outline"
