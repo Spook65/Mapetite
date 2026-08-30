@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
+import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import {
@@ -135,16 +136,6 @@ function getHoursLabel(restaurant: Restaurant) {
 	}
 
 	return "Hours unavailable";
-}
-
-function buildDirectionsUrl(restaurant: Restaurant) {
-	const hasCoordinates =
-		Number.isFinite(restaurant.latitude) &&
-		Number.isFinite(restaurant.longitude);
-
-	return hasCoordinates
-		? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
-		: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
 }
 
 function SavedPlacesPage() {
@@ -460,8 +451,12 @@ function SavedPlacesPage() {
 								</div>
 
 								<div className="grid gap-3">
-									{savedItems.map(({ id, restaurant }) =>
-										restaurant ? (
+									{savedItems.map(({ id, restaurant }) => {
+										const directionsUrl = restaurant
+											? buildGoogleMapsDirectionsUrl(restaurant)
+											: null;
+
+										return restaurant ? (
 											<article
 												key={id}
 												className="mapetite-panel grid gap-4 p-4 text-center md:grid-cols-[112px_minmax(0,1fr)_auto] md:items-center md:text-left"
@@ -519,20 +514,31 @@ function SavedPlacesPage() {
 															View details
 														</Link>
 													</Button>
-													<Button
-														asChild
-														variant="outline"
-														className="mapetite-quiet-button h-10 justify-center rounded-full px-4 shadow-none"
-													>
-														<a
-															href={buildDirectionsUrl(restaurant)}
-															target="_blank"
-															rel="noreferrer"
+													{directionsUrl ? (
+														<Button
+															asChild
+															variant="outline"
+															className="mapetite-quiet-button h-10 justify-center rounded-full px-4 shadow-none"
+														>
+															<a
+																href={directionsUrl}
+																target="_blank"
+																rel="noreferrer"
+															>
+																<Navigation className="mr-2 size-4" />
+																Directions
+															</a>
+														</Button>
+													) : (
+														<Button
+															disabled
+															variant="outline"
+															className="mapetite-quiet-button h-10 justify-center rounded-full px-4 opacity-60 shadow-none"
 														>
 															<Navigation className="mr-2 size-4" />
-															Directions
-														</a>
-													</Button>
+															No directions
+														</Button>
+													)}
 													<Button
 														type="button"
 														variant="outline"
@@ -573,8 +579,8 @@ function SavedPlacesPage() {
 													Remove
 												</Button>
 											</article>
-										),
-									)}
+										);
+									})}
 								</div>
 							</section>
 						)}

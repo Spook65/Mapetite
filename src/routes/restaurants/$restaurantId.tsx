@@ -2,6 +2,11 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
+import {
+	buildGoogleMapsDirectionsUrl,
+	buildOpenStreetMapLocationUrl,
+	buildRestaurantAddressLine,
+} from "@/lib/restaurant-directions";
 import { hasValidMapCoordinate } from "@/lib/restaurant-map";
 import { getRestaurantResultReasons } from "@/lib/restaurant-result-reasons";
 import { getRestaurantById } from "@/lib/search-restaurants";
@@ -160,45 +165,6 @@ function buildLocationLine(restaurant: Restaurant) {
 	return [restaurant.address.city, restaurant.address.state]
 		.filter(Boolean)
 		.join(", ");
-}
-
-function buildFullAddress(restaurant: Restaurant) {
-	return [
-		restaurant.address.street,
-		[restaurant.address.city, restaurant.address.state, restaurant.address.zipCode]
-			.filter(Boolean)
-			.join(" "),
-		restaurant.address.country,
-	]
-		.filter(Boolean)
-		.join(", ");
-}
-
-function buildDirectionsDestination(restaurant: Restaurant) {
-	if (hasValidMapCoordinate(restaurant.latitude, restaurant.longitude)) {
-		return `${restaurant.latitude},${restaurant.longitude}`;
-	}
-
-	const address = buildFullAddress(restaurant);
-	return address || null;
-}
-
-function buildGoogleMapsDirectionsUrl(restaurant: Restaurant) {
-	const destination = buildDirectionsDestination(restaurant);
-	if (!destination) return null;
-
-	return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-}
-
-function buildOpenStreetMapLocationUrl(restaurant: Restaurant) {
-	if (hasValidMapCoordinate(restaurant.latitude, restaurant.longitude)) {
-		return `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`;
-	}
-
-	const address = buildFullAddress(restaurant);
-	if (!address) return null;
-
-	return `https://www.openstreetmap.org/search?query=${encodeURIComponent(address)}`;
 }
 
 function buildGalleryImages(restaurant: Restaurant) {
@@ -379,7 +345,7 @@ function RestaurantDetailPage() {
 	const isFavorite = favoriteIds.has(restaurant.id);
 	const priceRangeLabel = formatPriceRange(restaurant.priceRange);
 	const locationLine = buildLocationLine(restaurant);
-	const fullAddress = buildFullAddress(restaurant);
+	const fullAddress = buildRestaurantAddressLine(restaurant);
 	const galleryImages = buildGalleryImages(restaurant);
 	const galleryAttributions = buildGalleryAttributions(restaurant);
 	const hasVerifiedGalleryImages = galleryImages.length > 0;

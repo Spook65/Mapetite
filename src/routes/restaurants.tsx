@@ -8,6 +8,7 @@ import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { reverseGeocode } from "@/lib/api/nominatim";
 import { RestaurantSearchApiError } from "@/lib/api/restaurants";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
+import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantById, searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
@@ -673,16 +674,6 @@ function RestaurantSearchPage() {
 		});
 	}, []);
 
-	const buildDirectionsUrl = useCallback((restaurant: Restaurant) => {
-		const hasCoordinates =
-			Number.isFinite(restaurant.latitude) &&
-			Number.isFinite(restaurant.longitude);
-
-		return hasCoordinates
-			? `https://www.openstreetmap.org/?mlat=${restaurant.latitude}&mlon=${restaurant.longitude}#map=18/${restaurant.latitude}/${restaurant.longitude}`
-			: `https://www.openstreetmap.org/search?query=${encodeURIComponent(restaurant.name)}`;
-	}, []);
-
 	// Memoize favorite IDs Set to avoid recreating on every render.
 	// Only recomputes when favoritesData?.favorites array reference changes.
 	const favoriteIdList = favoritesData?.favorites ?? [];
@@ -1040,6 +1031,9 @@ function RestaurantSearchPage() {
 					: null,
 		[selectedRestaurantId, displayedRestaurants, favoriteRestaurants, restaurants],
 	);
+	const selectedDirectionsUrl = selectedRestaurant
+		? buildGoogleMapsDirectionsUrl(selectedRestaurant)
+		: null;
 	const mapDistanceOrigin = useMemo<RestaurantMapDistanceOrigin | null>(() => {
 		if (
 			mapUserLocation &&
@@ -1768,6 +1762,8 @@ function RestaurantSearchPage() {
 										const isSelected = selectedRestaurantId === restaurant.id;
 										const openLabel = getSearchHoursLabel(restaurant);
 										const cityScopeLabel = getCityScopeLabel(restaurant);
+										const directionsUrl =
+											buildGoogleMapsDirectionsUrl(restaurant);
 										const summary = truncateCopy(
 											restaurant.description,
 											88,
@@ -1912,20 +1908,30 @@ function RestaurantSearchPage() {
 														{favoriteIds.has(restaurant.id) ? "Saved" : "Save"}
 													</Button>
 
-													<Button
-														asChild
-														variant="outline"
-														className="mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5"
-														onClick={(event) => event.stopPropagation()}
-													>
-														<a
-															href={buildDirectionsUrl(restaurant)}
-															target="_blank"
-															rel="noreferrer"
+													{directionsUrl ? (
+														<Button
+															asChild
+															variant="outline"
+															className="mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5"
+															onClick={(event) => event.stopPropagation()}
 														>
-															Directions
-														</a>
-													</Button>
+															<a
+																href={directionsUrl}
+																target="_blank"
+																rel="noreferrer"
+															>
+																Directions
+															</a>
+														</Button>
+													) : (
+														<Button
+															disabled
+															variant="outline"
+															className="mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] opacity-60 shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5"
+														>
+															No directions
+														</Button>
+													)}
 
 													{isSelected ? (
 														<span className="hidden h-10 w-[118px] items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3.5 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:inline-flex">
@@ -2110,19 +2116,29 @@ function RestaurantSearchPage() {
 														? "Saved"
 														: "Save"}
 												</Button>
-												<Button
-													asChild
-													variant="outline"
-													className="mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:w-[132px] min-[1261px]:px-4"
-												>
-													<a
-														href={buildDirectionsUrl(selectedRestaurant)}
-														target="_blank"
-														rel="noreferrer"
+												{selectedDirectionsUrl ? (
+													<Button
+														asChild
+														variant="outline"
+														className="mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:w-[132px] min-[1261px]:px-4"
 													>
-														Directions
-													</a>
-												</Button>
+														<a
+															href={selectedDirectionsUrl}
+															target="_blank"
+															rel="noreferrer"
+														>
+															Directions
+														</a>
+													</Button>
+												) : (
+													<Button
+														disabled
+														variant="outline"
+														className="mapetite-quiet-button h-[46px] w-full justify-center rounded-[10px] px-5 opacity-60 shadow-none sm:w-auto min-[1261px]:h-10 min-[1261px]:w-[132px] min-[1261px]:px-4"
+													>
+														No directions
+													</Button>
+												)}
 											</div>
 
 											<div className="grid gap-3 border-t border-[rgba(255,236,220,0.08)] pt-4">
@@ -2324,19 +2340,29 @@ function RestaurantSearchPage() {
 									{favoriteIds.has(selectedRestaurant.id) ? "Saved" : "Save"}
 								</Button>
 
-								<Button
-									asChild
-									variant="outline"
-									className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 text-[14px] shadow-none"
-								>
-									<a
-										href={buildDirectionsUrl(selectedRestaurant)}
-										target="_blank"
-										rel="noreferrer"
+								{selectedDirectionsUrl ? (
+									<Button
+										asChild
+										variant="outline"
+										className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 text-[14px] shadow-none"
 									>
-										Directions
-									</a>
-								</Button>
+										<a
+											href={selectedDirectionsUrl}
+											target="_blank"
+											rel="noreferrer"
+										>
+											Directions
+										</a>
+									</Button>
+								) : (
+									<Button
+										disabled
+										variant="outline"
+										className="mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 text-[14px] opacity-60 shadow-none"
+									>
+										No directions
+									</Button>
+								)}
 							</div>
 						</div>
 					</div>
