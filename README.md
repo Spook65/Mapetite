@@ -451,7 +451,8 @@ Manual smoke tests that represent the current MVP:
 - Open a restaurant detail page.
 - Confirm Save/Saved works while logged in.
 - Open Saved Places and confirm saved restaurants can be viewed and removed.
-- Confirm Directions opens a route URL.
+- Confirm Directions opens an external Google Maps URL with the destination
+  filled in.
 - Confirm website/menu actions appear only when those links exist.
 - Confirm no-photo and failed-photo states do not look like verified venue
   photos.
