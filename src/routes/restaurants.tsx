@@ -9,6 +9,7 @@ import { reverseGeocode } from "@/lib/api/nominatim";
 import { RestaurantSearchApiError } from "@/lib/api/restaurants";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
 import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
+import { getRestaurantResultReasons } from "@/lib/restaurant-result-reasons";
 import { getRestaurantById, searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
@@ -183,6 +184,19 @@ function getCityScopeLabel(restaurant: Restaurant) {
 	return restaurant.cityScope?.state === "nearby_city"
 		? restaurant.cityScope.label
 		: null;
+}
+
+function getRatingSummary(restaurant: Restaurant) {
+	const hasRating = Number.isFinite(restaurant.rating);
+	const hasReviews = restaurant.reviewCount > 0;
+
+	if (hasRating && hasReviews) {
+		return `${restaurant.rating.toFixed(1)} · ${restaurant.reviewCount.toLocaleString()} reviews`;
+	}
+
+	if (hasRating) return `${restaurant.rating.toFixed(1)} rating`;
+	if (hasReviews) return `${restaurant.reviewCount.toLocaleString()} reviews`;
+	return "New listing";
 }
 
 function getFullAddressLine(restaurant: Restaurant) {
@@ -1034,6 +1048,13 @@ function RestaurantSearchPage() {
 	const selectedDirectionsUrl = selectedRestaurant
 		? buildGoogleMapsDirectionsUrl(selectedRestaurant)
 		: null;
+	const selectedResultReasons = useMemo(
+		() =>
+			selectedRestaurant
+				? getRestaurantResultReasons(selectedRestaurant)
+				: null,
+		[selectedRestaurant],
+	);
 	const mapDistanceOrigin = useMemo<RestaurantMapDistanceOrigin | null>(() => {
 		if (
 			mapUserLocation &&
@@ -1064,6 +1085,13 @@ function RestaurantSearchPage() {
 				.join(", "),
 		[location.city, location.country, location.state],
 	);
+	const selectedDistanceLabel = useMemo(() => {
+		if (!selectedRestaurant || !mapDistanceOrigin) return null;
+		return getRestaurantMapPins([selectedRestaurant], mapDistanceOrigin)[0]
+			?.distanceLabel ?? null;
+	}, [mapDistanceOrigin, selectedRestaurant]);
+	const selectedHelpfulReasons = selectedResultReasons?.helpful.slice(0, 2) ?? [];
+	const selectedCautionReason = selectedResultReasons?.cautions[0] ?? null;
 	const hasActiveFilters =
 		selectedCategories.size > 0 ||
 		priceFilter.length < 4 ||
@@ -1845,11 +1873,7 @@ function RestaurantSearchPage() {
 														</div>
 
 														<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-															{restaurant.rating != null
-																? `${restaurant.rating.toFixed(1)} rating`
-																: restaurant.reviewCount
-																	? `${restaurant.reviewCount} reviews`
-																	: "New listing"}
+															{getRatingSummary(restaurant)}
 														</span>
 													</div>
 
@@ -1995,11 +2019,11 @@ function RestaurantSearchPage() {
 								<aside className="mapetite-panel hidden h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:grid min-[1261px]:self-start">
 									<div className="flex flex-wrap items-center justify-between gap-3">
 										<span className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.5)]">
-											Selected restaurant
+											Compare selection
 										</span>
 										{selectedRestaurant?.rating != null ? (
 											<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-												{selectedRestaurant.rating.toFixed(1)} rating
+												{getRatingSummary(selectedRestaurant)}
 											</span>
 										) : null}
 									</div>
@@ -2055,25 +2079,24 @@ function RestaurantSearchPage() {
 												)}
 											</p>
 
-										<div className="flex flex-wrap gap-2">
+											<div className="flex flex-wrap gap-2">
 												{getDisplayCategory(selectedRestaurant) ? (
 													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 														{getDisplayCategory(selectedRestaurant)}
-													</span>
-												) : null}
-												{selectedRestaurant.address.city ? (
-													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-														{selectedRestaurant.address.city}
 													</span>
 												) : null}
 												{getCityScopeLabel(selectedRestaurant) ? (
 													<span className="rounded-full border border-[rgba(183,177,118,0.18)] bg-[rgba(183,177,118,0.08)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 														{getCityScopeLabel(selectedRestaurant)}
 													</span>
-												) : null}
-												{selectedRestaurant.priceRange ? (
+												) : selectedRestaurant.address.city ? (
 													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
-														{"$".repeat(selectedRestaurant.priceRange)}
+														{selectedRestaurant.address.city}
+													</span>
+												) : null}
+												{selectedDistanceLabel ? (
+													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+														{selectedDistanceLabel}
 													</span>
 												) : null}
 												{getSearchHoursLabel(selectedRestaurant) ? (
@@ -2081,6 +2104,34 @@ function RestaurantSearchPage() {
 														{getSearchHoursLabel(selectedRestaurant)}
 													</span>
 												) : null}
+											</div>
+
+											<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-3">
+												<div className="flex items-center justify-between gap-3">
+													<strong className="text-[13px] font-semibold text-[var(--mapetite-text)]">
+														Why consider it
+													</strong>
+													<span className="text-[11px] uppercase tracking-[0.12em] text-[var(--mapetite-text-faint)]">
+														Listing signals
+													</span>
+												</div>
+												<div className="grid gap-1.5">
+													{selectedHelpfulReasons.map((reason) => (
+														<div
+															key={reason}
+															className="flex items-start gap-2 text-[13px] leading-5 text-[var(--mapetite-text-soft)]"
+														>
+															<span className="mt-[7px] size-1.5 shrink-0 rounded-full bg-[var(--mapetite-accent)]" />
+															<span>{reason}</span>
+														</div>
+													))}
+													{selectedCautionReason ? (
+														<div className="flex items-start gap-2 text-[13px] leading-5 text-[var(--mapetite-text-faint)]">
+															<span className="mt-[7px] size-1.5 shrink-0 rounded-full border border-[rgba(255,236,220,0.26)]" />
+															<span>Double-check: {selectedCautionReason}</span>
+														</div>
+													) : null}
+												</div>
 											</div>
 
 											<div className="grid gap-3 sm:flex sm:flex-wrap">
@@ -2147,9 +2198,8 @@ function RestaurantSearchPage() {
 														{getFullAddressLine(selectedRestaurant) || "Address available in details"}
 													</strong>
 													<p className="mapetite-muted-copy mt-2 text-[14px] leading-6">
-														{selectedRestaurant.reviewCount
-															? `A stronger comparison pick when the shortlist should stay narrow and the room needs enough confidence to justify the route. ${selectedRestaurant.reviewCount.toLocaleString()} reviews available once you open details.`
-															: "Use the full detail page when the address, timing, and route feel close enough to commit."}
+														Use the detail page for photos, hours notes, and source
+														context before you commit to the route.
 													</p>
 												</div>
 											</div>
@@ -2293,6 +2343,13 @@ function RestaurantSearchPage() {
 									{getCityScopeLabel(selectedRestaurant) ? (
 										<p className="mt-1 text-[12px] font-medium text-[var(--mapetite-text-soft)]">
 											{getCityScopeLabel(selectedRestaurant)}
+										</p>
+									) : null}
+									{getSearchHoursLabel(selectedRestaurant) || selectedDistanceLabel ? (
+										<p className="mt-1 truncate text-[12px] text-[var(--mapetite-text-faint)]">
+											{[getSearchHoursLabel(selectedRestaurant), selectedDistanceLabel]
+												.filter(Boolean)
+												.join(" · ")}
 										</p>
 									) : null}
 								</div>
