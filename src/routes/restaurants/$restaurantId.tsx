@@ -191,6 +191,9 @@ function RestaurantDetailPage() {
 		null,
 	);
 	const [selectedImageIndex, setSelectedImageIndex] = useState(0);
+	const [failedGalleryImageUrls, setFailedGalleryImageUrls] = useState<
+		Set<string>
+	>(() => new Set());
 
 	const storeRestaurant = restaurants.find((r) => r.id === restaurantId);
 	const restaurantName =
@@ -266,7 +269,17 @@ function RestaurantDetailPage() {
 
 	useEffect(() => {
 		setSelectedImageIndex(0);
+		setFailedGalleryImageUrls(new Set());
 	}, [restaurantId]);
+
+	const handleGalleryImageError = (imageUrl: string) => {
+		setFailedGalleryImageUrls((previous) => {
+			if (previous.has(imageUrl)) return previous;
+			const next = new Set(previous);
+			next.add(imageUrl);
+			return next;
+		});
+	};
 
 	const restaurant = fetchedRestaurant ?? storeRestaurant;
 	const favoriteIds = useMemo(
@@ -346,8 +359,15 @@ function RestaurantDetailPage() {
 	const priceRangeLabel = formatPriceRange(restaurant.priceRange);
 	const locationLine = buildLocationLine(restaurant);
 	const fullAddress = buildRestaurantAddressLine(restaurant);
-	const galleryImages = buildGalleryImages(restaurant);
-	const galleryAttributions = buildGalleryAttributions(restaurant);
+	const allGalleryImages = buildGalleryImages(restaurant);
+	const allGalleryAttributions = buildGalleryAttributions(restaurant);
+	const galleryEntries = allGalleryImages
+		.map((image, index) => ({
+			image,
+			attribution: allGalleryAttributions[index] ?? [],
+		}))
+		.filter((entry) => !failedGalleryImageUrls.has(entry.image));
+	const galleryImages = galleryEntries.map((entry) => entry.image);
 	const hasVerifiedGalleryImages = galleryImages.length > 0;
 	const hasReviews = !!restaurant.reviews?.length;
 	const hasRatingBreakdown = !!restaurant.ratingBreakdown;
@@ -375,7 +395,7 @@ function RestaurantDetailPage() {
 		0,
 	);
 	const galleryViews = hasVerifiedGalleryImages
-		? galleryImages.map((image, index) => ({
+		? galleryEntries.map((entry, index) => ({
 				badge: galleryImages.length === 1 ? "Available photo" : `Image ${index + 1}`,
 				label: galleryImages.length === 1 ? "Available photo" : `Image ${index + 1}`,
 				title:
@@ -396,8 +416,8 @@ function RestaurantDetailPage() {
 					galleryImages.length > 1
 						? "One of the available venue photos."
 						: "A verified venue image from the available photo coverage.",
-				image,
-				attribution: galleryAttributions[index] ?? [],
+				image: entry.image,
+				attribution: entry.attribution,
 		  }))
 		: [
 				{
@@ -634,6 +654,11 @@ function RestaurantDetailPage() {
 													)}
 													loading="lazy"
 													referrerPolicy="no-referrer"
+													onError={() => {
+														if (activeGalleryView.image) {
+															handleGalleryImageError(activeGalleryView.image);
+														}
+													}}
 												/>
 											) : null}
 
@@ -660,39 +685,44 @@ function RestaurantDetailPage() {
 
 										{galleryViews.length > 1 ? (
 											<div className="grid gap-3">
-											{galleryViews.map((view, index) => (
-												<button
-													key={`${view.label}-${index}`}
-													type="button"
-													onClick={() => setSelectedImageIndex(index)}
-													className={cn(
-														"grid gap-2 rounded-[12px] border p-[14px] text-left transition-all hover:-translate-y-0.5",
-														selectedImageIndex === index
-															? "border-[rgba(213,154,104,0.3)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]"
-															: "border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]",
-													)}
-												>
-													<div className="overflow-hidden rounded-[10px] border border-[rgba(255,236,220,0.08)]">
-														{view.image ? (
-															<img
-																src={view.image}
-																alt={`${restaurant.name} image ${index + 1}`}
-																className="aspect-[4/3] w-full object-cover"
-																loading="lazy"
-																referrerPolicy="no-referrer"
-															/>
-														) : (
-															<div className="min-h-[82px] bg-[linear-gradient(180deg,rgba(255,248,242,0.05),rgba(255,248,242,0.02)),linear-gradient(135deg,rgba(213,154,104,0.22),rgba(180,108,67,0.06)_50%,rgba(17,13,11,0.16)_100%)]" />
+												{galleryViews.map((view, index) => (
+													<button
+														key={`${view.label}-${index}`}
+														type="button"
+														onClick={() => setSelectedImageIndex(index)}
+														className={cn(
+															"grid gap-2 rounded-[12px] border p-[14px] text-left transition-all hover:-translate-y-0.5",
+															selectedImageIndex === index
+																? "border-[rgba(213,154,104,0.3)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]"
+																: "border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.04),rgba(255,248,242,0.02)),linear-gradient(145deg,rgba(213,154,104,0.18),rgba(180,108,67,0.04))]",
 														)}
-													</div>
-													<strong className="text-[15px] font-semibold text-[var(--mapetite-text)]">
-														{view.label}
-													</strong>
-													<span className="text-[13px] text-[var(--mapetite-text-soft)]">
-														{view.summary}
-													</span>
-												</button>
-											))}
+													>
+														<div className="overflow-hidden rounded-[10px] border border-[rgba(255,236,220,0.08)]">
+															{view.image ? (
+																<img
+																	src={view.image}
+																	alt={`${restaurant.name} image ${index + 1}`}
+																	className="aspect-[4/3] w-full object-cover"
+																	loading="lazy"
+																	referrerPolicy="no-referrer"
+																	onError={() => {
+																		if (view.image) {
+																			handleGalleryImageError(view.image);
+																		}
+																	}}
+																/>
+															) : (
+																<div className="min-h-[82px] bg-[linear-gradient(180deg,rgba(255,248,242,0.05),rgba(255,248,242,0.02)),linear-gradient(135deg,rgba(213,154,104,0.22),rgba(180,108,67,0.06)_50%,rgba(17,13,11,0.16)_100%)]" />
+															)}
+														</div>
+														<strong className="text-[15px] font-semibold text-[var(--mapetite-text)]">
+															{view.label}
+														</strong>
+														<span className="text-[13px] text-[var(--mapetite-text-soft)]">
+															{view.summary}
+														</span>
+													</button>
+												))}
 											</div>
 										) : null}
 									</div>

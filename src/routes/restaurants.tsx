@@ -1048,6 +1048,18 @@ function RestaurantSearchPage() {
 	const selectedDirectionsUrl = selectedRestaurant
 		? buildGoogleMapsDirectionsUrl(selectedRestaurant)
 		: null;
+	const selectedPreviewImage = selectedRestaurant
+		? getSelectedPreviewImage(selectedRestaurant)
+		: null;
+	const selectedPreviewImageKey =
+		selectedRestaurant && selectedPreviewImage
+			? `${selectedRestaurant.id}:selected:${selectedPreviewImage}`
+			: null;
+	const shouldShowSelectedPreviewImage = Boolean(
+		selectedPreviewImage &&
+			selectedPreviewImageKey &&
+			!failedResultImageKeys.has(selectedPreviewImageKey),
+	);
 	const selectedResultReasons = useMemo(
 		() =>
 			selectedRestaurant
@@ -2035,13 +2047,18 @@ function RestaurantSearchPage() {
 											</h2>
 
 											<div className="h-[172px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)]">
-												{getSelectedPreviewImage(selectedRestaurant) ? (
+												{shouldShowSelectedPreviewImage ? (
 													<div className="relative h-full">
 														<img
-															src={getSelectedPreviewImage(selectedRestaurant) ?? ""}
+															src={selectedPreviewImage ?? ""}
 															alt={selectedRestaurant.name}
 															className="absolute inset-0 h-full w-full object-cover"
 															referrerPolicy="no-referrer"
+															onError={() => {
+																if (selectedPreviewImageKey) {
+																	handleResultImageError(selectedPreviewImageKey);
+																}
+															}}
 														/>
 														<div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(19,15,13,0.08),rgba(19,15,13,0.68))]" />
 														<div className="relative grid h-full grid-rows-[auto_1fr_auto] p-4">
