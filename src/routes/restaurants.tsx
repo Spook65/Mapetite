@@ -10,6 +10,11 @@ import { RestaurantSearchApiError } from "@/lib/api/restaurants";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
 import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantResultReasons } from "@/lib/restaurant-result-reasons";
+import {
+	getPriceFilterLabel,
+	isPriceFilterActive,
+	matchesPriceFilter,
+} from "@/lib/search-result-filters";
 import { getRestaurantById, searchRestaurants } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
@@ -849,11 +854,9 @@ function RestaurantSearchPage() {
 		// Start with favorites filter if enabled, otherwise use all restaurants
 		let filtered = showFavorites ? favoriteRestaurants : restaurants;
 
-		// Apply price filter - only filter if priceRange exists and is valid
-		filtered = filtered.filter((r) => {
-			if (r.priceRange == null) return true; // Include restaurants without price data
-			return priceFilter.includes(r.priceRange);
-		});
+		filtered = filtered.filter((restaurant) =>
+			matchesPriceFilter(restaurant, priceFilter),
+		);
 
 		// Apply rating filter - only filter if rating exists and meets threshold
 		filtered = filtered.filter((r) => {
@@ -1104,9 +1107,10 @@ function RestaurantSearchPage() {
 	}, [mapDistanceOrigin, selectedRestaurant]);
 	const selectedHelpfulReasons = selectedResultReasons?.helpful.slice(0, 2) ?? [];
 	const selectedCautionReason = selectedResultReasons?.cautions[0] ?? null;
+	const priceFilterLabel = getPriceFilterLabel(priceFilter);
 	const hasActiveFilters =
 		selectedCategories.size > 0 ||
-		priceFilter.length < 4 ||
+		isPriceFilterActive(priceFilter) ||
 		minRating > 0 ||
 		openNowOnly;
 	const resultHeading = showFavorites
@@ -1741,13 +1745,13 @@ function RestaurantSearchPage() {
 											</button>
 										))}
 
-										{priceFilter.length < 4 && (
+										{priceFilterLabel && (
 											<button
 												type="button"
 												onClick={() => setPriceFilter([1, 2, 3, 4])}
 												className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
 											>
-												{"$".repeat(priceFilter.length || 0) || "Any price"}
+												{priceFilterLabel}
 												<X className="size-3" />
 											</button>
 										)}
