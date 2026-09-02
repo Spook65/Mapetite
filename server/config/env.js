@@ -20,6 +20,9 @@ const raw = {
     process.env.GEOAPIFY_API_KEY || "",
   // Support both historical MONGO_URI and newer MONGODB_URI names.
   mongoUri: process.env.MONGODB_URI || process.env.MONGO_URI || "",
+  searchPerfDebug:
+    process.env.MAPETITE_SEARCH_PERF_DEBUG === "true" ||
+    process.env.SEARCH_PERF_DEBUG === "true",
 };
 
 const validate = () => {

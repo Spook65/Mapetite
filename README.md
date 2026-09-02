@@ -123,7 +123,7 @@ src/
 server/
   routes/                 Express routes for restaurants, auth, health, maps
   services/               Provider, catalog, ranking, hours, media, validation
-  data/                   Compact backend-only place validation index
+  data/                   Generated backend-only place validation index
   config/                 Environment and logging helpers
 ```
 
@@ -360,6 +360,7 @@ Frontend variables:
 | `VITE_AUTH_DEBUG` | Optional | Auth integration debug logging when explicitly enabled. Keep `false` in deployed demos. |
 | `VITE_MOCK_API_DEBUG` | Optional | Vite mock API debug logs when explicitly enabled. Keep `false` in deployed demos. |
 | `VITE_APP_CONFIG_DEBUG` | Optional | App config debug logs when explicitly enabled. Keep `false` in deployed demos. |
+| `VITE_SEARCH_PERF_DEBUG` | Optional | Frontend search timing logs when explicitly enabled. Keep `false` in deployed demos unless debugging latency. |
 | `VITE_MCP_API_BASE_PATH` | Optional/legacy | Used by remaining generated MCP SDK helpers if those paths are exercised. |
 | `TENANT_ID` | Optional | Used by Vite base-path logic for hosted tenant-style paths. |
 
@@ -379,6 +380,8 @@ Backend variables:
 | `MONGODB_URI` / `MONGO_URI` | Optional | Optional Mongo connection hook. The app logs a warning and continues if unavailable in database mode. |
 | `MAPETITE_SEARCH_DEBUG` | Optional | Backend search diagnostics when `true`. Keep `false` in deployed demos. |
 | `SEARCH_DEBUG` | Optional | Legacy alias for backend search diagnostics. Keep `false` in deployed demos. |
+| `MAPETITE_SEARCH_PERF_DEBUG` | Optional | Backend search-stage timing logs when `true`. Keep `false` unless diagnosing latency. |
+| `SEARCH_PERF_DEBUG` | Optional | Legacy alias for backend search-stage timing logs. Keep `false` unless diagnosing latency. |
 
 ## Deployment
 
@@ -429,6 +432,9 @@ Notes:
 - Memory-mode demo accounts, saved places, and in-memory caches reset on backend
   restart.
 - The backend health route is `GET /health`.
+- The frontend sends a best-effort non-blocking health warmup on page mount to
+  help wake sleeping demo backends. Render cold starts can still make the first
+  request slower than warm searches.
 
 ## Verification
 

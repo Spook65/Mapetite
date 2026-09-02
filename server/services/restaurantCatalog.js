@@ -12,6 +12,7 @@ import { buildHoursStatus } from "./restaurantHours.js";
 import { applyRestaurantCityScope } from "./restaurantCityScope.js";
 import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
 import { validatePlaceInput } from "./placeValidation.js";
+import env from "../config/env.js";
 
 const SEARCH_RADIUS_METERS = 3000;
 // Keep OSM fallback payloads curated and performant for MVP:
@@ -31,6 +32,7 @@ const GEOAPIFY_BROAD_RETRY_RADIUS_METERS = 12000;
 const SEARCH_DEBUG =
   process.env.MAPETITE_SEARCH_DEBUG === "true" ||
   process.env.SEARCH_DEBUG === "true";
+const SEARCH_PERF_DEBUG = env.searchPerfDebug;
 
 const searchCache = new InMemoryTtlCache({
   defaultTtlMs: SEARCH_CACHE_SUCCESS_TTL_MS,
@@ -49,6 +51,63 @@ const LOCATION_CACHE_MISS = Object.freeze({ missing: true });
 function debugSearch(message, meta = {}) {
   if (SEARCH_DEBUG) {
     console.info(message, meta);
+  }
+}
+
+function getPerfTime() {
+  return typeof performance !== "undefined" && typeof performance.now === "function"
+    ? performance.now()
+    : Date.now();
+}
+
+function createSearchPerf(params = {}) {
+  if (!SEARCH_PERF_DEBUG) return null;
+
+  const startedAt = getPerfTime();
+  const requestId = `${Date.now().toString(36)}-${Math.random()
+    .toString(36)
+    .slice(2, 8)}`;
+
+  return {
+    requestId,
+    startedAt,
+    mark(label, meta = {}) {
+      console.info(`[SearchPerf] ${label}`, {
+        requestId,
+        elapsed_ms: Math.round(getPerfTime() - startedAt),
+        city: params.city || "",
+        state: params.state || "",
+        country: params.country || "",
+        hasCoordinates: hasFiniteCoordinates(params),
+        ...meta,
+      });
+    },
+  };
+}
+
+async function measureSearchPerf(perf, label, fn, meta = {}) {
+  if (!perf) return fn();
+  const startedAt = getPerfTime();
+  try {
+    return await fn();
+  } finally {
+    perf.mark(`${label}_ms`, {
+      duration_ms: Math.round(getPerfTime() - startedAt),
+      ...meta,
+    });
+  }
+}
+
+function measureSearchPerfSync(perf, label, fn, meta = {}) {
+  if (!perf) return fn();
+  const startedAt = getPerfTime();
+  try {
+    return fn();
+  } finally {
+    perf.mark(`${label}_ms`, {
+      duration_ms: Math.round(getPerfTime() - startedAt),
+      ...meta,
+    });
   }
 }
 
@@ -1001,8 +1060,11 @@ function normalizeElement(element, locationContext = {}) {
   return restaurant;
 }
 
-async function resolveLocation(locationInput = {}) {
+async function resolveLocation(locationInput = {}, perf = null) {
   if (hasFiniteCoordinates(locationInput)) {
+    perf?.mark("location_resolved_from_coordinates", {
+      cache_hit: false,
+    });
     return {
       city: locationInput.city || "",
       state: locationInput.state || "",
@@ -1016,14 +1078,27 @@ async function resolveLocation(locationInput = {}) {
   if (locationCacheKey) {
     const cachedLocation = locationCache.get(locationCacheKey);
     if (cachedLocation === LOCATION_CACHE_MISS) {
+      perf?.mark("location_cache_hit", {
+        cache_hit: true,
+        cache_type: "negative",
+      });
       return null;
     }
     if (cachedLocation) {
+      perf?.mark("location_cache_hit", {
+        cache_hit: true,
+        cache_type: "success",
+      });
       return cachedLocation;
     }
   }
 
-  const canonicalLocation = validatePlaceInput(locationInput);
+  perf?.mark("location_cache_miss", { cache_hit: false });
+  const canonicalLocation = measureSearchPerfSync(
+    perf,
+    "validation",
+    () => validatePlaceInput(locationInput),
+  );
   const canonicalLocationInput = {
     ...locationInput,
     city: canonicalLocation.city,
@@ -1031,7 +1106,11 @@ async function resolveLocation(locationInput = {}) {
     country: canonicalLocation.country,
   };
 
-  const geoapifyLocation = await resolveGeoapifyLocation(canonicalLocationInput);
+  const geoapifyLocation = await measureSearchPerf(
+    perf,
+    "geoapify_geocode",
+    () => resolveGeoapifyLocation(canonicalLocationInput),
+  );
   if (geoapifyLocation) {
     const resolvedLocation = {
       ...geoapifyLocation,
@@ -1392,143 +1471,273 @@ async function searchGeoapifyWithOneBroadRetry(params, resolvedLocation) {
 }
 
 export async function searchRestaurants(params = {}) {
-  const resolvedLocation = await resolveLocation(params);
-  if (!resolvedLocation) {
-    return { restaurants: [], location: null };
-  }
-
-  const preferredProvider = isGeoapifyEnabled() ? "geoapify" : "osm";
-  const cacheKey = buildSearchCacheKey(params, resolvedLocation, preferredProvider);
-  const cached = readSearchCache(cacheKey);
-  if (cached) {
-    return cached;
-  }
-
-  let geoapifyMeta;
-  if (preferredProvider === "geoapify") {
-    try {
-      const payload = await searchGeoapifyWithOneBroadRetry(
-        params,
-        resolvedLocation,
-      );
-      geoapifyMeta = payload.meta;
-      if (payload.restaurants.length > 0) {
-        payload.restaurants = deduplicateRestaurants(payload.restaurants);
-        const cityScoped = applyRestaurantCityScope(
-          payload.restaurants,
-          resolvedLocation,
-        );
-        payload.restaurants = cityScoped.restaurants;
-        payload.count = payload.restaurants.length;
-        payload.meta = {
-          ...(payload.meta || {}),
-          cityScope: cityScoped.meta,
-        };
-        if (payload.restaurants.length === 0) {
-          debugSearch("Geoapify restaurants were outside requested city scope; falling back to OpenStreetMap.", {
-            geoapify: payload.meta,
-          });
-          geoapifyMeta = payload.meta;
-        } else {
-          payload.restaurants = rankRestaurantsForSearch(payload.restaurants, {
-            selectedCategories: params.categories,
-            location: resolvedLocation,
-          });
-          payload.restaurants = await enrichSearchRestaurants(payload.restaurants);
-          writeSearchCache(cacheKey, payload);
-          rememberRestaurants(payload.restaurants);
-          return payload;
-        }
-      }
-
-      debugSearch("Geoapify returned no in-scope restaurants; falling back to OpenStreetMap.", {
-        geoapify: payload.meta,
-      });
-    } catch (error) {
-      geoapifyMeta = {
-        provider: "geoapify",
-        error: error?.message || String(error),
-      };
-      console.warn(
-        "Geoapify search failed; falling back to OpenStreetMap.",
-        error,
-      );
-    }
-  }
+  const perf = createSearchPerf(params);
+  perf?.mark("request_received");
 
   try {
-    const elements = await fetchNearbyRestaurants(
-      resolvedLocation,
-      params.radiusMeters || SEARCH_RADIUS_METERS,
+    const resolvedLocation = await measureSearchPerf(
+      perf,
+      "resolve_location",
+      () => resolveLocation(params, perf),
     );
-
-    let restaurants = elements
-      .map((element) => normalizeElement(element, resolvedLocation))
-      .filter(Boolean);
-    const normalizedCount = restaurants.length;
-
-    if (Array.isArray(params.categories) && params.categories.length > 0) {
-      restaurants = restaurants.filter((restaurant) =>
-        restaurant.categories.some((category) =>
-          params.categories.some(
-            (selected) =>
-              category.toLowerCase() === String(selected).toLowerCase() ||
-              category.toLowerCase().includes(String(selected).toLowerCase()),
-          ),
-        ),
-      );
+    if (!resolvedLocation) {
+      perf?.mark("response_sent", {
+        total_ms: Math.round(getPerfTime() - perf.startedAt),
+        cache_hit: false,
+        returnedCount: 0,
+      });
+      return { restaurants: [], location: null };
     }
-    const categoryFilteredCount = restaurants.length;
 
-    restaurants = deduplicateRestaurants(restaurants);
-    const deduplicatedCount = restaurants.length;
-    const cityScoped = applyRestaurantCityScope(restaurants, resolvedLocation);
-    restaurants = cityScoped.restaurants;
-    restaurants = rankRestaurantsForSearch(restaurants, {
-      selectedCategories: params.categories,
-      location: resolvedLocation,
-    });
-    restaurants = capOsmFallbackResults(restaurants);
+    const preferredProvider = isGeoapifyEnabled() ? "geoapify" : "osm";
+    const cacheKey = buildSearchCacheKey(params, resolvedLocation, preferredProvider);
+    const cached = measureSearchPerfSync(
+      perf,
+      "cache_read",
+      () => readSearchCache(cacheKey),
+      { provider: preferredProvider },
+    );
+    if (cached) {
+      perf?.mark("cache_hit", {
+        cache_hit: true,
+        provider: cached.meta?.provider || preferredProvider,
+        returnedCount: cached.restaurants?.length ?? cached.count ?? 0,
+      });
+      perf?.mark("response_sent", {
+        total_ms: Math.round(getPerfTime() - perf.startedAt),
+        cache_hit: true,
+        returnedCount: cached.restaurants?.length ?? cached.count ?? 0,
+      });
+      return cached;
+    }
 
-    const payload = {
-      restaurants,
-      location: resolvedLocation,
-      count: restaurants.length,
-      meta: {
-        provider: "osm",
-        geoapify: geoapifyMeta,
-        osm: {
-          rawCount: elements.length,
-          normalizedCount,
-          categoryFilteredCount,
-          deduplicatedCount,
-          cityScope: cityScoped.meta,
-          returnedCount: restaurants.length,
-          capped: deduplicatedCount > OSM_FALLBACK_MAX_RESULTS,
-          maxResults: OSM_FALLBACK_MAX_RESULTS,
+    perf?.mark("cache_miss", { cache_hit: false, provider: preferredProvider });
+
+    let geoapifyMeta;
+    if (preferredProvider === "geoapify") {
+      try {
+        const payload = await measureSearchPerf(
+          perf,
+          "geoapify",
+          () =>
+            searchGeoapifyWithOneBroadRetry(
+              params,
+              resolvedLocation,
+            ),
+        );
+        geoapifyMeta = payload.meta;
+        if (payload.restaurants.length > 0) {
+          payload.restaurants = measureSearchPerfSync(
+            perf,
+            "deduplicate_geoapify",
+            () => deduplicateRestaurants(payload.restaurants),
+            { rawCount: payload.restaurants.length },
+          );
+          const cityScoped = measureSearchPerfSync(
+            perf,
+            "city_scoping",
+            () =>
+              applyRestaurantCityScope(
+                payload.restaurants,
+                resolvedLocation,
+              ),
+            { provider: "geoapify" },
+          );
+          payload.restaurants = cityScoped.restaurants;
+          payload.count = payload.restaurants.length;
+          payload.meta = {
+            ...(payload.meta || {}),
+            cityScope: cityScoped.meta,
+          };
+          if (payload.restaurants.length === 0) {
+            debugSearch("Geoapify restaurants were outside requested city scope; falling back to OpenStreetMap.", {
+              geoapify: payload.meta,
+            });
+            geoapifyMeta = payload.meta;
+          } else {
+            payload.restaurants = measureSearchPerfSync(
+              perf,
+              "ranking_filtering",
+              () =>
+                rankRestaurantsForSearch(payload.restaurants, {
+                  selectedCategories: params.categories,
+                  location: resolvedLocation,
+                }),
+              { provider: "geoapify" },
+            );
+            payload.restaurants = await measureSearchPerf(
+              perf,
+              "media_enrichment",
+              () => enrichSearchRestaurants(payload.restaurants),
+              { provider: "geoapify" },
+            );
+            measureSearchPerfSync(perf, "cache_write", () =>
+              writeSearchCache(cacheKey, payload),
+            );
+            rememberRestaurants(payload.restaurants);
+            perf?.mark("response_sent", {
+              total_ms: Math.round(getPerfTime() - perf.startedAt),
+              cache_hit: false,
+              provider: "geoapify",
+              returnedCount: payload.restaurants.length,
+            });
+            return payload;
+          }
+        }
+
+        debugSearch("Geoapify returned no in-scope restaurants; falling back to OpenStreetMap.", {
+          geoapify: payload.meta,
+        });
+      } catch (error) {
+        geoapifyMeta = {
+          provider: "geoapify",
+          error: error?.message || String(error),
+        };
+        console.warn(
+          "Geoapify search failed; falling back to OpenStreetMap.",
+          error,
+        );
+      }
+    }
+
+    try {
+      const elements = await measureSearchPerf(
+        perf,
+        "osm_fallback",
+        () =>
+          fetchNearbyRestaurants(
+            resolvedLocation,
+            params.radiusMeters || SEARCH_RADIUS_METERS,
+          ),
+      );
+
+      let restaurants = measureSearchPerfSync(
+        perf,
+        "normalize",
+        () =>
+          elements
+            .map((element) => normalizeElement(element, resolvedLocation))
+            .filter(Boolean),
+        { provider: "osm", rawCount: elements.length },
+      );
+      const normalizedCount = restaurants.length;
+
+      if (Array.isArray(params.categories) && params.categories.length > 0) {
+        restaurants = measureSearchPerfSync(
+          perf,
+          "category_filtering",
+          () =>
+            restaurants.filter((restaurant) =>
+              restaurant.categories.some((category) =>
+                params.categories.some(
+                  (selected) =>
+                    category.toLowerCase() === String(selected).toLowerCase() ||
+                    category.toLowerCase().includes(String(selected).toLowerCase()),
+                ),
+              ),
+            ),
+          { provider: "osm" },
+        );
+      }
+      const categoryFilteredCount = restaurants.length;
+
+      restaurants = measureSearchPerfSync(
+        perf,
+        "deduplicate_osm",
+        () => deduplicateRestaurants(restaurants),
+        { provider: "osm", normalizedCount },
+      );
+      const deduplicatedCount = restaurants.length;
+      const cityScoped = measureSearchPerfSync(
+        perf,
+        "city_scoping",
+        () => applyRestaurantCityScope(restaurants, resolvedLocation),
+        { provider: "osm" },
+      );
+      restaurants = cityScoped.restaurants;
+      restaurants = measureSearchPerfSync(
+        perf,
+        "ranking_filtering",
+        () =>
+          rankRestaurantsForSearch(restaurants, {
+            selectedCategories: params.categories,
+            location: resolvedLocation,
+          }),
+        { provider: "osm" },
+      );
+      restaurants = capOsmFallbackResults(restaurants);
+
+      const payload = {
+        restaurants,
+        location: resolvedLocation,
+        count: restaurants.length,
+        meta: {
+          provider: "osm",
+          geoapify: geoapifyMeta,
+          osm: {
+            rawCount: elements.length,
+            normalizedCount,
+            categoryFilteredCount,
+            deduplicatedCount,
+            cityScope: cityScoped.meta,
+            returnedCount: restaurants.length,
+            capped: deduplicatedCount > OSM_FALLBACK_MAX_RESULTS,
+            maxResults: OSM_FALLBACK_MAX_RESULTS,
+          },
         },
-      },
-    };
+      };
 
-    payload.restaurants = await enrichSearchRestaurants(payload.restaurants);
+      payload.restaurants = await measureSearchPerf(
+        perf,
+        "media_enrichment",
+        () => enrichSearchRestaurants(payload.restaurants),
+        { provider: "osm" },
+      );
 
-    writeSearchCache(cacheKey, payload);
-    rememberRestaurants(restaurants);
+      measureSearchPerfSync(perf, "cache_write", () =>
+        writeSearchCache(cacheKey, payload),
+      );
+      rememberRestaurants(restaurants);
 
-    return payload;
+      perf?.mark("response_sent", {
+        total_ms: Math.round(getPerfTime() - perf.startedAt),
+        cache_hit: false,
+        provider: "osm",
+        returnedCount: payload.restaurants.length,
+      });
+      return payload;
+    } catch (error) {
+      console.warn("OpenStreetMap search failed; using demo fallback data.", error);
+      const restaurants = measureSearchPerfSync(
+        perf,
+        "demo_fallback",
+        () => buildSyntheticRestaurantList(params, resolvedLocation),
+      );
+      const payload = {
+        restaurants,
+        location: resolvedLocation,
+        count: restaurants.length,
+      };
+      measureSearchPerfSync(perf, "cache_write", () =>
+        writeSearchCache(cacheKey, payload, {
+          ttlMs: SEARCH_CACHE_NEGATIVE_TTL_MS,
+        }),
+      );
+      rememberRestaurants(restaurants);
+      perf?.mark("response_sent", {
+        total_ms: Math.round(getPerfTime() - perf.startedAt),
+        cache_hit: false,
+        provider: "demo",
+        returnedCount: payload.restaurants.length,
+      });
+      return payload;
+    }
   } catch (error) {
-    console.warn("OpenStreetMap search failed; using demo fallback data.", error);
-    const restaurants = buildSyntheticRestaurantList(params, resolvedLocation);
-    const payload = {
-      restaurants,
-      location: resolvedLocation,
-      count: restaurants.length,
-    };
-    writeSearchCache(cacheKey, payload, {
-      ttlMs: SEARCH_CACHE_NEGATIVE_TTL_MS,
+    perf?.mark("response_error", {
+      total_ms: perf ? Math.round(getPerfTime() - perf.startedAt) : undefined,
+      message: error?.message || String(error),
     });
-    rememberRestaurants(restaurants);
-    return payload;
+    throw error;
   }
 }
 

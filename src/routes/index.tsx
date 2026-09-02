@@ -4,6 +4,7 @@ import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
+import { warmRestaurantsApiHealth } from "@/lib/api/restaurants";
 import { cn } from "@/lib/utils";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import {
@@ -17,7 +18,7 @@ import {
 	Utensils,
 	X,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 export const Route = createFileRoute("/")({
 	component: LandingPage,
@@ -175,6 +176,10 @@ function LandingPage() {
 	const [selectedRestaurantIndex, setSelectedRestaurantIndex] = useState(0);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+
+	useEffect(() => {
+		warmRestaurantsApiHealth();
+	}, []);
 	const [isLogInOpen, setIsLogInOpen] = useState(false);
 	const { isAuthenticated, profile, logout } = useAuthState();
 

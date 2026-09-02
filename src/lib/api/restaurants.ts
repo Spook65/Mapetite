@@ -1,5 +1,8 @@
 import type { LocationState, Restaurant } from "@/store/restaurant-search-store";
 
+const SEARCH_PERF_DEBUG = import.meta.env.VITE_SEARCH_PERF_DEBUG === "true";
+let hasAttemptedRestaurantApiWarmup = false;
+
 function getRestaurantsApiBaseUrl() {
 	const configuredBaseUrl = import.meta.env.VITE_RESTAURANTS_API_BASE_URL;
 	if (configuredBaseUrl) {
@@ -70,9 +73,47 @@ function appendIfDefined(params: URLSearchParams, key: string, value: unknown) {
 	params.set(key, String(value));
 }
 
+function getPerfTime() {
+	return typeof performance !== "undefined" && typeof performance.now === "function"
+		? performance.now()
+		: Date.now();
+}
+
+function debugSearchPerf(label: string, meta: Record<string, unknown> = {}) {
+	if (!SEARCH_PERF_DEBUG) return;
+	console.debug(`[SearchPerf] ${label}`, meta);
+}
+
+export function warmRestaurantsApiHealth() {
+	if (hasAttemptedRestaurantApiWarmup) return;
+	hasAttemptedRestaurantApiWarmup = true;
+
+	let baseUrl: string;
+	try {
+		baseUrl = getRestaurantsApiBaseUrl();
+	} catch {
+		return;
+	}
+
+	const controller = new AbortController();
+	const timeoutId = window.setTimeout(() => controller.abort(), 8_000);
+
+	fetch(`${baseUrl}/health`, {
+		headers: {
+			Accept: "application/json",
+		},
+		signal: controller.signal,
+	})
+		.catch(() => {
+			// Warmup is best-effort only. Real search requests still surface errors.
+		})
+		.finally(() => window.clearTimeout(timeoutId));
+}
+
 export async function searchRestaurantsApi(
 	request: RestaurantSearchRequest,
 ): Promise<RestaurantSearchResponse> {
+	const startedAt = getPerfTime();
 	const url = new URL(`${getRestaurantsApiBaseUrl()}/api/restaurants/search`);
 	appendIfDefined(url.searchParams, "city", request.city);
 	appendIfDefined(url.searchParams, "state", request.state);
@@ -85,14 +126,33 @@ export async function searchRestaurantsApi(
 		url.searchParams.set("categories", request.categories.join(","));
 	}
 
+	debugSearchPerf("request_start", {
+		city: request.city || "",
+		state: request.state || "",
+		country: request.country || "",
+		hasCoordinates:
+			typeof request.latitude === "number" &&
+			typeof request.longitude === "number",
+		categories: request.categories?.length ?? 0,
+	});
+
 	const response = await fetch(url.toString(), {
 		headers: {
 			Accept: "application/json",
 		},
 	});
+	debugSearchPerf("response_received", {
+		status: response.status,
+		duration_ms: Math.round(getPerfTime() - startedAt),
+	});
 
 	if (!response.ok) {
 		const errorBody = await response.json().catch(() => ({}));
+		debugSearchPerf("error_shown", {
+			status: response.status,
+			duration_ms: Math.round(getPerfTime() - startedAt),
+			code: typeof errorBody.error === "string" ? errorBody.error : undefined,
+		});
 		throw new RestaurantSearchApiError(
 			errorBody.message || `Restaurant search failed: ${response.statusText}`,
 			typeof errorBody.error === "string" ? errorBody.error : undefined,
@@ -100,8 +160,18 @@ export async function searchRestaurantsApi(
 		);
 	}
 
+	const parseStartedAt = getPerfTime();
 	const data = (await response.json()) as RestaurantSearchApiPayload;
+	debugSearchPerf("response_parsed", {
+		parse_ms: Math.round(getPerfTime() - parseStartedAt),
+		total_ms: Math.round(getPerfTime() - startedAt),
+	});
 	const restaurants = data.restaurants ?? data.results ?? [];
+	debugSearchPerf("results_received", {
+		total_ms: Math.round(getPerfTime() - startedAt),
+		restaurants: restaurants.length,
+		count: typeof data.count === "number" ? data.count : restaurants.length,
+	});
 	return {
 		restaurants,
 		location: data.location ?? null,

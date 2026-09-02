@@ -5,8 +5,11 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
+import {
+	RestaurantSearchApiError,
+	warmRestaurantsApiHealth,
+} from "@/lib/api/restaurants";
 import { reverseGeocode } from "@/lib/api/nominatim";
-import { RestaurantSearchApiError } from "@/lib/api/restaurants";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
 import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantResultReasons } from "@/lib/restaurant-result-reasons";
@@ -70,6 +73,8 @@ const INITIAL_VISIBLE_RESULTS = 36;
 const RESULTS_BATCH_SIZE = 36;
 const FAVORITE_SNAPSHOTS_STORAGE_KEY = "mapetite-favorite-snapshots-v1";
 const GEOLOCATION_TIMEOUT_MS = 10_000;
+const SLOW_SEARCH_MESSAGE_DELAY_MS = 2_500;
+const SEARCH_PERF_DEBUG = import.meta.env.VITE_SEARCH_PERF_DEBUG === "true";
 const SearchResultsMap = lazy(() =>
 	import("@/components/SearchResultsMap").then((module) => ({
 		default: module.SearchResultsMap,
@@ -158,6 +163,11 @@ function App() {
 	}
 
 	return <RestaurantSearchPage />;
+}
+
+function debugSearchPerf(label: string, meta: Record<string, unknown> = {}) {
+	if (!SEARCH_PERF_DEBUG) return;
+	console.debug(`[SearchPerf] ${label}`, meta);
 }
 
 function getPreviewImage(restaurant: Restaurant) {
@@ -487,6 +497,7 @@ function RestaurantSearchPage() {
 	// Local component state (not persisted)
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
 	const [isSearching, setIsSearching] = useState(false);
+	const [showSlowSearchMessage, setShowSlowSearchMessage] = useState(false);
 	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
 	const [isMapOpen, setIsMapOpen] = useState(false);
 	const [mapUserLocation, setMapUserLocation] = useState<{
@@ -512,6 +523,26 @@ function RestaurantSearchPage() {
 	const hasLocationInput = Boolean(
 		location.city.trim() || location.state.trim() || location.country.trim(),
 	);
+
+	useEffect(() => {
+		warmRestaurantsApiHealth();
+	}, []);
+
+	useEffect(() => {
+		if (!isSearching) {
+			setShowSlowSearchMessage(false);
+			return;
+		}
+
+		const timeoutId = window.setTimeout(() => {
+			setShowSlowSearchMessage(true);
+			debugSearchPerf("loading_message_shown", {
+				delay_ms: SLOW_SEARCH_MESSAGE_DELAY_MS,
+			});
+		}, SLOW_SEARCH_MESSAGE_DELAY_MS);
+
+		return () => window.clearTimeout(timeoutId);
+	}, [isSearching]);
 
 	const handleClearLocation = useCallback(() => {
 		setLocation({ city: "", state: "", country: "" });
@@ -563,6 +594,13 @@ function RestaurantSearchPage() {
 			toast.error("Add a city to search");
 			return;
 		}
+		const startedAt = performance.now();
+		debugSearchPerf("search_button_click", {
+			city: location.city,
+			state: location.state,
+			country: location.country,
+			categories: selectedCategories.size,
+		});
 		const searchId = ++activeSearchIdRef.current;
 		setIsSearching(true);
 		setMapUserLocation(null);
@@ -576,10 +614,19 @@ function RestaurantSearchPage() {
 			setLocation(resolvedLocation ?? location);
 			setRestaurants(results);
 			setShowFavorites(false);
+			debugSearchPerf("results_render_queued", {
+				total_ms: Math.round(performance.now() - startedAt),
+				restaurants: results.length,
+				resolvedCity: resolvedLocation?.city ?? location.city,
+			});
 		} catch (error) {
 			if (!isExpectedPlaceValidationError(error)) {
 				console.error("Search failed", error);
 			}
+			debugSearchPerf("error_shown", {
+				total_ms: Math.round(performance.now() - startedAt),
+				message: error instanceof Error ? error.message : String(error),
+			});
 			toast.error(getSearchErrorTitle(error), {
 				description: getSearchErrorDescription(error),
 			});
@@ -2262,6 +2309,12 @@ function RestaurantSearchPage() {
 							<div className="mapetite-panel grid gap-3 px-6 py-5">
 								<div className="h-4 w-40 rounded-full bg-[rgba(255,248,242,0.08)]" />
 								<div className="h-3 w-[58%] rounded-full bg-[rgba(255,248,242,0.08)]" />
+								{showSlowSearchMessage ? (
+									<p className="mapetite-muted-copy text-sm leading-6">
+										Waking up the demo backend... first search may take a few
+										seconds.
+									</p>
+								) : null}
 								<div className="grid gap-3 min-[981px]:grid-cols-2">
 									<div className="mapetite-media-fallback h-32 rounded-[12px]" />
 									<div className="grid gap-3">
