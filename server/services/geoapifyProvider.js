@@ -415,23 +415,6 @@ function hasExplicitReviewCountValue(value) {
   return Number.isFinite(value) && value > 0;
 }
 
-function buildRatingBreakdown(rating, reviewCount) {
-  const rounded = Math.max(1, Math.min(5, Math.round(rating)));
-  const five = Math.max(1, Math.round(reviewCount * (0.46 + rounded * 0.05)));
-  const four = Math.max(0, Math.round(reviewCount * 0.28));
-  const three = Math.max(0, Math.round(reviewCount * 0.14));
-  const two = Math.max(0, Math.round(reviewCount * 0.08));
-  const one = Math.max(0, reviewCount - five - four - three - two);
-
-  return {
-    5: five,
-    4: four,
-    3: three,
-    2: two,
-    1: one,
-  };
-}
-
 function buildChefInfo(categories, restaurantName, locationContext = {}) {
   const cuisine = categories.find((category) => category !== "Restaurant") || "Restaurant";
   const pool = [
@@ -487,55 +470,6 @@ function buildSignatureDishes(categories, restaurantName) {
       tags: ["Dessert"],
     },
   ];
-}
-
-function buildReviews(
-  restaurantName,
-  rating,
-  reviewCount,
-  locationContext = {},
-  categories = [],
-) {
-  const openers = [
-    "Impeccable service and memorable flavors.",
-    "A polished dining room with a confident kitchen.",
-    "Thoughtful plating, great pacing, and a strong wine list.",
-    "The menu feels focused and the quality is consistent.",
-    "A destination worth returning to.",
-    "The room feels lively without losing its calm.",
-  ];
-  const middle = [
-    "The pacing felt deliberate in the best way.",
-    "The cooking had a clear point of view.",
-    "It felt tailored to the neighborhood and the city.",
-    "Every course arrived with good energy and restraint.",
-    "You can tell the team cares about the details.",
-  ];
-  const closers = [
-    "We would happily come back again.",
-    "It left a strong impression.",
-    "Worth planning a second visit.",
-    "An easy recommendation for the area.",
-  ];
-  const seed = [restaurantName, locationContext.city, locationContext.state, categories.join("|")]
-    .filter(Boolean)
-    .join("|");
-
-  return Array.from({ length: Math.min(4, Math.max(3, reviewCount > 80 ? 4 : 3)) }, (_, index) => {
-    const hash = stableHash(`${seed}|review|${index}`);
-    const score = Math.max(3.5, Math.min(5, rating - index * 0.2));
-    const date = new Date();
-    date.setDate(date.getDate() - (index + 1) * 11);
-
-    return {
-      id: `${stableHash(restaurantName)}-${index}`,
-      author: `Guest ${index + 1}`,
-      rating: Number(score.toFixed(1)),
-      comment: `${openers[hash % openers.length]} ${middle[(hash >> 3) % middle.length]} ${closers[(hash >> 6) % closers.length]}`,
-      date: date.toISOString(),
-      helpfulCount: Math.max(1, Math.round(reviewCount / (index + 5))),
-    };
-  });
 }
 
 function parseOpeningHours(openingHours) {
@@ -802,7 +736,6 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     rawHours: props.opening_hours,
     timezone: locationContext.timezone,
   });
-  const reviews = buildReviews(name, rating, reviewCount, locationContext, categories);
   const distance =
     hasFiniteCoordinates(locationContext)
       ? calculateDistance(
@@ -833,7 +766,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     description: buildDescription(name, categories, locationContext, props),
     latitude: lat,
     longitude: lon,
-    reviews,
+    reviews: [],
     distance,
     isOpenNow,
     hours: openingHours,
@@ -850,7 +783,7 @@ function normalizeGeoapifyPlace(feature, locationContext = {}, queryCategories =
     chef: buildChefInfo(categories, name, locationContext),
     signatureDishes: buildSignatureDishes(categories, name),
     cuisineHints: buildCuisineHints(categories),
-    ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
+    ratingBreakdown: undefined,
     phone: normalizePhone(props.phone || props.phone_number || props.contact?.phone),
     website: normalizeWebsite(props.website || props.website_uri),
     menuUrl: extractGeoapifyMenuUrl(props),

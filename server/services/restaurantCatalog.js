@@ -123,14 +123,6 @@ const CHEF_BY_CUISINE = {
   Indian: ["Chef Rajesh Kumar", "Chef Anita Patel", "Chef Priya Reddy"],
 };
 
-const REVIEW_TEMPLATES = [
-  "Impeccable service and memorable flavors.",
-  "A polished dining room with a confident kitchen.",
-  "Thoughtful plating, great pacing, and a strong wine list.",
-  "The menu feels focused and the quality is consistent.",
-  "A destination worth returning to.",
-];
-
 function stableHash(value) {
   return String(value)
     .split("")
@@ -800,23 +792,6 @@ function deduplicateRestaurants(restaurants = []) {
   return deduped;
 }
 
-function buildRatingBreakdown(rating, reviewCount) {
-  const rounded = Math.max(1, Math.min(5, Math.round(rating)));
-  const five = Math.max(1, Math.round(reviewCount * (0.46 + rounded * 0.05)));
-  const four = Math.max(0, Math.round(reviewCount * 0.28));
-  const three = Math.max(0, Math.round(reviewCount * 0.14));
-  const two = Math.max(0, Math.round(reviewCount * 0.08));
-  const one = Math.max(0, reviewCount - five - four - three - two);
-
-  return {
-    5: five,
-    4: four,
-    3: three,
-    2: two,
-    1: one,
-  };
-}
-
 function buildChefInfo(categories, restaurantName, locationContext = {}) {
   const cuisine = categories.find((category) => category !== "Restaurant") || "Restaurant";
   const pool = CHEF_BY_CUISINE[cuisine] || [
@@ -874,55 +849,6 @@ function buildSignatureDishes(categories, restaurantName) {
   ];
 
   return dishes;
-}
-
-function buildReviews(
-  restaurantName,
-  rating,
-  reviewCount,
-  locationContext = {},
-  categories = [],
-) {
-  const openers = [
-    "Impeccable service and memorable flavors.",
-    "A polished dining room with a confident kitchen.",
-    "Thoughtful plating, great pacing, and a strong wine list.",
-    "The menu feels focused and the quality is consistent.",
-    "A destination worth returning to.",
-    "The room feels lively without losing its calm.",
-  ];
-  const middle = [
-    "The pacing felt deliberate in the best way.",
-    "The cooking had a clear point of view.",
-    "It felt tailored to the neighborhood and the city.",
-    "Every course arrived with good energy and restraint.",
-    "You can tell the team cares about the details.",
-  ];
-  const closers = [
-    "We would happily come back again.",
-    "It left a strong impression.",
-    "Worth planning a second visit.",
-    "An easy recommendation for the area.",
-  ];
-  const seed = [restaurantName, locationContext.city, locationContext.state, categories.join("|")]
-    .filter(Boolean)
-    .join("|");
-
-  return Array.from({ length: Math.min(4, Math.max(3, reviewCount > 80 ? 4 : 3)) }, (_, index) => {
-    const hash = stableHash(`${seed}|review|${index}`);
-    const score = Math.max(3.5, Math.min(5, rating - index * 0.2));
-    const date = new Date();
-    date.setDate(date.getDate() - (index + 1) * 11);
-
-    return {
-      id: `${stableHash(restaurantName)}-${index}`,
-      author: `Guest ${index + 1}`,
-      rating: Number(score.toFixed(1)),
-      comment: `${openers[hash % openers.length]} ${middle[(hash >> 3) % middle.length]} ${closers[(hash >> 6) % closers.length]}`,
-      date: date.toISOString(),
-      helpfulCount: Math.max(1, Math.round(reviewCount / (index + 5))),
-    };
-  });
 }
 
 function normalizeAddress(tags = {}, fallbackLocation = {}) {
@@ -990,7 +916,6 @@ function normalizeElement(element, locationContext = {}) {
   const rating = deriveRating(tags, id);
   const reviewCount = deriveReviewCount(tags, id);
   const priceRange = parsePriceRange(tags, categories);
-  const reviews = buildReviews(name, rating, reviewCount, locationContext, categories);
   const distance =
     hasFiniteCoordinates(locationContext)
       ? calculateDistance(
@@ -1024,7 +949,7 @@ function normalizeElement(element, locationContext = {}) {
     description: buildDescription(name, categories, locationContext, tags),
     latitude: lat,
     longitude: lon,
-    reviews,
+    reviews: [],
     distance,
     isOpenNow: undefined,
     hours,
@@ -1039,7 +964,7 @@ function normalizeElement(element, locationContext = {}) {
     chef: buildChefInfo(categories, name, locationContext),
     signatureDishes: buildSignatureDishes(categories, name),
     cuisineHints: buildCuisineHints(categories),
-    ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
+    ratingBreakdown: undefined,
     amenities: [
       tags.wifi === "yes" ? "Wi-Fi" : null,
       tags.outdoor_seating === "yes" ? "Outdoor Seating" : null,
@@ -1256,8 +1181,6 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
     ),
   ];
 
-  const reviews = buildReviews(`${seed}-${index}`, rating, reviewCount, locationContext, categories);
-
   return {
     id: `demo:${baseSeed}`,
     name: `${categoryLabel} ${noun}`,
@@ -1277,7 +1200,7 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
     description: `${categoryLabel} ${noun} is a polished demo restaurant in ${city}. It appears when live provider data is temporarily unavailable.`,
     latitude,
     longitude,
-    reviews,
+    reviews: [],
     distance:
       typeof locationContext.latitude === "number" &&
       typeof locationContext.longitude === "number"
@@ -1297,7 +1220,7 @@ function buildSyntheticRestaurant(seed, locationContext = {}, index = 0, queryCa
     chef: buildChefInfo(categories, `${city} ${categoryLabel} ${noun}`, locationContext),
     signatureDishes: buildSignatureDishes(categories, `${categoryLabel} ${noun}`),
     cuisineHints: buildCuisineHints(categories),
-    ratingBreakdown: buildRatingBreakdown(rating, reviewCount),
+    ratingBreakdown: undefined,
     amenities: ["Wi-Fi", "Outdoor Seating"],
     paymentMethods: ["Cards", "Cash"],
     source: "demo",

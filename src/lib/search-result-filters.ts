@@ -28,6 +28,19 @@ export function matchesPriceFilter(
 	return normalizePriceFilter(prices).includes(priceRange);
 }
 
+export function togglePriceFilterSelection(prices: number[], price: number) {
+	if (!PRICE_LEVEL_SET.has(price)) return normalizePriceFilter(prices);
+
+	const normalized = normalizePriceFilter(prices);
+	if (!isPriceFilterActive(normalized)) return [price];
+
+	if (normalized.includes(price)) {
+		return normalized.filter((selectedPrice) => selectedPrice !== price);
+	}
+
+	return [...normalized, price].sort((a, b) => a - b);
+}
+
 export function getPriceFilterLabel(prices: number[]) {
 	if (!isPriceFilterActive(prices)) return null;
 	return normalizePriceFilter(prices)

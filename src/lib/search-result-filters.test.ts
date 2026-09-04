@@ -4,6 +4,7 @@ import {
 	isPriceFilterActive,
 	matchesPriceFilter,
 	normalizePriceFilter,
+	togglePriceFilterSelection,
 } from "@/lib/search-result-filters";
 
 describe("search result price filters", () => {
@@ -37,5 +38,16 @@ describe("search result price filters", () => {
 
 	it("labels non-contiguous price selections accurately", () => {
 		expect(getPriceFilterLabel([3, 1])).toBe("$, $$$");
+	});
+
+	it("starts an explicit selection from Any price", () => {
+		expect(togglePriceFilterSelection([], 1)).toEqual([1]);
+		expect(togglePriceFilterSelection([1, 2, 3, 4], 1)).toEqual([1]);
+	});
+
+	it("toggles explicit price selections without inverting constraints", () => {
+		expect(togglePriceFilterSelection([1], 2)).toEqual([1, 2]);
+		expect(togglePriceFilterSelection([1, 2], 1)).toEqual([2]);
+		expect(togglePriceFilterSelection([1], 1)).toEqual([]);
 	});
 });

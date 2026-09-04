@@ -1509,7 +1509,8 @@ function RestaurantSearchPage() {
 													onClick={() => togglePriceFilter(price)}
 											className={cn(
 												"h-10 rounded-full px-2 shadow-none",
-														priceFilter.includes(price)
+														isPriceFilterActive(priceFilter) &&
+															priceFilter.includes(price)
 															? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 															: "mapetite-quiet-button",
 													)}
@@ -1635,7 +1636,8 @@ function RestaurantSearchPage() {
 														onClick={() => togglePriceFilter(price)}
 														className={cn(
 															"rounded-full shadow-none",
-															priceFilter.includes(price)
+															isPriceFilterActive(priceFilter) &&
+																priceFilter.includes(price)
 																? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 																: "mapetite-quiet-button",
 														)}

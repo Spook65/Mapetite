@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { togglePriceFilterSelection } from "@/lib/search-result-filters";
 
 /**
  * Location State Interface
@@ -169,7 +170,7 @@ const initialState = {
 	},
 	restaurants: [],
 	selectedCategories: new Set<string>(),
-	priceFilter: [1, 2, 3, 4],
+	priceFilter: [],
 	minRating: 0,
 	sortBy: "none" as const,
 	openNowOnly: false,
@@ -242,16 +243,9 @@ export const useRestaurantSearchStore = create<RestaurantSearchState>()(
 			setPriceFilter: (prices) => set({ priceFilter: prices }),
 
 			togglePriceFilter: (price) =>
-				set((state) => {
-					if (state.priceFilter.includes(price)) {
-						return {
-							priceFilter: state.priceFilter.filter((p) => p !== price),
-						};
-					}
-					return {
-						priceFilter: [...state.priceFilter, price].sort(),
-					};
-				}),
+				set((state) => ({
+					priceFilter: togglePriceFilterSelection(state.priceFilter, price),
+				})),
 
 			// Rating filter
 			setMinRating: (rating) => set({ minRating: rating }),
@@ -270,7 +264,7 @@ export const useRestaurantSearchStore = create<RestaurantSearchState>()(
 			// Utility functions
 			clearAllFilters: () =>
 				set({
-					priceFilter: [1, 2, 3, 4],
+					priceFilter: [],
 					minRating: 0,
 					sortBy: "none",
 					openNowOnly: false,
