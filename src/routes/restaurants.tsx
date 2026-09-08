@@ -11,6 +11,15 @@ import {
 } from "@/lib/api/restaurants";
 import { reverseGeocode } from "@/lib/api/nominatim";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
+import {
+	clearRecentSearches,
+	loadLastSearchSnapshot,
+	loadRecentSearches,
+	saveLastSearchSnapshot,
+	saveRecentSearch,
+	type LastSearchSnapshot,
+	type RecentSearchEntry,
+} from "@/lib/recent-search-cache";
 import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantResultReasons } from "@/lib/restaurant-result-reasons";
 import {
@@ -513,6 +522,14 @@ function RestaurantSearchPage() {
 	const [failedResultImageKeys, setFailedResultImageKeys] = useState<Set<string>>(
 		() => new Set(),
 	);
+	const [recentSearches, setRecentSearches] = useState<RecentSearchEntry[]>(
+		() => loadRecentSearches(),
+	);
+	const [lastSearchSnapshot, setLastSearchSnapshot] =
+		useState<LastSearchSnapshot | null>(() => loadLastSearchSnapshot());
+	const [restoredSearchLabel, setRestoredSearchLabel] = useState<string | null>(
+		null,
+	);
 	const [favoriteSnapshots, setFavoriteSnapshots] = useState<
 		Record<string, Restaurant>
 	>(() => loadFavoriteSnapshotsFromStorage());
@@ -522,6 +539,60 @@ function RestaurantSearchPage() {
 	const categories = ["Noodles", "Vegetarian", "Fast-Food"];
 	const hasLocationInput = Boolean(
 		location.city.trim() || location.state.trim() || location.country.trim(),
+	);
+	const quickSearches: RecentSearchEntry[] = [
+		{
+			city: "Stockton",
+			state: "California",
+			country: "United States",
+			label: "Stockton",
+			timestamp: 0,
+		},
+		{
+			city: "Modesto",
+			state: "California",
+			country: "United States",
+			label: "Modesto",
+			timestamp: 0,
+		},
+		{
+			city: "San Diego",
+			state: "California",
+			country: "United States",
+			label: "San Diego",
+			timestamp: 0,
+		},
+		{
+			city: "Kyoto",
+			state: "",
+			country: "Japan",
+			label: "Kyoto",
+			timestamp: 0,
+		},
+		{
+			city: "Paris",
+			state: "",
+			country: "France",
+			label: "Paris",
+			timestamp: 0,
+		},
+		{
+			city: "London",
+			state: "",
+			country: "United Kingdom",
+			label: "London",
+			timestamp: 0,
+		},
+	];
+	const searchChips = recentSearches.length > 0 ? recentSearches : quickSearches;
+	const searchChipHeading =
+		recentSearches.length > 0 ? "Recent searches" : "Quick starts";
+	const searchChipCopy =
+		recentSearches.length > 0
+			? "Saved in this browser only."
+			: "Starter cities for a faster demo.";
+	const shouldShowLastSearchRestore = Boolean(
+		lastSearchSnapshot && restaurants.length === 0 && !showFavorites,
 	);
 
 	useEffect(() => {
@@ -552,6 +623,19 @@ function RestaurantSearchPage() {
 		}, 0);
 	}, [setLocation]);
 
+	const recordSuccessfulTypedSearch = useCallback(
+		(searchLocation: typeof location, results: Restaurant[]) => {
+			if (!searchLocation.city || results.length === 0) return;
+			setRecentSearches(
+				saveRecentSearch(searchLocation, {
+					resultCount: results.length,
+				}),
+			);
+			setLastSearchSnapshot(saveLastSearchSnapshot(searchLocation, results));
+		},
+		[],
+	);
+
 	// Handle city search parameter from navigation
 	useEffect(() => {
 		if (searchCity) {
@@ -571,9 +655,12 @@ function RestaurantSearchPage() {
 					if (searchId !== activeSearchIdRef.current) {
 						return;
 					}
-					setLocation(resolvedLocation ?? requestedLocation);
+					const nextLocation = resolvedLocation ?? requestedLocation;
+					setLocation(nextLocation);
 					setRestaurants(results);
 					setShowFavorites(false);
+					setRestoredSearchLabel(null);
+					recordSuccessfulTypedSearch(nextLocation, results);
 				} catch (error) {
 					if (searchId !== activeSearchIdRef.current) {
 						return;
@@ -605,15 +692,18 @@ function RestaurantSearchPage() {
 		setIsSearching(true);
 		setMapUserLocation(null);
 		setRestaurants([]);
+		setRestoredSearchLabel(null);
 		try {
 			const { restaurants: results, location: resolvedLocation } =
 				await searchRestaurants(location, Array.from(selectedCategories));
 			if (searchId !== activeSearchIdRef.current) {
 				return;
 			}
-			setLocation(resolvedLocation ?? location);
+			const nextLocation = resolvedLocation ?? location;
+			setLocation(nextLocation);
 			setRestaurants(results);
 			setShowFavorites(false);
+			recordSuccessfulTypedSearch(nextLocation, results);
 			debugSearchPerf("results_render_queued", {
 				total_ms: Math.round(performance.now() - startedAt),
 				restaurants: results.length,
@@ -669,6 +759,7 @@ function RestaurantSearchPage() {
 			setLocation(resolvedLocation ?? resolved);
 			setRestaurants(results);
 			setShowFavorites(false);
+			setRestoredSearchLabel(null);
 		} catch (error) {
 			if (!isExpectedLocationError(error)) {
 				console.error("Geolocation search failed", error);
@@ -696,9 +787,12 @@ function RestaurantSearchPage() {
 			if (searchId !== activeSearchIdRef.current) {
 				return;
 			}
-			setLocation(resolvedLocation ?? location);
+			const nextLocation = resolvedLocation ?? location;
+			setLocation(nextLocation);
 			setRestaurants(results);
 			setShowFavorites(false);
+			setRestoredSearchLabel(null);
+			recordSuccessfulTypedSearch(nextLocation, results);
 			toast.success("Results refreshed", {
 				description:
 					"Refreshes current provider data. Results may stay the same.",
@@ -709,6 +803,102 @@ function RestaurantSearchPage() {
 			}
 			toast.error(getSearchErrorTitle(error), {
 				description: getSearchErrorDescription(error),
+			});
+		} finally {
+			if (searchId === activeSearchIdRef.current) {
+				setIsSearching(false);
+			}
+		}
+	};
+
+	const handleRunSearchChip = async (search: RecentSearchEntry) => {
+		const requestedLocation = {
+			city: search.city,
+			state: search.state,
+			country: search.country,
+		};
+		const startedAt = performance.now();
+		const searchId = ++activeSearchIdRef.current;
+		setLocation(requestedLocation);
+		setMapUserLocation(null);
+		setRestaurants([]);
+		setSelectedRestaurantId(null);
+		setRestoredSearchLabel(null);
+		setIsSearching(true);
+
+		try {
+			const { restaurants: results, location: resolvedLocation } =
+				await searchRestaurants(requestedLocation, Array.from(selectedCategories));
+			if (searchId !== activeSearchIdRef.current) {
+				return;
+			}
+			const nextLocation = resolvedLocation ?? requestedLocation;
+			setLocation(nextLocation);
+			setRestaurants(results);
+			setShowFavorites(false);
+			recordSuccessfulTypedSearch(nextLocation, results);
+			debugSearchPerf("results_render_queued", {
+				total_ms: Math.round(performance.now() - startedAt),
+				restaurants: results.length,
+				resolvedCity: resolvedLocation?.city ?? requestedLocation.city,
+			});
+		} catch (error) {
+			if (!isExpectedPlaceValidationError(error)) {
+				console.error("Search failed", error);
+			}
+			toast.error(getSearchErrorTitle(error), {
+				description: getSearchErrorDescription(error),
+			});
+		} finally {
+			if (searchId === activeSearchIdRef.current) {
+				setIsSearching(false);
+			}
+		}
+	};
+
+	const handleClearRecentSearches = () => {
+		clearRecentSearches();
+		setRecentSearches([]);
+	};
+
+	const handleRestoreLastSearch = async () => {
+		const snapshot = loadLastSearchSnapshot();
+		if (!snapshot) {
+			setLastSearchSnapshot(null);
+			toast.error("Last search expired", {
+				description: "Run a fresh search to save a new browser-local snapshot.",
+			});
+			return;
+		}
+
+		const searchId = ++activeSearchIdRef.current;
+		setLocation(snapshot.location);
+		setRestaurants(snapshot.restaurants);
+		setShowFavorites(false);
+		setSelectedRestaurantId(null);
+		setMapUserLocation(null);
+		setRestoredSearchLabel(snapshot.search.label);
+		setLastSearchSnapshot(snapshot);
+		setIsSearching(true);
+
+		try {
+			const { restaurants: results, location: resolvedLocation } =
+				await searchRestaurants(snapshot.location, Array.from(selectedCategories));
+			if (searchId !== activeSearchIdRef.current) {
+				return;
+			}
+			const nextLocation = resolvedLocation ?? snapshot.location;
+			setLocation(nextLocation);
+			setRestaurants(results);
+			setRestoredSearchLabel(null);
+			recordSuccessfulTypedSearch(nextLocation, results);
+		} catch (error) {
+			if (!isExpectedPlaceValidationError(error)) {
+				console.error("Restored search refresh failed", error);
+			}
+			toast.error("Showing saved browser results", {
+				description:
+					"We could not refresh current provider data. These results may be outdated.",
 			});
 		} finally {
 			if (searchId === activeSearchIdRef.current) {
@@ -1331,6 +1521,69 @@ function RestaurantSearchPage() {
 						) : null}
 					</section>
 
+					<section className="mapetite-panel-soft mb-4 grid gap-3 p-4 md:p-5">
+						<div className="flex flex-wrap items-center justify-between gap-3">
+							<div>
+								<div className="mapetite-eyebrow">{searchChipHeading}</div>
+								<p className="mapetite-muted-copy mt-2 text-sm">
+									{searchChipCopy}
+								</p>
+							</div>
+							{recentSearches.length > 0 ? (
+								<button
+									type="button"
+									onClick={handleClearRecentSearches}
+									className="rounded-full border border-[rgba(255,236,220,0.1)] px-3 py-1.5 text-xs font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:text-[var(--mapetite-text)]"
+								>
+									Clear recent searches
+								</button>
+							) : null}
+						</div>
+
+						<div className="flex flex-wrap gap-2">
+							{searchChips.map((search) => (
+								<button
+									key={`${search.city}-${search.state}-${search.country}`}
+									type="button"
+									onClick={() => handleRunSearchChip(search)}
+									disabled={isSearching}
+									className="rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3.5 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] disabled:cursor-not-allowed disabled:opacity-60"
+								>
+									<span>{search.label}</span>
+									{search.resultCount !== undefined ? (
+										<span className="ml-2 text-[12px] text-[var(--mapetite-text-faint)]">
+											{search.resultCount.toLocaleString()}
+										</span>
+									) : null}
+								</button>
+							))}
+						</div>
+
+						{shouldShowLastSearchRestore && lastSearchSnapshot ? (
+							<div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-3.5 py-3">
+								<p className="mapetite-muted-copy text-sm leading-6">
+									Last saved search:{" "}
+									<span className="text-[var(--mapetite-text)]">
+										{lastSearchSnapshot.search.label}
+									</span>
+									. Restored results are saved in this browser and refreshed
+									against current provider data.
+								</p>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={handleRestoreLastSearch}
+									disabled={isSearching}
+									className="mapetite-quiet-button h-10 rounded-full px-4 text-sm shadow-none"
+								>
+									{isSearching && restoredSearchLabel
+										? "Refreshing..."
+										: "Restore last search"}
+								</Button>
+							</div>
+						) : null}
+					</section>
+
 					<section className="mapetite-panel-soft mb-4 grid gap-4 p-4 md:p-5">
 						<div className="grid gap-3 min-[981px]:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] min-[981px]:items-center">
 							<div className="grid justify-items-center gap-3 min-[981px]:block min-[981px]:justify-items-stretch">
@@ -1797,7 +2050,7 @@ function RestaurantSearchPage() {
 										{priceFilterLabel && (
 											<button
 												type="button"
-												onClick={() => setPriceFilter([1, 2, 3, 4])}
+												onClick={() => setPriceFilter([])}
 												className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
 											>
 												{priceFilterLabel}
@@ -1839,6 +2092,17 @@ function RestaurantSearchPage() {
 										</Button>
 									</div>
 								)}
+
+								{displayedRestaurants.length > 0 &&
+									restoredSearchLabel && (
+										<div className="rounded-[14px] border border-[rgba(213,154,104,0.16)] bg-[rgba(213,154,104,0.07)] px-4 py-3 text-sm leading-6 text-[var(--mapetite-text-soft)]">
+											Showing saved results from this browser for{" "}
+											<span className="font-medium text-[var(--mapetite-text)]">
+												{restoredSearchLabel}
+											</span>{" "}
+											while refreshing current provider data.
+										</div>
+									)}
 
 								{displayedRestaurants.length > 0 &&
 									visibleRestaurants.map((restaurant) => {
@@ -2306,7 +2570,7 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
-					{isSearching && (
+					{isSearching && !(restoredSearchLabel && restaurants.length > 0) && (
 						<section className="mt-6 grid gap-4">
 							<div className="mapetite-panel grid gap-3 px-6 py-5">
 								<div className="h-4 w-40 rounded-full bg-[rgba(255,248,242,0.08)]" />

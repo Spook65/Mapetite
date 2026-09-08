@@ -276,7 +276,11 @@ export const useRestaurantSearchStore = create<RestaurantSearchState>()(
 			name: "restaurant-search-storage", // localStorage key
 			// Custom serialization for Set objects
 			partialize: (state) => ({
-				location: state.location,
+				location: {
+					city: state.location.city,
+					state: state.location.state,
+					country: state.location.country,
+				},
 				selectedCategories: Array.from(state.selectedCategories),
 				priceFilter: state.priceFilter,
 				minRating: state.minRating,
