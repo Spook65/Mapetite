@@ -2,6 +2,29 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const MAX_SUGGESTIONS = 5;
+const MAX_AUTOCOMPLETE_SUGGESTIONS = 8;
+const MIN_AUTOCOMPLETE_QUERY_LENGTH = 2;
+const SUGGESTION_COUNTRY_PRIORITY = new Map([
+  ["US", 0],
+  ["JP", 1],
+  ["GB", 2],
+  ["FR", 3],
+  ["CA", 4],
+  ["AU", 5],
+]);
+const SUGGESTION_REGION_PRIORITY = new Map([
+  ["US|CA", 0],
+  ["US|NY", 1],
+  ["US|TX", 2],
+  ["US|FL", 3],
+  ["US|WA", 4],
+  ["US|OR", 5],
+  ["JP|13", 6],
+  ["JP|26", 7],
+  ["JP|27", 8],
+  ["FR|IDF", 9],
+  ["GB|ENG", 10],
+]);
 
 function getPlaceIndexPath() {
   const candidates = [
@@ -131,6 +154,16 @@ function toSuggestion(place) {
   };
 }
 
+function toAutocompleteSuggestion(place) {
+  const suggestion = toSuggestion(place);
+  return {
+    ...suggestion,
+    label: [suggestion.city, suggestion.region, suggestion.country]
+      .filter(Boolean)
+      .join(", "),
+  };
+}
+
 function uniqueSuggestions(matches) {
   const seen = new Set();
   const suggestions = [];
@@ -148,6 +181,68 @@ function uniqueSuggestions(matches) {
   }
 
   return suggestions;
+}
+
+function uniqueAutocompleteSuggestions(matches, limit = MAX_AUTOCOMPLETE_SUGGESTIONS) {
+  const seen = new Set();
+  const suggestions = [];
+
+  for (const match of matches) {
+    const key = [
+      match.normalizedCity,
+      match.normalizedRegion,
+      match.normalizedCountry,
+    ].join("|");
+    if (seen.has(key)) continue;
+    seen.add(key);
+    suggestions.push(toAutocompleteSuggestion(match));
+    if (suggestions.length >= limit) break;
+  }
+
+  return suggestions;
+}
+
+function getSuggestionCountryPriority(place) {
+  return SUGGESTION_COUNTRY_PRIORITY.get(place.countryCode) ?? 20;
+}
+
+function getSuggestionRegionPriority(place) {
+  return (
+    SUGGESTION_REGION_PRIORITY.get(`${place.countryCode}|${place.regionCode}`) ??
+    20
+  );
+}
+
+function getSuggestionMatchRank(place, normalizedQuery) {
+  const cityTokens = [place.normalizedCity, ...place.normalizedCityAliases];
+  if (cityTokens.includes(normalizedQuery)) return 0;
+  if (cityTokens.some((token) => token.startsWith(normalizedQuery))) return 1;
+  return 2;
+}
+
+function sortAutocompleteMatches(matches, normalizedQuery) {
+  return [...matches].sort((first, second) => {
+    const matchRank =
+      getSuggestionMatchRank(first, normalizedQuery) -
+      getSuggestionMatchRank(second, normalizedQuery);
+    if (matchRank !== 0) return matchRank;
+
+    const countryRank =
+      getSuggestionCountryPriority(first) - getSuggestionCountryPriority(second);
+    if (countryRank !== 0) return countryRank;
+
+    const regionRank =
+      getSuggestionRegionPriority(first) - getSuggestionRegionPriority(second);
+    if (regionRank !== 0) return regionRank;
+
+    const cityLengthRank =
+      first.normalizedCity.length - second.normalizedCity.length;
+    if (cityLengthRank !== 0) return cityLengthRank;
+
+    return [first.city, first.region, first.country]
+      .join("|")
+      .localeCompare([second.city, second.region, second.country].join("|"));
+  });
 }
 
 function isCountryMatch(place, countryInput) {
@@ -186,6 +281,47 @@ function findNearbyCitySuggestions(cityInput) {
         place.normalizedCity.startsWith(normalizedCity) ||
         normalizedCity.startsWith(place.normalizedCity),
     ),
+  );
+}
+
+export function suggestPlaces(query = "", options = {}) {
+  const normalizedQuery = normalizePlaceToken(query);
+  const limit = Math.min(
+    Math.max(Number(options.limit) || MAX_AUTOCOMPLETE_SUGGESTIONS, 1),
+    MAX_AUTOCOMPLETE_SUGGESTIONS,
+  );
+
+  if (normalizedQuery.length < MIN_AUTOCOMPLETE_QUERY_LENGTH) {
+    return [];
+  }
+
+  const exactMatches = [];
+  const prefixMatches = [];
+  const containsMatches = [];
+
+  for (const place of places) {
+    const cityTokens = [place.normalizedCity, ...place.normalizedCityAliases];
+    if (cityTokens.includes(normalizedQuery)) {
+      exactMatches.push(place);
+      continue;
+    }
+
+    if (cityTokens.some((token) => token.startsWith(normalizedQuery))) {
+      prefixMatches.push(place);
+      continue;
+    }
+
+    if (cityTokens.some((token) => token.includes(normalizedQuery))) {
+      containsMatches.push(place);
+    }
+  }
+
+  return uniqueAutocompleteSuggestions(
+    sortAutocompleteMatches(
+      [...exactMatches, ...prefixMatches, ...containsMatches],
+      normalizedQuery,
+    ),
+    limit,
   );
 }
 

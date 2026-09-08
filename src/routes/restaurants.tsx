@@ -7,6 +7,8 @@ import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import {
 	RestaurantSearchApiError,
+	type PlaceSearchSuggestion,
+	suggestPlacesApi,
 	warmRestaurantsApiHealth,
 } from "@/lib/api/restaurants";
 import { reverseGeocode } from "@/lib/api/nominatim";
@@ -83,6 +85,7 @@ const RESULTS_BATCH_SIZE = 36;
 const FAVORITE_SNAPSHOTS_STORAGE_KEY = "mapetite-favorite-snapshots-v1";
 const GEOLOCATION_TIMEOUT_MS = 10_000;
 const SLOW_SEARCH_MESSAGE_DELAY_MS = 2_500;
+const PLACE_SUGGESTION_DEBOUNCE_MS = 220;
 const SEARCH_PERF_DEBUG = import.meta.env.VITE_SEARCH_PERF_DEBUG === "true";
 const SearchResultsMap = lazy(() =>
 	import("@/components/SearchResultsMap").then((module) => ({
@@ -233,6 +236,15 @@ function getFullAddressLine(restaurant: Restaurant) {
 	]
 		.filter(Boolean)
 		.join(", ");
+}
+
+function getPlaceSuggestionLabel(suggestion: PlaceSearchSuggestion) {
+	return (
+		suggestion.label ||
+		[suggestion.city, suggestion.region, suggestion.country]
+			.filter(Boolean)
+			.join(", ")
+	);
 }
 
 function getSearchHoursLabel(restaurant: Restaurant) {
@@ -530,11 +542,18 @@ function RestaurantSearchPage() {
 	const [restoredSearchLabel, setRestoredSearchLabel] = useState<string | null>(
 		null,
 	);
+	const [placeSuggestions, setPlaceSuggestions] = useState<
+		PlaceSearchSuggestion[]
+	>([]);
+	const [isLoadingPlaceSuggestions, setIsLoadingPlaceSuggestions] =
+		useState(false);
+	const [isPlaceSuggestionsOpen, setIsPlaceSuggestionsOpen] = useState(false);
 	const [favoriteSnapshots, setFavoriteSnapshots] = useState<
 		Record<string, Restaurant>
 	>(() => loadFavoriteSnapshotsFromStorage());
 	const activeSearchIdRef = useRef(0);
 	const favoriteHydrationAttemptsRef = useRef<Set<string>>(new Set());
+	const suppressedSuggestionQueryRef = useRef("");
 
 	const categories = ["Noodles", "Vegetarian", "Fast-Food"];
 	const hasLocationInput = Boolean(
@@ -600,6 +619,47 @@ function RestaurantSearchPage() {
 	}, []);
 
 	useEffect(() => {
+		const query = location.city.trim();
+		if (query.length < 2) {
+			setPlaceSuggestions([]);
+			setIsPlaceSuggestionsOpen(false);
+			setIsLoadingPlaceSuggestions(false);
+			return;
+		}
+		if (suppressedSuggestionQueryRef.current === query) {
+			suppressedSuggestionQueryRef.current = "";
+			return;
+		}
+
+		const controller = new AbortController();
+		const timeoutId = window.setTimeout(() => {
+			setIsLoadingPlaceSuggestions(true);
+			suggestPlacesApi(query, { limit: 8, signal: controller.signal })
+				.then((suggestions) => {
+					setPlaceSuggestions(suggestions);
+					setIsPlaceSuggestionsOpen(suggestions.length > 0);
+				})
+				.catch((error) => {
+					if (error instanceof DOMException && error.name === "AbortError") {
+						return;
+					}
+					setPlaceSuggestions([]);
+					setIsPlaceSuggestionsOpen(false);
+				})
+				.finally(() => {
+					if (!controller.signal.aborted) {
+						setIsLoadingPlaceSuggestions(false);
+					}
+				});
+		}, PLACE_SUGGESTION_DEBOUNCE_MS);
+
+		return () => {
+			window.clearTimeout(timeoutId);
+			controller.abort();
+		};
+	}, [location.city]);
+
+	useEffect(() => {
 		if (!isSearching) {
 			setShowSlowSearchMessage(false);
 			return;
@@ -618,10 +678,23 @@ function RestaurantSearchPage() {
 	const handleClearLocation = useCallback(() => {
 		setLocation({ city: "", state: "", country: "" });
 		setMapUserLocation(null);
+		setPlaceSuggestions([]);
+		setIsPlaceSuggestionsOpen(false);
 		window.setTimeout(() => {
 			document.getElementById("city")?.focus();
 		}, 0);
 	}, [setLocation]);
+
+	const handleSelectPlaceSuggestion = (suggestion: PlaceSearchSuggestion) => {
+		suppressedSuggestionQueryRef.current = suggestion.city.trim();
+		setLocation({
+			city: suggestion.city,
+			state: suggestion.region || "",
+			country: suggestion.country,
+		});
+		setPlaceSuggestions([]);
+		setIsPlaceSuggestionsOpen(false);
+	};
 
 	const recordSuccessfulTypedSearch = useCallback(
 		(searchLocation: typeof location, results: Restaurant[]) => {
@@ -693,6 +766,7 @@ function RestaurantSearchPage() {
 		setMapUserLocation(null);
 		setRestaurants([]);
 		setRestoredSearchLabel(null);
+		setIsPlaceSuggestionsOpen(false);
 		try {
 			const { restaurants: results, location: resolvedLocation } =
 				await searchRestaurants(location, Array.from(selectedCategories));
@@ -1418,13 +1492,73 @@ function RestaurantSearchPage() {
 								>
 									City
 								</Label>
-								<Input
-									id="city"
-									placeholder="Paris, Tokyo, Chicago"
-									value={location.city}
-									onChange={(e) => updateLocation({ city: e.target.value })}
-									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
-								/>
+								<div className="relative">
+									<Input
+										id="city"
+										placeholder="Paris, Tokyo, Chicago"
+										value={location.city}
+										onChange={(e) => updateLocation({ city: e.target.value })}
+										onFocus={() => {
+											if (placeSuggestions.length > 0) {
+												setIsPlaceSuggestionsOpen(true);
+											}
+										}}
+										onKeyDown={(event) => {
+											if (event.key === "Escape") {
+												setIsPlaceSuggestionsOpen(false);
+											}
+										}}
+										autoComplete="off"
+										aria-autocomplete="list"
+										aria-expanded={isPlaceSuggestionsOpen}
+										aria-controls="place-suggestions"
+										className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
+									/>
+
+									{isLoadingPlaceSuggestions ? (
+										<div className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 text-[11px] text-[var(--mapetite-text-faint)] min-[1261px]:block">
+											Finding…
+										</div>
+									) : null}
+
+									{isPlaceSuggestionsOpen && placeSuggestions.length > 0 ? (
+										<div
+											id="place-suggestions"
+											role="listbox"
+											aria-label="Place suggestions"
+											className="absolute z-30 mt-2 max-h-[280px] w-full overflow-y-auto rounded-[14px] border border-[rgba(255,236,220,0.12)] bg-[#18110d] p-2 text-left shadow-[0_18px_40px_rgba(0,0,0,0.32)]"
+										>
+											{placeSuggestions.map((suggestion) => (
+												<button
+													key={[
+														suggestion.city,
+														suggestion.region,
+														suggestion.country,
+													].join("|")}
+													type="button"
+													role="option"
+													onMouseDown={(event) => {
+														event.preventDefault();
+													}}
+													onClick={() => handleSelectPlaceSuggestion(suggestion)}
+													className="w-full rounded-[10px] px-3 py-2.5 text-left transition-colors hover:bg-[rgba(255,248,242,0.06)] focus-visible:bg-[rgba(255,248,242,0.06)] focus-visible:outline-none"
+												>
+													<span className="block text-sm font-medium text-[var(--mapetite-text)]">
+														{suggestion.city}
+													</span>
+													<span className="mapetite-muted-copy mt-0.5 block text-xs">
+														{getPlaceSuggestionLabel(suggestion)
+															.replace(`${suggestion.city}, `, "")}
+													</span>
+												</button>
+											))}
+											<p className="mapetite-muted-copy border-t border-[rgba(255,236,220,0.08)] px-3 pt-2 text-[11px] leading-5">
+												Suggestions come from Mapetite&apos;s backend place index.
+												Search still validates the selected place.
+											</p>
+										</div>
+									) : null}
+								</div>
 							</div>
 
 							<div className="grid gap-2">

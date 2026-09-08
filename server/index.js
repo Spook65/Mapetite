@@ -9,6 +9,7 @@ import { connectMongo } from "./db/mongo.js";
 
 // Routes
 import restaurantRoutes from "./routes/restaurants.js";
+import placeRoutes from "./routes/places.js";
 import mapRoutes from "./routes/maps.js";
 import healthRoutes from "./routes/health.js";
 import { createDemoAuthRouter } from "./routes/demoAuth.js";
@@ -108,6 +109,7 @@ if (env.storageMode === "memory") {
   app.use("/api", createDemoAuthRouter());
 }
 app.use("/api/restaurants", restaurantRoutes);
+app.use("/api/places", placeRoutes);
 app.use("/api/maps", mapRoutes);
 app.use("/health", healthRoutes);
 

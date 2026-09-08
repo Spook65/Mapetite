@@ -1,7 +1,11 @@
 import { execFileSync } from "node:child_process";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
-import { PlaceValidationError, validatePlaceInput } from "./placeValidation.js";
+import {
+  PlaceValidationError,
+  suggestPlaces,
+  validatePlaceInput,
+} from "./placeValidation.js";
 
 describe("place validation", () => {
   it("accepts generated-index California search cities", () => {
@@ -146,5 +150,76 @@ describe("place validation", () => {
     );
 
     expect(output).toBe("Manteca");
+  });
+});
+
+describe("place suggestions", () => {
+  it("returns empty suggestions for short queries", () => {
+    expect(suggestPlaces("s")).toEqual([]);
+    expect(suggestPlaces(" ")).toEqual([]);
+  });
+
+  it("suggests Stockton for a city prefix", () => {
+    expect(suggestPlaces("sto")).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          city: "Stockton",
+          region: "California",
+          country: "United States",
+          label: "Stockton, California, United States",
+        }),
+      ]),
+    );
+  });
+
+  it("suggests Modesto for a city prefix", () => {
+    expect(suggestPlaces("mod")).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          city: "Modesto",
+          region: "California",
+          country: "United States",
+        }),
+      ]),
+    );
+  });
+
+  it("returns multiple San Jose suggestions without resolving ambiguity", () => {
+    const suggestions = suggestPlaces("san jose", { limit: 8 });
+    expect(suggestions.length).toBeGreaterThan(1);
+    expect(suggestions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          city: "San Jose",
+          region: "California",
+          country: "United States",
+        }),
+      ]),
+    );
+  });
+
+  it("returns empty suggestions for fake input", () => {
+    expect(suggestPlaces("fakecity")).toEqual([]);
+    expect(suggestPlaces("asdfasdf")).toEqual([]);
+  });
+
+  it("caps suggestion limits", () => {
+    expect(suggestPlaces("san", { limit: 100 })).toHaveLength(8);
+  });
+
+  it("does not expose full index fields or coordinates", () => {
+    const [suggestion] = suggestPlaces("stockton", { limit: 1 });
+    expect(suggestion).toEqual({
+      city: "Stockton",
+      region: "California",
+      regionCode: "CA",
+      country: "United States",
+      countryCode: "US",
+      label: "Stockton, California, United States",
+    });
+    expect(suggestion).not.toHaveProperty("latitude");
+    expect(suggestion).not.toHaveProperty("longitude");
+    expect(suggestion).not.toHaveProperty("timezone");
+    expect(suggestion).not.toHaveProperty("cityKey");
   });
 });

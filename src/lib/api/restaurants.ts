@@ -40,6 +40,7 @@ export type PlaceSearchSuggestion = {
 	regionCode?: string;
 	country: string;
 	countryCode?: string;
+	label?: string;
 };
 
 export class RestaurantSearchApiError extends Error {
@@ -177,6 +178,64 @@ export async function searchRestaurantsApi(
 		location: data.location ?? null,
 		count: typeof data.count === "number" ? data.count : restaurants.length,
 	};
+}
+
+export async function suggestPlacesApi(
+	query: string,
+	options: { limit?: number; signal?: AbortSignal } = {},
+): Promise<PlaceSearchSuggestion[]> {
+	const trimmedQuery = query.trim();
+	if (trimmedQuery.length < 2) return [];
+
+	const url = new URL(`${getRestaurantsApiBaseUrl()}/api/places/suggest`);
+	url.searchParams.set("q", trimmedQuery);
+	appendIfDefined(url.searchParams, "limit", options.limit);
+
+	const response = await fetch(url.toString(), {
+		headers: {
+			Accept: "application/json",
+		},
+		signal: options.signal,
+	});
+
+	if (!response.ok) return [];
+
+	const data = (await response.json().catch(() => ({}))) as {
+		suggestions?: unknown;
+	};
+	if (!Array.isArray(data.suggestions)) return [];
+
+	return data.suggestions
+		.map((suggestion): PlaceSearchSuggestion | null => {
+			if (!suggestion || typeof suggestion !== "object") return null;
+			const candidate = suggestion as Partial<PlaceSearchSuggestion>;
+			if (typeof candidate.city !== "string" || !candidate.city.trim()) {
+				return null;
+			}
+			if (typeof candidate.country !== "string" || !candidate.country.trim()) {
+				return null;
+			}
+
+			return {
+				city: candidate.city,
+				region:
+					typeof candidate.region === "string" ? candidate.region : undefined,
+				regionCode:
+					typeof candidate.regionCode === "string"
+						? candidate.regionCode
+						: undefined,
+				country: candidate.country,
+				countryCode:
+					typeof candidate.countryCode === "string"
+						? candidate.countryCode
+						: undefined,
+				label:
+					typeof candidate.label === "string" ? candidate.label : undefined,
+			};
+		})
+		.filter((suggestion): suggestion is PlaceSearchSuggestion =>
+			Boolean(suggestion),
+		);
 }
 
 export async function getRestaurantByIdApi(
