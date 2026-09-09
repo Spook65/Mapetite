@@ -22,6 +22,11 @@ import {
 	type LastSearchSnapshot,
 	type RecentSearchEntry,
 } from "@/lib/recent-search-cache";
+import {
+	getBrowserSuggestionContext,
+	getQuickSearchesForContext,
+	type PlaceSuggestionContext,
+} from "@/lib/place-suggestion-context";
 import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantResultReasons } from "@/lib/restaurant-result-reasons";
 import {
@@ -54,6 +59,8 @@ import {
 } from "lucide-react";
 import {
 	Suspense,
+	type FocusEvent,
+	type KeyboardEvent,
 	lazy,
 	useCallback,
 	useEffect,
@@ -238,13 +245,26 @@ function getFullAddressLine(restaurant: Restaurant) {
 		.join(", ");
 }
 
-function getPlaceSuggestionLabel(suggestion: PlaceSearchSuggestion) {
-	return (
-		suggestion.label ||
-		[suggestion.city, suggestion.region, suggestion.country]
-			.filter(Boolean)
-			.join(", ")
-	);
+function getPlaceSuggestionMeta(suggestion: PlaceSearchSuggestion) {
+	return [suggestion.region, suggestion.country].filter(Boolean).join(", ");
+}
+
+function getHighlightedCityParts(city: string, query: string) {
+	const trimmedQuery = query.trim();
+	if (!trimmedQuery) return { before: city, match: "", after: "" };
+
+	const matchIndex = city.toLowerCase().indexOf(trimmedQuery.toLowerCase());
+	if (matchIndex < 0) return { before: city, match: "", after: "" };
+
+	return {
+		before: city.slice(0, matchIndex),
+		match: city.slice(matchIndex, matchIndex + trimmedQuery.length),
+		after: city.slice(matchIndex + trimmedQuery.length),
+	};
+}
+
+function getPlaceSuggestionOptionId(index: number) {
+	return `place-suggestion-${index}`;
 }
 
 function getSearchHoursLabel(restaurant: Restaurant) {
@@ -548,6 +568,10 @@ function RestaurantSearchPage() {
 	const [isLoadingPlaceSuggestions, setIsLoadingPlaceSuggestions] =
 		useState(false);
 	const [isPlaceSuggestionsOpen, setIsPlaceSuggestionsOpen] = useState(false);
+	const [hasPlaceSuggestionResponse, setHasPlaceSuggestionResponse] =
+		useState(false);
+	const [activePlaceSuggestionIndex, setActivePlaceSuggestionIndex] =
+		useState(-1);
 	const [favoriteSnapshots, setFavoriteSnapshots] = useState<
 		Record<string, Restaurant>
 	>(() => loadFavoriteSnapshotsFromStorage());
@@ -559,57 +583,21 @@ function RestaurantSearchPage() {
 	const hasLocationInput = Boolean(
 		location.city.trim() || location.state.trim() || location.country.trim(),
 	);
-	const quickSearches: RecentSearchEntry[] = [
-		{
-			city: "Stockton",
-			state: "California",
-			country: "United States",
-			label: "Stockton",
-			timestamp: 0,
-		},
-		{
-			city: "Modesto",
-			state: "California",
-			country: "United States",
-			label: "Modesto",
-			timestamp: 0,
-		},
-		{
-			city: "San Diego",
-			state: "California",
-			country: "United States",
-			label: "San Diego",
-			timestamp: 0,
-		},
-		{
-			city: "Kyoto",
-			state: "",
-			country: "Japan",
-			label: "Kyoto",
-			timestamp: 0,
-		},
-		{
-			city: "Paris",
-			state: "",
-			country: "France",
-			label: "Paris",
-			timestamp: 0,
-		},
-		{
-			city: "London",
-			state: "",
-			country: "United Kingdom",
-			label: "London",
-			timestamp: 0,
-		},
-	];
+	const suggestionContext = useMemo<PlaceSuggestionContext>(
+		() => getBrowserSuggestionContext(recentSearches),
+		[recentSearches],
+	);
+	const quickSearches = useMemo(
+		() => getQuickSearchesForContext(suggestionContext),
+		[suggestionContext],
+	);
 	const searchChips = recentSearches.length > 0 ? recentSearches : quickSearches;
 	const searchChipHeading =
-		recentSearches.length > 0 ? "Recent searches" : "Quick starts";
+		recentSearches.length > 0 ? "Recent searches" : "Example cities";
 	const searchChipCopy =
 		recentSearches.length > 0
 			? "Saved in this browser only."
-			: "Starter cities for a faster demo.";
+			: "A few global starting points. Mapetite supports many more places.";
 	const shouldShowLastSearchRestore = Boolean(
 		lastSearchSnapshot && restaurants.length === 0 && !showFavorites,
 	);
@@ -624,6 +612,8 @@ function RestaurantSearchPage() {
 			setPlaceSuggestions([]);
 			setIsPlaceSuggestionsOpen(false);
 			setIsLoadingPlaceSuggestions(false);
+			setHasPlaceSuggestionResponse(false);
+			setActivePlaceSuggestionIndex(-1);
 			return;
 		}
 		if (suppressedSuggestionQueryRef.current === query) {
@@ -632,19 +622,32 @@ function RestaurantSearchPage() {
 		}
 
 		const controller = new AbortController();
+		setHasPlaceSuggestionResponse(false);
+		setActivePlaceSuggestionIndex(-1);
 		const timeoutId = window.setTimeout(() => {
 			setIsLoadingPlaceSuggestions(true);
-			suggestPlacesApi(query, { limit: 8, signal: controller.signal })
+			suggestPlacesApi(query, {
+				limit: 8,
+				signal: controller.signal,
+				country: location.country,
+				region: location.state,
+				recentCountry: suggestionContext.recentCountry,
+				recentRegion: suggestionContext.recentRegion,
+				localeCountry: suggestionContext.localeCountry,
+				timezoneCountry: suggestionContext.timezoneCountry,
+			})
 				.then((suggestions) => {
 					setPlaceSuggestions(suggestions);
-					setIsPlaceSuggestionsOpen(suggestions.length > 0);
+					setHasPlaceSuggestionResponse(true);
+					setIsPlaceSuggestionsOpen(true);
 				})
 				.catch((error) => {
 					if (error instanceof DOMException && error.name === "AbortError") {
 						return;
 					}
 					setPlaceSuggestions([]);
-					setIsPlaceSuggestionsOpen(false);
+					setHasPlaceSuggestionResponse(true);
+					setIsPlaceSuggestionsOpen(true);
 				})
 				.finally(() => {
 					if (!controller.signal.aborted) {
@@ -657,7 +660,15 @@ function RestaurantSearchPage() {
 			window.clearTimeout(timeoutId);
 			controller.abort();
 		};
-	}, [location.city]);
+	}, [
+		location.city,
+		location.country,
+		location.state,
+		suggestionContext.localeCountry,
+		suggestionContext.recentCountry,
+		suggestionContext.recentRegion,
+		suggestionContext.timezoneCountry,
+	]);
 
 	useEffect(() => {
 		if (!isSearching) {
@@ -680,6 +691,8 @@ function RestaurantSearchPage() {
 		setMapUserLocation(null);
 		setPlaceSuggestions([]);
 		setIsPlaceSuggestionsOpen(false);
+		setHasPlaceSuggestionResponse(false);
+		setActivePlaceSuggestionIndex(-1);
 		window.setTimeout(() => {
 			document.getElementById("city")?.focus();
 		}, 0);
@@ -694,6 +707,8 @@ function RestaurantSearchPage() {
 		});
 		setPlaceSuggestions([]);
 		setIsPlaceSuggestionsOpen(false);
+		setHasPlaceSuggestionResponse(false);
+		setActivePlaceSuggestionIndex(-1);
 	};
 
 	const recordSuccessfulTypedSearch = useCallback(
@@ -799,6 +814,59 @@ function RestaurantSearchPage() {
 				setIsSearching(false);
 			}
 		}
+	};
+
+	const handlePlaceSuggestionKeyDown = (
+		event: KeyboardEvent<HTMLInputElement>,
+	) => {
+		if (event.key === "Escape") {
+			setIsPlaceSuggestionsOpen(false);
+			setActivePlaceSuggestionIndex(-1);
+			return;
+		}
+
+		if (event.key === "ArrowDown") {
+			if (placeSuggestions.length === 0) return;
+			event.preventDefault();
+			setIsPlaceSuggestionsOpen(true);
+			setActivePlaceSuggestionIndex((current) =>
+				current < placeSuggestions.length - 1 ? current + 1 : 0,
+			);
+			return;
+		}
+
+		if (event.key === "ArrowUp") {
+			if (placeSuggestions.length === 0) return;
+			event.preventDefault();
+			setIsPlaceSuggestionsOpen(true);
+			setActivePlaceSuggestionIndex((current) =>
+				current > 0 ? current - 1 : placeSuggestions.length - 1,
+			);
+			return;
+		}
+
+		if (event.key === "Enter") {
+			if (
+				isPlaceSuggestionsOpen &&
+				activePlaceSuggestionIndex >= 0 &&
+				placeSuggestions[activePlaceSuggestionIndex]
+			) {
+				event.preventDefault();
+				handleSelectPlaceSuggestion(placeSuggestions[activePlaceSuggestionIndex]);
+				return;
+			}
+
+			event.preventDefault();
+			void handleSearch();
+		}
+	};
+
+	const handlePlaceSuggestionBlur = (
+		event: FocusEvent<HTMLDivElement>,
+	) => {
+		if (event.currentTarget.contains(event.relatedTarget)) return;
+		setIsPlaceSuggestionsOpen(false);
+		setActivePlaceSuggestionIndex(-1);
 	};
 
 	const handleGetCurrentLocation = async () => {
@@ -1419,6 +1487,12 @@ function RestaurantSearchPage() {
 	const selectedHelpfulReasons = selectedResultReasons?.helpful.slice(0, 2) ?? [];
 	const selectedCautionReason = selectedResultReasons?.cautions[0] ?? null;
 	const priceFilterLabel = getPriceFilterLabel(priceFilter);
+	const shouldShowPlaceSuggestionMenu =
+		isPlaceSuggestionsOpen &&
+		location.city.trim().length >= 2 &&
+		(isLoadingPlaceSuggestions ||
+			placeSuggestions.length > 0 ||
+			hasPlaceSuggestionResponse);
 	const hasActiveFilters =
 		selectedCategories.size > 0 ||
 		isPriceFilterActive(priceFilter) ||
@@ -1492,26 +1566,37 @@ function RestaurantSearchPage() {
 								>
 									City
 								</Label>
-								<div className="relative">
+								<div className="relative" onBlur={handlePlaceSuggestionBlur}>
 									<Input
 										id="city"
 										placeholder="Paris, Tokyo, Chicago"
 										value={location.city}
-										onChange={(e) => updateLocation({ city: e.target.value })}
-										onFocus={() => {
-											if (placeSuggestions.length > 0) {
+										onChange={(e) => {
+											updateLocation({ city: e.target.value });
+											setActivePlaceSuggestionIndex(-1);
+											if (e.target.value.trim().length >= 2) {
 												setIsPlaceSuggestionsOpen(true);
 											}
 										}}
-										onKeyDown={(event) => {
-											if (event.key === "Escape") {
-												setIsPlaceSuggestionsOpen(false);
+										onFocus={() => {
+											if (
+												placeSuggestions.length > 0 ||
+												hasPlaceSuggestionResponse
+											) {
+												setIsPlaceSuggestionsOpen(true);
 											}
 										}}
+										onKeyDown={handlePlaceSuggestionKeyDown}
 										autoComplete="off"
+										role="combobox"
 										aria-autocomplete="list"
 										aria-expanded={isPlaceSuggestionsOpen}
 										aria-controls="place-suggestions"
+										aria-activedescendant={
+											activePlaceSuggestionIndex >= 0
+												? getPlaceSuggestionOptionId(activePlaceSuggestionIndex)
+												: undefined
+										}
 										className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
 									/>
 
@@ -1521,37 +1606,69 @@ function RestaurantSearchPage() {
 										</div>
 									) : null}
 
-									{isPlaceSuggestionsOpen && placeSuggestions.length > 0 ? (
+									{shouldShowPlaceSuggestionMenu ? (
 										<div
 											id="place-suggestions"
 											role="listbox"
 											aria-label="Place suggestions"
 											className="absolute z-30 mt-2 max-h-[280px] w-full overflow-y-auto rounded-[14px] border border-[rgba(255,236,220,0.12)] bg-[#18110d] p-2 text-left shadow-[0_18px_40px_rgba(0,0,0,0.32)]"
 										>
-											{placeSuggestions.map((suggestion) => (
-												<button
-													key={[
+											{placeSuggestions.length > 0 ? (
+												placeSuggestions.map((suggestion, index) => {
+													const cityParts = getHighlightedCityParts(
 														suggestion.city,
-														suggestion.region,
-														suggestion.country,
-													].join("|")}
-													type="button"
-													role="option"
-													onMouseDown={(event) => {
-														event.preventDefault();
-													}}
-													onClick={() => handleSelectPlaceSuggestion(suggestion)}
-													className="w-full rounded-[10px] px-3 py-2.5 text-left transition-colors hover:bg-[rgba(255,248,242,0.06)] focus-visible:bg-[rgba(255,248,242,0.06)] focus-visible:outline-none"
-												>
-													<span className="block text-sm font-medium text-[var(--mapetite-text)]">
-														{suggestion.city}
-													</span>
-													<span className="mapetite-muted-copy mt-0.5 block text-xs">
-														{getPlaceSuggestionLabel(suggestion)
-															.replace(`${suggestion.city}, `, "")}
-													</span>
-												</button>
-											))}
+														location.city,
+													);
+													const isActive =
+														index === activePlaceSuggestionIndex;
+													return (
+														<button
+															id={getPlaceSuggestionOptionId(index)}
+															key={[
+																suggestion.city,
+																suggestion.region,
+																suggestion.country,
+															].join("|")}
+															type="button"
+															role="option"
+															aria-selected={isActive}
+															onMouseEnter={() =>
+																setActivePlaceSuggestionIndex(index)
+															}
+															onMouseDown={(event) => {
+																event.preventDefault();
+															}}
+															onClick={() =>
+																handleSelectPlaceSuggestion(suggestion)
+															}
+															className={cn(
+																"w-full rounded-[10px] px-3 py-2.5 text-left transition-colors hover:bg-[rgba(255,248,242,0.06)] focus-visible:bg-[rgba(255,248,242,0.06)] focus-visible:outline-none",
+																isActive &&
+																	"bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+															)}
+														>
+															<span className="block text-sm font-medium text-[var(--mapetite-text)]">
+																{cityParts.before}
+																{cityParts.match ? (
+																	<mark className="rounded bg-[rgba(213,154,104,0.2)] px-0.5 text-[var(--mapetite-text)]">
+																		{cityParts.match}
+																	</mark>
+																) : null}
+																{cityParts.after}
+															</span>
+															<span className="mapetite-muted-copy mt-0.5 block text-xs">
+																{getPlaceSuggestionMeta(suggestion)}
+															</span>
+														</button>
+													);
+												})
+											) : (
+												<div className="rounded-[10px] px-3 py-3 text-sm text-[var(--mapetite-text-soft)]">
+													{isLoadingPlaceSuggestions
+														? "Finding matching places…"
+														: "No matching places. Try adding region or country."}
+												</div>
+											)}
 											<p className="mapetite-muted-copy border-t border-[rgba(255,236,220,0.08)] px-3 pt-2 text-[11px] leading-5">
 												Suggestions come from Mapetite&apos;s backend place index.
 												Search still validates the selected place.

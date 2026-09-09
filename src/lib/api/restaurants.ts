@@ -1,4 +1,5 @@
 import type { LocationState, Restaurant } from "@/store/restaurant-search-store";
+import type { PlaceSuggestionContext } from "@/lib/place-suggestion-context";
 
 const SEARCH_PERF_DEBUG = import.meta.env.VITE_SEARCH_PERF_DEBUG === "true";
 let hasAttemptedRestaurantApiWarmup = false;
@@ -182,7 +183,7 @@ export async function searchRestaurantsApi(
 
 export async function suggestPlacesApi(
 	query: string,
-	options: { limit?: number; signal?: AbortSignal } = {},
+	options: { limit?: number; signal?: AbortSignal } & PlaceSuggestionContext = {},
 ): Promise<PlaceSearchSuggestion[]> {
 	const trimmedQuery = query.trim();
 	if (trimmedQuery.length < 2) return [];
@@ -190,6 +191,12 @@ export async function suggestPlacesApi(
 	const url = new URL(`${getRestaurantsApiBaseUrl()}/api/places/suggest`);
 	url.searchParams.set("q", trimmedQuery);
 	appendIfDefined(url.searchParams, "limit", options.limit);
+	appendIfDefined(url.searchParams, "country", options.country);
+	appendIfDefined(url.searchParams, "region", options.region);
+	appendIfDefined(url.searchParams, "recentCountry", options.recentCountry);
+	appendIfDefined(url.searchParams, "recentRegion", options.recentRegion);
+	appendIfDefined(url.searchParams, "localeCountry", options.localeCountry);
+	appendIfDefined(url.searchParams, "timezoneCountry", options.timezoneCountry);
 
 	const response = await fetch(url.toString(), {
 		headers: {

@@ -159,8 +159,8 @@ describe("place suggestions", () => {
     expect(suggestPlaces(" ")).toEqual([]);
   });
 
-  it("suggests Stockton for a city prefix", () => {
-    expect(suggestPlaces("sto")).toEqual(
+  it("suggests Stockton for a city prefix when U.S. context is available", () => {
+    expect(suggestPlaces("sto", { timezoneCountry: "US" })).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
           city: "Stockton",
@@ -198,6 +198,66 @@ describe("place suggestions", () => {
     );
   });
 
+  it("uses selected country as an ordering bias without hiding global matches", () => {
+    const suggestions = suggestPlaces("london", {
+      country: "United Kingdom",
+      limit: 8,
+    });
+
+    expect(suggestions[0]).toMatchObject({
+      city: "London",
+      country: "United Kingdom",
+    });
+    expect(suggestions).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          city: "London",
+          country: "Canada",
+        }),
+      ]),
+    );
+  });
+
+  it("uses selected region as an ordering bias inside the same country", () => {
+    const suggestions = suggestPlaces("san", {
+      country: "United States",
+      region: "California",
+      limit: 8,
+    });
+
+    expect(suggestions.slice(0, 4)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          city: "San Jose",
+          region: "California",
+          country: "United States",
+        }),
+      ]),
+    );
+  });
+
+  it("uses recent-search and locale country hints as soft ordering signals", () => {
+    expect(
+      suggestPlaces("ky", {
+        recentCountry: "Japan",
+        limit: 4,
+      })[0],
+    ).toMatchObject({
+      city: "Kyoto",
+      country: "Japan",
+    });
+
+    expect(
+      suggestPlaces("lon", {
+        localeCountry: "GB",
+        limit: 4,
+      })[0],
+    ).toMatchObject({
+      city: "London",
+      country: "United Kingdom",
+    });
+  });
+
   it("returns empty suggestions for fake input", () => {
     expect(suggestPlaces("fakecity")).toEqual([]);
     expect(suggestPlaces("asdfasdf")).toEqual([]);
@@ -208,7 +268,11 @@ describe("place suggestions", () => {
   });
 
   it("does not expose full index fields or coordinates", () => {
-    const [suggestion] = suggestPlaces("stockton", { limit: 1 });
+    const [suggestion] = suggestPlaces("stockton", {
+      country: "United States",
+      region: "California",
+      limit: 1,
+    });
     expect(suggestion).toEqual({
       city: "Stockton",
       region: "California",

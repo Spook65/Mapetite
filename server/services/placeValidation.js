@@ -4,26 +4,27 @@ import { resolve } from "node:path";
 const MAX_SUGGESTIONS = 5;
 const MAX_AUTOCOMPLETE_SUGGESTIONS = 8;
 const MIN_AUTOCOMPLETE_QUERY_LENGTH = 2;
-const SUGGESTION_COUNTRY_PRIORITY = new Map([
-  ["US", 0],
+const NEUTRAL_COUNTRY_PRIORITY = new Map([
+  ["GB", 0],
   ["JP", 1],
-  ["GB", 2],
-  ["FR", 3],
-  ["CA", 4],
-  ["AU", 5],
+  ["FR", 2],
+  ["CA", 3],
+  ["AU", 4],
+  ["US", 5],
 ]);
-const SUGGESTION_REGION_PRIORITY = new Map([
-  ["US|CA", 0],
-  ["US|NY", 1],
-  ["US|TX", 2],
-  ["US|FL", 3],
-  ["US|WA", 4],
-  ["US|OR", 5],
-  ["JP|13", 6],
-  ["JP|26", 7],
-  ["JP|27", 8],
-  ["FR|IDF", 9],
-  ["GB|ENG", 10],
+const NEUTRAL_REGION_PRIORITY = new Map([
+  ["GB|ENG", 0],
+  ["JP|13", 1],
+  ["JP|26", 2],
+  ["JP|27", 3],
+  ["FR|IDF", 4],
+  ["CA|ON", 5],
+  ["CA|BC", 6],
+  ["AU|NSW", 7],
+  ["US|CA", 8],
+  ["US|NY", 9],
+  ["US|TX", 10],
+  ["US|FL", 11],
 ]);
 
 function getPlaceIndexPath() {
@@ -202,15 +203,33 @@ function uniqueAutocompleteSuggestions(matches, limit = MAX_AUTOCOMPLETE_SUGGEST
   return suggestions;
 }
 
-function getSuggestionCountryPriority(place) {
-  return SUGGESTION_COUNTRY_PRIORITY.get(place.countryCode) ?? 20;
+function isCountryContextMatch(place, countryInput) {
+  return Boolean(countryInput && isCountryMatch(place, countryInput));
 }
 
-function getSuggestionRegionPriority(place) {
-  return (
-    SUGGESTION_REGION_PRIORITY.get(`${place.countryCode}|${place.regionCode}`) ??
-    20
-  );
+function isRegionContextMatch(place, regionInput) {
+  return Boolean(regionInput && isRegionMatch(place, regionInput));
+}
+
+function getNeutralCountryPriority(place) {
+  return NEUTRAL_COUNTRY_PRIORITY.get(place.countryCode) ?? 20;
+}
+
+function getNeutralRegionPriority(place) {
+  return NEUTRAL_REGION_PRIORITY.get(`${place.countryCode}|${place.regionCode}`) ?? 20;
+}
+
+function getSuggestionContextRank(place, context = {}) {
+  let rank = 0;
+
+  if (isCountryContextMatch(place, context.country)) rank -= 60;
+  if (isRegionContextMatch(place, context.region)) rank -= 30;
+  if (isCountryContextMatch(place, context.recentCountry)) rank -= 16;
+  if (isRegionContextMatch(place, context.recentRegion)) rank -= 8;
+  if (isCountryContextMatch(place, context.localeCountry)) rank -= 5;
+  if (isCountryContextMatch(place, context.timezoneCountry)) rank -= 3;
+
+  return rank;
 }
 
 function getSuggestionMatchRank(place, normalizedQuery) {
@@ -220,19 +239,24 @@ function getSuggestionMatchRank(place, normalizedQuery) {
   return 2;
 }
 
-function sortAutocompleteMatches(matches, normalizedQuery) {
+function sortAutocompleteMatches(matches, normalizedQuery, context = {}) {
   return [...matches].sort((first, second) => {
     const matchRank =
       getSuggestionMatchRank(first, normalizedQuery) -
       getSuggestionMatchRank(second, normalizedQuery);
     if (matchRank !== 0) return matchRank;
 
+    const contextRank =
+      getSuggestionContextRank(first, context) -
+      getSuggestionContextRank(second, context);
+    if (contextRank !== 0) return contextRank;
+
     const countryRank =
-      getSuggestionCountryPriority(first) - getSuggestionCountryPriority(second);
+      getNeutralCountryPriority(first) - getNeutralCountryPriority(second);
     if (countryRank !== 0) return countryRank;
 
     const regionRank =
-      getSuggestionRegionPriority(first) - getSuggestionRegionPriority(second);
+      getNeutralRegionPriority(first) - getNeutralRegionPriority(second);
     if (regionRank !== 0) return regionRank;
 
     const cityLengthRank =
@@ -320,6 +344,14 @@ export function suggestPlaces(query = "", options = {}) {
     sortAutocompleteMatches(
       [...exactMatches, ...prefixMatches, ...containsMatches],
       normalizedQuery,
+      {
+        country: options.country,
+        region: options.region,
+        recentCountry: options.recentCountry,
+        recentRegion: options.recentRegion,
+        localeCountry: options.localeCountry,
+        timezoneCountry: options.timezoneCountry,
+      },
     ),
     limit,
   );
