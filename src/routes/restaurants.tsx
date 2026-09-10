@@ -1586,15 +1586,15 @@ function RestaurantSearchPage() {
 							</div>
 						</div>
 
-						<div className="mx-auto grid w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto]">
-							<div className="grid gap-2">
+						<div className="mx-auto grid min-w-0 w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto]">
+							<div className="grid min-w-0 gap-2">
 								<Label
 									htmlFor="city"
 									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
 									City
 								</Label>
-								<div className="relative" onBlur={handlePlaceSuggestionBlur}>
+								<div className="relative min-w-0" onBlur={handlePlaceSuggestionBlur}>
 									<Input
 										id="city"
 										placeholder="Paris, Tokyo, Chicago"
@@ -1640,7 +1640,7 @@ function RestaurantSearchPage() {
 											id="place-suggestions"
 											role="listbox"
 											aria-label="Place suggestions"
-										className="absolute z-30 mt-2 max-h-[min(42vh,240px)] w-full overflow-y-auto overscroll-contain rounded-[14px] border border-[rgba(255,236,220,0.12)] bg-[#18110d] p-2 text-left shadow-[0_18px_40px_rgba(0,0,0,0.32)] md:max-h-[280px]"
+										className="absolute inset-x-0 z-30 mt-2 max-h-[min(42vh,240px)] min-w-0 max-w-full overflow-x-hidden overflow-y-auto overscroll-contain rounded-[14px] border border-[rgba(255,236,220,0.12)] bg-[#18110d] p-2 text-left shadow-[0_18px_40px_rgba(0,0,0,0.32)] md:max-h-[280px]"
 										>
 											{placeSuggestions.length > 0 ? (
 												placeSuggestions.map((suggestion, index) => {
@@ -1671,12 +1671,12 @@ function RestaurantSearchPage() {
 																handleSelectPlaceSuggestion(suggestion)
 															}
 															className={cn(
-																"w-full rounded-[10px] px-3 py-2.5 text-left transition-colors hover:bg-[rgba(255,248,242,0.06)] focus-visible:bg-[rgba(255,248,242,0.06)] focus-visible:outline-none",
+														"w-full min-w-0 overflow-hidden rounded-[10px] px-3 py-2.5 text-left transition-colors hover:bg-[rgba(255,248,242,0.06)] focus-visible:bg-[rgba(255,248,242,0.06)] focus-visible:outline-none",
 																isActive &&
 																	"bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 															)}
 														>
-															<span className="block text-sm font-medium text-[var(--mapetite-text)]">
+													<span className="block min-w-0 truncate text-sm font-medium text-[var(--mapetite-text)]">
 																{cityParts.before}
 																{cityParts.match ? (
 																	<mark className="rounded bg-[rgba(213,154,104,0.2)] px-0.5 text-[var(--mapetite-text)]">
@@ -1685,7 +1685,7 @@ function RestaurantSearchPage() {
 																) : null}
 																{cityParts.after}
 															</span>
-															<span className="mapetite-muted-copy mt-0.5 block text-xs">
+													<span className="mapetite-muted-copy mt-0.5 block min-w-0 truncate text-xs">
 																{getPlaceSuggestionMeta(suggestion)}
 															</span>
 														</button>
@@ -1801,9 +1801,9 @@ function RestaurantSearchPage() {
 						) : null}
 					</section>
 
-					<section className="mapetite-panel-soft mb-4 grid gap-3 p-4 md:p-5">
-						<div className="flex flex-wrap items-center justify-between gap-3">
-							<div>
+					<section className="mapetite-panel-soft mb-4 grid min-w-0 max-w-full gap-3 p-4 md:p-5">
+						<div className="grid min-w-0 gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+							<div className="min-w-0">
 								<div className="mapetite-eyebrow">{searchChipHeading}</div>
 								<p className="mapetite-muted-copy mt-2 text-sm">
 									{searchChipCopy}
@@ -1813,23 +1813,23 @@ function RestaurantSearchPage() {
 								<button
 									type="button"
 									onClick={handleClearRecentSearches}
-									className="rounded-full border border-[rgba(255,236,220,0.1)] px-3 py-1.5 text-xs font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:text-[var(--mapetite-text)]"
+									className="w-full max-w-full whitespace-normal rounded-full border border-[rgba(255,236,220,0.1)] px-3 py-2 text-xs font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:text-[var(--mapetite-text)] sm:w-auto sm:py-1.5"
 								>
 									Clear recent searches
 								</button>
 							) : null}
 						</div>
 
-							<div className="flex flex-wrap gap-2">
+							<div className="grid min-w-0 max-w-full gap-2 sm:flex sm:flex-wrap">
 								{searchChips.map((search) => (
 									<button
 									key={`${search.city}-${search.state}-${search.country}`}
 									type="button"
 									onClick={() => handleRunSearchChip(search)}
 									disabled={isSearching}
-										className="inline-flex max-w-full items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3.5 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] disabled:cursor-not-allowed disabled:opacity-60"
+										className="inline-flex w-full min-w-0 max-w-full items-center justify-between gap-2 overflow-hidden rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3.5 py-2 text-left text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
 									>
-										<span className="min-w-0 truncate">{search.label}</span>
+										<span className="block min-w-0 flex-1 truncate">{search.label}</span>
 										{formatRecentSearchResultCount(search.resultCount) ? (
 											<span className="shrink-0 rounded-full border border-[rgba(255,236,220,0.08)] bg-black/10 px-2 py-0.5 text-[11px] text-[var(--mapetite-text-faint)]">
 												{formatRecentSearchResultCount(search.resultCount)}
@@ -1840,10 +1840,10 @@ function RestaurantSearchPage() {
 						</div>
 
 						{shouldShowLastSearchRestore && lastSearchSnapshot ? (
-							<div className="flex flex-wrap items-center justify-between gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-3.5 py-3">
-								<p className="mapetite-muted-copy text-sm leading-6">
+								<div className="grid min-w-0 max-w-full gap-3 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] px-3.5 py-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
+									<p className="mapetite-muted-copy min-w-0 break-words text-sm leading-6 sm:flex-1">
 									Last saved search:{" "}
-									<span className="text-[var(--mapetite-text)]">
+										<span className="break-words text-[var(--mapetite-text)]">
 										{lastSearchSnapshot.search.label}
 									</span>
 									. Restored results are saved in this browser and refreshed
@@ -1854,7 +1854,7 @@ function RestaurantSearchPage() {
 									variant="outline"
 									onClick={handleRestoreLastSearch}
 									disabled={isSearching}
-									className="mapetite-quiet-button h-10 rounded-full px-4 text-sm shadow-none"
+										className="mapetite-quiet-button h-10 w-full max-w-full rounded-full px-4 text-sm shadow-none sm:w-auto"
 								>
 									{isSearching && restoredSearchLabel
 										? "Refreshing..."
