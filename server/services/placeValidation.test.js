@@ -218,6 +218,30 @@ describe("place suggestions", () => {
     );
   });
 
+  it("keeps neutral global ordering ahead of stale recent-search bias", () => {
+    const suggestions = suggestPlaces("lon", {
+      recentCountry: "United States",
+      limit: 8,
+    });
+
+    expect(suggestions[0]).toMatchObject({
+      city: "London",
+      country: "United Kingdom",
+    });
+  });
+
+  it("uses an explicitly selected country before a shorter out-of-country match", () => {
+    const suggestions = suggestPlaces("kyo", {
+      country: "Japan",
+      limit: 8,
+    });
+
+    expect(suggestions[0]).toMatchObject({
+      city: "Kyoto",
+      country: "Japan",
+    });
+  });
+
   it("uses selected region as an ordering bias inside the same country", () => {
     const suggestions = suggestPlaces("san", {
       country: "United States",

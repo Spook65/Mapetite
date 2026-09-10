@@ -6,6 +6,7 @@ import {
 	normalizePriceFilter,
 	togglePriceFilterSelection,
 } from "@/lib/search-result-filters";
+import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 
 describe("search result price filters", () => {
 	it("treats an empty price selection as Any price", () => {
@@ -49,5 +50,26 @@ describe("search result price filters", () => {
 		expect(togglePriceFilterSelection([1], 2)).toEqual([1, 2]);
 		expect(togglePriceFilterSelection([1, 2], 1)).toEqual([2]);
 		expect(togglePriceFilterSelection([1], 1)).toEqual([]);
+	});
+});
+
+describe("search filter reset", () => {
+	it("clears category and refinement constraints while restoring default sort", () => {
+		useRestaurantSearchStore.setState({
+			selectedCategories: new Set(["Noodles"]),
+			priceFilter: [2],
+			minRating: 4,
+			sortBy: "rating",
+			openNowOnly: true,
+		});
+
+		useRestaurantSearchStore.getState().clearAllFilters();
+
+		const state = useRestaurantSearchStore.getState();
+		expect(Array.from(state.selectedCategories)).toEqual([]);
+		expect(state.priceFilter).toEqual([]);
+		expect(state.minRating).toBe(0);
+		expect(state.sortBy).toBe("none");
+		expect(state.openNowOnly).toBe(false);
 	});
 });

@@ -264,6 +264,7 @@ export const useRestaurantSearchStore = create<RestaurantSearchState>()(
 			// Utility functions
 			clearAllFilters: () =>
 				set({
+					selectedCategories: new Set<string>(),
 					priceFilter: [],
 					minRating: 0,
 					sortBy: "none",

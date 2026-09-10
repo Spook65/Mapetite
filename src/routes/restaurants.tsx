@@ -15,6 +15,7 @@ import { reverseGeocode } from "@/lib/api/nominatim";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
 import {
 	clearRecentSearches,
+	formatRecentSearchResultCount,
 	loadLastSearchSnapshot,
 	loadRecentSearches,
 	saveLastSearchSnapshot,
@@ -348,6 +349,12 @@ function getSearchErrorDescription(error: unknown) {
 			)
 			.join(" • ");
 
+		if (error.code === "PLACE_AMBIGUOUS") {
+			return suggestions
+				? `Select a suggestion or add region and country. Try: ${suggestions}.`
+				: "Select a suggestion or add region and country to identify the place.";
+		}
+
 		return suggestions ? `${error.message} Try: ${suggestions}.` : error.message;
 	}
 
@@ -362,6 +369,12 @@ function isExpectedPlaceValidationError(error: unknown) {
 }
 
 function getSearchErrorTitle(error: unknown) {
+	if (
+		error instanceof RestaurantSearchApiError &&
+		error.code === "PLACE_AMBIGUOUS"
+	) {
+		return "Choose a specific place";
+	}
 	return isExpectedPlaceValidationError(error)
 		? "Check the place"
 		: "Search failed";
@@ -616,8 +629,16 @@ function RestaurantSearchPage() {
 			setActivePlaceSuggestionIndex(-1);
 			return;
 		}
+		if (!isPlaceSuggestionsOpen) {
+			setIsLoadingPlaceSuggestions(false);
+			return;
+		}
 		if (suppressedSuggestionQueryRef.current === query) {
-			suppressedSuggestionQueryRef.current = "";
+			setPlaceSuggestions([]);
+			setIsPlaceSuggestionsOpen(false);
+			setIsLoadingPlaceSuggestions(false);
+			setHasPlaceSuggestionResponse(false);
+			setActivePlaceSuggestionIndex(-1);
 			return;
 		}
 
@@ -664,6 +685,7 @@ function RestaurantSearchPage() {
 		location.city,
 		location.country,
 		location.state,
+		isPlaceSuggestionsOpen,
 		suggestionContext.localeCountry,
 		suggestionContext.recentCountry,
 		suggestionContext.recentRegion,
@@ -777,6 +799,7 @@ function RestaurantSearchPage() {
 			categories: selectedCategories.size,
 		});
 		const searchId = ++activeSearchIdRef.current;
+		suppressedSuggestionQueryRef.current = location.city.trim();
 		setIsSearching(true);
 		setMapUserLocation(null);
 		setRestaurants([]);
@@ -1498,6 +1521,11 @@ function RestaurantSearchPage() {
 		isPriceFilterActive(priceFilter) ||
 		minRating > 0 ||
 		openNowOnly;
+	const activeFilterCount =
+		selectedCategories.size +
+		Number(isPriceFilterActive(priceFilter)) +
+		Number(minRating > 0) +
+		Number(openNowOnly);
 	const resultHeading = showFavorites
 		? "Saved restaurants"
 		: location.city
@@ -1570,9 +1598,10 @@ function RestaurantSearchPage() {
 									<Input
 										id="city"
 										placeholder="Paris, Tokyo, Chicago"
-										value={location.city}
-										onChange={(e) => {
-											updateLocation({ city: e.target.value });
+									value={location.city}
+									onChange={(e) => {
+										suppressedSuggestionQueryRef.current = "";
+										updateLocation({ city: e.target.value });
 											setActivePlaceSuggestionIndex(-1);
 											if (e.target.value.trim().length >= 2) {
 												setIsPlaceSuggestionsOpen(true);
@@ -1611,7 +1640,7 @@ function RestaurantSearchPage() {
 											id="place-suggestions"
 											role="listbox"
 											aria-label="Place suggestions"
-											className="absolute z-30 mt-2 max-h-[280px] w-full overflow-y-auto rounded-[14px] border border-[rgba(255,236,220,0.12)] bg-[#18110d] p-2 text-left shadow-[0_18px_40px_rgba(0,0,0,0.32)]"
+										className="absolute z-30 mt-2 max-h-[min(42vh,240px)] w-full overflow-y-auto overscroll-contain rounded-[14px] border border-[rgba(255,236,220,0.12)] bg-[#18110d] p-2 text-left shadow-[0_18px_40px_rgba(0,0,0,0.32)] md:max-h-[280px]"
 										>
 											{placeSuggestions.length > 0 ? (
 												placeSuggestions.map((suggestion, index) => {
@@ -1791,20 +1820,20 @@ function RestaurantSearchPage() {
 							) : null}
 						</div>
 
-						<div className="flex flex-wrap gap-2">
-							{searchChips.map((search) => (
-								<button
+							<div className="flex flex-wrap gap-2">
+								{searchChips.map((search) => (
+									<button
 									key={`${search.city}-${search.state}-${search.country}`}
 									type="button"
 									onClick={() => handleRunSearchChip(search)}
 									disabled={isSearching}
-									className="rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3.5 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] disabled:cursor-not-allowed disabled:opacity-60"
-								>
-									<span>{search.label}</span>
-									{search.resultCount !== undefined ? (
-										<span className="ml-2 text-[12px] text-[var(--mapetite-text-faint)]">
-											{search.resultCount.toLocaleString()}
-										</span>
+										className="inline-flex max-w-full items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3.5 py-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] disabled:cursor-not-allowed disabled:opacity-60"
+									>
+										<span className="min-w-0 truncate">{search.label}</span>
+										{formatRecentSearchResultCount(search.resultCount) ? (
+											<span className="shrink-0 rounded-full border border-[rgba(255,236,220,0.08)] bg-black/10 px-2 py-0.5 text-[11px] text-[var(--mapetite-text-faint)]">
+												{formatRecentSearchResultCount(search.resultCount)}
+											</span>
 									) : null}
 								</button>
 							))}
@@ -1835,41 +1864,39 @@ function RestaurantSearchPage() {
 						) : null}
 					</section>
 
-					<section className="mapetite-panel-soft mb-4 grid gap-4 p-4 md:p-5">
-						<div className="grid gap-3 min-[981px]:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] min-[981px]:items-center">
-							<div className="grid justify-items-center gap-3 min-[981px]:block min-[981px]:justify-items-stretch">
-								<div className="text-center min-[981px]:hidden">
-									<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase">
-										Popular filters
-									</div>
-								</div>
-								<div className="flex max-w-[330px] flex-wrap justify-center gap-2 min-[981px]:max-w-none min-[981px]:justify-start">
-									{categories.map((category) => {
-										const isActive = selectedCategories.has(category);
-										return (
-											<button
-												key={category}
-												type="button"
-												onClick={() => toggleCategory(category)}
-												className={cn(
-													"rounded-full border px-4 py-2 text-sm transition-colors",
-													isActive
-														? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
-														: "border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.02)] text-[rgba(245,233,222,0.62)] hover:border-[rgba(255,236,220,0.18)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]",
-												)}
-											>
-												{category}
-											</button>
-										);
-									})}
-								</div>
-							</div>
+					<section className="mapetite-panel-soft mb-4 flex flex-wrap items-center gap-2 p-3 md:p-4">
+						{hasResultsForCurrentView ? (
+							<>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => setShowMobileFilters(true)}
+									aria-label={`Open filters${activeFilterCount ? `, ${activeFilterCount} active` : ""}`}
+									className={cn(
+										"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none md:hidden",
+										hasActiveFilters && "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+									)}
+								>
+									<SlidersHorizontal className="size-4" />
+									Filters{activeFilterCount ? ` (${activeFilterCount})` : ""}
+								</Button>
+								<Button
+									type="button"
+									variant="outline"
+									onClick={() => setShowRefinements(!showRefinements)}
+									aria-expanded={showRefinements}
+									className={cn(
+										"mapetite-quiet-button hidden h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none md:inline-flex",
+										hasActiveFilters && "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+									)}
+								>
+									<SlidersHorizontal className="size-4" />
+									Filters{activeFilterCount ? ` (${activeFilterCount})` : ""}
+								</Button>
+							</>
+						) : null}
 
-							<div className="grid w-full gap-3 min-[981px]:w-auto min-[981px]:grid-flow-col min-[981px]:items-center min-[981px]:justify-end">
-								<div className="grid gap-1.5 min-[981px]:block">
-									<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[981px]:hidden">
-										Sort
-									</div>
+						<div className="min-w-[180px] flex-1 sm:flex-none">
 									<Select
 										value={sortBy}
 										onValueChange={(value) =>
@@ -1878,28 +1905,24 @@ function RestaurantSearchPage() {
 											)
 										}
 									>
-										<SelectTrigger className="relative h-11 w-full min-w-0 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-3 text-[var(--mapetite-text)] [&>svg]:ml-auto min-[981px]:h-10 min-[981px]:w-auto min-[981px]:min-w-[190px]">
-											<SelectValue className="absolute left-1/2 max-w-[calc(100%-5rem)] -translate-x-1/2 justify-center text-center min-[981px]:static min-[981px]:max-w-none min-[981px]:flex-1 min-[981px]:translate-x-0 min-[981px]:justify-start min-[981px]:text-left" />
+										<SelectTrigger aria-label="Sort restaurants" className="h-10 w-full rounded-full border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-3 text-[var(--mapetite-text)] sm:min-w-[190px]">
+											<SelectValue />
 										</SelectTrigger>
 										<SelectContent>
-											<SelectItem className="justify-center px-10 text-center min-[981px]:justify-start min-[981px]:pr-8 min-[981px]:pl-2" value="none">Sort: Best match</SelectItem>
-											<SelectItem className="justify-center px-10 text-center min-[981px]:justify-start min-[981px]:pr-8 min-[981px]:pl-2" value="rating">Sort: Highest rated</SelectItem>
-											<SelectItem className="justify-center px-10 text-center min-[981px]:justify-start min-[981px]:pr-8 min-[981px]:pl-2" value="distance">Sort: Closest first</SelectItem>
-											<SelectItem className="justify-center px-10 text-center min-[981px]:justify-start min-[981px]:pr-8 min-[981px]:pl-2" value="reviews">Sort: Most reviews</SelectItem>
+											<SelectItem value="none">Sort: Best match</SelectItem>
+											<SelectItem value="rating">Sort: Highest rated</SelectItem>
+											<SelectItem value="distance">Sort: Closest first</SelectItem>
+											<SelectItem value="reviews">Sort: Most reviews</SelectItem>
 										</SelectContent>
 									</Select>
-								</div>
+						</div>
 
-								<div className="grid gap-1.5 min-[981px]:block">
-									<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[981px]:hidden">
-										Saved
-									</div>
 									<Button
 										type="button"
 										variant="outline"
 										onClick={() => setShowFavorites(!showFavorites)}
 										className={cn(
-											"mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none min-[981px]:h-10 min-[981px]:w-auto",
+											"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
 											showFavorites
 												? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 												: null,
@@ -1910,20 +1933,15 @@ function RestaurantSearchPage() {
 										/>
 										{showFavorites ? "Viewing saved places" : "Saved only"}
 									</Button>
-								</div>
 
 								{hasResultsForCurrentView && (
-									<div className="grid gap-1.5 min-[981px]:block">
-										<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[981px]:hidden">
-											Map
-										</div>
 										<Button
 											type="button"
 											variant="outline"
 											onClick={() => setIsMapOpen((current) => !current)}
 											aria-pressed={isMapOpen}
 											className={cn(
-												"mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none min-[981px]:h-10 min-[981px]:w-auto",
+												"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
 												isMapOpen
 													? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 													: null,
@@ -1932,14 +1950,9 @@ function RestaurantSearchPage() {
 											<MapPinned className="size-4" />
 											{isMapOpen ? "Hide map" : "Map"}
 										</Button>
-									</div>
 								)}
 
 								{hasResultsForCurrentView && (
-									<div className="grid gap-1.5 min-[981px]:block">
-										<div className="text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[981px]:hidden">
-											Refresh
-										</div>
 										<Button
 											type="button"
 											variant="outline"
@@ -1947,28 +1960,13 @@ function RestaurantSearchPage() {
 											disabled={isSearching}
 											title="Refreshes current provider data. Results may stay the same."
 											aria-label="Refresh current search results"
-											className="mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none min-[981px]:h-10 min-[981px]:w-auto"
+											className="mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none"
 										>
 											<RefreshCw className={cn("size-4", isSearching && "animate-spin")} />
 											{isSearching ? "Refreshing..." : "Refresh current search"}
 										</Button>
-									</div>
-								)}
-
-								{hasResultsForCurrentView && (
-									<Button
-										type="button"
-										variant="outline"
-										onClick={() => setShowMobileFilters(true)}
-										className="mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none md:hidden"
-									>
-										<SlidersHorizontal className="size-4" />
-										Filters
-									</Button>
-								)}
-							</div>
-						</div>
-					</section>
+									)}
+						</section>
 
 					{showMobileFilters && (
 						// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
@@ -1984,10 +1982,10 @@ function RestaurantSearchPage() {
 								<div className="relative flex items-center justify-center border-b border-[var(--mapetite-border)] px-14 py-4 text-center">
 									<div>
 										<h2 className="text-base font-semibold text-[var(--mapetite-text)]">
-											Filters and sort
+										Filters
 										</h2>
 										<p className="mapetite-muted-copy text-sm">
-											Adjust price, rating, and ordering.
+										Narrow the current restaurant list.
 										</p>
 									</div>
 									<button
@@ -2000,6 +1998,32 @@ function RestaurantSearchPage() {
 								</div>
 
 								<div className="space-y-5 px-4 py-4">
+									<div className="space-y-3">
+										<Label className="text-[var(--mapetite-text)]">
+											Quick categories
+										</Label>
+										<div className="flex flex-wrap gap-2">
+											{categories.map((category) => {
+												const isActive = selectedCategories.has(category);
+												return (
+													<button
+														key={category}
+														type="button"
+														onClick={() => toggleCategory(category)}
+														className={cn(
+															"rounded-full border px-3 py-2 text-sm transition-colors",
+															isActive
+																? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+																: "border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.02)] text-[var(--mapetite-text-soft)]",
+														)}
+													>
+														{category}
+													</button>
+												);
+											})}
+										</div>
+									</div>
+
 									<div className="space-y-3">
 										<Label className="text-[var(--mapetite-text)]">
 											Price range
@@ -2044,30 +2068,6 @@ function RestaurantSearchPage() {
 										/>
 									</div>
 
-									<div className="space-y-3">
-										<Label className="text-[var(--mapetite-text)]">
-											Sort by
-										</Label>
-										<Select
-											value={sortBy}
-											onValueChange={(value) =>
-												setSortBy(
-													value as "distance" | "rating" | "reviews" | "none",
-												)
-											}
-										>
-											<SelectTrigger className="relative h-11 w-full rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-3 text-[var(--mapetite-text)] [&>svg]:ml-auto">
-												<SelectValue className="absolute left-1/2 max-w-[calc(100%-5rem)] -translate-x-1/2 justify-center text-center" />
-											</SelectTrigger>
-											<SelectContent>
-												<SelectItem className="justify-center px-10 text-center" value="none">Sort: Best match</SelectItem>
-												<SelectItem className="justify-center px-10 text-center" value="distance">Sort: Closest first</SelectItem>
-												<SelectItem className="justify-center px-10 text-center" value="rating">Sort: Highest rated</SelectItem>
-												<SelectItem className="justify-center px-10 text-center" value="reviews">Sort: Most reviews</SelectItem>
-											</SelectContent>
-										</Select>
-									</div>
-
 									<div className="flex items-center justify-between gap-4">
 										<div className="space-y-1">
 											<Label className="text-[var(--mapetite-text)]">
@@ -2105,13 +2105,13 @@ function RestaurantSearchPage() {
 						</div>
 					)}
 
-						{hasResultsForCurrentView && (
+						{hasResultsForCurrentView && showRefinements && (
 							<section className="mapetite-panel mb-4 hidden p-5 md:grid md:gap-5">
 							<div className="flex flex-wrap items-center justify-between gap-4">
 								<div>
-									<div className="mapetite-eyebrow">Refine search</div>
+									<div className="mapetite-eyebrow">Filters</div>
 									<p className="mapetite-muted-copy mt-3 text-sm">
-										Filter by price, rating, distance, and open status.
+										Narrow by category, price, rating, or listed open status.
 									</p>
 								</div>
 								<Button
@@ -2120,12 +2120,37 @@ function RestaurantSearchPage() {
 									onClick={() => setShowRefinements(!showRefinements)}
 									className="mapetite-quiet-button rounded-full px-4 shadow-none"
 								>
-									{showRefinements ? "Hide" : "Show"}
+									Close
 								</Button>
 							</div>
 
-							{showRefinements && (
 								<div className="grid gap-5">
+									<div className="grid gap-3">
+										<Label className="text-[var(--mapetite-text)]">
+											Quick categories
+										</Label>
+										<div className="flex flex-wrap gap-2">
+											{categories.map((category) => {
+												const isActive = selectedCategories.has(category);
+												return (
+													<button
+														key={category}
+														type="button"
+														onClick={() => toggleCategory(category)}
+														className={cn(
+															"rounded-full border px-4 py-2 text-sm transition-colors",
+															isActive
+																? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
+																: "border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.02)] text-[var(--mapetite-text-soft)] hover:border-[rgba(255,236,220,0.18)] hover:text-[var(--mapetite-text)]",
+														)}
+													>
+														{category}
+													</button>
+												);
+											})}
+										</div>
+									</div>
+
 									<div className="grid gap-5 lg:grid-cols-2">
 										<div className="grid gap-3">
 											<Label className="text-[var(--mapetite-text)]">
@@ -2153,47 +2178,23 @@ function RestaurantSearchPage() {
 										</div>
 
 										<div className="grid gap-3">
-											<Label className="text-[var(--mapetite-text)]">
-												Sort by
-											</Label>
-											<Select
-												value={sortBy}
-												onValueChange={(value) =>
-													setSortBy(
-														value as "distance" | "rating" | "reviews" | "none",
-													)
-												}
-											>
-												<SelectTrigger className="h-11 rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
-													<SelectValue />
-												</SelectTrigger>
-												<SelectContent>
-													<SelectItem value="none">Sort: Best match</SelectItem>
-													<SelectItem value="distance">Sort: Closest first</SelectItem>
-													<SelectItem value="rating">Sort: Highest rated</SelectItem>
-													<SelectItem value="reviews">Sort: Most reviews</SelectItem>
-												</SelectContent>
-											</Select>
+											<div className="flex items-center justify-between">
+												<Label className="text-[var(--mapetite-text)]">
+													Minimum rating
+												</Label>
+												<span className="mapetite-muted-copy text-sm">
+													{minRating === 0 ? "Any" : `${minRating.toFixed(1)}+`}
+												</span>
+											</div>
+											<Slider
+												value={[minRating]}
+												onValueChange={(values) => setMinRating(values[0])}
+												min={0}
+												max={5}
+												step={0.5}
+												className="[&_[data-slot=slider-range]]:bg-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:border-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:bg-[#20140d] [&_[data-slot=slider-thumb]]:shadow-none [&_[data-slot=slider-track]]:bg-[rgba(255,248,242,0.08)]"
+											/>
 										</div>
-									</div>
-
-									<div className="grid gap-3">
-										<div className="flex items-center justify-between">
-											<Label className="text-[var(--mapetite-text)]">
-												Minimum rating
-											</Label>
-											<span className="mapetite-muted-copy text-sm">
-												{minRating === 0 ? "Any" : `${minRating.toFixed(1)}+`}
-											</span>
-										</div>
-										<Slider
-											value={[minRating]}
-											onValueChange={(values) => setMinRating(values[0])}
-											min={0}
-											max={5}
-											step={0.5}
-											className="[&_[data-slot=slider-range]]:bg-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:border-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:bg-[#20140d] [&_[data-slot=slider-thumb]]:shadow-none [&_[data-slot=slider-thumb]]:hover:ring-[rgba(213,154,104,0.22)] [&_[data-slot=slider-thumb]]:focus-visible:ring-[rgba(213,154,104,0.32)] [&_[data-slot=slider-track]]:bg-[rgba(255,248,242,0.08)]"
-										/>
 									</div>
 
 									<div className="flex items-center justify-between gap-4">
@@ -2222,8 +2223,7 @@ function RestaurantSearchPage() {
 										</Button>
 									</div>
 								</div>
-							)}
-						</section>
+							</section>
 					)}
 
 						{hasResultsForCurrentView && (

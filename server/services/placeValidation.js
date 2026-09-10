@@ -219,15 +219,22 @@ function getNeutralRegionPriority(place) {
   return NEUTRAL_REGION_PRIORITY.get(`${place.countryCode}|${place.regionCode}`) ?? 20;
 }
 
-function getSuggestionContextRank(place, context = {}) {
+function getExplicitSuggestionContextRank(place, context = {}) {
   let rank = 0;
 
   if (isCountryContextMatch(place, context.country)) rank -= 60;
   if (isRegionContextMatch(place, context.region)) rank -= 30;
-  if (isCountryContextMatch(place, context.recentCountry)) rank -= 16;
-  if (isRegionContextMatch(place, context.recentRegion)) rank -= 8;
-  if (isCountryContextMatch(place, context.localeCountry)) rank -= 5;
-  if (isCountryContextMatch(place, context.timezoneCountry)) rank -= 3;
+
+  return rank;
+}
+
+function getSoftSuggestionContextRank(place, context = {}) {
+  let rank = 0;
+
+  if (isCountryContextMatch(place, context.recentCountry)) rank -= 2;
+  if (isRegionContextMatch(place, context.recentRegion)) rank -= 1;
+  if (isCountryContextMatch(place, context.localeCountry)) rank -= 4;
+  if (isCountryContextMatch(place, context.timezoneCountry)) rank -= 6;
 
   return rank;
 }
@@ -241,19 +248,31 @@ function getSuggestionMatchRank(place, normalizedQuery) {
 
 function sortAutocompleteMatches(matches, normalizedQuery, context = {}) {
   return [...matches].sort((first, second) => {
+    const explicitContextRank =
+      getExplicitSuggestionContextRank(first, context) -
+      getExplicitSuggestionContextRank(second, context);
+    if (explicitContextRank !== 0) return explicitContextRank;
+
     const matchRank =
       getSuggestionMatchRank(first, normalizedQuery) -
       getSuggestionMatchRank(second, normalizedQuery);
     if (matchRank !== 0) return matchRank;
 
-    const contextRank =
-      getSuggestionContextRank(first, context) -
-      getSuggestionContextRank(second, context);
-    if (contextRank !== 0) return contextRank;
-
+    const softContextRank =
+      getSoftSuggestionContextRank(first, context) -
+      getSoftSuggestionContextRank(second, context);
     const countryRank =
       getNeutralCountryPriority(first) - getNeutralCountryPriority(second);
-    if (countryRank !== 0) return countryRank;
+
+    // Exact city-name ties stay globally neutral; soft browser/recent hints only
+    // help order broader prefix and contains matches.
+    if (getSuggestionMatchRank(first, normalizedQuery) === 0) {
+      if (countryRank !== 0) return countryRank;
+      if (softContextRank !== 0) return softContextRank;
+    } else {
+      const contextualCountryRank = countryRank + softContextRank;
+      if (contextualCountryRank !== 0) return contextualCountryRank;
+    }
 
     const regionRank =
       getNeutralRegionPriority(first) - getNeutralRegionPriority(second);

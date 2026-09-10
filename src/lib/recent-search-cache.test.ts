@@ -4,6 +4,7 @@ import {
 	LAST_SEARCH_TTL_MS,
 	buildSearchDisplayLabel,
 	clearRecentSearches,
+	formatRecentSearchResultCount,
 	isTypedPlaceSearch,
 	loadLastSearchSnapshot,
 	loadRecentSearches,
@@ -74,6 +75,12 @@ describe("recent search cache", () => {
 	it("detects typed place searches without requiring coordinates", () => {
 		expect(isTypedPlaceSearch({ city: "Stockton" })).toBe(true);
 		expect(isTypedPlaceSearch({ latitude: 37.95, longitude: -121.29 })).toBe(false);
+	});
+
+	it("formats recent result counts with an explicit label", () => {
+		expect(formatRecentSearchResultCount(40)).toBe("40 results");
+		expect(formatRecentSearchResultCount(1)).toBe("1 result");
+		expect(formatRecentSearchResultCount(undefined)).toBeNull();
 	});
 
 	it("saves typed city searches with most recent first", () => {

@@ -66,6 +66,12 @@ export function buildSearchDisplayLabel(location: Partial<LocationState>) {
 		.join(", ");
 }
 
+export function formatRecentSearchResultCount(resultCount: number | undefined) {
+	if (typeof resultCount !== "number" || !Number.isFinite(resultCount)) return null;
+	const count = Math.max(0, Math.trunc(resultCount));
+	return `${count.toLocaleString()} ${count === 1 ? "result" : "results"}`;
+}
+
 export function isTypedPlaceSearch(location: Partial<LocationState>) {
 	return Boolean(normalizePart(location.city));
 }
