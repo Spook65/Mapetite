@@ -15,6 +15,8 @@ const raw = {
   rateLimitWindowMs: Number(process.env.RATE_LIMIT_WINDOW_MS || 15 * 60 * 1000),
   rateLimitMax: Number(process.env.RATE_LIMIT_MAX || 300),
   searchRateLimitMax: Number(process.env.SEARCH_RATE_LIMIT_MAX || 60),
+  searchRequestTimeoutMs: Number(process.env.SEARCH_REQUEST_TIMEOUT_MS || 25000),
+  overpassTimeoutMs: Number(process.env.OVERPASS_TIMEOUT_MS || 15000),
   databaseUrl: process.env.DATABASE_URL,
   geoapifyApiKey:
     process.env.GEOAPIFY_API_KEY || "",

@@ -12,6 +12,7 @@ import { buildHoursStatus } from "./restaurantHours.js";
 import { applyRestaurantCityScope } from "./restaurantCityScope.js";
 import { InMemoryTtlCache } from "./inMemoryTtlCache.js";
 import { validatePlaceInput } from "./placeValidation.js";
+import { SearchProviderUnavailableError } from "./searchErrors.js";
 import env from "../config/env.js";
 
 const SEARCH_RADIUS_METERS = 3000;
@@ -1065,21 +1066,29 @@ async function resolveLocation(locationInput = {}, perf = null) {
 
 async function fetchOverpass(query) {
   const body = new URLSearchParams({ data: query }).toString();
-  const response = await fetch("https://overpass-api.de/api/interpreter", {
-    method: "POST",
-    body,
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "*/*",
-      "User-Agent": "Mapetite/1.0 (+https://mapetite.local)",
-    },
-  });
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), env.overpassTimeoutMs);
 
-  if (!response.ok) {
-    throw new Error(`Overpass request failed (${response.status})`);
+  try {
+    const response = await fetch("https://overpass-api.de/api/interpreter", {
+      method: "POST",
+      body,
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Accept: "*/*",
+        "User-Agent": "Mapetite/1.0 (+https://mapetite.local)",
+      },
+      signal: controller.signal,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Overpass request failed (${response.status})`);
+    }
+
+    return response.json();
+  } finally {
+    clearTimeout(timeoutId);
   }
-
-  return response.json();
 }
 
 async function fetchNearbyRestaurants(location, radiusMeters = SEARCH_RADIUS_METERS) {
@@ -1630,7 +1639,12 @@ export async function searchRestaurants(params = {}) {
       });
       return payload;
     } catch (error) {
-      console.warn("OpenStreetMap search failed; using demo fallback data.", error);
+      if (env.nodeEnv === "production") {
+        console.error("OpenStreetMap search failed after provider fallback.", error);
+        throw new SearchProviderUnavailableError();
+      }
+
+      console.warn("OpenStreetMap search failed; using local demo fallback data.", error);
       const restaurants = measureSearchPerfSync(
         perf,
         "demo_fallback",

@@ -5,6 +5,12 @@ import {
   searchRestaurants,
 } from "../services/restaurantCatalog.js";
 import { PlaceValidationError } from "../services/placeValidation.js";
+import {
+  SearchProviderUnavailableError,
+  SearchRequestTimeoutError,
+  withSearchTimeout,
+} from "../services/searchErrors.js";
+import env from "../config/env.js";
 
 const router = express.Router();
 
@@ -60,7 +66,10 @@ async function handleSearch(req, res) {
   }
 
   try {
-    const result = await searchRestaurants(params);
+    const result = await withSearchTimeout(
+      searchRestaurants(params),
+      env.searchRequestTimeoutMs,
+    );
     res.json(result);
   } catch (error) {
     if (error instanceof PlaceValidationError) {
@@ -68,6 +77,20 @@ async function handleSearch(req, res) {
         error: error.code,
         message: error.message,
         suggestions: error.suggestions,
+      });
+    }
+
+    if (error instanceof SearchRequestTimeoutError) {
+      return res.status(504).json({
+        error: error.code,
+        message: "Restaurant search took too long. Please try again.",
+      });
+    }
+
+    if (error instanceof SearchProviderUnavailableError) {
+      return res.status(503).json({
+        error: error.code,
+        message: "Restaurant providers are unavailable right now. Please try again.",
       });
     }
 

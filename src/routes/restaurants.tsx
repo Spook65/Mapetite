@@ -355,10 +355,18 @@ function getSearchErrorDescription(error: unknown) {
 				: "Select a suggestion or add region and country to identify the place.";
 		}
 
+		if (error.code === "SEARCH_TIMEOUT") {
+			return "The demo backend or restaurant provider took too long to respond. Please try again.";
+		}
+
+		if (error.code === "SEARCH_UNAVAILABLE") {
+			return "Restaurant providers are unavailable right now. Please try again shortly.";
+		}
+
 		return suggestions ? `${error.message} Try: ${suggestions}.` : error.message;
 	}
 
-	return "Unable to fetch restaurants right now.";
+	return "Unable to reach the demo backend right now. Please try again.";
 }
 
 function isExpectedPlaceValidationError(error: unknown) {
