@@ -13,53 +13,11 @@ import placeRoutes from "./routes/places.js";
 import mapRoutes from "./routes/maps.js";
 import healthRoutes from "./routes/health.js";
 import { createDemoAuthRouter } from "./routes/demoAuth.js";
+import { createRateLimiter } from "./middleware/rateLimiter.js";
 
 const app = express();
 app.disable("x-powered-by");
 app.set("trust proxy", 1);
-
-function createRateLimiter({ windowMs, maxRequests, keyPrefix = "global" }) {
-  const hits = new Map();
-
-  return (req, res, next) => {
-    const now = Date.now();
-    if (hits.size > 1000) {
-      for (const [storedKey, storedHit] of hits) {
-        if (storedHit.resetAt <= now) {
-          hits.delete(storedKey);
-        }
-      }
-    }
-
-    const ip =
-      req.ip ||
-      req.socket.remoteAddress ||
-      "unknown";
-    const key = `${keyPrefix}:${ip}`;
-    const current = hits.get(key);
-
-    if (!current || current.resetAt <= now) {
-      hits.set(key, { count: 1, resetAt: now + windowMs });
-      return next();
-    }
-
-    current.count += 1;
-
-    if (current.count > maxRequests) {
-      const retryAfterSeconds = Math.max(
-        1,
-        Math.ceil((current.resetAt - now) / 1000),
-      );
-      res.setHeader("Retry-After", String(retryAfterSeconds));
-      return res.status(429).json({
-        message: "Too many requests. Please wait before trying again.",
-      });
-    }
-
-    hits.set(key, current);
-    return next();
-  };
-}
 
 app.use((_req, res, next) => {
   res.setHeader("X-Content-Type-Options", "nosniff");
@@ -90,11 +48,19 @@ const apiRateLimiter = createRateLimiter({
   windowMs: env.rateLimitWindowMs,
   maxRequests: env.rateLimitMax,
   keyPrefix: "api",
+  skip: (req) => req.path === "/places/suggest",
 });
 const searchRateLimiter = createRateLimiter({
   windowMs: env.rateLimitWindowMs,
   maxRequests: env.searchRateLimitMax,
   keyPrefix: "search",
+});
+const placeSuggestRateLimiter = createRateLimiter({
+  windowMs: env.placeSuggestRateLimitWindowMs,
+  maxRequests: env.placeSuggestRateLimitMax,
+  keyPrefix: "place-suggest",
+  errorCode: "PLACE_SUGGEST_RATE_LIMITED",
+  message: "Suggestions paused. You can still search.",
 });
 
 // Fire-and-forget optional Mongo connection for cache and document stores.
@@ -103,6 +69,7 @@ if (env.mongoUri) {
   void connectMongo(env.mongoUri);
 }
 
+app.use("/api/places/suggest", placeSuggestRateLimiter);
 app.use("/api", apiRateLimiter);
 app.use("/api/restaurants/search", searchRateLimiter);
 if (env.storageMode === "memory") {

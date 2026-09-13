@@ -1,5 +1,8 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { suggestPlacesApi } from "@/lib/api/restaurants";
+import {
+	PlaceSuggestionRateLimitError,
+	suggestPlacesApi,
+} from "@/lib/api/restaurants";
 
 const originalFetch = globalThis.fetch;
 
@@ -75,5 +78,23 @@ describe("suggestPlacesApi", () => {
 		vi.stubEnv("VITE_RESTAURANTS_API_BASE_URL", "https://api.example.test");
 
 		await expect(suggestPlacesApi("sto")).resolves.toEqual([]);
+	});
+
+	it("surfaces a quiet rate-limit error with retry timing", async () => {
+		globalThis.fetch = vi.fn().mockResolvedValue({
+			ok: false,
+			status: 429,
+			headers: { get: () => "45" },
+			json: async () => ({
+				error: "PLACE_SUGGEST_RATE_LIMITED",
+				retryAfterSeconds: 45,
+			}),
+		});
+		vi.stubEnv("VITE_RESTAURANTS_API_BASE_URL", "https://api.example.test");
+
+		await expect(suggestPlacesApi("sto")).rejects.toMatchObject({
+			name: PlaceSuggestionRateLimitError.name,
+			retryAfterSeconds: 45,
+		});
 	});
 });

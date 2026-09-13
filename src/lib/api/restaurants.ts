@@ -44,6 +44,16 @@ export type PlaceSearchSuggestion = {
 	label?: string;
 };
 
+export class PlaceSuggestionRateLimitError extends Error {
+	retryAfterSeconds: number;
+
+	constructor(retryAfterSeconds = 60) {
+		super("Suggestions paused. You can still search.");
+		this.name = "PlaceSuggestionRateLimitError";
+		this.retryAfterSeconds = retryAfterSeconds;
+	}
+}
+
 export class RestaurantSearchApiError extends Error {
 	code?: string;
 	suggestions: PlaceSearchSuggestion[];
@@ -204,6 +214,21 @@ export async function suggestPlacesApi(
 		},
 		signal: options.signal,
 	});
+
+	if (response.status === 429) {
+		const retryAfterHeader = Number(response.headers?.get?.("Retry-After"));
+		const errorBody = (await response.json().catch(() => ({}))) as {
+			retryAfterSeconds?: unknown;
+		};
+		const retryAfterBody = Number(errorBody.retryAfterSeconds);
+		const retryAfterSeconds =
+			Number.isFinite(retryAfterHeader) && retryAfterHeader > 0
+				? retryAfterHeader
+				: Number.isFinite(retryAfterBody) && retryAfterBody > 0
+					? retryAfterBody
+					: 60;
+		throw new PlaceSuggestionRateLimitError(retryAfterSeconds);
+	}
 
 	if (!response.ok) return [];
 

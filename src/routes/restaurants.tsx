@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import {
 	RestaurantSearchApiError,
+	PlaceSuggestionRateLimitError,
 	type PlaceSearchSuggestion,
 	suggestPlacesApi,
 	warmRestaurantsApiHealth,
@@ -591,6 +592,9 @@ function RestaurantSearchPage() {
 	const [isPlaceSuggestionsOpen, setIsPlaceSuggestionsOpen] = useState(false);
 	const [hasPlaceSuggestionResponse, setHasPlaceSuggestionResponse] =
 		useState(false);
+	const [placeSuggestionNotice, setPlaceSuggestionNotice] = useState<
+		"rate-limited" | "unavailable" | null
+	>(null);
 	const [activePlaceSuggestionIndex, setActivePlaceSuggestionIndex] =
 		useState(-1);
 	const [favoriteSnapshots, setFavoriteSnapshots] = useState<
@@ -599,6 +603,7 @@ function RestaurantSearchPage() {
 	const activeSearchIdRef = useRef(0);
 	const favoriteHydrationAttemptsRef = useRef<Set<string>>(new Set());
 	const suppressedSuggestionQueryRef = useRef("");
+	const placeSuggestionPausedUntilRef = useRef(0);
 
 	const categories = ["Noodles", "Vegetarian", "Fast-Food"];
 	const hasLocationInput = Boolean(
@@ -634,6 +639,7 @@ function RestaurantSearchPage() {
 			setIsPlaceSuggestionsOpen(false);
 			setIsLoadingPlaceSuggestions(false);
 			setHasPlaceSuggestionResponse(false);
+			setPlaceSuggestionNotice(null);
 			setActivePlaceSuggestionIndex(-1);
 			return;
 		}
@@ -652,8 +658,16 @@ function RestaurantSearchPage() {
 
 		const controller = new AbortController();
 		setHasPlaceSuggestionResponse(false);
+		setPlaceSuggestionNotice(null);
 		setActivePlaceSuggestionIndex(-1);
 		const timeoutId = window.setTimeout(() => {
+			if (Date.now() < placeSuggestionPausedUntilRef.current) {
+				setPlaceSuggestions([]);
+				setHasPlaceSuggestionResponse(true);
+				setPlaceSuggestionNotice("rate-limited");
+				setIsPlaceSuggestionsOpen(true);
+				return;
+			}
 			setIsLoadingPlaceSuggestions(true);
 			suggestPlacesApi(query, {
 				limit: 8,
@@ -667,6 +681,7 @@ function RestaurantSearchPage() {
 			})
 				.then((suggestions) => {
 					setPlaceSuggestions(suggestions);
+					setPlaceSuggestionNotice(null);
 					setHasPlaceSuggestionResponse(true);
 					setIsPlaceSuggestionsOpen(true);
 				})
@@ -675,6 +690,13 @@ function RestaurantSearchPage() {
 						return;
 					}
 					setPlaceSuggestions([]);
+					if (error instanceof PlaceSuggestionRateLimitError) {
+						placeSuggestionPausedUntilRef.current =
+							Date.now() + error.retryAfterSeconds * 1000;
+						setPlaceSuggestionNotice("rate-limited");
+					} else {
+						setPlaceSuggestionNotice("unavailable");
+					}
 					setHasPlaceSuggestionResponse(true);
 					setIsPlaceSuggestionsOpen(true);
 				})
@@ -722,6 +744,7 @@ function RestaurantSearchPage() {
 		setPlaceSuggestions([]);
 		setIsPlaceSuggestionsOpen(false);
 		setHasPlaceSuggestionResponse(false);
+		setPlaceSuggestionNotice(null);
 		setActivePlaceSuggestionIndex(-1);
 		window.setTimeout(() => {
 			document.getElementById("city")?.focus();
@@ -738,6 +761,7 @@ function RestaurantSearchPage() {
 		setPlaceSuggestions([]);
 		setIsPlaceSuggestionsOpen(false);
 		setHasPlaceSuggestionResponse(false);
+		setPlaceSuggestionNotice(null);
 		setActivePlaceSuggestionIndex(-1);
 	};
 
@@ -1700,10 +1724,17 @@ function RestaurantSearchPage() {
 													);
 												})
 											) : (
-												<div className="rounded-[10px] px-3 py-3 text-sm text-[var(--mapetite-text-soft)]">
+												<div
+													role="status"
+													className="rounded-[10px] px-3 py-3 text-sm text-[var(--mapetite-text-soft)]"
+												>
 													{isLoadingPlaceSuggestions
 														? "Finding matching places…"
-														: "No matching places. Try adding region or country."}
+														: placeSuggestionNotice === "rate-limited"
+															? "Suggestions paused. You can still search."
+															: placeSuggestionNotice === "unavailable"
+																? "Suggestions unavailable. You can still search."
+																: "No matching places yet. Try adding region or country."}
 												</div>
 											)}
 											<p className="mapetite-muted-copy border-t border-[rgba(255,236,220,0.08)] px-3 pt-2 text-[11px] leading-5">

@@ -376,6 +376,8 @@ Backend variables:
 | `RATE_LIMIT_WINDOW_MS` | Optional | Backend API rate-limit window. Defaults to 15 minutes. |
 | `RATE_LIMIT_MAX` | Optional | General `/api` requests per IP per window. Defaults to `300`. |
 | `SEARCH_RATE_LIMIT_MAX` | Optional | `/api/restaurants/search` requests per IP per window. Defaults to `60`. |
+| `PLACE_SUGGEST_RATE_LIMIT_WINDOW_MS` | Optional | Place-autocomplete rate-limit window. Defaults to one minute. |
+| `PLACE_SUGGEST_RATE_LIMIT_MAX` | Optional | Place-autocomplete requests per IP per window. Defaults to `90`, allowing normal debounced typing while limiting bursts. |
 | `SEARCH_REQUEST_TIMEOUT_MS` | Optional | Maximum time for an awake backend search before returning structured `504` JSON. Defaults to `25000`. |
 | `OVERPASS_TIMEOUT_MS` | Optional | Client-side timeout for the OpenStreetMap/Overpass fallback request. Defaults to `15000`. |
 | `DATABASE_URL` | Required only for `MAPETITE_STORAGE_MODE=database` | Prisma/Postgres connection. Not required for memory-mode portfolio demos. |
