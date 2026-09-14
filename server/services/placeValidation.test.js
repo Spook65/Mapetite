@@ -218,15 +218,63 @@ describe("place suggestions", () => {
     );
   });
 
-  it("keeps neutral global ordering ahead of stale recent-search bias", () => {
+  it("keeps London UK above London California despite soft U.S. hints", () => {
     const suggestions = suggestPlaces("lon", {
       recentCountry: "United States",
+      localeCountry: "US",
+      timezoneCountry: "US",
       limit: 8,
     });
 
     expect(suggestions[0]).toMatchObject({
       city: "London",
       country: "United Kingdom",
+    });
+    const californiaLondonIndex = suggestions.findIndex(
+      (suggestion) =>
+        suggestion.city === "London" && suggestion.region === "California",
+    );
+    expect(californiaLondonIndex).toBeGreaterThan(0);
+  });
+
+  it("allows explicit California and United States context to rank London California first", () => {
+    expect(
+      suggestPlaces("lon", {
+        country: "United States",
+        region: "California",
+        limit: 8,
+      })[0],
+    ).toMatchObject({
+      city: "London",
+      region: "California",
+      country: "United States",
+    });
+  });
+
+  it("ranks globally recognizable cities for neutral prefixes", () => {
+    const parisSuggestions = suggestPlaces("par", {
+      timezoneCountry: "US",
+      limit: 8,
+    });
+    const parisIndex = parisSuggestions.findIndex(
+      (suggestion) =>
+        suggestion.city === "Paris" && suggestion.country === "France",
+    );
+
+    expect(parisIndex).toBeGreaterThanOrEqual(0);
+    expect(parisIndex).toBeLessThan(3);
+    expect(suggestPlaces("lon", { timezoneCountry: "US" })[0]).toMatchObject({
+      city: "London",
+      country: "United Kingdom",
+    });
+  });
+
+  it("keeps Paris France above other Paris matches", () => {
+    const suggestions = suggestPlaces("paris", { limit: 8 });
+
+    expect(suggestions[0]).toMatchObject({
+      city: "Paris",
+      country: "France",
     });
   });
 
@@ -239,6 +287,14 @@ describe("place suggestions", () => {
     expect(suggestions[0]).toMatchObject({
       city: "Kyoto",
       country: "Japan",
+    });
+  });
+
+  it("keeps Stockton prominent with soft U.S. context", () => {
+    expect(suggestPlaces("sto", { timezoneCountry: "US" })[0]).toMatchObject({
+      city: "Stockton",
+      region: "California",
+      country: "United States",
     });
   });
 

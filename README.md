@@ -387,6 +387,10 @@ Backend variables:
 | `MAPETITE_SEARCH_PERF_DEBUG` | Optional | Backend search-stage timing logs when `true`. Keep `false` unless diagnosing latency. |
 | `SEARCH_PERF_DEBUG` | Optional | Legacy alias for backend search-stage timing logs. Keep `false` unless diagnosing latency. |
 
+Place suggestions balance match quality with explicitly selected country or
+region, followed by a small backend-only curated city list.
+Recent searches, browser locale, and timezone are soft ordering hints only.
+
 ## Deployment
 
 Recommended portfolio deployment:

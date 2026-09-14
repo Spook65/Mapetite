@@ -4,27 +4,24 @@ import { resolve } from "node:path";
 const MAX_SUGGESTIONS = 5;
 const MAX_AUTOCOMPLETE_SUGGESTIONS = 8;
 const MIN_AUTOCOMPLETE_QUERY_LENGTH = 2;
-const NEUTRAL_COUNTRY_PRIORITY = new Map([
-  ["GB", 0],
-  ["JP", 1],
-  ["FR", 2],
-  ["CA", 3],
-  ["AU", 4],
-  ["US", 5],
-]);
-const NEUTRAL_REGION_PRIORITY = new Map([
-  ["GB|ENG", 0],
-  ["JP|13", 1],
-  ["JP|26", 2],
-  ["JP|27", 3],
-  ["FR|IDF", 4],
-  ["CA|ON", 5],
-  ["CA|BC", 6],
-  ["AU|NSW", 7],
-  ["US|CA", 8],
-  ["US|NY", 9],
-  ["US|TX", 10],
-  ["US|FL", 11],
+const MATCH_TIER_WEIGHT = 100;
+const EXPLICIT_COUNTRY_BOOST = 120;
+const EXPLICIT_REGION_BOOST = 60;
+const CITY_RECOGNITION_BOOST = new Map([
+  ["london|GB", 80],
+  ["paris|FR", 75],
+  ["tokyo|JP", 75],
+  ["kyoto|JP", 70],
+  ["osaka|JP", 65],
+  ["singapore|SG", 65],
+  ["dubai|AE", 60],
+  ["toronto|CA", 60],
+  ["sydney|AU", 60],
+  ["new york city|US", 60],
+  ["los angeles|US", 55],
+  ["san jose|US", 45],
+  ["stockton|US", 45],
+  ["modesto|US", 40],
 ]);
 
 function getPlaceIndexPath() {
@@ -211,19 +208,30 @@ function isRegionContextMatch(place, regionInput) {
   return Boolean(regionInput && isRegionMatch(place, regionInput));
 }
 
-function getNeutralCountryPriority(place) {
-  return NEUTRAL_COUNTRY_PRIORITY.get(place.countryCode) ?? 20;
-}
+function getCityRecognitionBoost(place, context) {
+  if (
+    (context.country && !isCountryContextMatch(place, context.country)) ||
+    (context.region && !isRegionContextMatch(place, context.region))
+  ) {
+    return 0;
+  }
 
-function getNeutralRegionPriority(place) {
-  return NEUTRAL_REGION_PRIORITY.get(`${place.countryCode}|${place.regionCode}`) ?? 20;
+  return (
+    CITY_RECOGNITION_BOOST.get(
+      `${place.normalizedCity}|${place.countryCode}`,
+    ) ?? 0
+  );
 }
 
 function getExplicitSuggestionContextRank(place, context = {}) {
   let rank = 0;
 
-  if (isCountryContextMatch(place, context.country)) rank -= 60;
-  if (isRegionContextMatch(place, context.region)) rank -= 30;
+  if (isCountryContextMatch(place, context.country)) {
+    rank -= EXPLICIT_COUNTRY_BOOST;
+  }
+  if (isRegionContextMatch(place, context.region)) {
+    rank -= EXPLICIT_REGION_BOOST;
+  }
 
   return rank;
 }
@@ -246,37 +254,21 @@ function getSuggestionMatchRank(place, normalizedQuery) {
   return 2;
 }
 
+function getSuggestionRank(place, normalizedQuery, context) {
+  return (
+    getSuggestionMatchRank(place, normalizedQuery) * MATCH_TIER_WEIGHT +
+    getExplicitSuggestionContextRank(place, context) +
+    getSoftSuggestionContextRank(place, context) -
+    getCityRecognitionBoost(place, context)
+  );
+}
+
 function sortAutocompleteMatches(matches, normalizedQuery, context = {}) {
   return [...matches].sort((first, second) => {
-    const explicitContextRank =
-      getExplicitSuggestionContextRank(first, context) -
-      getExplicitSuggestionContextRank(second, context);
-    if (explicitContextRank !== 0) return explicitContextRank;
-
-    const matchRank =
-      getSuggestionMatchRank(first, normalizedQuery) -
-      getSuggestionMatchRank(second, normalizedQuery);
-    if (matchRank !== 0) return matchRank;
-
-    const softContextRank =
-      getSoftSuggestionContextRank(first, context) -
-      getSoftSuggestionContextRank(second, context);
-    const countryRank =
-      getNeutralCountryPriority(first) - getNeutralCountryPriority(second);
-
-    // Exact city-name ties stay globally neutral; soft browser/recent hints only
-    // help order broader prefix and contains matches.
-    if (getSuggestionMatchRank(first, normalizedQuery) === 0) {
-      if (countryRank !== 0) return countryRank;
-      if (softContextRank !== 0) return softContextRank;
-    } else {
-      const contextualCountryRank = countryRank + softContextRank;
-      if (contextualCountryRank !== 0) return contextualCountryRank;
-    }
-
-    const regionRank =
-      getNeutralRegionPriority(first) - getNeutralRegionPriority(second);
-    if (regionRank !== 0) return regionRank;
+    const suggestionRank =
+      getSuggestionRank(first, normalizedQuery, context) -
+      getSuggestionRank(second, normalizedQuery, context);
+    if (suggestionRank !== 0) return suggestionRank;
 
     const cityLengthRank =
       first.normalizedCity.length - second.normalizedCity.length;
