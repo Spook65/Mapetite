@@ -19,7 +19,7 @@ const raw = {
     process.env.PLACE_SUGGEST_RATE_LIMIT_WINDOW_MS || 60 * 1000,
   ),
   placeSuggestRateLimitMax: Number(
-    process.env.PLACE_SUGGEST_RATE_LIMIT_MAX || 90,
+    process.env.PLACE_SUGGEST_RATE_LIMIT_MAX || 120,
   ),
   searchRequestTimeoutMs: Number(process.env.SEARCH_REQUEST_TIMEOUT_MS || 25000),
   overpassTimeoutMs: Number(process.env.OVERPASS_TIMEOUT_MS || 15000),
