@@ -732,13 +732,35 @@ function extractCandidateLinksFromHtml(html, baseUrl, profile = {}) {
   return [...new Set(candidates)].slice(0, 4);
 }
 
-async function fetchText(url) {
+function createFetchAbortContext(externalSignal) {
   const controller = new AbortController();
+  const abortFromExternalSignal = () => controller.abort(externalSignal?.reason);
+
+  if (externalSignal?.aborted) {
+    abortFromExternalSignal();
+  } else {
+    externalSignal?.addEventListener("abort", abortFromExternalSignal, {
+      once: true,
+    });
+  }
+
   const timeout = setTimeout(() => controller.abort(), IMAGE_TIMEOUT_MS);
+
+  return {
+    signal: controller.signal,
+    cleanup() {
+      clearTimeout(timeout);
+      externalSignal?.removeEventListener("abort", abortFromExternalSignal);
+    },
+  };
+}
+
+async function fetchText(url, options = {}) {
+  const abortContext = createFetchAbortContext(options.signal);
 
   try {
     const response = await fetch(url, {
-      signal: controller.signal,
+      signal: abortContext.signal,
       headers: {
         "User-Agent": "Mapetite/1.0 (restaurant discovery)",
         Accept: "text/html,application/xhtml+xml",
@@ -758,18 +780,18 @@ async function fetchText(url) {
   } catch {
     return null;
   } finally {
-    clearTimeout(timeout);
+    abortContext.cleanup();
   }
 }
 
 async function fetchJson(url, options = {}) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), IMAGE_TIMEOUT_MS);
+  const abortContext = createFetchAbortContext(options.signal);
+  const { signal: _signal, ...fetchOptions } = options;
 
   try {
     const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
+      ...fetchOptions,
+      signal: abortContext.signal,
       headers: {
         "User-Agent": "Mapetite/1.0 (restaurant discovery)",
         Accept: "application/json",
@@ -785,20 +807,19 @@ async function fetchJson(url, options = {}) {
   } catch {
     return null;
   } finally {
-    clearTimeout(timeout);
+    abortContext.cleanup();
   }
 }
 
-async function fetchDirectImageUrl(url) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), IMAGE_TIMEOUT_MS);
+async function fetchPageResource(url, externalSignal) {
+  const abortContext = createFetchAbortContext(externalSignal);
 
   try {
     const response = await fetch(url, {
-      signal: controller.signal,
+      signal: abortContext.signal,
       headers: {
         "User-Agent": "Mapetite/1.0 (restaurant discovery)",
-        Accept: "image/*,*/*;q=0.8",
+        Accept: "text/html,application/xhtml+xml,image/*,*/*;q=0.8",
       },
     });
 
@@ -807,31 +828,42 @@ async function fetchDirectImageUrl(url) {
     }
 
     const contentType = response.headers.get("content-type") || "";
-    if (!contentType.startsWith("image/")) {
-      return null;
+    if (contentType.startsWith("image/")) {
+      return { imageUrl: url, html: null };
     }
 
-    return url;
+    if (
+      contentType.includes("text/html") ||
+      contentType.includes("application/xhtml+xml")
+    ) {
+      return { imageUrl: null, html: await response.text() };
+    }
+
+    return null;
   } catch {
     return null;
   } finally {
-    clearTimeout(timeout);
+    abortContext.cleanup();
   }
 }
 
-async function fetchRestaurantImagesFromPage(pageUrl, profile = buildCuisineProfile()) {
+async function fetchRestaurantImagesFromPage(
+  pageUrl,
+  profile = buildCuisineProfile(),
+  options = {},
+) {
   if (!pageUrl) return [];
 
   const absolute = normalizeUrl(pageUrl);
   if (!absolute) return [];
 
-  const directImage = await fetchDirectImageUrl(absolute);
-  const safeDirectImage = normalizeRestaurantMediaUrl(directImage);
+  const resource = await fetchPageResource(absolute, options.signal);
+  const safeDirectImage = normalizeRestaurantMediaUrl(resource?.imageUrl);
   if (safeDirectImage && isUsefulImageUrl(safeDirectImage)) {
     return [safeDirectImage];
   }
 
-  const html = await fetchText(absolute);
+  const html = resource?.html;
   if (!html) return [];
 
   const images = extractImageCandidatesFromHtml(html, absolute, profile);
@@ -841,7 +873,8 @@ async function fetchRestaurantImagesFromPage(pageUrl, profile = buildCuisineProf
 
   const candidateLinks = extractCandidateLinksFromHtml(html, absolute, profile);
   for (const link of candidateLinks) {
-    const linkedHtml = await fetchText(link);
+    if (options.signal?.aborted) break;
+    const linkedHtml = await fetchText(link, { signal: options.signal });
     if (!linkedHtml) continue;
     const linkedImages = extractImageCandidatesFromHtml(linkedHtml, link, profile);
     if (linkedImages.length > 0) {
@@ -1033,7 +1066,9 @@ export async function resolveRestaurantMedia(options = {}) {
   for (const seed of [...new Set(seeds)]) {
     if (images.length >= MAX_MEDIA_IMAGES) break;
 
-    const pageImages = await fetchRestaurantImagesFromPage(seed, profile);
+    const pageImages = await fetchRestaurantImagesFromPage(seed, profile, {
+      signal: options.signal,
+    });
     for (const image of pageImages) {
       if (!image || seen.has(image)) continue;
       seen.add(image);
@@ -1044,9 +1079,11 @@ export async function resolveRestaurantMedia(options = {}) {
   }
 
   const media = { images, attributions };
-  imageCache.set(cacheKey, media, {
-    ttlMs: images.length > 0 ? MEDIA_CACHE_SUCCESS_TTL_MS : MEDIA_CACHE_NEGATIVE_TTL_MS,
-  });
+  if (!options.signal?.aborted) {
+    imageCache.set(cacheKey, media, {
+      ttlMs: images.length > 0 ? MEDIA_CACHE_SUCCESS_TTL_MS : MEDIA_CACHE_NEGATIVE_TTL_MS,
+    });
+  }
   return media;
 }
 

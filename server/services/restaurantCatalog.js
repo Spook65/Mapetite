@@ -21,6 +21,7 @@ const SEARCH_RADIUS_METERS = 3000;
 // This prevents multi-thousand fallback responses from large cities while
 // leaving room for frontend batching/show-more to work.
 const OSM_FALLBACK_MAX_RESULTS = 100;
+const SEARCH_MEDIA_ENRICHMENT_LIMIT = 16;
 const SEARCH_CACHE_SUCCESS_TTL_MS = 60 * 60 * 1000;
 const SEARCH_CACHE_NEGATIVE_TTL_MS = 10 * 60 * 1000;
 const SEARCH_CACHE_MAX_SIZE = 500;
@@ -110,6 +111,16 @@ function measureSearchPerfSync(perf, label, fn, meta = {}) {
       ...meta,
     });
   }
+}
+
+function measureResponseSerialization(perf, payload, meta = {}) {
+  if (!perf) return;
+
+  let responseBytes = 0;
+  measureSearchPerfSync(perf, "response_serialization", () => {
+    responseBytes = Buffer.byteLength(JSON.stringify(payload));
+  }, meta);
+  perf.mark("response_payload", { response_bytes: responseBytes, ...meta });
 }
 
 const CHEF_BY_CUISINE = {
@@ -1250,7 +1261,7 @@ function buildSyntheticRestaurantList(params, locationContext, count = 8) {
   );
 }
 
-async function ensureRestaurantMedia(restaurant) {
+async function ensureRestaurantMedia(restaurant, options = {}) {
   if (!restaurant || restaurant.source === "demo") {
     return restaurant;
   }
@@ -1268,6 +1279,7 @@ async function ensureRestaurantMedia(restaurant) {
     country: restaurant.address?.country,
     categories: restaurant.categories,
     placeId: restaurant.geoapifyPlaceId || restaurant.id,
+    signal: options.signal,
   });
 
   if (media.images.length > 0) {
@@ -1279,10 +1291,19 @@ async function ensureRestaurantMedia(restaurant) {
   return restaurant;
 }
 
-async function enrichSearchRestaurants(restaurants = [], limit = 16) {
+export async function enrichSearchRestaurants(restaurants = [], options = {}) {
   if (restaurants.length === 0) {
     return restaurants;
   }
+
+  const limit = Number(options.limit) > 0
+    ? Number(options.limit)
+    : SEARCH_MEDIA_ENRICHMENT_LIMIT;
+  const timeoutMs = Number(options.timeoutMs) > 0
+    ? Number(options.timeoutMs)
+    : env.searchMediaEnrichmentTimeoutMs;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   const enrichableIndexes = restaurants
     .map((restaurant, index) => ({
@@ -1297,11 +1318,31 @@ async function enrichSearchRestaurants(restaurants = [], limit = 16) {
     .slice(0, Math.min(limit, restaurants.length));
 
   const enrichedByIndex = new Map();
-  await Promise.all(
-    enrichableIndexes.map(async ({ index, restaurant }) => {
-      enrichedByIndex.set(index, await ensureRestaurantMedia(restaurant));
-    }),
-  );
+  try {
+    await Promise.all(
+      enrichableIndexes.map(async ({ index, restaurant }) => {
+        const isolatedRestaurant = {
+          ...restaurant,
+        };
+        if (Array.isArray(restaurant.galleryImageUrls)) {
+          isolatedRestaurant.galleryImageUrls = [...restaurant.galleryImageUrls];
+        }
+        if (Array.isArray(restaurant.galleryPhotoAttributions)) {
+          isolatedRestaurant.galleryPhotoAttributions = [
+            ...restaurant.galleryPhotoAttributions,
+          ];
+        }
+        enrichedByIndex.set(
+          index,
+          await ensureRestaurantMedia(isolatedRestaurant, {
+            signal: controller.signal,
+          }),
+        );
+      }),
+    );
+  } finally {
+    clearTimeout(timeoutId);
+  }
 
   return restaurants.map((restaurant, index) =>
     enrichedByIndex.get(index) || restaurant,
@@ -1413,12 +1454,14 @@ export async function searchRestaurants(params = {}) {
       () => resolveLocation(params, perf),
     );
     if (!resolvedLocation) {
+      const payload = { restaurants: [], location: null };
+      measureResponseSerialization(perf, payload, { provider: "none" });
       perf?.mark("response_sent", {
         total_ms: Math.round(getPerfTime() - perf.startedAt),
         cache_hit: false,
         returnedCount: 0,
       });
-      return { restaurants: [], location: null };
+      return payload;
     }
 
     const preferredProvider = isGeoapifyEnabled() ? "geoapify" : "osm";
@@ -1430,6 +1473,10 @@ export async function searchRestaurants(params = {}) {
       { provider: preferredProvider },
     );
     if (cached) {
+      measureResponseSerialization(perf, cached, {
+        provider: cached.meta?.provider || preferredProvider,
+        cache_hit: true,
+      });
       perf?.mark("cache_hit", {
         cache_hit: true,
         provider: cached.meta?.provider || preferredProvider,
@@ -1501,12 +1548,20 @@ export async function searchRestaurants(params = {}) {
               perf,
               "media_enrichment",
               () => enrichSearchRestaurants(payload.restaurants),
-              { provider: "geoapify" },
+              {
+                provider: "geoapify",
+                limit: SEARCH_MEDIA_ENRICHMENT_LIMIT,
+                timeout_ms: env.searchMediaEnrichmentTimeoutMs,
+              },
             );
             measureSearchPerfSync(perf, "cache_write", () =>
               writeSearchCache(cacheKey, payload),
             );
             rememberRestaurants(payload.restaurants);
+            measureResponseSerialization(perf, payload, {
+              provider: "geoapify",
+              cache_hit: false,
+            });
             perf?.mark("response_sent", {
               total_ms: Math.round(getPerfTime() - perf.startedAt),
               cache_hit: false,
@@ -1623,13 +1678,21 @@ export async function searchRestaurants(params = {}) {
         perf,
         "media_enrichment",
         () => enrichSearchRestaurants(payload.restaurants),
-        { provider: "osm" },
+        {
+          provider: "osm",
+          limit: SEARCH_MEDIA_ENRICHMENT_LIMIT,
+          timeout_ms: env.searchMediaEnrichmentTimeoutMs,
+        },
       );
 
       measureSearchPerfSync(perf, "cache_write", () =>
         writeSearchCache(cacheKey, payload),
       );
       rememberRestaurants(restaurants);
+      measureResponseSerialization(perf, payload, {
+        provider: "osm",
+        cache_hit: false,
+      });
 
       perf?.mark("response_sent", {
         total_ms: Math.round(getPerfTime() - perf.startedAt),
@@ -1661,6 +1724,10 @@ export async function searchRestaurants(params = {}) {
         }),
       );
       rememberRestaurants(restaurants);
+      measureResponseSerialization(perf, payload, {
+        provider: "demo",
+        cache_hit: false,
+      });
       perf?.mark("response_sent", {
         total_ms: Math.round(getPerfTime() - perf.startedAt),
         cache_hit: false,

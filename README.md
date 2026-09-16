@@ -39,7 +39,8 @@ restaurant-themed landing page. It demonstrates:
 - Backend place validation for known city/region/country combinations.
 - Clear invalid-place and ambiguous-place responses.
 - Geoapify as the primary restaurant/location provider.
-- OSM/Overpass fallback when primary provider data is unavailable or thin.
+- OSM/Overpass fallback when primary provider data fails, is empty, or has no
+  usable in-scope restaurants.
 - Normalized restaurant cards with rating, review count, cuisine/category,
   hours status, route, save, and detail actions.
 - Optional MapLibre map view for the current search results when listings
@@ -150,7 +151,9 @@ Key files:
    `PLACE_AMBIGUOUS` with suggestions instead of silently guessing.
 4. The backend searches Geoapify first.
 5. If needed, the backend can use OSM/Overpass fallback data.
-6. Raw provider JSON is normalized into Mapetite restaurant objects.
+6. Raw provider JSON is normalized into Mapetite restaurant objects. Search-card
+   media lookup is best-effort and bounded so slow restaurant websites do not
+   hold the full result list indefinitely.
 7. The catalog layer deduplicates, scores, ranks, and caches the result set.
 8. The frontend renders results with honest labels for available, unavailable,
    and uncertain data.
@@ -379,6 +382,7 @@ Backend variables:
 | `PLACE_SUGGEST_RATE_LIMIT_WINDOW_MS` | Optional | Place-autocomplete rate-limit window. Defaults to one minute. |
 | `PLACE_SUGGEST_RATE_LIMIT_MAX` | Optional | Place-autocomplete requests per IP per window. Defaults to `120`, allowing normal debounced typing while limiting bursts. This limit protects suggestions only. |
 | `SEARCH_REQUEST_TIMEOUT_MS` | Optional | Maximum time for an awake backend search before returning structured `504` JSON. Defaults to `25000`. |
+| `SEARCH_MEDIA_ENRICHMENT_TIMEOUT_MS` | Optional | Shared deadline for best-effort search-result media enrichment. Defaults to `2500`; detail-page enrichment is unaffected. |
 | `OVERPASS_TIMEOUT_MS` | Optional | Client-side timeout for the OpenStreetMap/Overpass fallback request. Defaults to `15000`. |
 | `DATABASE_URL` | Required only for `MAPETITE_STORAGE_MODE=database` | Prisma/Postgres connection. Not required for memory-mode portfolio demos. |
 | `MONGODB_URI` / `MONGO_URI` | Optional | Optional Mongo connection hook. The app logs a warning and continues if unavailable in database mode. |

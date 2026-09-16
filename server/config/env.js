@@ -22,6 +22,9 @@ const raw = {
     process.env.PLACE_SUGGEST_RATE_LIMIT_MAX || 120,
   ),
   searchRequestTimeoutMs: Number(process.env.SEARCH_REQUEST_TIMEOUT_MS || 25000),
+  searchMediaEnrichmentTimeoutMs: Number(
+    process.env.SEARCH_MEDIA_ENRICHMENT_TIMEOUT_MS || 2500,
+  ),
   overpassTimeoutMs: Number(process.env.OVERPASS_TIMEOUT_MS || 15000),
   databaseUrl: process.env.DATABASE_URL,
   geoapifyApiKey:
