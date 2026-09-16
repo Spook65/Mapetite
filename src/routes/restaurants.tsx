@@ -2271,7 +2271,7 @@ function RestaurantSearchPage() {
 								{isMapOpen && displayedRestaurants.length > 0 ? (
 									<Suspense
 										fallback={
-											<section className="mapetite-panel grid min-h-[220px] place-items-center p-5 text-center">
+											<section className="mapetite-panel grid min-h-[584px] place-items-center p-5 text-center md:min-h-[556px]">
 												<div>
 													<MapPinned className="mx-auto size-6 text-[var(--mapetite-text-soft)]" />
 													<p className="mapetite-muted-copy mt-3 text-sm">
@@ -2436,13 +2436,15 @@ function RestaurantSearchPage() {
 														: "border-[rgba(255,236,220,0.08)] bg-[var(--mapetite-surface)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:border-[rgba(213,154,104,0.24)] hover:bg-[rgba(255,248,242,0.05)] hover:-translate-y-[1px]",
 												)}
 											>
-												<div className="grid min-h-[116px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[12px] border border-[rgba(255,236,220,0.08)] min-[981px]:min-h-[132px]">
+												<div className="grid h-[132px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[12px] border border-[rgba(255,236,220,0.08)]">
 													{shouldShowPreviewImage ? (
-														<div className="relative h-full min-h-[116px] min-[981px]:min-h-[132px]">
+														<div className="relative h-full">
 															<img
 																src={previewImage ?? ""}
 																alt={restaurant.name}
 																className="absolute inset-0 h-full w-full object-cover"
+																loading="lazy"
+																decoding="async"
 																referrerPolicy="no-referrer"
 																onError={() => {
 																	if (previewImageKey) {
@@ -2456,7 +2458,7 @@ function RestaurantSearchPage() {
 																	{getRestaurantInitials(restaurant)}
 																</strong>
 																<div />
-																<span className="text-[12px] text-[rgba(245,233,222,0.72)]">
+																<span className="block max-w-full truncate text-[12px] text-[rgba(245,233,222,0.72)]">
 																	{displayCategory
 																		? `${displayCategory} · ${getLocationHint(restaurant)}`
 																		: getLocationHint(restaurant)}
@@ -2464,12 +2466,12 @@ function RestaurantSearchPage() {
 															</div>
 														</div>
 													) : (
-														<div className="mapetite-media-fallback grid h-full min-h-[116px] grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:min-h-[132px] min-[981px]:justify-items-start min-[981px]:text-left">
+														<div className="mapetite-media-fallback grid h-full grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left">
 															<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[rgba(255,244,236,0.92)]">
 																{getRestaurantInitials(restaurant)}
 															</strong>
 															<div />
-															<span className="text-[12px] text-[rgba(245,233,222,0.68)]">
+															<span className="block max-w-full truncate text-[12px] text-[rgba(245,233,222,0.68)]">
 																{displayCategory
 																	? `${displayCategory} · ${getLocationHint(restaurant)}`
 																	: getLocationHint(restaurant)}
@@ -2481,10 +2483,10 @@ function RestaurantSearchPage() {
 												<div className="grid content-start gap-2.5">
 													<div className="flex flex-wrap items-start justify-center gap-2.5 min-[981px]:justify-between">
 														<div className="w-full min-[981px]:w-auto">
-															<h3 className="m-0 text-[clamp(1.55rem,2vw,1.85rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[var(--mapetite-text)]">
+															<h3 className="m-0 min-h-[3.25rem] overflow-hidden text-[clamp(1.55rem,2vw,1.85rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[var(--mapetite-text)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
 																{restaurant.name}
 															</h3>
-															<p className="mapetite-muted-copy mt-1.5 text-[14px]">
+															<p className="mapetite-muted-copy mt-1.5 min-h-[1.375rem] overflow-hidden text-ellipsis whitespace-nowrap text-[14px]">
 																{displayCategory
 																	? `${displayCategory} · ${getLocationHint(restaurant)}`
 																	: getLocationHint(restaurant)}
@@ -2496,11 +2498,11 @@ function RestaurantSearchPage() {
 														</span>
 													</div>
 
-													<p className="m-0 overflow-hidden text-[14px] leading-[1.55] text-[var(--mapetite-text-soft)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+													<p className="m-0 min-h-[2.75rem] overflow-hidden text-[14px] leading-[1.55] text-[var(--mapetite-text-soft)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
 														{summary}
 													</p>
 
-													<div className="flex flex-wrap justify-center gap-2 min-[981px]:justify-start">
+													<div className="flex min-h-8 flex-wrap justify-center gap-2 min-[981px]:justify-start">
 														{cityScopeLabel ? (
 															<span className="rounded-full border border-[rgba(183,177,118,0.18)] bg-[rgba(183,177,118,0.08)] px-3 py-1.5 text-[12px] text-[var(--mapetite-text-soft)]">
 																{cityScopeLabel}
@@ -2865,18 +2867,29 @@ function RestaurantSearchPage() {
 							<div className="mapetite-panel grid gap-3 px-6 py-5">
 								<div className="h-4 w-40 rounded-full bg-[rgba(255,248,242,0.08)]" />
 								<div className="h-3 w-[58%] rounded-full bg-[rgba(255,248,242,0.08)]" />
-								{showSlowSearchMessage ? (
-									<p className="mapetite-muted-copy text-sm leading-6">
+								<div className="min-h-6">
+									<p
+										className={cn(
+											"mapetite-muted-copy text-sm leading-6 transition-opacity",
+											showSlowSearchMessage ? "opacity-100" : "invisible opacity-0",
+										)}
+									>
 										Waking up the demo backend... first search may take a few
 										seconds.
 									</p>
-								) : null}
-								<div className="grid gap-3 min-[981px]:grid-cols-2">
-									<div className="mapetite-media-fallback h-32 rounded-[12px]" />
-									<div className="grid gap-3">
-										<div className="h-4 w-full rounded-full bg-[rgba(255,248,242,0.08)]" />
-										<div className="h-4 w-[84%] rounded-full bg-[rgba(255,248,242,0.08)]" />
-										<div className="h-4 w-[70%] rounded-full bg-[rgba(255,248,242,0.08)]" />
+								</div>
+								<div className="grid gap-3 rounded-[14px] border border-[rgba(255,236,220,0.08)] bg-[var(--mapetite-surface)] p-4 min-[981px]:grid-cols-[154px_minmax(0,1fr)_118px] min-[981px]:gap-4">
+									<div className="mapetite-media-fallback h-[132px] rounded-[12px]" />
+									<div className="grid content-start gap-3">
+										<div className="h-[52px] w-[72%] rounded-[10px] bg-[rgba(255,248,242,0.08)]" />
+										<div className="h-[22px] w-[58%] rounded-full bg-[rgba(255,248,242,0.06)]" />
+										<div className="h-[44px] w-full rounded-[10px] bg-[rgba(255,248,242,0.06)]" />
+										<div className="h-8 w-28 rounded-full bg-[rgba(255,248,242,0.05)]" />
+									</div>
+									<div className="grid grid-cols-2 content-start gap-2 min-[981px]:grid-cols-1">
+										<div className="col-span-2 h-11 rounded-full bg-[rgba(213,154,104,0.18)] min-[981px]:col-span-1" />
+										<div className="h-10 rounded-full bg-[rgba(255,248,242,0.05)]" />
+										<div className="h-10 rounded-full bg-[rgba(255,248,242,0.05)]" />
 									</div>
 								</div>
 							</div>
