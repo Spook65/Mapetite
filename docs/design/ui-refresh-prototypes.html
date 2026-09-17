@@ -1,0 +1,1377 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta
+			name="description"
+			content="Isolated, local-first visual prototypes for Mapetite."
+		/>
+		<title>Mapetite UI Refresh Design Lab</title>
+		<style>
+			:root {
+				color-scheme: dark;
+				--espresso: #100d0a;
+				--espresso-raised: #18130f;
+				--cream: #fbefe0;
+				--cream-soft: rgba(251, 239, 224, 0.72);
+				--cream-faint: rgba(251, 239, 224, 0.48);
+				--apricot: #efa96f;
+				--apricot-pale: #f6c398;
+				--sage: #b7b176;
+				--sage-dark: #303727;
+				--line: rgba(251, 239, 224, 0.12);
+				--line-strong: rgba(251, 239, 224, 0.2);
+				--shadow: 0 26px 80px rgba(0, 0, 0, 0.28);
+				font-family:
+					ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+					"Segoe UI", sans-serif;
+				background: var(--espresso);
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html {
+				scroll-behavior: smooth;
+			}
+
+			body {
+				min-width: 0;
+				margin: 0;
+				overflow-x: hidden;
+				background:
+					radial-gradient(circle at 12% 0%, rgba(183, 177, 118, 0.09), transparent 28rem),
+					linear-gradient(180deg, #15100d, var(--espresso) 28%, #090706);
+				color: var(--cream);
+			}
+
+			button,
+			input,
+			select {
+				font: inherit;
+			}
+
+			button,
+			a {
+				-webkit-tap-highlight-color: transparent;
+			}
+
+			button:focus-visible,
+			a:focus-visible,
+			input:focus-visible,
+			select:focus-visible {
+				outline: 2px solid var(--apricot-pale);
+				outline-offset: 3px;
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+
+			.design-lab {
+				width: min(1440px, 100%);
+				margin: 0 auto;
+				padding: 20px clamp(14px, 3vw, 42px) 64px;
+			}
+
+			.lab-header {
+				position: sticky;
+				top: 12px;
+				z-index: 20;
+				display: grid;
+				grid-template-columns: auto minmax(0, 1fr) auto;
+				align-items: center;
+				gap: 20px;
+				min-height: 68px;
+				padding: 12px 14px;
+				border: 1px solid var(--line);
+				border-radius: 18px;
+				background: rgba(20, 16, 13, 0.86);
+				box-shadow: 0 18px 60px rgba(0, 0, 0, 0.22);
+				backdrop-filter: blur(18px);
+			}
+
+			.lab-brand {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				min-width: 0;
+			}
+
+			.lab-mark,
+			.brand-mark {
+				display: grid;
+				flex: 0 0 auto;
+				place-items: center;
+				width: 40px;
+				height: 40px;
+				border: 1px solid rgba(239, 169, 111, 0.28);
+				border-radius: 12px;
+				background: linear-gradient(145deg, rgba(239, 169, 111, 0.2), rgba(183, 177, 118, 0.08));
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: 17px;
+			}
+
+			.lab-brand strong,
+			.lab-brand span {
+				display: block;
+			}
+
+			.lab-brand strong {
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: 17px;
+			}
+
+			.lab-brand span {
+				margin-top: 2px;
+				color: var(--cream-faint);
+				font-size: 11px;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+			}
+
+			.lab-tabs {
+				display: flex;
+				min-width: 0;
+				justify-content: center;
+				gap: 6px;
+			}
+
+			.lab-tab,
+			.quiet-button,
+			.accent-button,
+			.chip,
+			.icon-button {
+				min-height: 42px;
+				border: 1px solid var(--line);
+				border-radius: 999px;
+				background: rgba(251, 239, 224, 0.035);
+				color: var(--cream-soft);
+				cursor: pointer;
+				transition: transform 160ms ease, border-color 160ms ease, background-color 160ms ease, color 160ms ease;
+			}
+
+			.lab-tab {
+				padding: 0 15px;
+				font-size: 13px;
+			}
+
+			.lab-tab[aria-selected="true"] {
+				border-color: rgba(239, 169, 111, 0.34);
+				background: rgba(239, 169, 111, 0.13);
+				color: var(--cream);
+			}
+
+			.lab-note {
+				max-width: 190px;
+				color: var(--cream-faint);
+				font-size: 12px;
+				line-height: 1.4;
+				text-align: right;
+			}
+
+			.prototype {
+				display: none;
+				padding-top: 34px;
+			}
+
+			.prototype.is-active {
+				display: block;
+				animation: prototype-in 420ms ease both;
+			}
+
+			.prototype-intro {
+				display: grid;
+				grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
+				gap: 28px;
+				align-items: end;
+				margin: 26px 0 28px;
+			}
+
+			.kicker,
+			.eyebrow {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				color: var(--sage);
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.16em;
+				text-transform: uppercase;
+			}
+
+			.kicker::before,
+			.eyebrow::before {
+				content: "";
+				width: 28px;
+				height: 1px;
+				background: currentColor;
+				opacity: 0.6;
+			}
+
+			.prototype-intro h1,
+			.cinematic-hero h1 {
+				max-width: 940px;
+				margin: 14px 0 0;
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: clamp(3rem, 8vw, 7.5rem);
+				font-weight: 500;
+				line-height: 0.88;
+				letter-spacing: -0.068em;
+			}
+
+			.prototype-intro p {
+				max-width: 650px;
+				margin: 0;
+				color: var(--cream-soft);
+				font-size: 16px;
+				line-height: 1.75;
+			}
+
+			.frame {
+				overflow: hidden;
+				border: 1px solid var(--line);
+				border-radius: 26px;
+				background: rgba(24, 19, 15, 0.82);
+				box-shadow: var(--shadow);
+			}
+
+			.product-nav {
+				display: grid;
+				grid-template-columns: auto minmax(0, 1fr) auto;
+				align-items: center;
+				gap: 16px;
+				min-height: 72px;
+				padding: 12px 18px;
+				border-bottom: 1px solid var(--line);
+				background: rgba(16, 13, 10, 0.78);
+			}
+
+			.product-brand,
+			.product-links,
+			.product-actions,
+			.control-row,
+			.chip-row,
+			.action-row,
+			.rating-line,
+			.result-meta {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+
+			.product-brand {
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: 18px;
+			}
+
+			.product-links {
+				justify-content: center;
+				color: var(--cream-soft);
+				font-size: 13px;
+			}
+
+			.product-links a,
+			.text-link {
+				padding: 8px 10px;
+				border-radius: 8px;
+			}
+
+			.product-links a:hover,
+			.text-link:hover {
+				background: rgba(251, 239, 224, 0.05);
+				color: var(--cream);
+			}
+
+			.quiet-button,
+			.accent-button,
+			.icon-button {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+				padding: 0 16px;
+				font-size: 13px;
+				font-weight: 700;
+			}
+
+			.accent-button {
+				border-color: rgba(239, 169, 111, 0.5);
+				background: var(--apricot);
+				color: #21130b;
+			}
+
+			.quiet-button:hover,
+			.accent-button:hover,
+			.icon-button:hover,
+			.chip:hover {
+				transform: translateY(-1px);
+				border-color: rgba(239, 169, 111, 0.38);
+				color: var(--cream);
+			}
+
+			.accent-button:hover {
+				background: var(--apricot-pale);
+				color: #21130b;
+			}
+
+			.search-stage {
+				padding: clamp(18px, 3vw, 34px);
+				background:
+					linear-gradient(rgba(255, 255, 255, 0.012), rgba(255, 255, 255, 0)),
+					radial-gradient(circle at 82% 12%, rgba(183, 177, 118, 0.1), transparent 24rem);
+			}
+
+			.search-shell {
+				display: grid;
+				grid-template-columns: minmax(0, 1.15fr) minmax(300px, 0.58fr);
+				gap: 18px;
+			}
+
+			.panel {
+				min-width: 0;
+				border: 1px solid var(--line);
+				border-radius: 18px;
+				background: rgba(251, 239, 224, 0.025);
+			}
+
+			.search-panel {
+				grid-column: 1 / -1;
+				display: grid;
+				gap: 16px;
+				padding: 20px;
+			}
+
+			.search-heading {
+				display: flex;
+				align-items: end;
+				justify-content: space-between;
+				gap: 20px;
+			}
+
+			.search-heading h2,
+			.panel h2,
+			.panel h3 {
+				margin: 0;
+				font-family: Georgia, "Times New Roman", serif;
+				font-weight: 500;
+				letter-spacing: -0.035em;
+			}
+
+			.search-heading h2 {
+				font-size: clamp(1.8rem, 4vw, 3rem);
+			}
+
+			.search-heading p,
+			.panel-copy,
+			.muted {
+				margin: 0;
+				color: var(--cream-soft);
+				line-height: 1.6;
+			}
+
+			.search-form {
+				display: grid;
+				grid-template-columns: 1.2fr 1fr 1fr auto;
+				gap: 10px;
+			}
+
+			.field {
+				display: grid;
+				min-width: 0;
+				gap: 7px;
+			}
+
+			.field span {
+				color: var(--cream-faint);
+				font-size: 10px;
+				font-weight: 700;
+				letter-spacing: 0.13em;
+				text-transform: uppercase;
+			}
+
+			.field input,
+			.field select {
+				width: 100%;
+				min-width: 0;
+				height: 46px;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background: rgba(251, 239, 224, 0.035);
+				color: var(--cream);
+				padding: 0 13px;
+			}
+
+			.search-submit {
+				align-self: end;
+				height: 46px;
+			}
+
+			.search-support {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 14px;
+			}
+
+			.chip-row,
+			.control-row,
+			.action-row {
+				flex-wrap: wrap;
+			}
+
+			.chip {
+				display: inline-flex;
+				min-width: 0;
+				align-items: center;
+				gap: 8px;
+				min-height: 34px;
+				padding: 0 12px;
+				font-size: 12px;
+			}
+
+			.chip b {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.chip small {
+				flex: 0 0 auto;
+				color: var(--cream-faint);
+			}
+
+			.results-column,
+			.preview-column {
+				display: grid;
+				align-content: start;
+				gap: 12px;
+			}
+
+			.result-summary {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 16px;
+				padding: 16px 18px;
+			}
+
+			.result-summary strong {
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: 24px;
+				font-weight: 500;
+			}
+
+			.result-card {
+				display: grid;
+				grid-template-columns: 180px minmax(0, 1fr);
+				gap: 16px;
+				padding: 14px;
+				transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease;
+			}
+
+			.result-card:hover {
+				transform: translateY(-2px);
+				border-color: rgba(239, 169, 111, 0.32);
+				background: rgba(251, 239, 224, 0.04);
+			}
+
+			.media {
+				position: relative;
+				min-width: 0;
+				aspect-ratio: 4 / 3;
+				overflow: hidden;
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				background:
+					linear-gradient(150deg, rgba(239, 169, 111, 0.2), rgba(183, 177, 118, 0.08) 46%, rgba(16, 13, 10, 0.9)),
+					repeating-linear-gradient(45deg, transparent 0 16px, rgba(255, 255, 255, 0.02) 16px 17px);
+			}
+
+			.media::after {
+				content: attr(data-initials);
+				position: absolute;
+				top: 14px;
+				left: 14px;
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: 28px;
+			}
+
+			.media-label {
+				position: absolute;
+				right: 12px;
+				bottom: 12px;
+				left: 12px;
+				overflow: hidden;
+				color: var(--cream-soft);
+				font-size: 11px;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.result-body {
+				display: grid;
+				min-width: 0;
+				align-content: start;
+				gap: 10px;
+			}
+
+			.result-topline {
+				display: flex;
+				align-items: start;
+				justify-content: space-between;
+				gap: 14px;
+			}
+
+			.result-card h3 {
+				font-size: clamp(1.55rem, 3vw, 2.2rem);
+				line-height: 1;
+			}
+
+			.rating-pill,
+			.signal {
+				flex: 0 0 auto;
+				border: 1px solid var(--line);
+				border-radius: 999px;
+				background: rgba(251, 239, 224, 0.035);
+				color: var(--cream-soft);
+				font-size: 11px;
+				padding: 7px 10px;
+			}
+
+			.result-meta {
+				flex-wrap: wrap;
+				color: var(--cream-faint);
+				font-size: 12px;
+			}
+
+			.result-copy {
+				margin: 0;
+				color: var(--cream-soft);
+				font-size: 13px;
+				line-height: 1.55;
+			}
+
+			.preview-card {
+				position: sticky;
+				top: 104px;
+				overflow: hidden;
+			}
+
+			.preview-media {
+				position: relative;
+				aspect-ratio: 16 / 10;
+				background:
+					linear-gradient(180deg, transparent 28%, rgba(12, 9, 7, 0.82)),
+					radial-gradient(circle at 74% 24%, rgba(239, 169, 111, 0.36), transparent 21%),
+					linear-gradient(135deg, #46503a, #201711 68%);
+			}
+
+			.preview-number {
+				position: absolute;
+				top: 16px;
+				left: 18px;
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: 46px;
+				font-style: italic;
+				opacity: 0.88;
+			}
+
+			.preview-caption {
+				position: absolute;
+				right: 18px;
+				bottom: 16px;
+				left: 18px;
+				color: var(--cream-soft);
+				font-size: 12px;
+			}
+
+			.preview-content {
+				display: grid;
+				gap: 14px;
+				padding: 20px;
+			}
+
+			.preview-content h2 {
+				font-size: clamp(2rem, 4vw, 3.4rem);
+				line-height: 0.96;
+			}
+
+			.evidence {
+				display: grid;
+				gap: 8px;
+				padding: 13px;
+				border: 1px solid var(--line);
+				border-radius: 13px;
+				background: rgba(183, 177, 118, 0.055);
+			}
+
+			.evidence-row {
+				display: flex;
+				align-items: center;
+				gap: 9px;
+				color: var(--cream-soft);
+				font-size: 12px;
+			}
+
+			.dot {
+				width: 7px;
+				height: 7px;
+				flex: 0 0 auto;
+				border-radius: 999px;
+				background: var(--apricot);
+			}
+
+			.detail-strip {
+				display: grid;
+				grid-template-columns: 1fr 1fr 1fr;
+				gap: 10px;
+				margin-top: 18px;
+			}
+
+			.detail-note {
+				padding: 16px;
+			}
+
+			.detail-note strong,
+			.detail-note span {
+				display: block;
+			}
+
+			.detail-note strong {
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: 18px;
+				font-weight: 500;
+			}
+
+			.detail-note span {
+				margin-top: 7px;
+				color: var(--cream-faint);
+				font-size: 12px;
+				line-height: 1.5;
+			}
+
+			/* Bento */
+			.bento-stage {
+				padding: clamp(16px, 2.6vw, 30px);
+				background:
+					linear-gradient(90deg, rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+					linear-gradient(rgba(255, 255, 255, 0.016) 1px, transparent 1px),
+					#11100c;
+				background-size: 28px 28px;
+			}
+
+			.bento-grid {
+				display: grid;
+				grid-template-columns: repeat(12, minmax(0, 1fr));
+				gap: 12px;
+			}
+
+			.bento-card {
+				min-width: 0;
+				padding: 18px;
+				border: 1px solid var(--line);
+				border-radius: 18px;
+				background: rgba(28, 27, 21, 0.94);
+				box-shadow: 0 16px 46px rgba(0, 0, 0, 0.18);
+			}
+
+			.bento-search {
+				grid-column: span 8;
+			}
+
+			.bento-recents {
+				grid-column: span 4;
+			}
+
+			.bento-controls {
+				grid-column: 1 / -1;
+			}
+
+			.bento-results {
+				grid-column: span 5;
+			}
+
+			.bento-map {
+				grid-column: span 4;
+			}
+
+			.bento-selection {
+				grid-column: span 3;
+			}
+
+			.bento-card header {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				margin-bottom: 14px;
+			}
+
+			.bento-card h2,
+			.bento-card h3 {
+				margin: 0;
+				font-family: Georgia, "Times New Roman", serif;
+				font-weight: 500;
+			}
+
+			.bento-card h2 {
+				font-size: clamp(2rem, 4vw, 3.6rem);
+				line-height: 0.98;
+			}
+
+			.bento-card h3 {
+				font-size: 20px;
+			}
+
+			.bento-search .search-form {
+				grid-template-columns: 1.2fr 1fr 1fr;
+				margin-top: 18px;
+			}
+
+			.bento-search .action-row {
+				margin-top: 12px;
+			}
+
+			.recent-list,
+			.compact-results {
+				display: grid;
+				gap: 8px;
+			}
+
+			.recent-item,
+			.compact-result {
+				display: flex;
+				min-width: 0;
+				align-items: center;
+				justify-content: space-between;
+				gap: 12px;
+				padding: 11px 12px;
+				border: 1px solid var(--line);
+				border-radius: 12px;
+				background: rgba(251, 239, 224, 0.028);
+			}
+
+			.recent-item span,
+			.compact-result div {
+				min-width: 0;
+			}
+
+			.recent-item b,
+			.compact-result strong,
+			.compact-result small {
+				display: block;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
+			}
+
+			.recent-item small,
+			.compact-result small {
+				color: var(--cream-faint);
+				font-size: 11px;
+			}
+
+			.bento-controls .control-row {
+				justify-content: space-between;
+			}
+
+			.control-cluster {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 8px;
+			}
+
+			.map-canvas {
+				position: relative;
+				aspect-ratio: 4 / 4.1;
+				overflow: hidden;
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				background:
+					linear-gradient(24deg, transparent 46%, rgba(239, 169, 111, 0.13) 47% 49%, transparent 50%),
+					linear-gradient(112deg, transparent 40%, rgba(251, 239, 224, 0.09) 41% 43%, transparent 44%),
+					repeating-linear-gradient(0deg, rgba(251, 239, 224, 0.035) 0 1px, transparent 1px 34px),
+					repeating-linear-gradient(90deg, rgba(251, 239, 224, 0.035) 0 1px, transparent 1px 42px),
+					#20231b;
+			}
+
+			.map-pin {
+				position: absolute;
+				width: 18px;
+				height: 18px;
+				border: 3px solid var(--cream);
+				border-radius: 50% 50% 50% 2px;
+				background: var(--apricot);
+				box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+				transform: rotate(-45deg);
+			}
+
+			.map-pin:nth-child(1) { top: 22%; left: 28%; }
+			.map-pin:nth-child(2) { top: 44%; left: 64%; }
+			.map-pin:nth-child(3) { top: 67%; left: 39%; }
+			.map-pin:nth-child(4) { top: 32%; left: 76%; }
+
+			.map-pin.is-selected {
+				width: 24px;
+				height: 24px;
+				border-width: 4px;
+				box-shadow: 0 0 0 6px rgba(239, 169, 111, 0.18), 0 10px 24px rgba(0, 0, 0, 0.4);
+			}
+
+			.selection-media {
+				aspect-ratio: 1 / 0.82;
+				margin-bottom: 15px;
+				border-radius: 14px;
+				background:
+					radial-gradient(circle at 25% 22%, rgba(239, 169, 111, 0.42), transparent 22%),
+					linear-gradient(145deg, #4d543d, #211710 72%);
+			}
+
+			.selection-stack {
+				display: grid;
+				gap: 12px;
+			}
+
+			.selection-stack .action-row > * {
+				flex: 1 1 100px;
+			}
+
+			/* Cinematic */
+			.cinematic-frame {
+				position: relative;
+				min-height: min(840px, calc(100vh - 130px));
+				overflow: hidden;
+				isolation: isolate;
+				background:
+					linear-gradient(180deg, rgba(13, 10, 8, 0.28), rgba(13, 10, 8, 0.92)),
+					linear-gradient(125deg, #303827, #1c1510 54%, #351e16);
+			}
+
+			.cinematic-frame::before,
+			.cinematic-frame::after {
+				content: "";
+				position: absolute;
+				z-index: -1;
+				width: 48vw;
+				min-width: 360px;
+				aspect-ratio: 1;
+				border-radius: 48% 52% 58% 42%;
+				filter: blur(2px);
+				opacity: 0.42;
+				animation: drift 16s ease-in-out infinite alternate;
+			}
+
+			.cinematic-frame::before {
+				top: -28%;
+				right: -10%;
+				background: radial-gradient(circle at 36% 40%, rgba(239, 169, 111, 0.78), rgba(128, 68, 40, 0.08) 62%, transparent 68%);
+			}
+
+			.cinematic-frame::after {
+				bottom: -42%;
+				left: -14%;
+				background: radial-gradient(circle at 62% 30%, rgba(183, 177, 118, 0.62), rgba(58, 72, 43, 0.06) 60%, transparent 70%);
+				animation-direction: alternate-reverse;
+			}
+
+			.cinematic-noise {
+				position: absolute;
+				inset: 0;
+				z-index: -1;
+				background-image: radial-gradient(rgba(255, 255, 255, 0.08) 0.55px, transparent 0.55px);
+				background-size: 7px 7px;
+				opacity: 0.13;
+			}
+
+			.cinematic-nav {
+				display: grid;
+				grid-template-columns: auto minmax(0, 1fr) auto;
+				align-items: center;
+				gap: 18px;
+				min-height: 78px;
+				padding: 14px clamp(18px, 4vw, 52px);
+				border-bottom: 1px solid rgba(251, 239, 224, 0.1);
+			}
+
+			.cinematic-content {
+				display: grid;
+				grid-template-columns: minmax(0, 1.25fr) minmax(300px, 0.75fr);
+				gap: clamp(26px, 6vw, 84px);
+				align-items: center;
+				min-height: 640px;
+				padding: clamp(54px, 8vw, 110px) clamp(20px, 6vw, 84px);
+			}
+
+			.cinematic-hero h1 {
+				max-width: 780px;
+				font-size: clamp(3.8rem, 9vw, 8.6rem);
+			}
+
+			.cinematic-hero p {
+				max-width: 620px;
+				margin: 24px 0 0;
+				color: rgba(251, 239, 224, 0.78);
+				font-size: clamp(1rem, 2vw, 1.2rem);
+				line-height: 1.75;
+			}
+
+			.cinematic-hero .action-row {
+				margin-top: 28px;
+			}
+
+			.cinematic-card {
+				position: relative;
+				min-width: 0;
+				padding: 14px;
+				border: 1px solid rgba(251, 239, 224, 0.18);
+				border-radius: 24px;
+				background: rgba(18, 14, 11, 0.58);
+				box-shadow: 0 32px 90px rgba(0, 0, 0, 0.36);
+				backdrop-filter: blur(20px);
+				transform: rotate(2deg);
+			}
+
+			.cinematic-photo {
+				position: relative;
+				aspect-ratio: 4 / 5;
+				overflow: hidden;
+				border-radius: 16px;
+				background:
+					linear-gradient(180deg, transparent 28%, rgba(11, 8, 6, 0.88)),
+					radial-gradient(circle at 65% 24%, rgba(255, 208, 159, 0.72), transparent 14%),
+					linear-gradient(145deg, #696b45, #3d2418 56%, #17100c);
+			}
+
+			.cinematic-photo::before,
+			.cinematic-photo::after {
+				content: "";
+				position: absolute;
+				border: 1px solid rgba(251, 239, 224, 0.12);
+				border-radius: 999px;
+			}
+
+			.cinematic-photo::before {
+				width: 68%;
+				aspect-ratio: 1;
+				right: -8%;
+				bottom: 8%;
+				background: radial-gradient(circle, rgba(239, 169, 111, 0.18), rgba(30, 21, 15, 0.74) 62%);
+			}
+
+			.cinematic-photo::after {
+				width: 34%;
+				aspect-ratio: 1;
+				left: 8%;
+				top: 22%;
+				background: rgba(183, 177, 118, 0.13);
+			}
+
+			.cinematic-card-copy {
+				position: absolute;
+				right: 34px;
+				bottom: 34px;
+				left: 34px;
+				z-index: 2;
+			}
+
+			.cinematic-card-copy h2 {
+				margin: 7px 0 0;
+				font-family: Georgia, "Times New Roman", serif;
+				font-size: clamp(2rem, 4vw, 3.4rem);
+				font-weight: 500;
+				line-height: 0.96;
+				letter-spacing: -0.045em;
+			}
+
+			.cinematic-card-copy p {
+				margin: 9px 0 0;
+				color: var(--cream-soft);
+				font-size: 13px;
+			}
+
+			.cinematic-footer {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 18px;
+				padding: 20px clamp(18px, 4vw, 52px);
+				border-top: 1px solid rgba(251, 239, 224, 0.1);
+				color: var(--cream-faint);
+				font-size: 12px;
+			}
+
+			.footer-links {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 16px;
+			}
+
+			@keyframes prototype-in {
+				from { opacity: 0; transform: translateY(8px); }
+				to { opacity: 1; transform: translateY(0); }
+			}
+
+			@keyframes drift {
+				from { transform: translate3d(-2%, -1%, 0) rotate(-2deg); }
+				to { transform: translate3d(4%, 3%, 0) rotate(4deg); }
+			}
+
+			@media (max-width: 980px) {
+				.lab-header {
+					grid-template-columns: 1fr auto;
+				}
+
+				.lab-tabs {
+					grid-column: 1 / -1;
+					grid-row: 2;
+					justify-content: stretch;
+				}
+
+				.lab-tab {
+					flex: 1 1 0;
+				}
+
+				.lab-note {
+					display: none;
+				}
+
+				.prototype-intro,
+				.search-shell,
+				.cinematic-content {
+					grid-template-columns: 1fr;
+				}
+
+				.search-form,
+				.bento-search .search-form {
+					grid-template-columns: repeat(2, minmax(0, 1fr));
+				}
+
+				.search-submit {
+					align-self: auto;
+				}
+
+				.preview-card {
+					position: static;
+				}
+
+				.bento-search,
+				.bento-recents {
+					grid-column: span 6;
+				}
+
+				.bento-results,
+				.bento-map,
+				.bento-selection {
+					grid-column: span 4;
+				}
+
+				.cinematic-card {
+					width: min(460px, 100%);
+					margin: 0 auto;
+					transform: none;
+				}
+			}
+
+			@media (max-width: 680px) {
+				.design-lab {
+					padding: 10px 10px 40px;
+				}
+
+				.lab-header {
+					top: 6px;
+					gap: 10px;
+					padding: 10px;
+					border-radius: 15px;
+				}
+
+				.lab-brand span {
+					display: none;
+				}
+
+				.lab-tabs {
+					display: grid;
+					grid-template-columns: repeat(3, minmax(0, 1fr));
+					width: 100%;
+				}
+
+				.lab-tab {
+					min-width: 0;
+					padding: 7px 8px;
+					line-height: 1.2;
+					white-space: normal;
+				}
+
+				.prototype {
+					padding-top: 22px;
+				}
+
+				.prototype-intro {
+					gap: 16px;
+					margin: 18px 4px 20px;
+				}
+
+				.prototype-intro h1 {
+					font-size: clamp(3.2rem, 17vw, 5rem);
+				}
+
+				.product-nav,
+				.cinematic-nav {
+					grid-template-columns: 1fr auto;
+				}
+
+				.product-links,
+				.cinematic-nav .product-links,
+				.product-actions .quiet-button {
+					display: none;
+				}
+
+				.search-stage,
+				.bento-stage {
+					padding: 12px;
+				}
+
+				.search-panel,
+				.bento-card,
+				.preview-content {
+					padding: 15px;
+				}
+
+				.search-heading,
+				.search-support,
+				.result-topline,
+				.cinematic-footer {
+					align-items: stretch;
+					flex-direction: column;
+				}
+
+				.search-form,
+				.bento-search .search-form {
+					grid-template-columns: 1fr;
+				}
+
+				.search-submit,
+				.search-support .quiet-button {
+					width: 100%;
+				}
+
+				.chip-row {
+					display: grid;
+					grid-template-columns: 1fr;
+					width: 100%;
+				}
+
+				.chip {
+					max-width: 100%;
+					justify-content: space-between;
+				}
+
+				.result-card {
+					grid-template-columns: 1fr;
+				}
+
+				.result-card .media {
+					aspect-ratio: 16 / 7;
+				}
+
+				.result-summary,
+				.bento-controls .control-row {
+					align-items: flex-start;
+					flex-direction: column;
+				}
+
+				.detail-strip {
+					grid-template-columns: 1fr;
+				}
+
+				.bento-grid {
+					grid-template-columns: 1fr;
+				}
+
+				.bento-search,
+				.bento-recents,
+				.bento-controls,
+				.bento-results,
+				.bento-map,
+				.bento-selection {
+					grid-column: 1;
+				}
+
+				.map-canvas {
+					aspect-ratio: 16 / 11;
+				}
+
+				.cinematic-content {
+					min-height: auto;
+					padding: 64px 20px 42px;
+				}
+
+				.cinematic-hero h1 {
+					font-size: clamp(4rem, 19vw, 6.4rem);
+				}
+
+				.cinematic-footer {
+					gap: 10px;
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				html {
+					scroll-behavior: auto;
+				}
+
+				*,
+				*::before,
+				*::after {
+					scroll-behavior: auto !important;
+					animation-duration: 0.001ms !important;
+					animation-iteration-count: 1 !important;
+					transition-duration: 0.001ms !important;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<main class="design-lab">
+			<header class="lab-header">
+				<div class="lab-brand">
+					<div class="lab-mark" aria-hidden="true">M</div>
+					<div>
+						<strong>Mapetite</strong>
+						<span>Protected design lab</span>
+					</div>
+				</div>
+				<div class="lab-tabs" role="tablist" aria-label="UI prototype direction">
+					<button class="lab-tab" type="button" role="tab" aria-selected="true" aria-controls="editorial" id="tab-editorial" data-target="editorial">Editorial guide</button>
+					<button class="lab-tab" type="button" role="tab" aria-selected="false" aria-controls="bento" id="tab-bento" data-target="bento">Bento discovery</button>
+					<button class="lab-tab" type="button" role="tab" aria-selected="false" aria-controls="cinematic" id="tab-cinematic" data-target="cinematic">Cinematic landing</button>
+				</div>
+				<div class="lab-note">Static local prototype. No APIs, auth, storage, or location calls.</div>
+			</header>
+
+			<section class="prototype is-active" id="editorial" role="tabpanel" aria-labelledby="tab-editorial">
+				<div class="prototype-intro">
+					<div>
+						<div class="kicker">Direction A / Editorial guide</div>
+						<h1>A shortlist with a point of view.</h1>
+					</div>
+					<p>Large, calm restaurant cards and an article-like comparison panel give Mapetite a premium guide identity without hiding the practical controls people already use.</p>
+				</div>
+
+				<div class="frame">
+					<nav class="product-nav" aria-label="Editorial prototype navigation">
+						<a class="product-brand" href="/" aria-label="Mapetite home"><span class="brand-mark" aria-hidden="true">M</span>Mapetite</a>
+						<div class="product-links"><a href="/">Home</a><a href="/restaurants">Search</a><a href="/saved">Saved</a></div>
+						<div class="product-actions"><button class="quiet-button" type="button">Log in</button><button class="accent-button" type="button">Sign up</button></div>
+					</nav>
+
+					<div class="search-stage">
+						<div class="search-shell">
+							<section class="panel search-panel">
+								<div class="search-heading"><div><div class="eyebrow">Restaurant search</div><h2>Choose the city. Keep the list considered.</h2></div><p>Public listing signals, organized for a faster decision.</p></div>
+								<form class="search-form" action="/restaurants" method="get">
+									<label class="field"><span>City</span><input name="city" value="Stockton" aria-label="City" /></label>
+									<label class="field"><span>Region</span><input name="state" value="California" aria-label="Region" /></label>
+									<label class="field"><span>Country</span><input name="country" value="United States" aria-label="Country" /></label>
+									<button class="accent-button search-submit" type="submit">Search restaurants</button>
+								</form>
+								<div class="search-support">
+									<div class="chip-row" aria-label="Recent searches"><button class="chip" type="button"><b>Stockton, California</b><small>18 results</small></button><button class="chip" type="button"><b>Modesto, California</b><small>24 results</small></button></div>
+									<button class="quiet-button" type="button">Use my location</button>
+								</div>
+								<div class="control-row" aria-label="Search controls"><button class="quiet-button" type="button">Filters</button><button class="quiet-button" type="button">Sort: Best match</button><button class="quiet-button" type="button">Saved only</button><button class="quiet-button" type="button">Map</button><button class="quiet-button" type="button">Refresh current search</button></div>
+							</section>
+
+							<div class="results-column">
+								<div class="panel result-summary"><div><strong>Stockton results</strong><p class="muted">18 public listings ready to compare</p></div><span class="signal">18 matching</span></div>
+								<article class="panel result-card">
+									<div class="media" data-initials="D"><span class="media-label">American &middot; Stockton, CA</span></div>
+									<div class="result-body"><div class="result-topline"><div><h3>Denny's</h3><div class="result-meta"><span>American</span><span>Stockton, CA</span><span>0.8 mi from center</span></div></div><span class="rating-pill">4.4 &middot; 174 reviews</span></div><p class="result-copy">A familiar option with address, route, photos, and listed-hours context available.</p><div class="chip-row"><span class="signal">Likely open from listed hours</span><span class="signal">Menu unavailable</span></div><div class="action-row"><a class="accent-button" href="/restaurants">View details</a><button class="quiet-button" type="button">Save</button><a class="quiet-button" href="https://www.google.com/maps/dir/?api=1&destination=37.9577%2C-121.2908">Directions</a></div></div>
+								</article>
+								<article class="panel result-card">
+									<div class="media" data-initials="T"><span class="media-label">Mexican &middot; Stockton, CA</span></div>
+									<div class="result-body"><div class="result-topline"><div><h3>Tequileros</h3><div class="result-meta"><span>Mexican</span><span>Stockton, CA</span><span>1.4 mi from center</span></div></div><span class="rating-pill">4.5 &middot; 174 reviews</span></div><p class="result-copy">A city-matched listing with useful contact, photo, and category signals.</p><div class="chip-row"><span class="signal">Hours listed</span><span class="signal">Directions available</span></div><div class="action-row"><a class="accent-button" href="/restaurants">View details</a><button class="quiet-button" type="button">Save</button><a class="quiet-button" href="https://www.google.com/maps/dir/?api=1&destination=37.9577%2C-121.2908">Directions</a></div></div>
+								</article>
+							</div>
+
+							<aside class="preview-column">
+								<article class="panel preview-card">
+									<div class="preview-media"><span class="preview-number">01</span><span class="preview-caption">Selected comparison &middot; Stockton</span></div>
+									<div class="preview-content"><div class="eyebrow">Compare selection</div><h2>Denny's</h2><div class="rating-line"><span class="rating-pill">4.4 rating</span><span class="rating-pill">174 reviews</span></div><p class="panel-copy">The selected place becomes a calm decision note rather than a duplicate result card.</p><div class="evidence"><strong>Why consider it</strong><div class="evidence-row"><span class="dot"></span>Address and directions available</div><div class="evidence-row"><span class="dot"></span>Photos and listed hours available</div><div class="evidence-row"><span class="dot"></span>Confirm details before going</div></div><div class="action-row"><a class="accent-button" href="/restaurants">View details</a><button class="quiet-button" type="button">Save</button><a class="quiet-button" href="https://www.google.com/maps/dir/?api=1&destination=37.9577%2C-121.2908">Directions</a></div></div>
+								</article>
+							</aside>
+						</div>
+
+						<div class="detail-strip" aria-label="Editorial detail page direction"><div class="panel detail-note"><strong>Curated article lead</strong><span>Large stable media, location context, and a restrained title treatment.</span></div><div class="panel detail-note"><strong>Practical details stay primary</strong><span>Hours, address, menu availability, and external directions remain explicit.</span></div><div class="panel detail-note"><strong>Evidence, not endorsement</strong><span>Why-this-result copy stays compact and based on public listing data.</span></div></div>
+					</div>
+				</div>
+			</section>
+
+			<section class="prototype" id="bento" role="tabpanel" aria-labelledby="tab-bento" hidden>
+				<div class="prototype-intro"><div><div class="kicker">Direction B / Bento discovery</div><h1>Every decision tool has a place.</h1></div><p>A denser desktop workspace groups search, recent places, filters, map, results, and the selected restaurant into clearly weighted panels. Mobile returns to a clean single column.</p></div>
+
+				<div class="frame">
+					<nav class="product-nav" aria-label="Bento prototype navigation"><a class="product-brand" href="/"><span class="brand-mark" aria-hidden="true">M</span>Mapetite</a><div class="product-links"><a href="/">Home</a><a href="/restaurants">Search</a><a href="/saved">Saved</a></div><div class="product-actions"><button class="quiet-button" type="button">Log in</button><button class="accent-button" type="button">Sign up</button></div></nav>
+					<div class="bento-stage">
+						<div class="bento-grid">
+							<section class="bento-card bento-search"><div class="eyebrow">Find restaurants</div><h2>Stockton, with less noise.</h2><form class="search-form" action="/restaurants" method="get"><label class="field"><span>City</span><input name="city" value="Stockton" /></label><label class="field"><span>Region</span><input name="state" value="California" /></label><label class="field"><span>Country</span><input name="country" value="United States" /></label></form><div class="action-row"><button class="accent-button" type="submit">Search restaurants</button><button class="quiet-button" type="button">Use my location</button></div></section>
+							<section class="bento-card bento-recents"><header><h3>Recent searches</h3><button class="icon-button" type="button">Clear</button></header><div class="recent-list"><button class="recent-item" type="button"><span><b>Stockton</b><small>California, United States</small></span><small>18 results</small></button><button class="recent-item" type="button"><span><b>London</b><small>England, United Kingdom</small></span><small>32 results</small></button><button class="recent-item" type="button"><span><b>Kyoto</b><small>Kyoto, Japan</small></span><small>26 results</small></button></div></section>
+							<section class="bento-card bento-controls"><div class="control-row"><div class="control-cluster"><button class="quiet-button" type="button">Filters</button><button class="quiet-button" type="button">Quick categories</button><button class="quiet-button" type="button">Any price</button><button class="quiet-button" type="button">Any rating</button></div><div class="control-cluster"><button class="quiet-button" type="button">Sort: Best match</button><button class="quiet-button" type="button">Saved only</button><button class="quiet-button" type="button">Map</button><button class="quiet-button" type="button">Refresh current search</button></div></div></section>
+							<section class="bento-card bento-results"><header><div><h3>18 matching restaurants</h3><p class="muted">Current filters and city scope</p></div><span class="signal">12 mapped</span></header><div class="compact-results"><article class="compact-result"><div><strong>Denny's</strong><small>American &middot; 4.4 &middot; Listed hours</small></div><button class="icon-button" type="button">Select</button></article><article class="compact-result"><div><strong>Tequileros</strong><small>Mexican &middot; 4.5 &middot; Menu unavailable</small></div><button class="icon-button" type="button">Select</button></article><article class="compact-result"><div><strong>Seoul Soon Dubu</strong><small>Korean &middot; 4.6 &middot; Photos available</small></div><button class="icon-button" type="button">Select</button></article><article class="compact-result"><div><strong>Cocoro Bistro</strong><small>Sushi &middot; 3.8 &middot; Directions available</small></div><button class="icon-button" type="button">Select</button></article></div></section>
+							<section class="bento-card bento-map"><header><div><h3>Map context</h3><p class="muted">12 mapped of 18</p></div><button class="icon-button" type="button">Show all</button></header><div class="map-canvas" role="img" aria-label="Static prototype map with four restaurant pins"><span class="map-pin is-selected"></span><span class="map-pin"></span><span class="map-pin"></span><span class="map-pin"></span></div><p class="muted">Approximate straight-line distances from the resolved place center.</p></section>
+							<aside class="bento-card bento-selection"><div class="selection-media" aria-hidden="true"></div><div class="selection-stack"><div class="eyebrow">Selected place</div><h2>Denny's</h2><div class="chip-row"><span class="signal">4.4 &middot; 174 reviews</span><span class="signal">0.8 mi from center</span></div><p class="panel-copy">One focused comparison panel keeps actions visible without duplicating the whole result card.</p><div class="action-row"><a class="accent-button" href="/restaurants">Details</a><button class="quiet-button" type="button">Save</button><a class="quiet-button" href="https://www.google.com/maps/dir/?api=1&destination=37.9577%2C-121.2908">Directions</a></div></div></aside>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<section class="prototype" id="cinematic" role="tabpanel" aria-labelledby="tab-cinematic" hidden>
+				<div class="prototype-intro"><div><div class="kicker">Direction C / Cinematic landing only</div><h1>Atmosphere before interface.</h1></div><p>A higher-impact first impression using layered CSS gradients and slow transform-only motion. The product begins as soon as the visitor chooses Open search.</p></div>
+
+				<div class="frame cinematic-frame">
+					<div class="cinematic-noise" aria-hidden="true"></div>
+					<nav class="cinematic-nav" aria-label="Cinematic landing prototype navigation"><a class="product-brand" href="/"><span class="brand-mark" aria-hidden="true">M</span>Mapetite</a><div class="product-links"><a href="#cinematic-story">Discover</a><a href="#cinematic-preview">Preview</a><a href="#cinematic-footer">How it works</a></div><div class="product-actions"><button class="quiet-button" type="button">Log in</button><button class="accent-button" type="button">Sign up</button></div></nav>
+					<div class="cinematic-content" id="cinematic-story">
+						<div class="cinematic-hero"><div class="eyebrow">A calmer restaurant guide</div><h1>Find the room worth crossing town for.</h1><p>Start with a city. Compare public listing signals without pretending they are recommendations. Save the places that deserve a closer look.</p><div class="action-row"><a class="accent-button" href="/restaurants">Open search</a><a class="quiet-button" href="#cinematic-preview">See the preview</a></div></div>
+						<article class="cinematic-card" id="cinematic-preview"><div class="cinematic-photo"><div class="cinematic-card-copy"><div class="eyebrow">Tonight in Stockton</div><h2>A shortlist, not a feed.</h2><p>Ratings, hours context, photos, route details, and honest gaps.</p></div></div></article>
+					</div>
+					<footer class="cinematic-footer" id="cinematic-footer"><span>Mapetite portfolio MVP &middot; Public listing data may be incomplete.</span><div class="footer-links"><a href="https://www.openstreetmap.org/copyright">Data attribution</a><a href="#cinematic-footer">Privacy</a><a href="/restaurants">Open search</a></div></footer>
+				</div>
+			</section>
+		</main>
+
+		<script>
+			const tabs = Array.from(document.querySelectorAll("[data-target]"));
+			const panels = Array.from(document.querySelectorAll(".prototype"));
+
+			function activatePrototype(targetId, focusTab) {
+				for (const tab of tabs) {
+					const isActive = tab.dataset.target === targetId;
+					tab.setAttribute("aria-selected", String(isActive));
+					tab.tabIndex = isActive ? 0 : -1;
+					if (isActive && focusTab) tab.focus();
+				}
+
+				for (const panel of panels) {
+					const isActive = panel.id === targetId;
+					panel.hidden = !isActive;
+					panel.classList.toggle("is-active", isActive);
+				}
+			}
+
+			for (const [index, tab] of tabs.entries()) {
+				tab.addEventListener("click", () => activatePrototype(tab.dataset.target, false));
+				tab.addEventListener("keydown", (event) => {
+					if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+					event.preventDefault();
+					const offset = event.key === "ArrowRight" ? 1 : -1;
+					const nextIndex = (index + offset + tabs.length) % tabs.length;
+					activatePrototype(tabs[nextIndex].dataset.target, true);
+				});
+			}
+		</script>
+	</body>
+</html>
