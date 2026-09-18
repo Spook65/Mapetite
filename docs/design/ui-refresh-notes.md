@@ -1,140 +1,162 @@
-# Mapetite UI Refresh Prototypes
+# Mapetite Visual Direction Lab: Round Four
 
 ## Safety Boundary
 
-The prototypes live in `docs/design/ui-refresh-prototypes.html`. They are standalone static mockups and are not imported by the React application, Vite entry point, generated route tree, or production build.
+The fourth-round work lives only in `docs/design/ui-refresh-prototypes.html` and this document. The prototype is a standalone static comparison lab. It is not imported by the React application, generated route tree, Vite entry point, backend, or production bundle.
 
-- Current branch at the start of this pass: `main`.
-- Recommended branch: `ui-prototypes/search-refresh`.
-- The branch could not be created in this environment because Git metadata is read-only and the ref lock could not be written. No existing refs were removed or changed.
-- No backend, provider, ranking, validation, map, directions, auth, saved-place, autocomplete, or recent-search code was changed.
-- The prototypes make no API, storage, geolocation, analytics, or authentication calls.
+- No production route, search, provider, ranking, validation, autocomplete, cache, map, directions, authentication, saved-place, account, or sticky-header code changed.
+- No dependencies, lockfiles, remote fonts, remote images, external styles, remote scripts, analytics, iframes, APIs, storage, authentication, geolocation, cookies, or browser-history access were added.
+- Restaurant names, ratings, counts, photos, map marks, and actions are static placeholder content used only to compare visual systems.
+- Review locally at `http://localhost:3000/docs/design/ui-refresh-prototypes.html` while Vite is running.
 
-Open the design lab while the local Vite server is running:
+## 1. Why Round One Was Rejected
 
-```text
-http://localhost:3000/docs/design/ui-refresh-prototypes.html
-```
+Round one was too dark, brown, formal, and editorial. Espresso panels, large serif display type, ornamental framing, and dramatic atmosphere made Mapetite feel like a luxury archive or spirits guide. Presentation carried more weight than search, food, listing evidence, and practical actions.
 
-## 1. Design Goals
+## 2. Why Round Two Was Rejected
 
-1. Give Mapetite a recognizable food-guide identity without sacrificing the current practical search workflow.
-2. Preserve every important control: city, region, country, autocomplete position, recent searches, location action, filters, sort, saved-only, map, refresh, result actions, selected comparison, and detail navigation.
-3. Use espresso, restrained sage, and apricot with stronger typographic hierarchy rather than adding more decoration.
-4. Keep mobile layouts single-column, stable, and free of horizontal overflow.
-5. Treat motion as optional polish, never as navigation or content structure.
+Round two corrected the darkness but overused rounded cards, pills, pastel blocks, oversized display type, emoji categories, and illustrated food motifs. It felt cheerful but too bubbly and toy-like for a trustworthy restaurant-discovery product.
 
-## 2. Prototype A: Editorial Guide
+## 3. Why Round Three Is Still Not Enough
 
-The Editorial Guide turns the shortlist into a premium food-guide composition:
+Round three introduced useful restraint but converged too quickly on one visual system:
 
-- Large, stable result media and confident serif headings.
-- A selected comparison panel that reads like a concise decision note rather than a duplicate card.
-- Compact evidence rows for rating, hours, address, photos, menu gaps, and directions.
-- A small detail-page direction strip showing how the same hierarchy could continue into restaurant details.
-- Search, recent searches, filters, sort, saved-only, map, refresh, save, directions, and detail navigation remain visible.
+- Olive, terracotta, warm-white surfaces, and the same card geometry appeared across all three directions.
+- Large horizontal cards and repeated bordered panels still felt chunky.
+- The Advanced Product direction approached a familiar SaaS dashboard pattern.
+- CSS food placeholders were more mature, but imagery was not always the organizing principle.
+- The three concepts felt like layout variants rather than different brand and product positions.
+- The work answered “how should the current UI be polished?” before fully exploring “what should Mapetite feel like?”
 
-This is the strongest brand direction. It is meaningfully different from generic search dashboards while remaining compatible with the existing product model.
+Round four therefore starts with breadth: eight compact systems using identical information, followed by three larger finalists.
 
-## 3. Prototype B: Bento Discovery
+## 4. Research And Design Inspiration Takeaways
 
-The Bento Discovery direction organizes the desktop search experience into explicit functional zones:
+The lab applies general principles associated with strong interface, branding, product, food, travel, map, and mobile work. It does not copy any source layout or code.
 
-- Search and location actions.
-- Recent searches.
-- A single consolidated control row.
-- Compact results.
-- Map context.
-- Selected restaurant comparison.
+| Area | Principle extracted for Mapetite |
+| --- | --- |
+| SaaS and product | Use alignment, hierarchy, and predictable control groups, but avoid default dashboard chrome and excessive boxed panels. |
+| Interface systems | Give search, result, selected state, and detail context clearly different jobs. Repetition should communicate state, not duplicate content. |
+| Branding | A recognizable product can come from type rhythm, image treatment, and restrained color behavior rather than a loud logo or decorative theme. |
+| Typography | Use a practical sans-serif foundation, compact labels, controlled weights, and occasional restrained editorial contrast. |
+| Motion | Animate only opacity and transform when useful. The static prototype does not need a motion library or layout animation. |
+| Food and drink | Favor stable, close-crop photographic composition and warm natural color relationships. Avoid icons and literal cartoon plates. |
+| Travel and hospitality | Treat region, city, route, and “plan your visit” context as part of the experience without implying concierge verification. |
+| Maps and search | Connect list selection and spatial context in one visual system. Keep map use optional on mobile and scoped to current results. |
+| Mobile apps | Prioritize scan speed, reachable actions, compact filters, stable cards, and one-column flow without making every control a pill. |
 
-It is the clearest operational layout and scales well on desktop. On mobile, the grid collapses to one column in task order. The risk is that it can feel like a polished SaaS dashboard rather than a restaurant guide if the editorial typography and warm materials are removed.
+The fixed design questions were:
 
-## 4. Prototype C: Cinematic Landing Only
+1. What should the hero feel like?
+2. How should search controls look?
+3. How should restaurant cards feel?
+4. How should map and list comparison work?
+5. What typography feels mature without becoming boring?
+6. What image treatment makes food feel appetizing?
+7. How can the product feel advanced without hurting usability?
 
-The Cinematic Landing raises first-glance impact without changing the search application:
+## 5. Eight Visual Direction Tiles
 
-- Layered CSS gradients provide atmosphere without external images, canvas, WebGL, or particles.
-- Decorative movement uses slow `transform` animation only.
-- Open search remains the primary CTA.
-- Home, Search, Saved, login, signup, and footer/data links remain represented.
-- The prototype keeps a fixed media aspect ratio and avoids content insertion above the hero.
+### 1. Minimal Concierge
 
-This direction should remain landing-only. Its atmospheric treatment would compete with dense search and detail data if applied throughout the app.
+A calm hospitality-inspired product. Off-white surfaces, controlled green, refined buttons, quiet dividers, and photo-first cards make the interface feel attentive without luxury theater.
 
-## 5. Dependencies Used Or Avoided
+### 2. Map-First Explorer
 
-No dependencies were added.
+A spatial search product where list, map, selected place, and mapped count behave as one workspace. Marketing recedes and practical comparison becomes the visual identity.
 
-| Tool or pattern | Decision | Reason |
+### 3. Photo-Led Food Guide
+
+The most appetizing direction. Stable food imagery leads cards and detail views while ratings, hours, location, and directions remain immediately available.
+
+### 4. Modern Student Local
+
+A fast, approachable, mobile-conscious product with efficient cards and direct language. It is friendly through clarity and pace rather than bright colors or childish illustration.
+
+### 5. Premium Travel Finder
+
+A location-aware direction influenced by thoughtful travel tools. Region and country context, neighborhood cues, and visit planning receive more visual attention.
+
+### 6. Editorial Lite
+
+Small editorial accents create guidance without turning the product into a magazine. “Why consider it” evidence adds voice while typography and imagery remain restrained.
+
+### 7. Advanced Product UI
+
+A crisp, denser system with explicit toolbar, mapped-count, list-selection, and inspector states. It tests product sophistication while avoiding generic enterprise decoration.
+
+### 8. Warm Minimal Mobile App
+
+A deliberately narrow, one-thumb interpretation. Search summary, compact cards, selected state, and actions remain reachable without oversized bubbles or horizontal scrolling.
+
+Every tile includes a miniature landing hero, search control, result card, selected-place panel, detail preview, mobile impression, and mood keywords.
+
+## 6. Three Expanded Finalists
+
+### Minimal Concierge
+
+The expanded version uses a controlled hospitality voice, calm result cards, and a concise selected panel. The detail preview leads with practical public listing information. It is the strongest brand foundation because it feels trustworthy, warm, and distinct without depending on one feature.
+
+### Map-First Explorer
+
+The expanded workspace gives list and map equal legitimacy. Compact rows preserve browsing density, numbered pins clarify correspondence, and the selected card floats within map context. On narrow screens the list and map stack, preserving the existing optional-map principle.
+
+### Photo-Led Food Guide
+
+The expanded direction uses a high-impact food image field on landing, stable image-led result cards, and a darker detail moment reserved for “Plan your visit.” It feels most restaurant-specific but would require disciplined media fallback treatment in production.
+
+## 7. Security And Dependency Decisions
+
+No dependency was added.
+
+| Item | Decision | Reason |
 | --- | --- | --- |
-| Motion / Motion.dev | Avoided for prototype | Existing CSS transitions cover opacity and transform exploration with zero bundle impact. Motion could be reconsidered only if production orchestration becomes difficult. |
-| Anime.js | Avoided | No animation need justifies a second runtime. |
-| Kokonut UI | Inspiration only | Small layout and surface ideas were recreated directly; no registry component or copied event logic was introduced. |
-| Particles / WebGL | Avoided | High performance and accessibility risk for little product value. |
-| EvilCharts | Avoided | Search and restaurant details do not need charts. |
-| Remote fonts, scripts, or images | Avoided | The prototype is self-contained and reviewable offline. |
+| Motion, Anime.js, particles, WebGL, charts | Avoided | The design questions can be answered with static HTML and CSS. |
+| Remote fonts, images, scripts, or styles | Avoided | The prototype remains local, inspectable, and free of third-party execution. |
+| Inspiration-site code | Not copied | Only spacing, hierarchy, card rhythm, type restraint, and image-composition principles were used. |
+| Analytics and tracking | Avoided | A design comparison lab should collect no behavior. |
+| APIs, authentication, storage, or location | Avoided | Production state and private data are outside the prototype boundary. |
 
-If Motion is proposed later, review `motion` as the single animation dependency. Before approval, measure its production chunk impact, verify reduced-motion behavior, and compare against the existing CSS-only alternative. Do not add Anime.js alongside it.
+The prototype contains no `eval`, `new Function`, dynamic script insertion, unsafe HTML injection, provider-controlled markup, or external asset request.
 
-## 6. Security And Privacy Review
+## 8. Accessibility And Performance Safeguards
 
-- No remote scripts or copied obfuscated code.
-- No `eval`, `new Function`, dynamic script insertion, or HTML injection.
-- No `dangerouslySetInnerHTML` because the prototype is plain static HTML.
-- No analytics, tracking, IP geolocation, precise location, local storage, cookies, or browser history access.
-- No provider calls or full place-index data.
-- Prototype buttons are visual except for explicit links to existing local app routes and external directions/data-attribution examples.
-- Production migration must reuse existing safe React handlers and URL helpers rather than copying placeholder links.
+- The lab navigation uses tabs with `aria-selected`, `aria-controls`, Home/End, and left/right arrow-key support.
+- Buttons retain visible focus states.
+- Statuses are written in text rather than encoded by color alone.
+- Text and controls maintain sufficient contrast against their surfaces.
+- CSS image fields reserve stable dimensions.
+- Responsive grids use `minmax(0, 1fr)` and shrinking text containers to prevent overflow.
+- The mobile breakpoint converts finalists to one-column layouts and keeps selected panels in document flow.
+- Animation is limited to a short opacity/transform reveal.
+- `prefers-reduced-motion: reduce` disables animations, transitions, and smooth scrolling.
+- No content is fetched or inserted asynchronously, so the lab introduces no runtime layout shift.
+- The prototype is not part of the production bundle graph.
 
-## 7. Accessibility And Motion
+## 9. Recommended Top Two Directions
 
-- Prototype switcher uses tabs with `aria-selected`, `aria-controls`, and left/right keyboard navigation.
-- Focus indicators remain visible on links, buttons, inputs, and selects.
-- Controls retain at least 42px height in most contexts.
-- Essential text is not animated.
-- Motion is limited to opacity and transforms.
-- `prefers-reduced-motion: reduce` disables meaningful animation duration and smooth scrolling.
-- There is no scroll-jacking, autoplay media, hover-only information, or color-only selected state.
+### 1. Minimal Concierge
 
-## 8. Performance And CLS Safeguards
+Recommended as the brand and component foundation. It best balances maturity, warmth, food focus, trust, and practical speed. It also maps onto the existing information architecture with the lowest migration risk.
 
-- All media-like surfaces reserve space with `aspect-ratio` before paint.
-- Prototype navigation has a stable minimum height.
-- No asynchronous content is inserted above results.
-- Decorative gradients are CSS-only and require no network request.
-- The cinematic blobs animate transforms instead of layout properties.
-- Mobile removes card rotation and uses a single-column layout.
-- No prototype file is imported into the production application bundle.
+### 2. Map-First Explorer
 
-## 9. What Should Not Move Into Production
+Recommended as the strongest product-level differentiator. Mapetite already has a stable optional map and selected-place flow; this direction makes that capability feel intentional rather than appended. It should borrow Minimal Concierge typography, color, and card restraint.
 
-- Static sample restaurant data and placeholder controls.
-- Prototype Google Maps coordinates and links.
-- The standalone tab-switching script.
-- Cinematic motion outside the landing page.
-- Dashboard density from Bento without user testing at tablet widths.
-- Serif typography on every control or dense metadata surface.
-- Any future particles, WebGL, charting, or animation library without a measured user need.
+Photo-Led Food Guide should remain a supporting influence for landing, hero, result media, and detail photography rather than the sole system. Real provider media can fail, so the product identity cannot depend entirely on photos.
 
-## 10. Recommended Direction
+## 10. Safe, Reversible Migration Plan
 
-Use **Editorial Guide** as the primary direction, borrowing the Bento prototype's consolidated control row and desktop information grouping. Use **Cinematic Landing** only as an optional landing-page treatment.
+Do not migrate a complete prototype at once. Use a dedicated UI branch and move one independently testable layer at a time.
 
-Why:
+1. **Typography tokens:** introduce the approved sans-serif scale, weights, line heights, and compact labels. Verify wrapping, accessibility, and sticky-header height. Revert by restoring token values.
+2. **Color tokens:** add off-white, charcoal, restrained green, and sparse orange roles without changing component structure. Verify contrast and map compatibility.
+3. **Radius and shadow tokens:** reduce excessive pills and heavy panels through shared tokens. Verify focus rings and touch targets.
+4. **Search bar styling:** restyle only the existing search shell, autocomplete, recent searches, and field grouping. Preserve every handler and state transition.
+5. **Result card styling:** apply stable image ratios, tighter metadata hierarchy, and refined actions to the existing card component. Keep media fallback behavior unchanged.
+6. **Selected panel styling:** reduce duplicated card content and restyle the existing desktop/mobile selected states without changing selection logic or map camera behavior.
+7. **Detail page styling:** update hero media, practical facts, evidence rows, and action hierarchy one section at a time. Preserve data-honesty copy and external directions.
+8. **Landing page styling:** migrate the approved hero and preview treatment last, after the product surfaces establish the system.
 
-- Editorial Guide creates the clearest Mapetite identity.
-- It improves comparison hierarchy without turning public listing signals into recommendations.
-- It maps cleanly onto current result and detail data.
-- It can be migrated incrementally without changing backend or state behavior.
-- Bento's control organization solves density, while Editorial prevents the product from feeling generic.
-
-## 11. Migration Plan If Approved
-
-1. Create or switch to `ui-prototypes/search-refresh` in a Git environment with writable metadata.
-2. Extract only visual tokens and layout primitives from the winning prototype.
-3. Apply the consolidated control row to the existing search route without changing handlers or store semantics.
-4. Restyle one existing result card and the selected comparison panel behind a temporary local feature flag.
-5. Verify autocomplete, recent searches, filters, map, save, directions, and sticky behavior before expanding the treatment.
-6. Apply the editorial hierarchy to one detail-page section at a time.
-7. Consider the cinematic landing treatment separately after measuring LCP, CLS, reduced motion, and mobile battery impact.
-8. Remove the feature flag only after desktop/mobile regression checks and the complete test suite pass.
+After every step run type checks, build, tests, desktop/mobile browser checks, reduced-motion checks, overflow checks, and CLS review. Do not migrate static placeholder data, CSS-generated food photography, map mockups, or lab tab JavaScript into production.
