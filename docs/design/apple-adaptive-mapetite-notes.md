@@ -6,6 +6,20 @@ This design study explores an Apple-inspired adaptive product direction without 
 
 The prototype is intentionally app-like rather than marketing-led. Its central question is whether Mapetite can present the same search state naturally on a compact phone, an expanded tablet or foldable viewport, and a desktop workspace.
 
+## Refinement from the first adaptive study
+
+The first adaptive prototype established the right information architecture but relied too heavily on simulated hardware and abstract food-like color circles. This refinement makes the interface credible without those devices:
+
+- heavy phone and tablet borders are replaced by quiet one-pixel app-canvas boundaries
+- cards use stable scan lines for rating, review count, hours confidence, cuisine, location, and distance
+- selected rows use a restrained inset accent and border rather than a larger duplicate card
+- image fallback surfaces explicitly say “Photo unavailable” and use a restaurant initial mark
+- selected-place surfaces prioritize decision evidence, distance, address, and actions
+- the static map now distinguishes normal pins, selected pin, and search center while labeling positions as approximate
+- calm provider, ambiguity, empty, offline, saved, photo, and map states demonstrate system behavior
+
+The goal is not to imitate a native screenshot. It is to establish a web implementation that already behaves coherently when placed inside a future iOS shell.
+
 ## Principles extracted
 
 The useful principles are broader than a particular visual effect:
@@ -32,9 +46,10 @@ These principles align with current Apple guidance that treats material as a fun
 - A single-column result flow keeps search and scanning primary.
 - The search command is sticky inside the content viewport and uses a restrained frosted treatment.
 - Recent searches and filter controls stay horizontally compact.
-- Results use stable square media areas and concise evidence.
-- The selected restaurant becomes a bottom sheet with Details, Save, and Directions.
+- Results use stable square media areas, predictable card heights, and two short scan lines.
+- The selected restaurant becomes a safe-area-aware decision sheet with an image fallback, evidence, and 44px actions.
 - Full restaurant information remains a detail route rather than an oversized sheet.
+- The list reserves bottom space equal to the sheet so the final result is never hidden.
 
 ### Expanded tablet or foldable
 
@@ -101,6 +116,16 @@ There must never be a toolbar Sort plus a second Sort panel, or map actions repe
 - Expanded and desktop pane headers may stay sticky within their pane. The whole page should not accumulate multiple sticky bars.
 - Focused autocomplete and filter overlays should remain above the sheet while preserving keyboard access.
 
+## Compact iOS and keyboard behavior
+
+- Use `env(safe-area-inset-top)` and `env(safe-area-inset-bottom)` in the real wrapper, with web-safe fallbacks.
+- Keep Search, Details, Save, and Directions at least 44px tall in the compact mode.
+- The selected sheet must remain dismissible without clearing the selected restaurant unless product logic explicitly requires it.
+- When the software keyboard opens, anchor autocomplete to the active field and let the results viewport resize; do not translate the whole app shell.
+- Search submission remains available when autocomplete is empty, offline, malformed, or rate-limited.
+- No compact action may depend on hover. Focus, pressed, selected, and disabled states need equivalent visible treatment.
+- External directions should leave the wrapper intentionally rather than opening an unbounded in-app browser.
+
 ## Autocomplete behavior
 
 ### Compact
@@ -156,7 +181,36 @@ There must never be a toolbar Sort plus a second Sort panel, or map actions repe
 - **Action accent:** apricot used for the main action and location pins, not every badge.
 - **Typography:** system sans stack for a native-adjacent feel without adding remote fonts.
 - **Shape:** moderate radii; circular controls only where their semantics are clear.
-- **Media:** stable aspect ratios and abstract CSS fields in this prototype; production continues honest image/fallback handling.
+- **Media:** stable aspect ratios and clearly labeled fallback fields. Initial marks provide identity without pretending a generated illustration is restaurant photography.
+
+## Result and decision hierarchy
+
+Result cards should answer four scan questions in order:
+
+1. What is this restaurant?
+2. How strong and current is the available public signal?
+3. What cuisine/place/distance context is known?
+4. Why might it be worth opening?
+
+The selected panel should not repeat every card sentence. It adds decision context: full location, approximate-distance source, address, hours wording, concise “why consider it” evidence, and Details/Save/Directions. Internal ranking scores never appear.
+
+## Media fallback behavior
+
+- Preserve the exact media container dimensions before and after an image request.
+- When a remote image fails, replace it in the same container without retry loops or a broken-image icon.
+- Use the restaurant’s safe text initial and a neutral “Photo unavailable” label.
+- Never imply the fallback is a real restaurant photo, official logo, or cuisine image.
+- Keep alt text factual: either describe the supplied image or state that the photo is unavailable.
+
+## Calm system states
+
+- **Provider timeout:** keep loading or saved browser results visible, explain the delay, and offer retry.
+- **No matching places:** retain the current search and suggest clearing a real constraint.
+- **Ambiguous city:** ask for region/country or selection from suggestions; do not present it as a crash.
+- **No saved places:** explain how to build a shortlist without inventing examples.
+- **No restaurant photo:** use the stable initial fallback.
+- **Map unavailable:** keep restaurant results usable in the list.
+- **Offline/backend unavailable:** preserve local convenience state, label cached results honestly, and offer reconnect/retry.
 
 ## Accessibility and motion
 
@@ -188,16 +242,16 @@ There must never be a toolbar Sort plus a second Sort panel, or map actions repe
 
 ## Safe migration sequence
 
-1. Add reversible color, material, radius, shadow, and typography tokens.
-2. Restyle the production search command without changing its form/state logic.
-3. Restyle result cards while preserving media dimensions and all actions.
-4. Introduce the compact selected sheet treatment behind the existing selection state.
-5. Consolidate expanded controls into one toolbar without changing filter behavior.
-6. Add an expanded list/map layout using existing map and result components.
-7. Add the desktop evidence pane using the current selected preview content.
-8. Validate safe areas and keyboard behavior in a Capacitor test shell before any TestFlight build.
+1. **Design tokens only:** add reversible color, type, radius, divider, shadow, spacing, and material variables without changing component markup.
+2. **Button/card/control styles:** update shared focus, pressed, selected, disabled, and 44px compact target treatments.
+3. **Result card styling:** apply the stable media fallback, scan-line hierarchy, line clamps, and selected-state treatment without changing search data or actions.
+4. **Selected-place panel styling:** reuse current selection state and content to create the evidence-led desktop panel and compact decision sheet.
+5. **Map/list layout styling:** change layout containers only; preserve MapLibre lifecycle, camera, markers, attribution, filtering, and current-results scope.
+6. **Compact mobile sheet styling:** add safe-area spacing, reserved list padding, keyboard-aware sizing, and non-hover interactions.
+7. **Landing and detail pages later:** migrate them only after the search experience proves the tokens and controls across real data states.
+8. **Capacitor/TestFlight wrapper last:** add the wrapper only after the responsive web UI, offline states, safe areas, and external-link behavior are stable.
 
-Each step should have its own visual review, mobile overflow check, accessibility pass, and check/build/test run. None requires a backend contract change.
+Each step must remain separately reviewable and reversible, with a visual review, 390px overflow check, accessibility pass, and check/build/test run. None requires a backend contract change.
 
 ## Recommendation
 

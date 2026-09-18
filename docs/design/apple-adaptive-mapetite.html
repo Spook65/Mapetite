@@ -9,16 +9,17 @@
       :root {
         --ink: #1d2722;
         --ink-soft: #52605a;
-        --canvas: #f3f1ea;
+        --canvas: #f4f3ee;
         --surface: rgba(255, 255, 252, 0.86);
         --surface-solid: #fffefa;
         --sage: #617565;
         --sage-soft: #dfe7dd;
         --apricot: #d96f42;
         --apricot-soft: #f7ddcf;
-        --line: rgba(42, 58, 49, 0.14);
-        --shadow: 0 18px 50px rgba(42, 54, 47, 0.11);
-        --shadow-soft: 0 8px 24px rgba(42, 54, 47, 0.08);
+        --line: rgba(42, 58, 49, 0.12);
+        --line-strong: rgba(42, 58, 49, 0.22);
+        --shadow: 0 20px 55px rgba(42, 54, 47, 0.09);
+        --shadow-soft: 0 7px 22px rgba(42, 54, 47, 0.07);
         --radius-xs: 10px;
         --radius-sm: 15px;
         --radius-md: 22px;
@@ -36,8 +37,8 @@
         color: var(--ink);
         font-family: var(--font);
         background:
-          radial-gradient(circle at 8% 0%, rgba(225, 239, 224, 0.86), transparent 30rem),
-          radial-gradient(circle at 92% 12%, rgba(247, 221, 207, 0.66), transparent 34rem),
+          radial-gradient(circle at 8% 0%, rgba(225, 235, 224, 0.72), transparent 30rem),
+          radial-gradient(circle at 92% 12%, rgba(246, 225, 213, 0.52), transparent 34rem),
           var(--canvas);
       }
 
@@ -136,9 +137,9 @@
         overflow: hidden;
         min-width: 0;
         border: 1px solid rgba(37, 50, 43, 0.16);
-        border-radius: clamp(20px, 3vw, 38px);
-        background: #e9ebe5;
-        box-shadow: var(--shadow);
+        border-radius: clamp(18px, 2.4vw, 30px);
+        background: #eceee9;
+        box-shadow: 0 14px 42px rgba(42, 54, 47, 0.08);
       }
       .stage-label {
         display: flex;
@@ -158,7 +159,7 @@
         justify-content: space-between;
         gap: 0.75rem;
         min-width: 0;
-        height: 60px;
+        min-height: 60px;
         padding: 0 1rem;
         border-bottom: 1px solid var(--line);
         background: rgba(255,255,252,0.78);
@@ -168,21 +169,21 @@
       .app-logo { font-size: 1.02rem; font-weight: 850; letter-spacing: -0.035em; }
       .app-logo i { color: var(--apricot); font-style: normal; }
       .avatar { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 50%; color: white; background: var(--sage); font-size: 0.72rem; font-weight: 800; }
-      .icon-button { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: rgba(255,255,252,0.8); cursor: pointer; }
+      .icon-button { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: rgba(255,255,252,0.88); cursor: pointer; }
 
       .glass {
         border: 1px solid rgba(255,255,255,0.76);
         background: rgba(255,255,252,0.76);
-        box-shadow: 0 12px 36px rgba(40,52,45,0.12), inset 0 1px rgba(255,255,255,0.8);
-        backdrop-filter: blur(20px) saturate(135%);
-        -webkit-backdrop-filter: blur(20px) saturate(135%);
+        box-shadow: 0 10px 30px rgba(40,52,45,0.1), inset 0 1px rgba(255,255,255,0.8);
+        backdrop-filter: blur(16px) saturate(125%);
+        -webkit-backdrop-filter: blur(16px) saturate(125%);
       }
 
-      .search-command { display: flex; align-items: center; gap: 0.65rem; min-width: 0; padding: 0.55rem; border-radius: 18px; }
+      .search-command { display: flex; align-items: center; gap: 0.65rem; min-width: 0; min-height: 54px; padding: 0.45rem; border-radius: 17px; }
       .search-copy { flex: 1; min-width: 0; padding: 0 0.35rem; }
       .search-copy small { display: block; color: var(--ink-soft); font-size: 0.66rem; }
       .search-copy strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.88rem; }
-      .search-go { flex: 0 0 auto; padding: 0.66rem 0.88rem; border: 0; border-radius: 12px; color: white; background: var(--apricot); font-weight: 800; cursor: pointer; }
+      .search-go { flex: 0 0 auto; min-height: 42px; padding: 0.64rem 0.9rem; border: 0; border-radius: 11px; color: white; background: var(--apricot); box-shadow: 0 5px 14px rgba(181, 77, 38, 0.18); font-weight: 800; cursor: pointer; }
 
       .chip-row { display: flex; gap: 0.45rem; overflow: hidden; }
       .chip { flex: 0 0 auto; padding: 0.48rem 0.7rem; border: 1px solid var(--line); border-radius: 10px; color: var(--ink-soft); background: rgba(255,255,252,0.72); font-size: 0.72rem; font-weight: 720; }
@@ -190,24 +191,54 @@
 
       .photo {
         position: relative;
+        display: grid;
+        align-content: end;
         overflow: hidden;
         aspect-ratio: 4 / 3;
         background:
-          radial-gradient(circle at 34% 31%, rgba(248,211,160,0.9) 0 7%, transparent 8%),
-          radial-gradient(circle at 55% 52%, rgba(131,75,44,0.62) 0 15%, transparent 16%),
-          radial-gradient(circle at 66% 36%, rgba(137,157,103,0.8) 0 12%, transparent 13%),
-          linear-gradient(145deg, #c7865e, #e3bf8d 48%, #73805c);
+          linear-gradient(135deg, transparent 0 42%, rgba(255,255,255,0.08) 42% 44%, transparent 44% 100%),
+          linear-gradient(28deg, rgba(37,55,44,0.82), rgba(108,124,92,0.72) 47%, rgba(191,132,91,0.68));
       }
-      .photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 48%, rgba(24,29,25,0.28)); }
-      .photo.alt { background: radial-gradient(circle at 42% 40%, #f2d0a4 0 17%, transparent 18%), radial-gradient(circle at 61% 56%, #ad4f37 0 14%, transparent 15%), linear-gradient(150deg,#63765d,#c9aa74 50%,#704b38); }
-      .photo.green { background: radial-gradient(circle at 53% 38%, #e6d8ad 0 18%, transparent 19%), radial-gradient(circle at 35% 64%, #a33e2c 0 10%, transparent 11%), linear-gradient(140deg,#425d46,#9eae77 52%,#d5a469); }
+      .photo::before {
+        content: attr(data-mark);
+        position: absolute;
+        top: 12%;
+        left: 12%;
+        display: grid;
+        width: 34%;
+        aspect-ratio: 1;
+        place-items: center;
+        border: 1px solid rgba(255,255,255,0.32);
+        border-radius: 50%;
+        color: rgba(255,255,252,0.92);
+        background: rgba(26,39,31,0.18);
+        font-size: clamp(0.78rem, 2vw, 1.25rem);
+        font-weight: 820;
+        letter-spacing: -0.04em;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+      }
+      .photo::after {
+        content: "Photo unavailable";
+        position: relative;
+        z-index: 1;
+        padding: 0.5rem 0.58rem;
+        color: rgba(255,255,252,0.84);
+        background: linear-gradient(180deg, transparent, rgba(20,29,24,0.58));
+        font-size: 0.56rem;
+        font-weight: 740;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+      .photo.alt { background: linear-gradient(130deg, transparent 0 52%, rgba(255,255,255,0.09) 52% 54%, transparent 54%), linear-gradient(32deg,#4c5549,#947c61 50%,#b86445); }
+      .photo.green { background: linear-gradient(145deg, transparent 0 39%, rgba(255,255,255,0.08) 39% 41%, transparent 41%), linear-gradient(25deg,#334b3b,#687b5e 54%,#c19a6a); }
 
       .rating { display: inline-flex; align-items: center; gap: 0.24rem; color: var(--ink); font-size: 0.74rem; font-weight: 800; }
       .rating::before { content: "★"; color: #b96736; }
       .status { color: #406248; font-size: 0.72rem; font-weight: 780; }
       .muted { color: var(--ink-soft); }
       .actions { display: flex; flex-wrap: wrap; gap: 0.45rem; }
-      .action { padding: 0.58rem 0.76rem; border: 1px solid var(--line); border-radius: 11px; color: var(--ink); background: var(--surface-solid); font-size: 0.72rem; font-weight: 800; text-decoration: none; cursor: pointer; }
+      .action { min-height: 40px; padding: 0.58rem 0.76rem; border: 1px solid var(--line); border-radius: 10px; color: var(--ink); background: var(--surface-solid); font-size: 0.72rem; font-weight: 800; text-decoration: none; cursor: pointer; }
       .action.primary { color: white; border-color: var(--ink); background: var(--ink); }
       .action.accent { color: white; border-color: var(--apricot); background: var(--apricot); }
 
@@ -216,39 +247,47 @@
       .phone {
         position: relative;
         overflow: hidden;
-        width: min(390px, 100%);
-        height: min(760px, calc(100vh - 180px));
+        width: min(420px, 100%);
+        height: min(780px, calc(100vh - 160px));
         min-height: 650px;
-        border: 8px solid #27312c;
-        border-radius: 38px;
-        background: #f6f4ee;
-        box-shadow: 0 26px 70px rgba(31,42,35,0.22);
+        border: 1px solid var(--line-strong);
+        border-radius: 27px;
+        background: #f8f7f2;
+        box-shadow: 0 24px 60px rgba(31,42,35,0.15);
       }
-      .phone .app-bar { height: 56px; padding: 0 0.8rem; }
-      .phone-content { height: calc(100% - 56px); overflow-y: auto; padding: 0.85rem 0.85rem 154px; }
+      .phone .app-bar { min-height: 62px; padding: max(0.42rem, env(safe-area-inset-top)) 0.85rem 0.42rem; }
+      .phone-content { height: calc(100% - 62px); overflow-y: auto; padding: 0.85rem 0.85rem calc(214px + env(safe-area-inset-bottom)); }
       .phone .search-command { position: sticky; top: 0; z-index: 5; }
       .recent-block { margin: 1rem 0; }
       .section-line { display: flex; align-items: baseline; justify-content: space-between; gap: 0.7rem; margin-bottom: 0.62rem; }
       .section-line h2 { margin: 0; font-size: 0.9rem; letter-spacing: -0.025em; }
       .section-line span { color: var(--ink-soft); font-size: 0.68rem; }
-      .phone-results { display: grid; gap: 0.75rem; }
-      .phone-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 0.72rem; overflow: hidden; padding: 0.55rem; border: 1px solid var(--line); border-radius: 17px; background: var(--surface-solid); box-shadow: 0 7px 20px rgba(42,54,47,0.07); }
-      .phone-card .photo { border-radius: 12px; aspect-ratio: 1 / 1; }
+      .phone-results { display: grid; gap: 0.62rem; }
+      .phone-card { display: grid; grid-template-columns: 92px minmax(0, 1fr); min-height: 116px; gap: 0.74rem; overflow: hidden; padding: 0.62rem; border: 1px solid var(--line); border-radius: 15px; background: var(--surface-solid); box-shadow: 0 5px 16px rgba(42,54,47,0.055); }
+      .phone-card.selected { border-color: rgba(97,117,101,0.55); box-shadow: 0 0 0 2px rgba(97,117,101,0.13), 0 7px 20px rgba(42,54,47,0.07); }
+      .phone-card .photo { height: 92px; border-radius: 10px; aspect-ratio: 1 / 1; }
+      .phone-card .photo::after, .compact-row .photo::after { font-size: 0.46rem; }
       .card-copy { min-width: 0; }
-      .card-copy h3 { margin: 0 0 0.22rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.9rem; letter-spacing: -0.02em; }
-      .card-meta { display: flex; flex-wrap: wrap; gap: 0.35rem 0.55rem; margin: 0 0 0.32rem; color: var(--ink-soft); font-size: 0.68rem; }
-      .card-reason { margin: 0.42rem 0 0; color: var(--ink-soft); font-size: 0.67rem; line-height: 1.35; }
-      .bottom-sheet { position: absolute; z-index: 10; right: 0.65rem; bottom: 0.65rem; left: 0.65rem; padding: 0.78rem; border-radius: 20px; }
-      .sheet-head { display: flex; justify-content: space-between; gap: 0.7rem; margin-bottom: 0.55rem; }
+      .card-copy h3 { margin: 0 0 0.3rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.94rem; line-height: 1.15; letter-spacing: -0.025em; }
+      .card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.28rem 0.48rem; min-height: 1rem; margin: 0 0 0.28rem; color: var(--ink-soft); font-size: 0.67rem; }
+      .card-meta + .card-meta { padding-top: 0.25rem; border-top: 1px solid rgba(42,58,49,0.08); }
+      .card-reason { display: -webkit-box; margin: 0.34rem 0 0; overflow: hidden; color: var(--ink-soft); font-size: 0.65rem; line-height: 1.3; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+      .bottom-sheet { position: absolute; z-index: 10; right: 0.7rem; bottom: max(0.7rem, env(safe-area-inset-bottom)); left: 0.7rem; padding: 0.78rem; border-radius: 19px; }
+      .sheet-grabber { width: 34px; height: 4px; margin: -0.18rem auto 0.65rem; border-radius: 999px; background: rgba(42,58,49,0.2); }
+      .sheet-summary { display: grid; grid-template-columns: 54px minmax(0,1fr) auto; gap: 0.62rem; align-items: center; }
+      .sheet-summary .photo { width: 54px; border-radius: 10px; aspect-ratio: 1; }
+      .sheet-summary .photo::after { display: none; }
+      .sheet-head { display: flex; justify-content: space-between; gap: 0.7rem; margin: 0; }
       .sheet-head div { min-width: 0; }
-      .sheet-head strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.86rem; }
-      .sheet-head span { color: var(--ink-soft); font-size: 0.67rem; }
+      .sheet-head strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.92rem; }
+      .sheet-head span { display: block; margin-top: 0.16rem; color: var(--ink-soft); font-size: 0.65rem; }
+      .sheet-evidence { margin: 0.58rem 0; padding: 0.5rem 0.6rem; border-left: 2px solid var(--sage); border-radius: 0 9px 9px 0; color: #405046; background: rgba(223,231,221,0.66); font-size: 0.64rem; line-height: 1.32; }
       .bottom-sheet .actions { flex-wrap: nowrap; }
-      .bottom-sheet .action { flex: 1; text-align: center; padding-inline: 0.3rem; }
+      .bottom-sheet .action { display: grid; flex: 1; min-height: 44px; place-items: center; text-align: center; padding-inline: 0.3rem; }
 
       /* Expanded */
       .tablet-wrap { padding: clamp(0.75rem, 3vw, 1.7rem); }
-      .tablet { overflow: hidden; min-height: 680px; border: 7px solid #303a35; border-radius: 28px; background: #f7f5ef; box-shadow: 0 24px 70px rgba(31,42,35,0.2); }
+      .tablet { overflow: hidden; min-height: 680px; border: 1px solid var(--line-strong); border-radius: 22px; background: #f8f7f2; box-shadow: 0 22px 58px rgba(31,42,35,0.12); }
       .tablet-toolbar { display: grid; grid-template-columns: minmax(190px, 1fr) auto; gap: 0.8rem; padding: 0.75rem; border-bottom: 1px solid var(--line); background: rgba(247,246,241,0.88); }
       .toolbar-actions { display: flex; align-items: center; gap: 0.4rem; }
       .tablet-grid { display: grid; grid-template-columns: minmax(250px, 0.8fr) minmax(320px, 1.25fr) minmax(235px, 0.78fr); min-height: 612px; }
@@ -257,46 +296,55 @@
       .pane-title { display: flex; justify-content: space-between; gap: 0.5rem; align-items: baseline; margin-bottom: 0.75rem; }
       .pane-title strong { font-size: 0.8rem; }
       .pane-title span { color: var(--ink-soft); font-size: 0.66rem; }
-      .compact-list { display: grid; gap: 0.55rem; }
-      .compact-row { display: grid; grid-template-columns: 68px minmax(0,1fr); gap: 0.62rem; padding: 0.45rem; border: 1px solid transparent; border-radius: 14px; background: rgba(255,255,252,0.66); }
-      .compact-row.selected { border-color: rgba(97,117,101,0.4); background: #f0f4ee; }
-      .compact-row .photo { border-radius: 10px; aspect-ratio: 1; }
-      .compact-row h3 { margin: 0 0 0.2rem; font-size: 0.77rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-      .compact-row p { margin: 0.16rem 0 0; color: var(--ink-soft); font-size: 0.62rem; }
+      .compact-list { display: grid; gap: 0.48rem; }
+      .compact-row { position: relative; display: grid; grid-template-columns: 66px minmax(0,1fr); min-height: 76px; gap: 0.64rem; padding: 0.48rem; border: 1px solid transparent; border-radius: 13px; background: rgba(255,255,252,0.74); }
+      .compact-row.selected { border-color: rgba(97,117,101,0.5); background: #f2f5f0; box-shadow: inset 3px 0 var(--sage); }
+      .compact-row .photo { width: 66px; height: 66px; border-radius: 9px; aspect-ratio: 1; }
+      .compact-row h3 { margin: 0 0 0.24rem; font-size: 0.79rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .compact-row p { margin: 0.16rem 0 0; color: var(--ink-soft); font-size: 0.62rem; line-height: 1.25; }
 
       .map-pane { position: relative; overflow: hidden; padding: 0; background: #dce3da; }
       .map-canvas, .desktop-map {
         position: absolute;
         inset: 0;
         background:
-          linear-gradient(32deg, transparent 0 46%, rgba(255,255,252,0.78) 46% 49%, transparent 49% 100%),
-          linear-gradient(118deg, transparent 0 56%, rgba(255,255,252,0.82) 56% 59%, transparent 59% 100%),
-          linear-gradient(80deg, rgba(112,133,113,0.09) 1px, transparent 1px),
-          linear-gradient(10deg, rgba(112,133,113,0.09) 1px, transparent 1px),
-          #dfe6dc;
-        background-size: auto, auto, 54px 54px, 54px 54px, auto;
+          linear-gradient(155deg, transparent 0 58%, rgba(169,199,190,0.34) 58% 66%, transparent 66%),
+          linear-gradient(32deg, transparent 0 45%, rgba(255,255,252,0.9) 45% 48%, rgba(205,183,149,0.34) 48% 49%, transparent 49%),
+          linear-gradient(118deg, transparent 0 55%, rgba(255,255,252,0.92) 55% 58%, rgba(205,183,149,0.3) 58% 59%, transparent 59%),
+          linear-gradient(80deg, rgba(112,133,113,0.1) 1px, transparent 1px),
+          linear-gradient(10deg, rgba(112,133,113,0.1) 1px, transparent 1px),
+          #e1e6dd;
+        background-size: auto, auto, auto, 48px 48px, 48px 48px, auto;
       }
-      .map-pin { position: absolute; display: grid; width: 27px; height: 27px; place-items: center; border: 4px solid white; border-radius: 50% 50% 50% 10%; color: white; background: var(--apricot); box-shadow: 0 7px 15px rgba(31,42,35,0.25); transform: rotate(-45deg); }
+      .map-canvas::before, .desktop-map::before { content: "DOWNTOWN  ·  STOCKTON"; position: absolute; top: 16%; left: 12%; color: rgba(52,72,60,0.52); font-size: 0.56rem; font-weight: 800; letter-spacing: 0.12em; }
+      .map-canvas::after, .desktop-map::after { content: "Map preview · approximate positions"; position: absolute; right: 0.72rem; bottom: 0.55rem; color: rgba(52,72,60,0.6); font-size: 0.55rem; }
+      .map-pin { position: absolute; z-index: 2; display: grid; width: 25px; height: 25px; place-items: center; border: 3px solid white; border-radius: 50% 50% 50% 10%; color: white; background: var(--sage); box-shadow: 0 6px 13px rgba(31,42,35,0.2); transform: rotate(-45deg); }
       .map-pin::after { content: ""; width: 5px; height: 5px; border-radius: 50%; background: white; }
       .map-pin.one { top: 28%; left: 32%; }
-      .map-pin.two { top: 52%; left: 58%; background: var(--ink); }
-      .map-pin.three { top: 66%; left: 38%; background: var(--sage); }
-      .map-place-card { position: absolute; right: 0.75rem; bottom: 0.75rem; left: 0.75rem; display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 0.68rem; padding: 0.62rem; border-radius: 17px; }
-      .map-place-card .photo { border-radius: 11px; aspect-ratio: 1; }
+      .map-pin.two { z-index: 4; top: 52%; left: 58%; width: 32px; height: 32px; border-width: 4px; background: var(--apricot); box-shadow: 0 0 0 6px rgba(217,111,66,0.16), 0 8px 18px rgba(31,42,35,0.25); }
+      .map-pin.three { top: 66%; left: 38%; }
+      .origin-dot { position: absolute; z-index: 2; top: 39%; left: 48%; width: 15px; height: 15px; border: 3px solid white; border-radius: 50%; background: #54789a; box-shadow: 0 0 0 5px rgba(84,120,154,0.16); }
+      .map-controls { position: absolute; z-index: 5; top: 0.7rem; right: 0.7rem; display: grid; overflow: hidden; border: 1px solid var(--line); border-radius: 11px; background: rgba(255,255,252,0.9); box-shadow: var(--shadow-soft); }
+      .map-controls button { width: 35px; height: 35px; border: 0; border-bottom: 1px solid var(--line); color: var(--ink); background: transparent; font-weight: 800; }
+      .map-controls button:last-child { border-bottom: 0; }
+      .map-place-card { position: absolute; z-index: 5; right: 0.75rem; bottom: 1.3rem; width: min(270px, calc(100% - 1.5rem)); display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 0.62rem; padding: 0.58rem; border-radius: 15px; }
+      .map-place-card .photo { width: 58px; border-radius: 9px; aspect-ratio: 1; }
+      .map-place-card .photo::after { display: none; }
       .map-place-card h3 { margin: 0 0 0.23rem; font-size: 0.78rem; }
       .map-place-card p { margin: 0; color: var(--ink-soft); font-size: 0.64rem; line-height: 1.35; }
-      .detail-pane { background: rgba(255,255,252,0.68); }
+      .detail-pane { background: rgba(255,255,252,0.78); }
       .detail-hero { overflow: hidden; border-radius: 16px; }
       .detail-hero .photo { aspect-ratio: 16 / 11; }
       .detail-pane h2 { margin: 0.75rem 0 0.25rem; font-size: 1.15rem; letter-spacing: -0.035em; }
       .detail-pane > p { margin: 0 0 0.75rem; color: var(--ink-soft); font-size: 0.72rem; line-height: 1.45; }
       .fact-list { display: grid; margin: 0.8rem 0; border-top: 1px solid var(--line); }
-      .fact { display: flex; justify-content: space-between; gap: 0.7rem; padding: 0.58rem 0; border-bottom: 1px solid var(--line); font-size: 0.68rem; }
+      .fact { display: flex; justify-content: space-between; gap: 0.7rem; padding: 0.58rem 0; border-bottom: 1px solid var(--line); font-size: 0.68rem; line-height: 1.3; }
+      .fact strong { max-width: 62%; text-align: right; }
       .fact span:first-child { color: var(--ink-soft); }
 
       /* Desktop */
       .desktop-wrap { padding: clamp(0.75rem, 2vw, 1.3rem); }
-      .desktop { overflow: hidden; min-height: 720px; border: 1px solid rgba(35,49,41,0.17); border-radius: 24px; background: #f8f6f0; box-shadow: 0 24px 70px rgba(31,42,35,0.15); }
+      .desktop { overflow: hidden; min-height: 720px; border: 1px solid rgba(35,49,41,0.17); border-radius: 20px; background: #f8f6f0; box-shadow: 0 20px 58px rgba(31,42,35,0.11); }
       .desktop-top { display: grid; grid-template-columns: auto minmax(340px, 1fr) auto; gap: 1rem; align-items: center; padding: 0.72rem 0.9rem; border-bottom: 1px solid var(--line); }
       .desktop-top .search-command { max-width: 650px; width: 100%; justify-self: center; }
       .desktop-grid { display: grid; grid-template-columns: minmax(275px, 0.82fr) minmax(430px, 1.42fr) minmax(280px, 0.86fr); min-height: 654px; }
@@ -309,11 +357,22 @@
       .desktop-map-card .topline { display: flex; justify-content: space-between; gap: 0.5rem; }
       .desktop-map-card h2 { margin: 0; font-size: 0.9rem; }
       .desktop-map-card p { margin: 0.28rem 0 0; color: var(--ink-soft); font-size: 0.68rem; line-height: 1.4; }
-      .evidence-pane { min-width: 0; padding: 0.95rem; border-left: 1px solid var(--line); background: rgba(255,255,252,0.66); }
+      .evidence-pane { min-width: 0; padding: 0.95rem; border-left: 1px solid var(--line); background: rgba(255,255,252,0.82); }
       .evidence-pane .photo { border-radius: 16px; aspect-ratio: 16/10; }
       .evidence-pane h2 { margin: 0.8rem 0 0.28rem; font-size: 1.2rem; letter-spacing: -0.035em; }
       .evidence-pane p { color: var(--ink-soft); font-size: 0.72rem; line-height: 1.45; }
-      .evidence { padding: 0.7rem; border-left: 3px solid var(--sage); background: var(--sage-soft); border-radius: 4px 12px 12px 4px; color: #34493b; font-size: 0.7rem; line-height: 1.4; }
+      .evidence { padding: 0.72rem; border-left: 3px solid var(--sage); background: rgba(223,231,221,0.72); border-radius: 3px 11px 11px 3px; color: #34493b; font-size: 0.7rem; line-height: 1.42; }
+
+      .state-lab { margin-top: 1.2rem; padding: clamp(1rem, 2.5vw, 1.4rem); border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,252,0.66); }
+      .state-lab header { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; margin-bottom: 0.8rem; }
+      .state-lab h2 { margin: 0; font-size: 1rem; letter-spacing: -0.025em; }
+      .state-lab header span { color: var(--ink-soft); font-size: 0.7rem; }
+      .state-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 0.65rem; }
+      .state-card { min-width: 0; min-height: 118px; padding: 0.78rem; border: 1px solid var(--line); border-radius: 13px; background: var(--surface-solid); }
+      .state-card .state-icon { display: grid; width: 30px; height: 30px; margin-bottom: 0.62rem; place-items: center; border-radius: 9px; color: var(--sage); background: var(--sage-soft); font-size: 0.72rem; font-weight: 850; }
+      .state-card strong { display: block; margin-bottom: 0.24rem; font-size: 0.74rem; }
+      .state-card p { margin: 0; color: var(--ink-soft); font-size: 0.66rem; line-height: 1.4; }
+      .state-card.warning .state-icon { color: #9b512f; background: var(--apricot-soft); }
 
       .continuity {
         display: grid;
@@ -333,6 +392,7 @@
         .detail-pane .detail-hero { grid-row: span 3; }
         .desktop-grid { grid-template-columns: minmax(245px, 0.75fr) minmax(0, 1.25fr); }
         .evidence-pane { grid-column: 1 / -1; display: grid; grid-template-columns: 170px minmax(0,1fr); gap: 0.8rem; border-top: 1px solid var(--line); border-left: 0; }
+        .state-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
       }
 
       @media (max-width: 680px) {
@@ -345,7 +405,7 @@
         .mode-tab { padding-inline: 0.35rem; font-size: 0.72rem; }
         .stage-label { flex-wrap: wrap; }
         .phone-wrap, .tablet-wrap, .desktop-wrap { padding: 0.5rem; }
-        .phone { width: 100%; height: 720px; min-height: 0; border-width: 5px; border-radius: 30px; }
+        .phone { width: 100%; height: 740px; min-height: 0; border-width: 1px; border-radius: 22px; }
         .tablet, .desktop { border-width: 1px; border-radius: 20px; }
         .tablet-toolbar, .desktop-top { grid-template-columns: minmax(0,1fr); }
         .toolbar-actions { overflow-x: auto; padding-bottom: 0.15rem; }
@@ -355,6 +415,9 @@
         .detail-pane, .evidence-pane { display: block; }
         .detail-pane .detail-hero, .evidence-pane .photo { max-width: 100%; }
         .desktop-top .toolbar-actions { display: none; }
+        .state-lab header { display: block; }
+        .state-lab header span { display: block; margin-top: 0.25rem; }
+        .state-grid { grid-template-columns: 1fr; }
         .continuity { grid-template-columns: 1fr; }
       }
 
@@ -416,22 +479,28 @@
                   <div class="chip-row"><span class="chip active">Filters · 2</span><span class="chip">Sort</span><span class="chip">Map</span><span class="chip">Refresh</span></div>
                 </div>
                 <div class="phone-results">
-                  <article class="phone-card">
-                    <div class="photo" role="img" aria-label="Abstract warm food-photo placeholder"></div>
+                  <article class="phone-card selected">
+                    <div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div>
                     <div class="card-copy"><h3>Market &amp; Main</h3><p class="card-meta"><span class="rating">4.6 · 318</span><span class="status">Likely open</span></p><p class="card-meta">New American · 0.8 mi</p><p class="card-reason">Strong rating and close to the search center.</p></div>
                   </article>
                   <article class="phone-card">
-                    <div class="photo alt" role="img" aria-label="Abstract green and clay food-photo placeholder"></div>
+                    <div class="photo alt" data-mark="EJ" role="img" aria-label="Photo unavailable for El Jardín Kitchen"></div>
                     <div class="card-copy"><h3>El Jardín Kitchen</h3><p class="card-meta"><span class="rating">4.5 · 204</span><span class="status">Hours listed</span></p><p class="card-meta">Mexican · Downtown</p><p class="card-reason">Well-reviewed local option with dinner hours.</p></div>
                   </article>
                   <article class="phone-card">
-                    <div class="photo green" role="img" aria-label="Abstract herb-toned food-photo placeholder"></div>
+                    <div class="photo green" data-mark="JT" role="img" aria-label="Photo unavailable for Juniper Table"></div>
                     <div class="card-copy"><h3>Juniper Table</h3><p class="card-meta"><span class="rating">4.4 · 126</span><span class="status">Likely open</span></p><p class="card-meta">Mediterranean · 1.4 mi</p></div>
                   </article>
                 </div>
               </div>
               <aside class="bottom-sheet glass" aria-label="Selected restaurant">
-                <div class="sheet-head"><div><strong>Market &amp; Main</strong><span>4.6 · New American · 0.8 mi</span></div><button class="icon-button" aria-label="Close selected restaurant">×</button></div>
+                <div class="sheet-grabber" aria-hidden="true"></div>
+                <div class="sheet-summary">
+                  <div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div>
+                  <div class="sheet-head"><div><strong>Market &amp; Main</strong><span>New American · Downtown</span><span><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span> · 0.8 mi</span></div></div>
+                  <button class="icon-button" aria-label="Close selected restaurant">×</button>
+                </div>
+                <p class="sheet-evidence"><strong>Why consider it:</strong> close to the search center, strongly rated, and dinner hours are listed.</p>
                 <div class="actions"><a class="action primary" href="#compact-panel">Details</a><button class="action">Save</button><a class="action accent" href="#compact-panel">Directions</a></div>
               </aside>
             </div>
@@ -453,20 +522,22 @@
                 <section class="pane">
                   <div class="pane-title"><strong>40 restaurants</strong><span>12 mapped</span></div>
                   <div class="compact-list">
-                    <article class="compact-row selected"><div class="photo"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span></p><p>New American · 0.8 mi</p></div></article>
-                    <article class="compact-row"><div class="photo alt"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span></p><p>Mexican · Downtown</p></div></article>
-                    <article class="compact-row"><div class="photo green"></div><div><h3>Juniper Table</h3><p><span class="rating">4.4 · 126</span></p><p>Mediterranean · 1.4 mi</p></div></article>
-                    <article class="compact-row"><div class="photo"></div><div><h3>Little Manila Grill</h3><p><span class="rating">4.4 · 93</span></p><p>Filipino · Midtown</p></div></article>
+                    <article class="compact-row selected"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · 0.8 mi</p></div></article>
+                    <article class="compact-row"><div class="photo alt" data-mark="EJ"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span> · Hours listed</p><p>Mexican · Downtown</p></div></article>
+                    <article class="compact-row"><div class="photo green" data-mark="JT"></div><div><h3>Juniper Table</h3><p><span class="rating">4.4 · 126</span> · <span class="status">Likely open</span></p><p>Mediterranean · 1.4 mi</p></div></article>
+                    <article class="compact-row"><div class="photo" data-mark="LM"></div><div><h3>Little Manila Grill</h3><p><span class="rating">4.4 · 93</span> · Hours listed</p><p>Filipino · Midtown</p></div></article>
                   </div>
                 </section>
                 <section class="pane map-pane" aria-label="Static map concept">
-                  <div class="map-canvas"></div><span class="map-pin one"></span><span class="map-pin two"></span><span class="map-pin three"></span>
-                  <article class="map-place-card glass"><div class="photo"></div><div><h3>Market &amp; Main</h3><p>Selected on the map. Approx. 0.8 mi from Stockton center.</p></div></article>
+                  <div class="map-canvas"></div><span class="map-pin one"></span><span class="map-pin two"></span><span class="map-pin three"></span><span class="origin-dot" title="Search center"></span>
+                  <div class="map-controls" aria-label="Static map controls"><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div>
+                  <article class="map-place-card glass"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · Approx. 0.8 mi from Stockton center.</p></div></article>
                 </section>
                 <aside class="pane detail-pane">
-                  <div class="detail-hero"><div class="photo"></div></div>
-                  <div><h2>Market &amp; Main</h2><p>New American · Downtown Stockton</p><div class="actions"><button class="action primary">Details</button><button class="action">Save</button><button class="action accent">Directions</button></div></div>
-                  <div class="fact-list"><div class="fact"><span>Rating</span><strong>4.6 · 318 reviews</strong></div><div class="fact"><span>Hours</span><strong class="status">Likely open until 10</strong></div><div class="fact"><span>Why consider it</span><strong>Close, well reviewed</strong></div></div>
+                  <div class="detail-hero"><div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div></div>
+                  <div><h2>Market &amp; Main</h2><p>New American · Downtown Stockton</p><div class="evidence"><strong>Why consider it</strong><br>Close to the search center, strongly rated, and dinner hours are listed.</div></div>
+                  <div class="fact-list"><div class="fact"><span>Rating</span><strong>4.6 · 318 reviews</strong></div><div class="fact"><span>Hours</span><strong class="status">Likely open until 10</strong></div><div class="fact"><span>Distance</span><strong>Approx. 0.8 mi</strong></div><div class="fact"><span>Address</span><strong>120 E Main Street</strong></div></div>
+                  <div class="actions"><button class="action primary">Details</button><button class="action">Save</button><button class="action accent">Directions</button></div>
                 </aside>
               </div>
             </div>
@@ -484,21 +555,36 @@
                 <section class="desktop-list">
                   <div class="list-tools"><strong>40 results</strong><span>12 on map · Best match</span></div>
                   <div class="compact-list">
-                    <article class="compact-row selected"><div class="photo"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · 0.8 mi</p></div></article>
-                    <article class="compact-row"><div class="photo alt"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span></p><p>Mexican · Downtown</p></div></article>
-                    <article class="compact-row"><div class="photo green"></div><div><h3>Juniper Table</h3><p><span class="rating">4.4 · 126</span></p><p>Mediterranean · 1.4 mi</p></div></article>
-                    <article class="compact-row"><div class="photo"></div><div><h3>Little Manila Grill</h3><p><span class="rating">4.4 · 93</span></p><p>Filipino · Midtown</p></div></article>
-                    <article class="compact-row"><div class="photo alt"></div><div><h3>North Channel Café</h3><p><span class="rating">4.3 · 171</span></p><p>Café · Waterfront</p></div></article>
+                    <article class="compact-row selected"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · 0.8 mi</p></div></article>
+                    <article class="compact-row"><div class="photo alt" data-mark="EJ"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span> · Hours listed</p><p>Mexican · Downtown</p></div></article>
+                    <article class="compact-row"><div class="photo green" data-mark="JT"></div><div><h3>Juniper Table</h3><p><span class="rating">4.4 · 126</span> · <span class="status">Likely open</span></p><p>Mediterranean · 1.4 mi</p></div></article>
+                    <article class="compact-row"><div class="photo" data-mark="LM"></div><div><h3>Little Manila Grill</h3><p><span class="rating">4.4 · 93</span> · Hours listed</p><p>Filipino · Midtown</p></div></article>
+                    <article class="compact-row"><div class="photo alt" data-mark="NC"></div><div><h3>North Channel Café</h3><p><span class="rating">4.3 · 171</span> · Hours listed</p><p>Café · Waterfront</p></div></article>
                   </div>
                 </section>
                 <section class="desktop-map-wrap" aria-label="Static desktop map concept">
-                  <div class="desktop-map"></div><span class="map-pin one"></span><span class="map-pin two"></span><span class="map-pin three"></span>
+                  <div class="desktop-map"></div><span class="map-pin one"></span><span class="map-pin two"></span><span class="map-pin three"></span><span class="origin-dot" title="Search center"></span>
+                  <div class="map-controls" aria-label="Static map controls"><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div>
                   <article class="desktop-map-card glass"><div class="topline"><h2>Stockton center</h2><span class="status">12 mapped</span></div><p>Map context stays visible while the right panel holds decision evidence and actions.</p></article>
                 </section>
-                <aside class="evidence-pane"><div class="photo"></div><div><h2>Market &amp; Main</h2><p>New American · Downtown Stockton<br><span class="rating">4.6 · 318 reviews</span> · <span class="status">Likely open</span></p><div class="evidence"><strong>Why consider it</strong><br>Strong public rating, close to the resolved search center, and dinner hours are listed.</div><div class="fact-list"><div class="fact"><span>Distance</span><strong>Approx. 0.8 mi</strong></div><div class="fact"><span>Address</span><strong>120 E Main Street</strong></div></div><div class="actions"><button class="action primary">View details</button><button class="action">Save</button><button class="action accent">Directions</button></div></div></aside>
+                <aside class="evidence-pane"><div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div><div><h2>Market &amp; Main</h2><p>New American · Downtown Stockton<br><span class="rating">4.6 · 318 reviews</span> · <span class="status">Likely open</span></p><div class="evidence"><strong>Why consider it</strong><br>Strong public rating, close to the resolved search center, and dinner hours are listed.</div><div class="fact-list"><div class="fact"><span>Distance</span><strong>Approx. 0.8 mi from Stockton center</strong></div><div class="fact"><span>Address</span><strong>120 E Main Street</strong></div><div class="fact"><span>Hours</span><strong>Listed until 10 PM</strong></div></div><div class="actions"><button class="action primary">View details</button><button class="action">Save</button><button class="action accent">Directions</button></div></div></aside>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="state-lab" aria-labelledby="state-lab-title">
+        <header><h2 id="state-lab-title">Calm system states</h2><span>Compact copy, one useful next action, no false certainty</span></header>
+        <div class="state-grid">
+          <article class="state-card warning"><span class="state-icon">!</span><strong>Provider taking longer</strong><p>Results are still loading. Retry remains available without replacing saved browser results.</p></article>
+          <article class="state-card"><span class="state-icon">?</span><strong>Add more place detail</strong><p>Several cities match. Choose a suggestion or add region and country.</p></article>
+          <article class="state-card"><span class="state-icon">0</span><strong>No matches yet</strong><p>Clear a filter or broaden the search. Existing search context stays intact.</p></article>
+          <article class="state-card warning"><span class="state-icon">↻</span><strong>Backend unavailable</strong><p>Browser-saved results may remain visible and clearly labeled as not fresh.</p></article>
+          <article class="state-card"><span class="state-icon">♡</span><strong>No saved places</strong><p>Save restaurants while comparing them to build a personal shortlist.</p></article>
+          <article class="state-card"><span class="state-icon">MM</span><strong>Photo unavailable</strong><p>Keep the listing readable with an initial mark and honest fallback label.</p></article>
+          <article class="state-card"><span class="state-icon">⌖</span><strong>Map unavailable</strong><p>Restaurant results remain available in the list with their location text.</p></article>
+          <article class="state-card warning"><span class="state-icon">×</span><strong>Offline</strong><p>Keep local recent-search controls usable and offer a clear reconnect action.</p></article>
         </div>
       </section>
 
