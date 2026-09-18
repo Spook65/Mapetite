@@ -60,11 +60,12 @@ Treat SwiftUI as a traction-based investment, not the prerequisite for learning 
 
 1. Keep the responsive web app as the canonical product.
 2. Run an iOS web-readiness sprint: safe areas, keyboard, external navigation, offline/provider errors, touch targets, and privacy copy.
-3. Add Capacitor in a separate approved implementation pass and isolated branch.
-4. Bundle the reviewed web build in the app for predictable submission behavior unless the product explicitly chooses and documents a remote-content model.
-5. Start with a small internal TestFlight group.
-6. Move to a capped external group only after crash-free testing, backend limits, review metadata, and a privacy policy are ready.
-7. Revisit SwiftUI after observing retention, native feature requests, and wrapper limitations.
+3. Configure the installed app to open directly into the search shell; keep the marketing landing page as a web entry, with only an optional first-run introduction in iOS.
+4. Add Capacitor in a separate approved implementation pass and isolated branch.
+5. Bundle the reviewed web build in the app for predictable submission behavior unless the product explicitly chooses and documents a remote-content model.
+6. Start with a small internal TestFlight group.
+7. Move to a capped external group only after crash-free testing, backend limits, review metadata, and a privacy policy are ready.
+8. Revisit SwiftUI after observing retention, native feature requests, and wrapper limitations.
 
 The wrapper must feel like a durable restaurant discovery utility, not a website with an icon. Mapetite’s saved shortlist, adaptive list/map comparison, explicit location flow, robust place validation, and external directions provide a stronger value story, but they still need polished native-shell behavior.
 

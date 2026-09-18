@@ -168,7 +168,7 @@
       }
       .app-logo { font-size: 1.02rem; font-weight: 850; letter-spacing: -0.035em; }
       .app-logo i { color: var(--apricot); font-style: normal; }
-      .avatar { display: grid; width: 32px; height: 32px; place-items: center; border-radius: 50%; color: white; background: var(--sage); font-size: 0.72rem; font-weight: 800; }
+      .avatar { display: grid; width: 32px; height: 32px; place-items: center; border: 0; border-radius: 50%; color: white; background: var(--sage); font-size: 0.72rem; font-weight: 800; cursor: pointer; }
       .icon-button { display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: rgba(255,255,252,0.88); cursor: pointer; }
 
       .glass {
@@ -188,6 +188,69 @@
       .chip-row { display: flex; gap: 0.45rem; overflow: hidden; }
       .chip { flex: 0 0 auto; padding: 0.48rem 0.7rem; border: 1px solid var(--line); border-radius: 10px; color: var(--ink-soft); background: rgba(255,255,252,0.72); font-size: 0.72rem; font-weight: 720; }
       .chip.active { color: white; border-color: var(--sage); background: var(--sage); }
+      button.chip { cursor: pointer; }
+
+      .restore-banner { display: flex; align-items: center; justify-content: space-between; gap: 0.65rem; min-width: 0; margin: 0.7rem 0; padding: 0.58rem 0.65rem; border: 1px solid rgba(97,117,101,0.26); border-radius: 12px; background: rgba(239,244,237,0.86); }
+      .restore-banner div { min-width: 0; }
+      .restore-banner strong { display: block; overflow: hidden; color: #34493b; font-size: 0.69rem; text-overflow: ellipsis; white-space: nowrap; }
+      .restore-banner span { display: block; margin-top: 0.12rem; color: var(--ink-soft); font-size: 0.59rem; }
+      .restore-banner button, .text-button { flex: 0 0 auto; padding: 0.35rem 0.5rem; border: 0; color: var(--sage); background: transparent; font-size: 0.64rem; font-weight: 820; cursor: pointer; }
+      .stale-label { display: flex; align-items: center; gap: 0.35rem; margin-bottom: 0.55rem; color: #75513f; font-size: 0.61rem; }
+      .stale-label::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--apricot); }
+
+      .command-panel[hidden] { display: none !important; }
+      .command-panel { position: absolute; z-index: 30; overflow-y: auto; border: 1px solid rgba(42,58,49,0.16); background: rgba(255,255,252,0.96); box-shadow: 0 24px 65px rgba(31,42,35,0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); animation: command-in 180ms ease-out both; }
+      @keyframes command-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+      .command-sheet { right: 0.55rem; bottom: max(0.55rem, env(safe-area-inset-bottom)); left: 0.55rem; max-height: calc(100% - 70px); padding: 0.88rem; border-radius: 20px; }
+      .command-popover { top: 126px; width: min(450px, calc(100% - 1.5rem)); max-height: calc(100% - 142px); padding: 0.9rem; border-radius: 17px; }
+      .command-popover.search-panel { left: calc(50% - 225px); }
+      .command-popover.filter-panel { right: 0.75rem; width: min(390px, calc(100% - 1.5rem)); }
+      .desktop .command-popover { top: 68px; }
+      .desktop .command-popover.search-panel { left: calc(50% - 225px); }
+      .phone.command-open .bottom-sheet { opacity: 0; pointer-events: none; transform: translateY(10px); }
+      .bottom-sheet { transition: opacity 150ms ease, transform 150ms ease; }
+      .command-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.75rem; margin-bottom: 0.8rem; }
+      .command-head div { min-width: 0; }
+      .command-head h3 { margin: 0; font-size: 1rem; letter-spacing: -0.025em; }
+      .command-head p { margin: 0.2rem 0 0; color: var(--ink-soft); font-size: 0.65rem; line-height: 1.4; }
+      .field-grid { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr); gap: 0.55rem; }
+      .field { min-width: 0; }
+      .field.country { grid-column: 1 / -1; }
+      .field label { display: block; margin-bottom: 0.25rem; color: var(--ink-soft); font-size: 0.62rem; font-weight: 780; }
+      .field input { width: 100%; min-width: 0; height: 42px; padding: 0 0.65rem; border: 1px solid var(--line-strong); border-radius: 10px; color: var(--ink); background: #fff; font: inherit; font-size: 0.76rem; }
+      .suggestions { margin-top: 0.52rem; overflow: hidden; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+      .suggestion { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.55rem 0.65rem; border-bottom: 1px solid var(--line); font-size: 0.66rem; }
+      .suggestion:last-child { border-bottom: 0; }
+      .suggestion strong { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .suggestion span { flex: 0 0 auto; color: var(--ink-soft); }
+      .suggestion.selected { background: var(--sage-soft); }
+      .command-section { margin-top: 0.8rem; }
+      .command-section-head { display: flex; align-items: baseline; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.45rem; }
+      .command-section-head strong { font-size: 0.7rem; }
+      .command-section-head span, .helper-copy { color: var(--ink-soft); font-size: 0.59rem; }
+      .recent-search-list { display: grid; gap: 0.35rem; }
+      .recent-search { display: flex; align-items: center; justify-content: space-between; gap: 0.55rem; min-width: 0; padding: 0.5rem 0.58rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+      .recent-search strong { min-width: 0; overflow: hidden; font-size: 0.66rem; text-overflow: ellipsis; white-space: nowrap; }
+      .count-badge { flex: 0 0 auto; padding: 0.2rem 0.38rem; border-radius: 7px; color: #49604f; background: var(--sage-soft); font-size: 0.56rem; font-weight: 820; }
+      .quick-row { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.5rem; }
+      .quick-row span { padding: 0.32rem 0.45rem; border-radius: 8px; color: var(--ink-soft); background: #f1f1ec; font-size: 0.59rem; }
+      .paused-state { display: flex; gap: 0.45rem; margin-top: 0.55rem; padding: 0.48rem 0.55rem; border-radius: 9px; color: #75513f; background: #fbede5; font-size: 0.6rem; line-height: 1.35; }
+      .command-footer { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.85rem; padding-top: 0.75rem; border-top: 1px solid var(--line); }
+      .command-footer .action { display: grid; min-height: 44px; place-items: center; }
+      .command-footer .action.primary, .command-footer .action.accent { flex: 1; }
+
+      .filter-group { padding: 0.68rem 0; border-top: 1px solid var(--line); }
+      .filter-group:first-of-type { border-top: 0; padding-top: 0; }
+      .filter-group > strong { display: block; margin-bottom: 0.46rem; font-size: 0.7rem; }
+      .choice-row { display: flex; flex-wrap: wrap; gap: 0.38rem; }
+      .choice { min-width: 39px; padding: 0.44rem 0.55rem; border: 1px solid var(--line); border-radius: 9px; color: var(--ink-soft); background: #fff; font-size: 0.66rem; font-weight: 780; text-align: center; }
+      .choice.active { color: white; border-color: var(--sage); background: var(--sage); }
+      .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.4rem 0; color: var(--ink); font-size: 0.68rem; }
+      .switch { position: relative; width: 38px; height: 22px; border-radius: 999px; background: #c9cfca; }
+      .switch::after { content: ""; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: white; box-shadow: 0 2px 6px rgba(31,42,35,0.18); }
+      .switch.on { background: var(--sage); }
+      .switch.on::after { left: 19px; }
+      .select-row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; padding: 0.55rem 0.62rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; font-size: 0.67rem; }
 
       .photo {
         position: relative;
@@ -374,6 +437,19 @@
       .state-card p { margin: 0; color: var(--ink-soft); font-size: 0.66rem; line-height: 1.4; }
       .state-card.warning .state-icon { color: #9b512f; background: var(--apricot-soft); }
 
+      .entry-strategy { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0.8rem; margin-top: 1.2rem; }
+      .entry-card { min-width: 0; padding: 1rem; border: 1px solid var(--line); border-radius: 17px; background: rgba(255,255,252,0.72); }
+      .entry-card > span { color: var(--sage); font-size: 0.58rem; font-weight: 850; letter-spacing: 0.1em; text-transform: uppercase; }
+      .entry-card h2 { margin: 0.34rem 0 0.3rem; font-size: 1rem; letter-spacing: -0.025em; }
+      .entry-card p { margin: 0; color: var(--ink-soft); font-size: 0.7rem; line-height: 1.45; }
+      .entry-preview { display: flex; align-items: center; justify-content: space-between; gap: 0.7rem; margin-top: 0.72rem; padding: 0.62rem; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+      .entry-preview div { min-width: 0; }
+      .entry-preview strong { display: block; font-size: 0.72rem; }
+      .entry-preview small { display: block; margin-top: 0.16rem; overflow: hidden; color: var(--ink-soft); font-size: 0.58rem; text-overflow: ellipsis; white-space: nowrap; }
+      .entry-preview .action { flex: 0 0 auto; display: grid; place-items: center; }
+      .session-strip { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.65rem; }
+      .session-strip span { padding: 0.34rem 0.48rem; border-radius: 8px; color: var(--ink-soft); background: #f0f1ed; font-size: 0.58rem; }
+
       .continuity {
         display: grid;
         grid-template-columns: repeat(3, minmax(0,1fr));
@@ -406,6 +482,9 @@
         .stage-label { flex-wrap: wrap; }
         .phone-wrap, .tablet-wrap, .desktop-wrap { padding: 0.5rem; }
         .phone { width: 100%; height: 740px; min-height: 0; border-width: 1px; border-radius: 22px; }
+        .command-sheet .field-grid { grid-template-columns: 1fr; }
+        .command-sheet .field.country { grid-column: auto; }
+        .command-popover.search-panel { left: 0.75rem; }
         .tablet, .desktop { border-width: 1px; border-radius: 20px; }
         .tablet-toolbar, .desktop-top { grid-template-columns: minmax(0,1fr); }
         .toolbar-actions { overflow-x: auto; padding-bottom: 0.15rem; }
@@ -418,6 +497,7 @@
         .state-lab header { display: block; }
         .state-lab header span { display: block; margin-top: 0.25rem; }
         .state-grid { grid-template-columns: 1fr; }
+        .entry-strategy { grid-template-columns: 1fr; }
         .continuity { grid-template-columns: 1fr; }
       }
 
@@ -462,22 +542,25 @@
             <div class="phone" aria-label="Compact Mapetite concept">
               <div class="app-bar">
                 <span class="app-logo">Mapetite<i>.</i></span>
-                <div style="display:flex;gap:.4rem"><button class="icon-button" aria-label="Saved places">♡</button><span class="avatar" aria-label="Demo profile">BH</span></div>
+                <div style="display:flex;gap:.4rem"><button class="icon-button" aria-label="Saved places">♡</button><button class="avatar" aria-label="Account profile">BH</button></div>
               </div>
               <div class="phone-content">
                 <div class="search-command glass">
-                  <button class="icon-button" aria-label="Edit search">⌕</button>
-                  <div class="search-copy"><small>Find restaurants in</small><strong>Stockton, California</strong></div>
+                  <button class="icon-button" data-open-panel="phone-search" aria-controls="phone-search" aria-expanded="false" aria-label="Edit search">⌕</button>
+                  <div class="search-copy"><small>Find restaurants · Any cuisine</small><strong>Stockton, California</strong></div>
                   <button class="search-go">Search</button>
                 </div>
+                <div class="restore-banner"><div><strong>Last saved search: Modesto, California</strong><span>Browser-saved · 18 minutes ago · may be stale</span></div><button>Restore</button></div>
                 <div class="recent-block">
-                  <div class="section-line"><h2>Pick up where you left off</h2><span>Browser only</span></div>
-                  <div class="chip-row"><span class="chip">Modesto</span><span class="chip">San Diego</span><span class="chip">Kyoto</span></div>
+                  <div class="section-line"><h2>Recent searches</h2><button class="text-button">Clear recent</button></div>
+                  <div class="chip-row"><span class="chip">Modesto · 40</span><span class="chip">San Diego · 36</span><span class="chip">Kyoto · 28</span></div>
+                  <p class="helper-copy">Saved in this browser only. Precise location is not included.</p>
                 </div>
                 <div class="recent-block">
                   <div class="section-line"><h2>40 restaurants</h2><span>Best match</span></div>
-                  <div class="chip-row"><span class="chip active">Filters · 2</span><span class="chip">Sort</span><span class="chip">Map</span><span class="chip">Refresh</span></div>
+                  <div class="chip-row"><button class="chip active" data-open-panel="phone-filters" aria-controls="phone-filters" aria-expanded="false">Filters &amp; sort · 2</button><button class="chip">Map</button><button class="chip">Refresh</button></div>
                 </div>
+                <div class="stale-label">Showing fresh results · restored results would be labeled here while refreshing</div>
                 <div class="phone-results">
                   <article class="phone-card selected">
                     <div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div>
@@ -493,6 +576,29 @@
                   </article>
                 </div>
               </div>
+              <aside class="command-panel command-sheet search-panel" id="phone-search" aria-label="Edit restaurant search" hidden>
+                <div class="sheet-grabber" aria-hidden="true"></div>
+                <div class="command-head"><div><h3>Search a place</h3><p>Choose a suggestion or enter enough location detail for safe validation.</p></div><button class="icon-button" data-close-panel aria-label="Close search sheet">×</button></div>
+                <div class="field-grid">
+                  <div class="field"><label for="phone-city">City</label><input id="phone-city" value="Stockton" /></div>
+                  <div class="field"><label for="phone-region">State / Province / Region</label><input id="phone-region" value="California" /></div>
+                  <div class="field country"><label for="phone-country">Country</label><input id="phone-country" value="United States" /></div>
+                </div>
+                <div class="suggestions" aria-label="Place suggestions"><div class="suggestion selected"><strong>Stockton, California, United States</strong><span>City</span></div><div class="suggestion"><strong>Stockton-on-Tees, England, United Kingdom</strong><span>Town</span></div></div>
+                <div class="paused-state"><strong>429:</strong><span>Suggestions paused. You can still search with the fields above.</span></div>
+                <div class="command-section"><div class="command-section-head"><strong>Recent searches</strong><button class="text-button">Clear recent searches</button></div><div class="recent-search-list"><div class="recent-search"><strong>Modesto, California, United States</strong><span class="count-badge">40 results</span></div><div class="recent-search"><strong>Kyoto, Japan</strong><span class="count-badge">28 results</span></div></div><p class="helper-copy">Recent searches stay in this browser. Shared coordinates are never added.</p></div>
+                <div class="command-section"><div class="command-section-head"><strong>Quick examples</strong><span>Shown when recent searches are empty</span></div><div class="quick-row"><span>Stockton</span><span>Modesto</span><span>San Diego</span><span>Kyoto</span><span>London</span></div></div>
+                <div class="command-footer"><button class="action">Use My Location</button><button class="action">Clear all</button><button class="action accent">Search restaurants</button></div>
+              </aside>
+              <aside class="command-panel command-sheet filter-panel" id="phone-filters" aria-label="Filters and sort" hidden>
+                <div class="sheet-grabber" aria-hidden="true"></div>
+                <div class="command-head"><div><h3>Filters &amp; sort</h3><p>Two filters currently change these results.</p></div><button class="icon-button" data-close-panel aria-label="Close filters sheet">×</button></div>
+                <div class="filter-group"><strong>Price range</strong><div class="choice-row"><span class="choice active">$</span><span class="choice active">$$</span><span class="choice">$$$</span><span class="choice">$$$$</span></div></div>
+                <div class="filter-group"><strong>Minimum rating</strong><div class="choice-row"><span class="choice">Any</span><span class="choice active">4.0+</span><span class="choice">4.5+</span></div></div>
+                <div class="filter-group"><div class="toggle-row"><span>Prioritize likely open</span><span class="switch on" aria-label="Prioritize likely open enabled"></span></div><div class="toggle-row"><span>Saved only</span><span class="switch" aria-label="Saved only disabled"></span></div></div>
+                <div class="filter-group"><strong>Sort</strong><div class="select-row"><span>Best match</span><strong>⌄</strong></div></div>
+                <div class="command-footer"><button class="action">Clear filters</button><button class="action primary">Apply 2 filters</button></div>
+              </aside>
               <aside class="bottom-sheet glass" aria-label="Selected restaurant">
                 <div class="sheet-grabber" aria-hidden="true"></div>
                 <div class="sheet-summary">
@@ -513,14 +619,31 @@
           <div class="stage-label"><strong>Expanded tablet or foldable</strong><span>Shared command bar · list + map + contextual detail</span></div>
           <div class="tablet-wrap">
             <div class="tablet">
-              <div class="app-bar"><span class="app-logo">Mapetite<i>.</i></span><div style="display:flex;gap:.4rem"><button class="icon-button" aria-label="Saved places">♡</button><span class="avatar">BH</span></div></div>
+              <div class="app-bar"><span class="app-logo">Mapetite<i>.</i></span><div style="display:flex;gap:.4rem"><button class="icon-button" aria-label="Saved places">♡</button><button class="avatar" aria-label="Account profile">BH</button></div></div>
               <div class="tablet-toolbar">
-                <div class="search-command glass"><button class="icon-button" aria-label="Edit location">⌕</button><div class="search-copy"><small>Restaurant search</small><strong>Stockton, California · Dinner</strong></div><button class="search-go">Search</button></div>
-                <div class="toolbar-actions"><button class="chip active">Filters · 2</button><button class="chip">Sort</button><button class="chip">Show all</button></div>
+                <div class="search-command glass"><button class="icon-button" data-open-panel="tablet-search" aria-controls="tablet-search" aria-expanded="false" aria-label="Edit location">⌕</button><div class="search-copy"><small>Restaurant search · Any cuisine</small><strong>Stockton, California</strong></div><button class="search-go">Search</button></div>
+                <div class="toolbar-actions"><button class="chip active" data-open-panel="tablet-filters" aria-controls="tablet-filters" aria-expanded="false">Filters &amp; sort · 2</button><button class="chip">Map</button><button class="chip">Refresh</button></div>
               </div>
+              <aside class="command-panel command-popover search-panel" id="tablet-search" aria-label="Edit restaurant search" hidden>
+                <div class="command-head"><div><h3>Search a place</h3><p>The list, map, and selected restaurant remain visible behind this anchored panel.</p></div><button class="icon-button" data-close-panel aria-label="Close search panel">×</button></div>
+                <div class="field-grid"><div class="field"><label for="tablet-city">City</label><input id="tablet-city" value="Stockton" /></div><div class="field"><label for="tablet-region">State / Province / Region</label><input id="tablet-region" value="California" /></div><div class="field country"><label for="tablet-country">Country</label><input id="tablet-country" value="United States" /></div></div>
+                <div class="suggestions"><div class="suggestion selected"><strong>Stockton, California, United States</strong><span>City</span></div><div class="suggestion"><strong>Stockton-on-Tees, England, United Kingdom</strong><span>Town</span></div></div>
+                <div class="command-section"><div class="command-section-head"><strong>Recent searches</strong><button class="text-button">Clear recent searches</button></div><div class="recent-search-list"><div class="recent-search"><strong>Modesto, California, United States</strong><span class="count-badge">40 results</span></div><div class="recent-search"><strong>Kyoto, Japan</strong><span class="count-badge">28 results</span></div></div><p class="helper-copy">Browser-only history. Use My Location is always explicit and is not stored here.</p></div>
+                <div class="quick-row"><span>Stockton</span><span>San Diego</span><span>Kyoto</span><span>Paris</span><span>London</span></div>
+                <div class="command-footer"><button class="action">Use My Location</button><button class="action">Clear all</button><button class="action accent">Search restaurants</button></div>
+              </aside>
+              <aside class="command-panel command-popover filter-panel" id="tablet-filters" aria-label="Filters and sort" hidden>
+                <div class="command-head"><div><h3>Filters &amp; sort</h3><p>One place for every narrowing and ordering control.</p></div><button class="icon-button" data-close-panel aria-label="Close filter panel">×</button></div>
+                <div class="filter-group"><strong>Price range</strong><div class="choice-row"><span class="choice active">$</span><span class="choice active">$$</span><span class="choice">$$$</span><span class="choice">$$$$</span></div></div>
+                <div class="filter-group"><strong>Minimum rating</strong><div class="choice-row"><span class="choice">Any</span><span class="choice active">4.0+</span><span class="choice">4.5+</span></div></div>
+                <div class="filter-group"><div class="toggle-row"><span>Prioritize likely open</span><span class="switch on"></span></div><div class="toggle-row"><span>Saved only</span><span class="switch"></span></div></div>
+                <div class="filter-group"><strong>Sort</strong><div class="select-row"><span>Best match</span><strong>⌄</strong></div></div>
+                <div class="command-footer"><button class="action">Clear filters</button><button class="action primary">Apply 2 filters</button></div>
+              </aside>
               <div class="tablet-grid">
                 <section class="pane">
                   <div class="pane-title"><strong>40 restaurants</strong><span>12 mapped</span></div>
+                  <div class="restore-banner"><div><strong>Restore Modesto results</strong><span>Browser-saved · possibly stale</span></div><button>Restore</button></div>
                   <div class="compact-list">
                     <article class="compact-row selected"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · 0.8 mi</p></div></article>
                     <article class="compact-row"><div class="photo alt" data-mark="EJ"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span> · Hours listed</p><p>Mexican · Downtown</p></div></article>
@@ -550,10 +673,27 @@
           <div class="stage-label"><strong>Desktop command center</strong><span>Dense comparison without repeated controls</span></div>
           <div class="desktop-wrap">
             <div class="desktop">
-              <div class="desktop-top"><span class="app-logo">Mapetite<i>.</i></span><div class="search-command glass"><button class="icon-button" aria-label="Edit search">⌕</button><div class="search-copy"><small>Find restaurants</small><strong>Stockton, California · Any cuisine</strong></div><button class="search-go">Search</button></div><div class="toolbar-actions"><button class="chip active">Filters · 2</button><button class="chip">Sort</button><button class="chip">Refresh</button><span class="avatar">BH</span></div></div>
+              <div class="desktop-top"><span class="app-logo">Mapetite<i>.</i></span><div class="search-command glass"><button class="icon-button" data-open-panel="desktop-search" aria-controls="desktop-search" aria-expanded="false" aria-label="Edit search">⌕</button><div class="search-copy"><small>Find restaurants · Any cuisine</small><strong>Stockton, California</strong></div><button class="search-go">Search</button></div><div class="toolbar-actions"><button class="chip active" data-open-panel="desktop-filters" aria-controls="desktop-filters" aria-expanded="false">Filters &amp; sort · 2</button><button class="chip">Map</button><button class="chip">Refresh</button><button class="icon-button" aria-label="Saved places">♡</button><button class="avatar" aria-label="Account profile">BH</button></div></div>
+              <aside class="command-panel command-popover search-panel" id="desktop-search" aria-label="Edit restaurant search" hidden>
+                <div class="command-head"><div><h3>Search a place</h3><p>Resolved context stays collapsed until the user needs to edit it.</p></div><button class="icon-button" data-close-panel aria-label="Close search panel">×</button></div>
+                <div class="field-grid"><div class="field"><label for="desktop-city">City</label><input id="desktop-city" value="Stockton" /></div><div class="field"><label for="desktop-region">State / Province / Region</label><input id="desktop-region" value="California" /></div><div class="field country"><label for="desktop-country">Country</label><input id="desktop-country" value="United States" /></div></div>
+                <div class="suggestions"><div class="suggestion selected"><strong>Stockton, California, United States</strong><span>City</span></div><div class="suggestion"><strong>Stockton-on-Tees, England, United Kingdom</strong><span>Town</span></div></div>
+                <div class="paused-state"><strong>If paused:</strong><span>Suggestions stop quietly; Search remains available.</span></div>
+                <div class="command-section"><div class="command-section-head"><strong>Recent searches</strong><button class="text-button">Clear recent searches</button></div><div class="recent-search-list"><div class="recent-search"><strong>Modesto, California, United States</strong><span class="count-badge">40 results</span></div><div class="recent-search"><strong>Kyoto, Japan</strong><span class="count-badge">28 results</span></div></div><p class="helper-copy">Stored only in this browser.</p></div>
+                <div class="command-footer"><button class="action">Use My Location</button><button class="action">Clear all</button><button class="action accent">Search restaurants</button></div>
+              </aside>
+              <aside class="command-panel command-popover filter-panel" id="desktop-filters" aria-label="Filters and sort" hidden>
+                <div class="command-head"><div><h3>Filters &amp; sort</h3><p>Active filters remain visible in the toolbar count.</p></div><button class="icon-button" data-close-panel aria-label="Close filter panel">×</button></div>
+                <div class="filter-group"><strong>Price range</strong><div class="choice-row"><span class="choice active">$</span><span class="choice active">$$</span><span class="choice">$$$</span><span class="choice">$$$$</span></div></div>
+                <div class="filter-group"><strong>Minimum rating</strong><div class="choice-row"><span class="choice">Any</span><span class="choice active">4.0+</span><span class="choice">4.5+</span></div></div>
+                <div class="filter-group"><div class="toggle-row"><span>Prioritize likely open</span><span class="switch on"></span></div><div class="toggle-row"><span>Saved only</span><span class="switch"></span></div></div>
+                <div class="filter-group"><strong>Sort</strong><div class="select-row"><span>Best match</span><strong>⌄</strong></div></div>
+                <div class="command-footer"><button class="action">Clear filters</button><button class="action primary">Apply 2 filters</button></div>
+              </aside>
               <div class="desktop-grid">
                 <section class="desktop-list">
                   <div class="list-tools"><strong>40 results</strong><span>12 on map · Best match</span></div>
+                  <div class="stale-label">Fresh results · restored browser results would be labeled here</div>
                   <div class="compact-list">
                     <article class="compact-row selected"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · 0.8 mi</p></div></article>
                     <article class="compact-row"><div class="photo alt" data-mark="EJ"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span> · Hours listed</p><p>Mexican · Downtown</p></div></article>
@@ -584,8 +724,26 @@
           <article class="state-card"><span class="state-icon">♡</span><strong>No saved places</strong><p>Save restaurants while comparing them to build a personal shortlist.</p></article>
           <article class="state-card"><span class="state-icon">MM</span><strong>Photo unavailable</strong><p>Keep the listing readable with an initial mark and honest fallback label.</p></article>
           <article class="state-card"><span class="state-icon">⌖</span><strong>Map unavailable</strong><p>Restaurant results remain available in the list with their location text.</p></article>
+          <article class="state-card warning"><span class="state-icon">429</span><strong>Suggestions paused</strong><p>Autocomplete pauses quietly. City search remains available through normal validation.</p></article>
+          <article class="state-card"><span class="state-icon">◎</span><strong>Location not shared</strong><p>Continue with city search. Permission is requested only after Use My Location.</p></article>
           <article class="state-card warning"><span class="state-icon">×</span><strong>Offline</strong><p>Keep local recent-search controls usable and offer a clear reconnect action.</p></article>
         </div>
+      </section>
+
+      <section class="entry-strategy" aria-label="Web and installed app entry strategy">
+        <article class="entry-card">
+          <span>Web entry</span>
+          <h2>Light landing, then the app</h2>
+          <p>The public website keeps a concise explanation and one primary action. Search, recent history, filters, map, saved places, and account live in the app shell.</p>
+          <div class="entry-preview"><div><strong>Find restaurants by city</strong><small>Honest public listing data · no location required</small></div><button class="action accent">Open search</button></div>
+        </article>
+        <article class="entry-card">
+          <span>Installed app entry</span>
+          <h2>Open directly to discovery</h2>
+          <p>TestFlight launches into the search shell. A short first-run introduction is optional, but marketing content never blocks repeat use.</p>
+          <div class="entry-preview"><div><strong>Stockton, California</strong><small>Recent search ready · selected place preserved</small></div><button class="action primary">Continue</button></div>
+          <div class="session-strip"><span>Saved places</span><span>Account</span><span>Signed-out state: Log in</span><span>Save feedback: Added to shortlist</span></div>
+        </article>
       </section>
 
       <section class="continuity" aria-label="Adaptive continuity principles">
@@ -622,6 +780,54 @@
             event.preventDefault();
             activate(tabs[next]);
           });
+        });
+
+        const commandTriggers = Array.from(document.querySelectorAll('[data-open-panel]'));
+        const commandPanels = Array.from(document.querySelectorAll('.command-panel'));
+
+        function closeCommand(panel, restoreFocus = false) {
+          if (!panel || panel.hidden) return;
+          panel.hidden = true;
+          const shell = panel.closest('.phone, .tablet, .desktop');
+          shell?.classList.remove('command-open');
+          const trigger = commandTriggers.find((item) => item.getAttribute('aria-controls') === panel.id);
+          trigger?.setAttribute('aria-expanded', 'false');
+          if (restoreFocus) trigger?.focus();
+        }
+
+        function openCommand(trigger) {
+          const panel = document.getElementById(trigger.dataset.openPanel);
+          if (!panel) return;
+          const shell = panel.closest('.phone, .tablet, .desktop');
+          commandPanels.filter((item) => item !== panel && item.closest('.phone, .tablet, .desktop') === shell).forEach((item) => closeCommand(item));
+          panel.hidden = false;
+          shell?.classList.add('command-open');
+          trigger.setAttribute('aria-expanded', 'true');
+          panel.querySelector('input, button')?.focus();
+        }
+
+        commandTriggers.forEach((trigger) => {
+          trigger.addEventListener('click', (event) => {
+            event.stopPropagation();
+            const panel = document.getElementById(trigger.dataset.openPanel);
+            if (panel?.hidden) openCommand(trigger);
+            else closeCommand(panel, true);
+          });
+        });
+
+        document.querySelectorAll('[data-close-panel]').forEach((button) => {
+          button.addEventListener('click', () => closeCommand(button.closest('.command-panel'), true));
+        });
+
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'Escape') return;
+          const openPanel = commandPanels.find((panel) => !panel.hidden);
+          if (openPanel) closeCommand(openPanel, true);
+        });
+
+        document.addEventListener('click', (event) => {
+          const openPanel = commandPanels.find((panel) => !panel.hidden);
+          if (openPanel && !openPanel.contains(event.target)) closeCommand(openPanel);
         });
       })();
     </script>

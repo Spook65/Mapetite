@@ -20,6 +20,23 @@ The first adaptive prototype established the right information architecture but 
 
 The goal is not to imitate a native screenshot. It is to establish a web implementation that already behaves coherently when placed inside a future iOS shell.
 
+## Production feature restoration
+
+The refined shell now shows where Mapetite’s real product features belong rather than gaining visual cleanliness by omitting them:
+
+- collapsed resolved-place search summary
+- City, State / Province / Region, and Country fields
+- autocomplete results and suggestions-paused behavior
+- explicit Use My Location and Clear all actions
+- browser-local recent searches with labeled result counts
+- last-search restore with stale-result disclosure
+- price, minimum rating, prioritize-open, Saved only, and Sort controls
+- Map and Refresh commands
+- Saved and Account navigation
+- ambiguity, empty, provider, backend, map, media, offline, location, and autocomplete-rate-limit states
+
+These are static representations only. The prototype does not read or write storage, call validation or provider APIs, request location, authenticate, or modify saved state.
+
 ## Principles extracted
 
 The useful principles are broader than a particular visual effect:
@@ -108,6 +125,56 @@ No layout should create its own copy of these values. Changing viewport size sho
 
 There must never be a toolbar Sort plus a second Sort panel, or map actions repeated in both the list and selected panel.
 
+## Search command model
+
+The default search command displays resolved context, such as “Stockton, California” and “Any cuisine,” plus one Search action. The full form appears only when the user edits location context.
+
+### Compact
+
+- Open City, Region, and Country in a safe-area-aware bottom sheet.
+- Keep autocomplete, recent searches, quick examples, Use My Location, Clear all, and Search within that sheet.
+- Cap and internally scroll the sheet when the keyboard is visible.
+- Closing the sheet restores focus to the command trigger.
+- Opening the search sheet temporarily moves the selected-place sheet out of the interaction layer; it does not clear selection.
+
+### Expanded and desktop
+
+- Open the same field set as an anchored overlay above the list/map workspace.
+- Keep results, map, and selected-place evidence visible behind the overlay.
+- Avoid inserting search form rows into the page and causing a layout shift.
+- Treat suggestion failure as optional assistance failure; normal Search remains available.
+
+## Filters and sort command
+
+Filters and Sort share one command because Sort must not appear in two competing places. The toolbar count reflects only active narrowing filters.
+
+- Price uses no selected levels to mean Any price.
+- Minimum rating uses Any as the default absence of a constraint.
+- Prioritize likely open remains honest about hours confidence.
+- Saved only is available from the same surface without duplicating Saved navigation.
+- Sort changes ordering and is visually separated from narrowing filters.
+- Clear filters resets filter defaults without clearing the searched place.
+- Compact uses a bottom sheet; larger layouts use an anchored overlay.
+
+## Recent and restore behavior
+
+- Recent rows show full place context and a labeled “N results” badge.
+- Mobile helper chips may abbreviate the count but retain a readable label in the expanded search sheet.
+- Clear recent searches is scoped to browser-local history.
+- Last-search restore stays a quiet banner near results, not a competing hero.
+- Restored results use an explicit browser-saved, possibly stale label until the normal backend refresh succeeds.
+- Precise Use My Location coordinates are not added to recent-search history.
+
+## Web and installed entry
+
+### Web
+
+Keep the existing lightweight landing route for portfolio context, data honesty, and discovery. Its primary CTA opens the search shell; it should not duplicate app controls.
+
+### Installed/TestFlight
+
+Launch directly into the app shell. An optional first-run introduction may explain public listing data, explicit location, and saved-state limitations, but repeat launches must not pass through marketing content. Saved and Account remain visible in the app bar, with signed-out copy that does not block city search.
+
 ## Sticky behavior
 
 - The global app header keeps a stable height and respects safe-area insets.
@@ -125,36 +192,6 @@ There must never be a toolbar Sort plus a second Sort panel, or map actions repe
 - Search submission remains available when autocomplete is empty, offline, malformed, or rate-limited.
 - No compact action may depend on hover. Focus, pressed, selected, and disabled states need equivalent visible treatment.
 - External directions should leave the wrapper intentionally rather than opening an unbounded in-app browser.
-
-## Autocomplete behavior
-
-### Compact
-
-- Open as an anchored overlay, not an element that pushes results downward.
-- Cap height and scroll internally.
-- Keep keyboard navigation, Escape, outside-click dismissal, loading, no-match, and rate-limit states.
-- Keep Search submission available when suggestions are unavailable.
-
-### Expanded and desktop
-
-- Anchor to the shared search field.
-- Keep result width tied to the search control, not the full toolbar.
-- Preserve selected country and region context in suggestion requests.
-- Do not open a second autocomplete in another pane.
-
-## Filter behavior
-
-### Compact
-
-- A single Filters control opens a bottom sheet or full-height drawer with explicit Apply/Clear actions.
-- Any price and default rating remain absence of constraints, not removable active chips.
-- Active constraints can appear as a short summary next to the Filters control.
-
-### Expanded and desktop
-
-- Use one toolbar disclosure or one side sheet.
-- Keep active constraints visible without duplicating full controls.
-- Sorting remains ordering, not a narrowing filter.
 
 ## Map behavior
 
@@ -211,6 +248,8 @@ The selected panel should not repeat every card sentence. It adds decision conte
 - **No restaurant photo:** use the stable initial fallback.
 - **Map unavailable:** keep restaurant results usable in the list.
 - **Offline/backend unavailable:** preserve local convenience state, label cached results honestly, and offer reconnect/retry.
+- **Suggestions paused / 429:** pause autocomplete requests quietly and preserve normal Search submission.
+- **Location permission denied:** continue with city search and do not repeat-prompt automatically.
 
 ## Accessibility and motion
 
