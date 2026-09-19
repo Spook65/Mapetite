@@ -259,25 +259,27 @@
         overflow: hidden;
         aspect-ratio: 4 / 3;
         background:
-          linear-gradient(135deg, transparent 0 42%, rgba(255,255,255,0.08) 42% 44%, transparent 44% 100%),
-          linear-gradient(28deg, rgba(37,55,44,0.82), rgba(108,124,92,0.72) 47%, rgba(191,132,91,0.68));
+          radial-gradient(circle at 76% 18%, rgba(255,255,255,0.18), transparent 28%),
+          linear-gradient(118deg, transparent 0 48%, rgba(255,255,255,0.07) 48% 50%, transparent 50%),
+          linear-gradient(28deg, #293c31, #687760 48%, #b47e5f);
       }
       .photo::before {
         content: attr(data-mark);
         position: absolute;
-        top: 12%;
-        left: 12%;
+        top: 0.62rem;
+        left: 0.62rem;
         display: grid;
-        width: 34%;
-        aspect-ratio: 1;
+        min-width: 31px;
+        height: 31px;
+        padding: 0 0.38rem;
         place-items: center;
-        border: 1px solid rgba(255,255,255,0.32);
-        border-radius: 50%;
+        border: 1px solid rgba(255,255,255,0.3);
+        border-radius: 9px;
         color: rgba(255,255,252,0.92);
-        background: rgba(26,39,31,0.18);
-        font-size: clamp(0.78rem, 2vw, 1.25rem);
+        background: rgba(26,39,31,0.3);
+        font-size: clamp(0.64rem, 1.5vw, 0.82rem);
         font-weight: 820;
-        letter-spacing: -0.04em;
+        letter-spacing: 0.01em;
         backdrop-filter: blur(6px);
         -webkit-backdrop-filter: blur(6px);
       }
@@ -293,8 +295,8 @@
         letter-spacing: 0.06em;
         text-transform: uppercase;
       }
-      .photo.alt { background: linear-gradient(130deg, transparent 0 52%, rgba(255,255,255,0.09) 52% 54%, transparent 54%), linear-gradient(32deg,#4c5549,#947c61 50%,#b86445); }
-      .photo.green { background: linear-gradient(145deg, transparent 0 39%, rgba(255,255,255,0.08) 39% 41%, transparent 41%), linear-gradient(25deg,#334b3b,#687b5e 54%,#c19a6a); }
+      .photo.alt { background: radial-gradient(circle at 74% 22%, rgba(255,255,255,0.16), transparent 26%), linear-gradient(130deg, transparent 0 52%, rgba(255,255,255,0.07) 52% 54%, transparent 54%), linear-gradient(32deg,#3f4940,#826f5b 50%,#a95f45); }
+      .photo.green { background: radial-gradient(circle at 72% 19%, rgba(255,255,255,0.14), transparent 25%), linear-gradient(145deg, transparent 0 39%, rgba(255,255,255,0.07) 39% 41%, transparent 41%), linear-gradient(25deg,#2e4337,#607259 54%,#ac8b67); }
 
       .rating { display: inline-flex; align-items: center; gap: 0.24rem; color: var(--ink); font-size: 0.74rem; font-weight: 800; }
       .rating::before { content: "★"; color: #b96736; }
@@ -329,12 +331,12 @@
       .phone-card { display: grid; grid-template-columns: 92px minmax(0, 1fr); min-height: 116px; gap: 0.74rem; overflow: hidden; padding: 0.62rem; border: 1px solid var(--line); border-radius: 15px; background: var(--surface-solid); box-shadow: 0 5px 16px rgba(42,54,47,0.055); }
       .phone-card.selected { border-color: rgba(97,117,101,0.55); box-shadow: 0 0 0 2px rgba(97,117,101,0.13), 0 7px 20px rgba(42,54,47,0.07); }
       .phone-card .photo { height: 92px; border-radius: 10px; aspect-ratio: 1 / 1; }
-      .phone-card .photo::after, .compact-row .photo::after { font-size: 0.46rem; }
+      .phone-card .photo::after, .compact-row .photo::after { content: "No photo"; font-size: 0.46rem; }
       .card-copy { min-width: 0; }
       .card-copy h3 { margin: 0 0 0.3rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.94rem; line-height: 1.15; letter-spacing: -0.025em; }
       .card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 0.28rem 0.48rem; min-height: 1rem; margin: 0 0 0.28rem; color: var(--ink-soft); font-size: 0.67rem; }
       .card-meta + .card-meta { padding-top: 0.25rem; border-top: 1px solid rgba(42,58,49,0.08); }
-      .card-reason { display: -webkit-box; margin: 0.34rem 0 0; overflow: hidden; color: var(--ink-soft); font-size: 0.65rem; line-height: 1.3; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+      .card-reason { overflow: hidden; margin: 0.34rem 0 0; color: var(--ink-soft); font-size: 0.65rem; line-height: 1.3; text-overflow: ellipsis; white-space: nowrap; }
       .bottom-sheet { position: absolute; z-index: 10; right: 0.7rem; bottom: max(0.7rem, env(safe-area-inset-bottom)); left: 0.7rem; padding: 0.78rem; border-radius: 19px; }
       .sheet-grabber { width: 34px; height: 4px; margin: -0.18rem auto 0.65rem; border-radius: 999px; background: rgba(42,58,49,0.2); }
       .sheet-summary { display: grid; grid-template-columns: 54px minmax(0,1fr) auto; gap: 0.62rem; align-items: center; }
@@ -344,6 +346,8 @@
       .sheet-head div { min-width: 0; }
       .sheet-head strong { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.92rem; }
       .sheet-head span { display: block; margin-top: 0.16rem; color: var(--ink-soft); font-size: 0.65rem; }
+      .place-kicker { display: block; margin-bottom: 0.18rem; color: var(--sage); font-size: 0.55rem; font-weight: 850; letter-spacing: 0.1em; text-transform: uppercase; }
+      .signal-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.2rem 0.42rem; color: var(--ink-soft); font-size: 0.66rem; }
       .sheet-evidence { margin: 0.58rem 0; padding: 0.5rem 0.6rem; border-left: 2px solid var(--sage); border-radius: 0 9px 9px 0; color: #405046; background: rgba(223,231,221,0.66); font-size: 0.64rem; line-height: 1.32; }
       .bottom-sheet .actions { flex-wrap: nowrap; }
       .bottom-sheet .action { display: grid; flex: 1; min-height: 44px; place-items: center; text-align: center; padding-inline: 0.3rem; }
@@ -365,6 +369,8 @@
       .compact-row .photo { width: 66px; height: 66px; border-radius: 9px; aspect-ratio: 1; }
       .compact-row h3 { margin: 0 0 0.24rem; font-size: 0.79rem; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
       .compact-row p { margin: 0.16rem 0 0; color: var(--ink-soft); font-size: 0.62rem; line-height: 1.25; }
+      .compact-row .row-reason { overflow: hidden; color: #435148; text-overflow: ellipsis; white-space: nowrap; }
+      .compact-row.selected::after { content: "Selected"; position: absolute; top: 0.42rem; right: 0.45rem; color: var(--sage); font-size: 0.48rem; font-weight: 850; letter-spacing: 0.06em; text-transform: uppercase; }
 
       .map-pane { position: relative; overflow: hidden; padding: 0; background: #dce3da; }
       .map-canvas, .desktop-map {
@@ -395,6 +401,8 @@
       .map-place-card .photo::after { display: none; }
       .map-place-card h3 { margin: 0 0 0.23rem; font-size: 0.78rem; }
       .map-place-card p { margin: 0; color: var(--ink-soft); font-size: 0.64rem; line-height: 1.35; }
+      .map-place-card small { display: block; margin-bottom: 0.18rem; color: var(--sage); font-size: 0.5rem; font-weight: 850; letter-spacing: 0.08em; text-transform: uppercase; }
+      .map-availability { position: absolute; z-index: 4; left: 0.72rem; bottom: 0.72rem; max-width: 190px; padding: 0.5rem 0.58rem; border: 1px solid rgba(42,58,49,0.12); border-radius: 10px; color: var(--ink-soft); background: rgba(255,255,252,0.9); box-shadow: var(--shadow-soft); font-size: 0.58rem; line-height: 1.35; }
       .detail-pane { background: rgba(255,255,252,0.78); }
       .detail-hero { overflow: hidden; border-radius: 16px; }
       .detail-hero .photo { aspect-ratio: 16 / 11; }
@@ -425,6 +433,42 @@
       .evidence-pane h2 { margin: 0.8rem 0 0.28rem; font-size: 1.2rem; letter-spacing: -0.035em; }
       .evidence-pane p { color: var(--ink-soft); font-size: 0.72rem; line-height: 1.45; }
       .evidence { padding: 0.72rem; border-left: 3px solid var(--sage); background: rgba(223,231,221,0.72); border-radius: 3px 11px 11px 3px; color: #34493b; font-size: 0.7rem; line-height: 1.42; }
+
+      .inline-state { display: flex; align-items: flex-start; justify-content: space-between; gap: 0.7rem; margin: 0.55rem 0; padding: 0.58rem 0.64rem; border: 1px solid rgba(191,107,65,0.18); border-radius: 11px; color: #694938; background: #fbefe8; font-size: 0.62rem; line-height: 1.35; }
+      .inline-state div { min-width: 0; }
+      .inline-state strong { display: block; margin-bottom: 0.12rem; color: #53382c; }
+      .inline-state button { flex: 0 0 auto; border: 0; color: #95502f; background: transparent; font: inherit; font-weight: 820; }
+      .inline-state.neutral { border-color: rgba(97,117,101,0.2); color: var(--ink-soft); background: #eef3ec; }
+      .inline-state.neutral strong { color: #34493b; }
+
+      .context-lab { margin-top: 1.2rem; padding: clamp(1rem, 2.5vw, 1.4rem); border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,252,0.66); }
+      .context-lab > header { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; margin-bottom: 0.8rem; }
+      .context-lab h2 { margin: 0; font-size: 1rem; letter-spacing: -0.025em; }
+      .context-lab > header span { color: var(--ink-soft); font-size: 0.7rem; }
+      .context-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 0.7rem; }
+      .context-demo { min-width: 0; overflow: hidden; padding: 0.78rem; border: 1px solid var(--line); border-radius: 14px; background: #f8f8f4; }
+      .context-demo > span { color: var(--sage); font-size: 0.52rem; font-weight: 850; letter-spacing: 0.09em; text-transform: uppercase; }
+      .context-demo h3 { margin: 0.28rem 0 0.55rem; font-size: 0.77rem; }
+      .mini-result { display: grid; grid-template-columns: 38px minmax(0,1fr); gap: 0.48rem; align-items: center; padding: 0.48rem; border: 1px solid var(--line); border-radius: 10px; background: #fff; }
+      .mini-result .photo { width: 38px; border-radius: 8px; aspect-ratio: 1; }
+      .mini-result .photo::before { top: 0.3rem; left: 0.3rem; min-width: 21px; height: 21px; padding: 0; border-radius: 6px; font-size: 0.5rem; }
+      .mini-result .photo::after { display: none; }
+      .mini-result strong, .mini-result small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .mini-result strong { font-size: 0.65rem; }
+      .mini-result small { margin-top: 0.12rem; color: var(--ink-soft); font-size: 0.55rem; }
+      .mini-map { position: relative; min-height: 118px; overflow: hidden; border-radius: 11px; background: linear-gradient(31deg, transparent 0 46%, rgba(255,255,255,0.86) 46% 50%, transparent 50%), #dfe5dc; }
+      .mini-map .map-pin { top: 38%; left: 54%; width: 28px; height: 28px; background: var(--apricot); }
+      .mini-map .inline-state { position: absolute; right: 0.45rem; bottom: 0.45rem; left: 0.45rem; margin: 0; }
+
+      .navigation-model { margin-top: 1.2rem; padding: clamp(1rem, 2.5vw, 1.4rem); border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,252,0.66); }
+      .navigation-model h2 { margin: 0 0 0.3rem; font-size: 1rem; }
+      .navigation-model > p { margin: 0 0 0.8rem; color: var(--ink-soft); font-size: 0.7rem; }
+      .nav-flow { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); gap: 0.42rem; }
+      .nav-node { min-width: 0; padding: 0.62rem; border: 1px solid var(--line); border-radius: 11px; background: #fff; }
+      .nav-node strong { display: block; overflow: hidden; font-size: 0.66rem; text-overflow: ellipsis; white-space: nowrap; }
+      .nav-node span { display: block; margin-top: 0.18rem; color: var(--ink-soft); font-size: 0.55rem; line-height: 1.3; }
+      .nav-node.primary { color: white; border-color: var(--sage); background: var(--sage); }
+      .nav-node.primary span { color: rgba(255,255,255,0.76); }
 
       .state-lab { margin-top: 1.2rem; padding: clamp(1rem, 2.5vw, 1.4rem); border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,252,0.66); }
       .state-lab header { display: flex; justify-content: space-between; gap: 1rem; align-items: baseline; margin-bottom: 0.8rem; }
@@ -469,6 +513,8 @@
         .desktop-grid { grid-template-columns: minmax(245px, 0.75fr) minmax(0, 1.25fr); }
         .evidence-pane { grid-column: 1 / -1; display: grid; grid-template-columns: 170px minmax(0,1fr); gap: 0.8rem; border-top: 1px solid var(--line); border-left: 0; }
         .state-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        .context-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+        .nav-flow { grid-template-columns: repeat(3, minmax(0,1fr)); }
       }
 
       @media (max-width: 680px) {
@@ -497,6 +543,10 @@
         .state-lab header { display: block; }
         .state-lab header span { display: block; margin-top: 0.25rem; }
         .state-grid { grid-template-columns: 1fr; }
+        .context-lab > header { display: block; }
+        .context-lab > header span { display: block; margin-top: 0.25rem; }
+        .context-grid { grid-template-columns: 1fr; }
+        .nav-flow { grid-template-columns: repeat(2, minmax(0,1fr)); }
         .entry-strategy { grid-template-columns: 1fr; }
         .continuity { grid-template-columns: 1fr; }
       }
@@ -585,6 +635,7 @@
                   <div class="field country"><label for="phone-country">Country</label><input id="phone-country" value="United States" /></div>
                 </div>
                 <div class="suggestions" aria-label="Place suggestions"><div class="suggestion selected"><strong>Stockton, California, United States</strong><span>City</span></div><div class="suggestion"><strong>Stockton-on-Tees, England, United Kingdom</strong><span>Town</span></div></div>
+                <div class="inline-state"><div><strong>Several Stocktons match</strong>Add a region or choose a suggestion before searching.</div><button type="button">Review</button></div>
                 <div class="paused-state"><strong>429:</strong><span>Suggestions paused. You can still search with the fields above.</span></div>
                 <div class="command-section"><div class="command-section-head"><strong>Recent searches</strong><button class="text-button">Clear recent searches</button></div><div class="recent-search-list"><div class="recent-search"><strong>Modesto, California, United States</strong><span class="count-badge">40 results</span></div><div class="recent-search"><strong>Kyoto, Japan</strong><span class="count-badge">28 results</span></div></div><p class="helper-copy">Recent searches stay in this browser. Shared coordinates are never added.</p></div>
                 <div class="command-section"><div class="command-section-head"><strong>Quick examples</strong><span>Shown when recent searches are empty</span></div><div class="quick-row"><span>Stockton</span><span>Modesto</span><span>San Diego</span><span>Kyoto</span><span>London</span></div></div>
@@ -603,7 +654,7 @@
                 <div class="sheet-grabber" aria-hidden="true"></div>
                 <div class="sheet-summary">
                   <div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div>
-                  <div class="sheet-head"><div><strong>Market &amp; Main</strong><span>New American · Downtown</span><span><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span> · 0.8 mi</span></div></div>
+                  <div class="sheet-head"><div><span class="place-kicker">Selected place</span><strong>Market &amp; Main</strong><span>New American · Downtown Stockton</span><span class="signal-line"><span class="rating">4.6 · 318</span><span class="status">Likely open</span><span>Approx. 0.8 mi</span></span></div></div>
                   <button class="icon-button" aria-label="Close selected restaurant">×</button>
                 </div>
                 <p class="sheet-evidence"><strong>Why consider it:</strong> close to the search center, strongly rated, and dinner hours are listed.</p>
@@ -628,6 +679,7 @@
                 <div class="command-head"><div><h3>Search a place</h3><p>The list, map, and selected restaurant remain visible behind this anchored panel.</p></div><button class="icon-button" data-close-panel aria-label="Close search panel">×</button></div>
                 <div class="field-grid"><div class="field"><label for="tablet-city">City</label><input id="tablet-city" value="Stockton" /></div><div class="field"><label for="tablet-region">State / Province / Region</label><input id="tablet-region" value="California" /></div><div class="field country"><label for="tablet-country">Country</label><input id="tablet-country" value="United States" /></div></div>
                 <div class="suggestions"><div class="suggestion selected"><strong>Stockton, California, United States</strong><span>City</span></div><div class="suggestion"><strong>Stockton-on-Tees, England, United Kingdom</strong><span>Town</span></div></div>
+                <div class="inline-state"><div><strong>Ambiguous place example</strong>When several places match, keep the fields editable and ask for region or country.</div><button type="button">Choose</button></div>
                 <div class="command-section"><div class="command-section-head"><strong>Recent searches</strong><button class="text-button">Clear recent searches</button></div><div class="recent-search-list"><div class="recent-search"><strong>Modesto, California, United States</strong><span class="count-badge">40 results</span></div><div class="recent-search"><strong>Kyoto, Japan</strong><span class="count-badge">28 results</span></div></div><p class="helper-copy">Browser-only history. Use My Location is always explicit and is not stored here.</p></div>
                 <div class="quick-row"><span>Stockton</span><span>San Diego</span><span>Kyoto</span><span>Paris</span><span>London</span></div>
                 <div class="command-footer"><button class="action">Use My Location</button><button class="action">Clear all</button><button class="action accent">Search restaurants</button></div>
@@ -644,21 +696,23 @@
                 <section class="pane">
                   <div class="pane-title"><strong>40 restaurants</strong><span>12 mapped</span></div>
                   <div class="restore-banner"><div><strong>Restore Modesto results</strong><span>Browser-saved · possibly stale</span></div><button>Restore</button></div>
+                  <div class="inline-state"><div><strong>Provider is taking longer</strong>Keep restored results visible while fresh results retry.</div><button type="button">Retry</button></div>
                   <div class="compact-list">
-                    <article class="compact-row selected"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · 0.8 mi</p></div></article>
-                    <article class="compact-row"><div class="photo alt" data-mark="EJ"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span> · Hours listed</p><p>Mexican · Downtown</p></div></article>
-                    <article class="compact-row"><div class="photo green" data-mark="JT"></div><div><h3>Juniper Table</h3><p><span class="rating">4.4 · 126</span> · <span class="status">Likely open</span></p><p>Mediterranean · 1.4 mi</p></div></article>
-                    <article class="compact-row"><div class="photo" data-mark="LM"></div><div><h3>Little Manila Grill</h3><p><span class="rating">4.4 · 93</span> · Hours listed</p><p>Filipino · Midtown</p></div></article>
+                    <article class="compact-row selected"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · Stockton · 0.8 mi</p><p class="row-reason">Strong rating and close to search center</p></div></article>
+                    <article class="compact-row"><div class="photo alt" data-mark="EJ"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span> · Hours listed</p><p>Mexican · Downtown · 1.1 mi</p><p class="row-reason">Dinner hours are listed</p></div></article>
+                    <article class="compact-row"><div class="photo green" data-mark="JT"></div><div><h3>Juniper Table</h3><p><span class="rating">4.4 · 126</span> · <span class="status">Likely open</span></p><p>Mediterranean · Stockton · 1.4 mi</p><p class="row-reason">Likely open based on listed hours</p></div></article>
+                    <article class="compact-row"><div class="photo" data-mark="LM"></div><div><h3>Little Manila Grill</h3><p><span class="rating">4.4 · 93</span> · Hours listed</p><p>Filipino · Midtown · 1.8 mi</p><p class="row-reason">Distinct cuisine in current results</p></div></article>
                   </div>
                 </section>
                 <section class="pane map-pane" aria-label="Static map concept">
                   <div class="map-canvas"></div><span class="map-pin one"></span><span class="map-pin two"></span><span class="map-pin three"></span><span class="origin-dot" title="Search center"></span>
                   <div class="map-controls" aria-label="Static map controls"><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div>
-                  <article class="map-place-card glass"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · Approx. 0.8 mi from Stockton center.</p></div></article>
+                  <article class="map-place-card glass"><div class="photo" data-mark="MM"></div><div><small>Selected from results</small><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · Approx. 0.8 mi from Stockton center.</p></div></article>
+                  <div class="map-availability">If the map is unavailable, this pane keeps the result list and location copy usable.</div>
                 </section>
                 <aside class="pane detail-pane">
                   <div class="detail-hero"><div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div></div>
-                  <div><h2>Market &amp; Main</h2><p>New American · Downtown Stockton</p><div class="evidence"><strong>Why consider it</strong><br>Close to the search center, strongly rated, and dinner hours are listed.</div></div>
+                  <div><span class="place-kicker">Selected place</span><h2>Market &amp; Main</h2><p>New American · Downtown Stockton<br><span class="rating">4.6 · 318 reviews</span> · <span class="status">Likely open</span></p><div class="evidence"><strong>Why consider it</strong><br>Close to the search center, strongly rated, and dinner hours are listed.</div></div>
                   <div class="fact-list"><div class="fact"><span>Rating</span><strong>4.6 · 318 reviews</strong></div><div class="fact"><span>Hours</span><strong class="status">Likely open until 10</strong></div><div class="fact"><span>Distance</span><strong>Approx. 0.8 mi</strong></div><div class="fact"><span>Address</span><strong>120 E Main Street</strong></div></div>
                   <div class="actions"><button class="action primary">Details</button><button class="action">Save</button><button class="action accent">Directions</button></div>
                 </aside>
@@ -678,6 +732,7 @@
                 <div class="command-head"><div><h3>Search a place</h3><p>Resolved context stays collapsed until the user needs to edit it.</p></div><button class="icon-button" data-close-panel aria-label="Close search panel">×</button></div>
                 <div class="field-grid"><div class="field"><label for="desktop-city">City</label><input id="desktop-city" value="Stockton" /></div><div class="field"><label for="desktop-region">State / Province / Region</label><input id="desktop-region" value="California" /></div><div class="field country"><label for="desktop-country">Country</label><input id="desktop-country" value="United States" /></div></div>
                 <div class="suggestions"><div class="suggestion selected"><strong>Stockton, California, United States</strong><span>City</span></div><div class="suggestion"><strong>Stockton-on-Tees, England, United Kingdom</strong><span>Town</span></div></div>
+                <div class="inline-state"><div><strong>Ambiguous place example</strong>Choose a suggestion or add region and country. This is guidance, not a failed search.</div><button type="button">Review</button></div>
                 <div class="paused-state"><strong>If paused:</strong><span>Suggestions stop quietly; Search remains available.</span></div>
                 <div class="command-section"><div class="command-section-head"><strong>Recent searches</strong><button class="text-button">Clear recent searches</button></div><div class="recent-search-list"><div class="recent-search"><strong>Modesto, California, United States</strong><span class="count-badge">40 results</span></div><div class="recent-search"><strong>Kyoto, Japan</strong><span class="count-badge">28 results</span></div></div><p class="helper-copy">Stored only in this browser.</p></div>
                 <div class="command-footer"><button class="action">Use My Location</button><button class="action">Clear all</button><button class="action accent">Search restaurants</button></div>
@@ -694,23 +749,50 @@
                 <section class="desktop-list">
                   <div class="list-tools"><strong>40 results</strong><span>12 on map · Best match</span></div>
                   <div class="stale-label">Fresh results · restored browser results would be labeled here</div>
+                  <div class="inline-state neutral"><div><strong>Fresh search delayed</strong>Browser-saved results can stay visible with a stale label.</div><button type="button">Retry</button></div>
                   <div class="compact-list">
-                    <article class="compact-row selected"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · 0.8 mi</p></div></article>
-                    <article class="compact-row"><div class="photo alt" data-mark="EJ"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span> · Hours listed</p><p>Mexican · Downtown</p></div></article>
-                    <article class="compact-row"><div class="photo green" data-mark="JT"></div><div><h3>Juniper Table</h3><p><span class="rating">4.4 · 126</span> · <span class="status">Likely open</span></p><p>Mediterranean · 1.4 mi</p></div></article>
-                    <article class="compact-row"><div class="photo" data-mark="LM"></div><div><h3>Little Manila Grill</h3><p><span class="rating">4.4 · 93</span> · Hours listed</p><p>Filipino · Midtown</p></div></article>
-                    <article class="compact-row"><div class="photo alt" data-mark="NC"></div><div><h3>North Channel Café</h3><p><span class="rating">4.3 · 171</span> · Hours listed</p><p>Café · Waterfront</p></div></article>
+                    <article class="compact-row selected"><div class="photo" data-mark="MM"></div><div><h3>Market &amp; Main</h3><p><span class="rating">4.6 · 318</span> · <span class="status">Likely open</span></p><p>New American · Stockton · 0.8 mi</p><p class="row-reason">Strong rating and close to search center</p></div></article>
+                    <article class="compact-row"><div class="photo alt" data-mark="EJ"></div><div><h3>El Jardín Kitchen</h3><p><span class="rating">4.5 · 204</span> · Hours listed</p><p>Mexican · Downtown · 1.1 mi</p><p class="row-reason">Dinner hours are listed</p></div></article>
+                    <article class="compact-row"><div class="photo green" data-mark="JT"></div><div><h3>Juniper Table</h3><p><span class="rating">4.4 · 126</span> · <span class="status">Likely open</span></p><p>Mediterranean · Stockton · 1.4 mi</p><p class="row-reason">Likely open based on listed hours</p></div></article>
+                    <article class="compact-row"><div class="photo" data-mark="LM"></div><div><h3>Little Manila Grill</h3><p><span class="rating">4.4 · 93</span> · Hours listed</p><p>Filipino · Midtown · 1.8 mi</p><p class="row-reason">Distinct cuisine in current results</p></div></article>
+                    <article class="compact-row"><div class="photo alt" data-mark="NC"></div><div><h3>North Channel Café</h3><p><span class="rating">4.3 · 171</span> · Hours listed</p><p>Café · Waterfront · 2.1 mi</p><p class="row-reason">Waterfront location and breakfast hours</p></div></article>
                   </div>
                 </section>
                 <section class="desktop-map-wrap" aria-label="Static desktop map concept">
                   <div class="desktop-map"></div><span class="map-pin one"></span><span class="map-pin two"></span><span class="map-pin three"></span><span class="origin-dot" title="Search center"></span>
                   <div class="map-controls" aria-label="Static map controls"><button aria-label="Zoom in">+</button><button aria-label="Zoom out">−</button></div>
                   <article class="desktop-map-card glass"><div class="topline"><h2>Stockton center</h2><span class="status">12 mapped</span></div><p>Map context stays visible while the right panel holds decision evidence and actions.</p></article>
+                  <article class="map-place-card glass"><div class="photo" data-mark="MM"></div><div><small>Selected from results</small><h3>Market &amp; Main</h3><p>Approx. 0.8 mi from Stockton center · not route distance.</p></div></article>
                 </section>
-                <aside class="evidence-pane"><div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div><div><h2>Market &amp; Main</h2><p>New American · Downtown Stockton<br><span class="rating">4.6 · 318 reviews</span> · <span class="status">Likely open</span></p><div class="evidence"><strong>Why consider it</strong><br>Strong public rating, close to the resolved search center, and dinner hours are listed.</div><div class="fact-list"><div class="fact"><span>Distance</span><strong>Approx. 0.8 mi from Stockton center</strong></div><div class="fact"><span>Address</span><strong>120 E Main Street</strong></div><div class="fact"><span>Hours</span><strong>Listed until 10 PM</strong></div></div><div class="actions"><button class="action primary">View details</button><button class="action">Save</button><button class="action accent">Directions</button></div></div></aside>
+                <aside class="evidence-pane"><div class="photo" data-mark="MM" role="img" aria-label="Photo unavailable for Market and Main"></div><div><span class="place-kicker">Selected place</span><h2>Market &amp; Main</h2><p>New American · Downtown Stockton<br><span class="rating">4.6 · 318 reviews</span> · <span class="status">Likely open</span></p><div class="evidence"><strong>Why consider it</strong><br>Strong public rating, close to the resolved search center, and dinner hours are listed.</div><div class="fact-list"><div class="fact"><span>Distance</span><strong>Approx. 0.8 mi from Stockton center</strong></div><div class="fact"><span>Address</span><strong>120 E Main Street</strong></div><div class="fact"><span>Hours</span><strong>Listed until 10 PM</strong></div></div><div class="actions"><button class="action primary">View details</button><button class="action">Save</button><button class="action accent">Directions</button></div></div></aside>
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="context-lab" aria-labelledby="context-lab-title">
+        <header><h2 id="context-lab-title">States where they matter</h2><span>Guidance stays inside the active surface instead of becoming a page-level error wall</span></header>
+        <div class="context-grid">
+          <article class="context-demo"><span>Results area</span><h3>Backend unavailable, restored results retained</h3><div class="inline-state"><div><strong>Could not refresh</strong>Showing browser-saved results from 18 minutes ago.</div><button type="button">Retry</button></div><div class="mini-result"><div class="photo" data-mark="MM"></div><div><strong>Market &amp; Main</strong><small>Saved result · may be stale</small></div></div></article>
+          <article class="context-demo"><span>Search sheet</span><h3>Ambiguity and paused suggestions</h3><div class="inline-state"><div><strong>Which Springfield?</strong>Add region or country, or choose a suggestion.</div><button type="button">Choose</button></div><div class="paused-state"><strong>Suggestions paused:</strong><span>Manual Search still works.</span></div></article>
+          <article class="context-demo"><span>Map pane</span><h3>Spatial context stays honest</h3><div class="mini-map"><span class="map-pin"></span><div class="inline-state neutral"><div><strong>Map unavailable</strong>Use the result list and address instead.</div><button type="button">Dismiss</button></div></div></article>
+          <article class="context-demo"><span>Saved view</span><h3>An empty shortlist, not an empty app</h3><div class="inline-state neutral"><div><strong>No saved places yet</strong>Save a restaurant while comparing results.</div><button type="button">Discover</button></div></article>
+          <article class="context-demo"><span>Result media</span><h3>No photo without broken imagery</h3><div class="mini-result"><div class="photo green" data-mark="JT"></div><div><strong>Juniper Table</strong><small>Photo unavailable · listing remains complete</small></div></div></article>
+          <article class="context-demo"><span>Location action</span><h3>Permission is optional and explicit</h3><div class="inline-state neutral"><div><strong>Location was not shared</strong>Continue with city search. Mapetite will not ask again automatically.</div><button type="button">OK</button></div></article>
+        </div>
+      </section>
+
+      <section class="navigation-model" aria-labelledby="navigation-model-title">
+        <h2 id="navigation-model-title">Installed-app navigation model</h2>
+        <p>Discovery is the launch destination. Search and filters are transient commands, selection is contextual, and full details remain a route.</p>
+        <div class="nav-flow">
+          <article class="nav-node primary"><strong>Discover</strong><span>Direct launch destination</span></article>
+          <article class="nav-node"><strong>Search sheet</strong><span>City, region, country, recent</span></article>
+          <article class="nav-node"><strong>Filter sheet</strong><span>One filters and sort surface</span></article>
+          <article class="nav-node"><strong>Selected place</strong><span>Bottom sheet or side panel</span></article>
+          <article class="nav-node"><strong>Restaurant detail</strong><span>Dedicated route with directions</span></article>
+          <article class="nav-node"><strong>Saved · Account</strong><span>Persistent app destinations</span></article>
         </div>
       </section>
 

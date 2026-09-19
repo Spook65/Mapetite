@@ -56,6 +56,58 @@ These principles align with current Apple guidance that treats material as a fun
 - [Human Interface Guidelines: Layout](https://developer.apple.com/design/human-interface-guidelines/layout)
 - [WWDC25: Meet Liquid Glass](https://developer.apple.com/videos/play/wwdc2025/219/)
 
+## Apple-style UI gap analysis
+
+This analysis extracts product principles from strong platform apps without reproducing Apple layouts, components, proprietary assets, or branding. The useful benchmark is not whether Mapetite resembles an Apple screenshot; it is whether content, commands, selection, navigation, and failure states feel coherent enough for repeated use on iOS.
+
+### Apple Maps pattern
+
+**What Mapetite already does well:** search is the primary command, the list and map share a selected restaurant, distance language is approximate, Directions remains an external utility, and compact selection already becomes a sheet.
+
+**What was missing:** the map read as a secondary illustration, list selection and the selected pin were not explicitly connected, and the selected-place surface gave several facts equal visual weight.
+
+**Prototype change:** the selected pin is visually dominant, map overlays say “Selected from results,” the distance explicitly avoids route claims, map controls remain minimal, and the selected place now follows photo → name → cuisine/location → rating/hours → evidence → distance/address → actions.
+
+### Apple Photos pattern
+
+**What Mapetite already does well:** recent searches and saved places are browser-local convenience features, location sharing is explicit, and the product has a natural personal-shortlist model.
+
+**What was missing:** recent and saved concepts felt like utilities around search rather than quiet personal organization, and empty Saved state existed only in a detached state gallery.
+
+**Prototype change:** Recent remains compact and subordinate to current results, Saved and Account become persistent destinations, the installed-app navigation model treats Saved as a collection rather than a filter-only concept, and the empty Saved treatment appears inside a Saved-view example.
+
+### App Store pattern
+
+**What Mapetite already does well:** cards support images, evidence, detail navigation, and a stronger dedicated restaurant detail route.
+
+**What was missing:** fallback media and card text competed at similar weights, result cards carried more prose than a scanning surface needs, and selected-place actions lacked a crisp order.
+
+**Prototype change:** fallback media uses a restrained material field and compact monogram, result evidence is one line, selected cards use a quiet “Selected” label, the decision panel adds hierarchy instead of repeating the list card, and Directions remains the distinct utility action.
+
+### Weather pattern
+
+**What Mapetite already does well:** timeout, ambiguity, stale data, location denial, and unavailable-map copy are calm, honest, and retry-oriented.
+
+**What was missing:** those states were demonstrated mainly as documentation cards rather than where the user would encounter them.
+
+**Prototype change:** provider delay appears in results, ambiguity and suggestion pause appear inside search, map unavailability stays inside the map pane, no-photo treatment stays inside cards, no-saved treatment stays in a Saved view, and restored results remain visible under backend failure.
+
+### Adaptive compact-to-expanded pattern
+
+**What Mapetite already does well:** compact, expanded, and desktop shells share one conceptual state; controls move rather than multiply; the selected restaurant becomes a sheet or evidence pane; and the wider layouts reveal map context.
+
+**What was missing:** the navigation model was implied rather than explicit, extra space occasionally looked like a static composition, and expanded selection did not strongly communicate continuity from the list.
+
+**Prototype change:** a six-stage installed-app navigation model documents Discover, Search, Filters, Selected Place, Detail, Saved, and Account; wider layouts devote space to map context and decision evidence; and every selected surface uses the same selected-place label and restaurant identity.
+
+### Highest-priority production gaps
+
+1. Test keyboard-aware compact sheets with real autocomplete content and Dynamic Type-sized text.
+2. Make selection semantics and focus movement accessible across list, map, bottom sheet, and detail route.
+3. Validate the selected place hierarchy with real missing-field combinations instead of static complete data.
+4. Preserve map camera behavior while resizing persistent panes in split-screen and Stage Manager-like widths.
+5. Establish native-wrapper navigation and external-link rules before a TestFlight build so the app never feels like an unbounded web view.
+
 ## Prototype summary
 
 ### Compact phone
@@ -192,6 +244,19 @@ Launch directly into the app shell. An optional first-run introduction may expla
 - Search submission remains available when autocomplete is empty, offline, malformed, or rate-limited.
 - No compact action may depend on hover. Focus, pressed, selected, and disabled states need equivalent visible treatment.
 - External directions should leave the wrapper intentionally rather than opening an unbounded in-app browser.
+
+## iOS and TestFlight polish checklist
+
+- **Safe areas:** app bar, sheets, selected-place actions, and transient notices must use top and bottom safe-area insets without double-padding in a wrapper.
+- **Keyboard:** focus the active search field, keep autocomplete attached to that field, preserve Search and Clear all access, and resize rather than translate the full shell.
+- **Tap targets:** interactive compact controls remain at least 44 by 44 points even when their visual treatment is smaller.
+- **Reduced motion:** selection, sheet, and panel transitions use short opacity/transform changes and collapse to effectively instant state changes when requested.
+- **Contrast:** text and controls remain legible when blur is unavailable, Increase Contrast is enabled, or the map beneath a material surface is visually busy.
+- **Dynamic Type:** names, evidence, states, and actions must wrap without clipping; the production shell should switch layout before compressing text below usable sizes.
+- **Offline/provider failure:** retain recent or restored content when honest, label stale data, and keep retry actions local to the affected surface.
+- **Privacy copy:** city search requires no location; precise location is requested only after Use My Location and is never implied to be live tracking.
+- **Wrapper quality:** launch directly into Discover, provide predictable back navigation, open external directions intentionally, avoid browser chrome, and prevent marketing content from appearing on repeat app launches.
+- **Review risk:** a wrapper that still exposes web-only navigation, covered inputs, hover-dependent controls, blank network states, or duplicate toolbars remains too web-like for beta readiness.
 
 ## Map behavior
 

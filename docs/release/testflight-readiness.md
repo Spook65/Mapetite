@@ -220,6 +220,9 @@ Adding Capacitor is intentionally outside this design-only task. When approved:
 - [ ] No production route exposes design-lab placeholders.
 - [ ] iPhone safe areas and keyboard do not cover inputs or selected sheets.
 - [ ] iPad split/full-screen states do not duplicate controls.
+- [ ] Discovery is the installed launch destination; Search and Filters open as contextual sheets or popovers instead of web-style pages.
+- [ ] List, map pin, selected-place sheet/panel, and restaurant detail preserve one accessible selection model.
+- [ ] Timeout, ambiguity, map unavailable, no-photo, no-saved, and offline states appear inside the affected surface rather than as blocking error pages.
 - [ ] No horizontal overflow at supported widths.
 - [ ] Dynamic text scaling and VoiceOver reading order are usable.
 - [ ] Reduced motion and increased contrast remain usable.

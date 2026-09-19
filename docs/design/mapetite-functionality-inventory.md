@@ -1,0 +1,130 @@
+# Mapetite Functionality Inventory
+
+## Purpose and scope
+
+This inventory is the production-behavior contract for any future adaptive UI migration. It was derived from the current React routes, shared layout, search store, browser-local search cache, API clients, and map components. The Apple-inspired prototype is a presentation target, not the source of truth.
+
+No behavior should be removed, renamed into a stronger claim, or silently combined during a visual migration. In the tables below, **compact** means a phone-width installed-app or mobile-web shell, **expanded** means tablet/foldable or split-view, and **desktop** means the widest three-pane shell.
+
+Pattern labels are implementation intentions, not a request to alter route behavior now.
+
+## Global shell and entry
+
+| Feature | Current production location and behavior | Compact phone destination | Expanded/tablet destination | Desktop destination | Pattern | Risk if forgotten |
+| --- | --- | --- | --- | --- | --- | --- |
+| Landing page | `src/routes/index.tsx`; marketing entry with value proposition, search CTA, preview flow, sample cities, auth navigation, and footer | Web keeps a lightweight entry; installed app opens Discover directly after an optional first-run intro | Web entry may remain; installed app opens the shared discovery shell | Lightweight web entry with a direct Open search action | Route | A wrapper can feel like a website on every launch, or the portfolio entry can disappear on the web |
+| Primary navigation | `src/components/Layout.tsx`; sticky Home, Search, Saved navigation | Stable safe-area app bar with Discover/Search identity, Saved, and Account access | Shared app bar or compact sidebar; same destinations | App toolbar/sidebar with the same route set | Toolbar action | Lost routes, duplicate navigation, or unstable sticky height |
+| Signed-out navigation | `Layout.tsx` and landing header; Log In and Sign Up actions | Account entry presents signed-out choices | Account popover/panel presents signed-out choices | Header/account menu presents signed-out choices | Popover / sheet | Save appears broken or authentication has no clear entry |
+| Signed-in navigation | `Layout.tsx`; Account and Log Out replace Log In/Sign Up | Account avatar/menu and explicit Log Out | Account popover or side panel | Header account menu | Popover / side panel | Authentication state becomes unclear or Log Out is hidden |
+| Footer, attribution, and feedback | `src/components/MapetiteFooter.tsx`; portfolio/demo disclosure, OpenStreetMap, Geoapify, city-data attribution, trademark disclaimer, reset warning, and optional feedback link. No dedicated privacy-policy link was found in the inspected production shell | Compact About/Data surface or route footer at natural page end; add a real privacy-policy destination before TestFlight, not as an undocumented prototype link | Footer/about panel with the same future policy destination | Footer/about panel with the same future policy destination | Route / inline disclosure | Required attribution and data limitations are lost; external links become unsafe/inaccessible; TestFlight ships without a reachable privacy policy |
+
+## Place search and browser-local convenience
+
+| Feature | Current production location and behavior | Compact phone destination | Expanded/tablet destination | Desktop destination | Pattern | Risk if forgotten |
+| --- | --- | --- | --- | --- | --- | --- |
+| Search city | `src/routes/restaurants.tsx`; required city text input and primary search context | Collapsed command opens a keyboard-aware search sheet | Anchored search popover or side panel | Anchored search popover in toolbar | Bottom sheet / popover | Core search cannot be performed or resolved place becomes hidden |
+| Search state/region | Optional disambiguation field persisted by the search store | Search sheet field under City | Search popover field | Search popover field | Sheet / popover field | Shared city names become false negatives or ambiguous failures |
+| Search country | Optional disambiguation field persisted by the search store | Search sheet field under Region | Search popover field | Search popover field | Sheet / popover field | International search quality regresses or U.S. context is implied |
+| Resolved place summary | Search results heading and map origin use resolved city/region/country | Collapsed search command shows the resolved place | Toolbar command shows resolved place | Toolbar command shows resolved place | Toolbar action | Users cannot tell what geography the result set represents |
+| Autocomplete suggestions | Backend suggestions in an accessible combobox; loading, active option, mouse/tap, Arrow keys, Enter, Escape, and result metadata | Scroll-capped list attached inside search sheet | List attached to search popover without covering results/map | Anchored list within toolbar popover | Popover / listbox | Keyboard access, global disambiguation, or context selection regresses |
+| Suggestions loading | Inline “Finding…” and list status while the debounced request is active | Inline progress inside suggestion area | Inline progress inside popover | Inline progress inside popover | Inline status | Search appears frozen or the layout shifts when results arrive |
+| Suggestion paused/rate-limited | Quiet “Suggestions paused. You can still search.” state; manual Search remains available | Contextual notice inside search sheet | Contextual notice inside popover | Contextual notice inside popover | Inline banner | A non-critical 429 becomes a blocking/scary app error |
+| Suggestion unavailable/no match | Quiet unavailable or “No matching places yet” copy with region/country guidance | Contextual list state | Contextual list state | Contextual list state | Inline banner | Users mistake suggestion failure for search failure |
+| Use My Location | Explicit geolocation action; no automatic request; coordinates become map/distance context | Secondary action in search sheet with permission and denial feedback | Secondary action in search popover | Secondary action in search popover | Toolbar action / inline status | Privacy regression, automatic permission prompt, or loss of explicit-location flow |
+| Clear all location | Clears City, Region, Country, explicit map-user location, and suggestion-menu state, then returns focus to City. It does not currently erase the rendered result list by itself | Visible secondary action in search sheet with the same field/suggestion reset semantics | Visible popover action | Visible popover action | Toolbar action | Old place context silently contaminates a new search, or migration unexpectedly destroys the current results |
+| Recent searches | `src/lib/recent-search-cache.ts`; browser-local typed successful searches, deduplicated and capped at six | Compact full-width rows/chips in search sheet | Recent section in search popover/side panel | Recent section in search popover | Card state / chips | Local convenience disappears or chips overflow; precise location must not be added |
+| Recent result count | Optional count displayed as a labeled “N results” badge | Trailing badge within a shrink-safe recent row | Trailing badge | Trailing badge | Card metadata | An unexplained number looks like ranking or popularity |
+| Clear recent searches | Deletes only the browser-local recent list | Search sheet section action | Search popover section action | Search popover section action | Toolbar action | Local history cannot be cleared, creating a privacy/trust issue |
+| Quick examples | Global example cities shown when appropriate; not a supported-city limit | Small neutral examples in search sheet when recents are empty | Small section in search popover | Small section in search popover | Chips | Examples can look U.S.-only or imply exclusive city coverage |
+| Restore last search | Browser-local compact snapshot, schema/version checked, max 40 results, 12-hour TTL | Quiet restore row/banner before results | Inline restore banner in list pane | Inline restore banner in list pane | Inline banner | Repeat use feels slower, or stale data is mistaken for live data |
+| Stale restored-results label | Restored results are explicitly browser-saved and refresh in the background | Persistent compact status above restored list until refresh resolves | Status in results header | Status in results header | Inline banner | Stale provider data is presented as current |
+| Search loading and backend wake copy | Immediate loading plus delayed honest demo-backend wake message | Results-area progress that preserves shell dimensions | Results-pane progress | Results-pane progress | Inline status / skeleton | First search looks broken or loading content causes layout shift |
+| Refresh current search | Reuses the current validated search, disabled while searching, and does not promise changed results | Compact toolbar action; progress label while active | Toolbar action | Toolbar action | Toolbar action | Refresh is confused with reset, bypassing cache, or guaranteed new restaurants |
+
+## Refinement, sorting, and result scope
+
+| Feature | Current production location and behavior | Compact phone destination | Expanded/tablet destination | Desktop destination | Pattern | Risk if forgotten |
+| --- | --- | --- | --- | --- | --- | --- |
+| Filter command | Mobile filter sheet and desktop refine panel expose the same filter state | One Filters button with active count opens one sheet | One Filters button opens one anchored panel | One Filters button opens one anchored panel | Bottom sheet / popover | Duplicate panels drift or consume most of the page |
+| Quick categories | Cuisine/category constraints are explicit and removable; label does not claim popularity | Filter sheet or compact horizontal section | Filter panel | Filter panel | Sheet / popover control | Category narrowing disappears or is mislabeled as popularity data |
+| Price filters | Empty selection means Any price; explicit `$` levels narrow results; missing prices remain under Any price | Multi-select control in filter sheet | Multi-select in filter popover | Multi-select in filter popover | Sheet / popover control | The previous zero-results bug returns or Any price becomes a false active filter |
+| Minimum rating | Default zero means no restriction | Filter sheet control | Filter popover control | Filter popover control | Sheet / popover control | Default state hides results or suggests unsupported confidence |
+| Prioritize open | Reorders based on listed/likely hours rather than guaranteeing open; it does not filter the list | Filter sheet toggle with honest label | Filter popover toggle | Filter popover toggle | Sheet / popover control | It is mistaken for a guaranteed-open filter or ranking behavior changes |
+| Sort | Best match, rating, distance, and review count; sort reorders rather than filtering | Single Sort row within the filter/sort sheet or one toolbar menu, never both | One anchored menu/panel | One anchored menu/panel | Popover / sheet | Duplicate sort controls conflict; distance appears meaningful without an origin |
+| Saved only | Requires authenticated favorite IDs; toggles between all and saved results | Filter sheet toggle and visible active state | Filter popover toggle | Filter popover toggle | Sheet / popover control | Hidden auth dependency or impossible empty state |
+| Active filter count/chips | Only real constraints are active; Any price, Any rating, and default sort are not active chips | Compact count on Filters plus removable chips below toolbar if needed | Compact count/chips in list header | Compact count/chips in list header | Toolbar state / chips | Passive defaults look like constraints; Clear filters becomes unpredictable |
+| Clear filters | Restores broad defaults without clearing the searched place | Filter-sheet action | Filter-panel action | Filter-panel action | Toolbar action | Users cannot recover broad results, or location is accidentally cleared |
+| Apply filters | Mobile sheet closes/apply state while underlying filter logic remains shared | Primary sheet action | Optional Done action; changes may apply live | Optional Done action; changes may apply live | Bottom sheet action | Sheet stays open over results or mobile and desktop use different state semantics |
+| City-scope honesty | Heading changes to “area results” and cards can identify nearby cities when non-exact results remain | Results heading and card metadata | Results heading and card metadata | Results heading and card metadata | Inline text / card metadata | Nearby cities are silently represented as the searched city |
+| Result count | Distinguishes total found, matching filters, and progressively shown results | Compact results header | List-pane header | List-pane header | Inline status | “0 matching / 40 found” contradictions return |
+| Mapped count | Counts visible filtered restaurants with valid coordinates | Map command badge or map header | Map panel header | Map panel header | Toolbar status | Map and list appear to contain different datasets without explanation |
+| Load more/progressive list | Initially limits visible cards and exposes more without changing matching count | End-of-list action | End-of-list action | End-of-list action | Inline action | Users think hidden matches were filtered out |
+
+## Results, selection, map, and actions
+
+| Feature | Current production location and behavior | Compact phone destination | Expanded/tablet destination | Desktop destination | Pattern | Risk if forgotten |
+| --- | --- | --- | --- | --- | --- | --- |
+| Restaurant result card | Image/fallback, name, rating/reviews, hours, category, place context, optional distance, evidence, and actions | Compact stable-height list card | List-pane card/row | Dense list-pane row/card | Card | Core evidence is lost, claims are strengthened, or cards become too tall |
+| Photo unavailable fallback | Shared mature initials/art treatment replaces missing or failed remote media without removing content | Same fixed media box as a loaded image | Same aspect-ratio media box | Same aspect-ratio media box | Card state | Broken icons, card jumps, or fabricated photography |
+| “Why this result” evidence | Helpful reasons and cautions are derived from listing evidence, without exposing internal scores | One concise evidence line, details disclosed on selection | One concise line plus selected-panel detail | One concise line plus evidence panel | Card metadata | Ranking becomes opaque or UI invents “best” claims |
+| Selected restaurant state | Selection synchronizes card, map pin, preview, and mobile sticky state; clears when no longer visible | Selected-place bottom sheet | Selected place card beside map/list | Decision/evidence side panel | Bottom sheet / side panel | A filtered-out or hidden restaurant stays selected |
+| Mobile sticky selected card | Fixed compact selected state with close, details, save, and directions | Replace with safe-area-aware bottom place sheet | Not used | Not used | Bottom sheet | Covers results/actions, overflows, or close changes map camera |
+| Desktop selected preview | Comparison panel with image/fallback, facts, evidence/cautions, address, details/save/directions | Not used | Concise selected place pane | Decision/evidence pane | Side panel | Becomes a duplicate full card or disappears entirely |
+| View details | Internal route to `/restaurants/$restaurantId` | Primary/secondary place-card action | Place-card action | Place-card action | Route action | Detail path is hidden or selection is mistaken for navigation |
+| Save/unsave | Authenticated favorite toggle; unauthenticated use opens login feedback; visual saved state and toast | Place card/result action with account gate | Place card/result action | Place card/result action | Card action | Saved state desynchronizes or signed-out users see a broken control |
+| Directions | Shared Google Maps launcher uses valid coordinates, then full address; disabled honestly if neither exists | Place-card/result action | Place-card/result action | Place-card/result action | External action | In-app routing is implied, destination is missing, or old OSM-primary behavior returns |
+| Map toggle | Optional map opens only for current visible results | Compact toolbar toggle; map replaces or layers with list intentionally | Persistent/resizable map pane with toggle if space is constrained | Persistent map pane | Toolbar action / content pane | Global/unrelated pins appear or mobile map dominates the flow |
+| Search-results map | `SearchResultsMap.tsx`; current filtered results, selected pin, safe popups, initial/new-result fit, manual Show all | Dedicated map state with selected place sheet | Primary map pane synchronized with list | Primary map pane synchronized with list and evidence | Content pane | Camera teleport regressions, unsafe popup text, or list/map mismatch |
+| Search-center marker | Visible while resolved search coordinates exist; popup identifies Search center and place | Map marker and legend/context | Map marker | Map marker | Map state | Approximate distances lose their origin meaning |
+| User-location marker | Appears only after explicit Use My Location and persists while that state exists | Distinct map marker | Distinct map marker | Distinct map marker | Map state | Privacy implication, duplicate marker, or marker loss on selection |
+| Map popup | Safe DOM text, close control, listing facts, approximate distance, internal View details | Compact readable popup above markers | Popup above markers | Popup above markers | Popover | Provider text injection, popup blocks map, or closing changes camera |
+| Show all | Only intentional post-open fit-all-results control | Minimal map control | Minimal map control | Minimal map control | Map toolbar action | Selection again refits/teleports the map |
+| Hide map | Closes optional map without clearing results or selection | Toolbar/map action | Optional pane action | Optional pane action | Toolbar action | Mobile user becomes trapped in the map |
+| Map unavailable/no coordinates | Honest fallback when style/map cannot load or visible results lack coordinates | In-place map-panel state with list preserved | In-place map-panel state | In-place map-panel state | Card state | Blank panel, retry loop, or invented location |
+| Approximate distance copy | Straight-line distance from resolved place center or explicitly shared user location | Card/popup label using “approx.” and named origin | Same | Same | Card metadata | Implies route distance or live tracking |
+
+## Detail, saved, account, and system states
+
+| Feature | Current production location and behavior | Compact phone destination | Expanded/tablet destination | Desktop destination | Pattern | Risk if forgotten |
+| --- | --- | --- | --- | --- | --- | --- |
+| Detail route | `src/routes/restaurants/$restaurantId.tsx`; internal loading, error, not-found, back navigation, facts, media, map, and actions | Full route pushed from selected place | Detail route or optional preview pane followed by route | Detail/evidence pane may preview; full route remains canonical | Route / side panel preview | Deep links and browser back break, or preview replaces canonical detail content |
+| Detail gallery | Provider photos with failure tracking, attribution, and stable fallbacks | Swipe/stack gallery with fixed aspect ratio | Gallery in detail route/pane | Gallery in detail route | Route content | Broken media, fake-photo implication, or layout shift |
+| Detail no-photo state | Honest “photo unavailable” fallback rather than invented imagery | Mature fixed-ratio fallback | Same | Same | Card state | App fabricates official imagery or leaves a broken hero |
+| Detail facts and evidence | Category, price, listed hours, cuisine hints, menu/website/phone availability, ratings/reviews only when supplied | Ordered practical sections | Ordered practical sections | Ordered practical sections | Route sections | Public listing limitations disappear or unavailable data becomes a claim |
+| Written reviews unavailable | Honest fallback when provider does not supply written reviews; no generated reviews/breakdowns | Calm in-section empty state | Same | Same | Card state | Fabricated review content returns |
+| Detail mini-map | `VenueMiniMap.tsx`; exactly one valid restaurant marker, safe popup, manual pan/zoom, no routing | Compact fixed-height map with fallback | Wider fixed-ratio map | Wider fixed-ratio map | Route content | Search-map behavior leaks into detail, or unrelated pins appear |
+| Detail map unavailable | Invalid/missing coordinates show honest copy; directions may still use address | In-place route state | In-place route state | In-place route state | Card state | Broken map or invented coordinates |
+| External listing actions | Menu, website, phone, Google directions, and secondary OSM location appear only when data supports them | Grouped practical actions | Grouped practical actions | Grouped practical actions | Route actions | Missing URLs become active, unsafe schemes pass through, or routing is implied |
+| Saved places route | `src/routes/saved.tsx`; auth-gated favorites, count, hydration/detail fallback, directions, remove, and demo reset disclosure | Saved tab/route | Saved route in shell | Saved route in shell | Route | Favorites become only a filter and lose their durable destination |
+| No saved places | Calm route empty state with Search action | Saved route state | Saved route state | Saved route state | Card state | Empty Saved looks like an API failure |
+| Saved detail unavailable | Keeps the saved ID visible with honest unavailable copy and remove action | Saved card state | Saved card state | Saved card state | Card state | A stale favorite silently disappears or crashes the page |
+| Account route | `src/routes/account.tsx`; profile initials/name/email, saved count, session limitations, saved/search actions, logout | Account route/sheet entry | Account route or side panel | Account route | Route / side panel | Demo limitations and session state are hidden |
+| Signed-in state | Profile and favorite operations use the authenticated session | Account identity in app bar and account route | Same | Same | Toolbar state / route | Save state and identity drift |
+| Signed-out state | Auth loading then login/signup choices; Saved route explains authentication need | Account and Saved contextual sign-in state | Same | Same | Route state / sheet | Blank protected routes or forced navigation without context |
+| Login/sign-up modals | Existing demo authentication entry from global/search/saved contexts | Sheet/modal invoked from account/save action | Modal/popover | Modal | Sheet / popover | Save cannot recover after auth is required |
+| Backend unavailable | Search API/network errors use retry-oriented copy; restored results may remain clearly stale | Contextual results banner, preserve honest restored list | Results-pane banner | Results-pane banner | Inline banner | Blank screen, fake success, or stale results presented as fresh |
+| Provider timeout | Structured timeout copy explains demo backend/provider delay and asks to retry | Contextual results banner | Results-pane banner | Results-pane banner | Inline banner | Timeout appears as invalid place or endless loading |
+| Ambiguous place | Friendly “Choose a specific place” copy with up to three suggestions and region/country guidance | Inline inside search sheet and announce on submit | Search popover state | Search popover state | Inline banner | Expected disambiguation becomes a scary global error |
+| Fake/invalid place | “Check the place” validation error; provider search is not treated as successful | Inline search-sheet error with field focus | Search popover error | Search popover error | Inline banner | Random strings trigger provider work or error copy is misleading |
+| No matching places | Distinguishes no provider results from filters/saved constraints and offers recovery | Results-area empty state with relevant Clear action | Results-pane state | Results-pane state | Card state | Users cannot tell whether to change place, filters, or saved-only |
+| Auth/favorites unavailable | API errors are caught and surfaced without hiding the rest of the app | Contextual toast/banner near save/account action | Same | Same | Inline banner / toast | Save appears successful when it failed |
+| Privacy and location honesty | No automatic location request; browser-local recent/restore disclosure; attribution and demo limitations | Search-sheet helper, About/Data route, explicit permission prompt only after action | Same | Same | Inline disclosure / route | TestFlight privacy copy and actual behavior diverge |
+
+## Shared state and invariants
+
+The adaptive shells must render the same state rather than create device-specific copies:
+
+- One location object: city, state/region, country, and resolved coordinates.
+- One place-suggestion request and active option state.
+- One recent-search list and one last-successful snapshot contract.
+- One filter object: categories, explicit price levels, minimum rating, prioritize open, and saved-only view.
+- One sort value.
+- One visible filtered restaurant list used by counts, cards, and map pins.
+- One selected restaurant ID, cleared when the item is no longer available in the active visible set.
+- One map-open state and one explicit user-location state.
+- One authenticated favorite-ID source, with local saved snapshots used only for presentation fallback.
+- One active transient surface on compact screens: Search, Filters, or Selected Place, never all three.
+
+## Inventory conclusion
+
+The prototype represents the main shell, but production migration is not ready until every row above has an explicit component/state owner. The highest-risk omissions are authentication-gated saving, detail and saved failure states, city-scope/count honesty, map origin semantics, external-data attribution, and the distinction between stale browser results and fresh provider results.
