@@ -6,6 +6,26 @@ Keep the Apple-inspired adaptive direction. Do not migrate its static markup lit
 
 The source of truth for behavior is `mapetite-functionality-inventory.md`. This document defines sequence, placement, and release gates.
 
+## Foundation status and safe opt-in
+
+Phase 1 now has a dormant implementation in `src/styles.css`:
+
+- `.mapetite-adaptive-scope` owns all `--mapetite-adaptive-*` variables.
+- Optional visual primitives are available only as descendants of that scope.
+- No production route, layout, map, modal, or component includes the scope class.
+- Existing `:root`, legacy `--mapetite-*` tokens, Tailwind theme values, global focus rules, and MapLibre styling remain the active production system.
+- No adaptive grid or pane ratio is applied; layout variables are contracts for later phases only.
+
+Future opt-in rules:
+
+1. Select one low-risk, non-structural surface with existing behavior and tests.
+2. Add `.mapetite-adaptive-scope` at the smallest coherent wrapper.
+3. Add only the primitive classes needed by that surface; do not mix adaptive and legacy primitives on one element.
+4. Capture before/after desktop and 390-pixel screenshots and verify focus, contrast, overflow, CLS, and route behavior.
+5. Roll back by removing the wrapper scope class. No global token restoration or state rollback should be necessary.
+
+Accent may style only the primary action, selected map pin, focus emphasis, or a small selected-state detail. It must not style generic cards, passive chips, page backgrounds, navigation decoration, map surfaces, success states, or ordinary borders.
+
 ## Migration classifications
 
 - **Keep as-is for now:** preserve markup, state, and behavior while tokens are introduced around it.
@@ -74,11 +94,11 @@ The layout may adapt; ownership may not fork.
 
 ### Phase 1: adaptive tokens only
 
-- Add namespaced light-adaptive color, spacing, radius, elevation, typography, and control-size tokens.
-- Do not replace existing dark tokens globally.
-- Apply tokens to one non-structural preview or opt-in class boundary first.
-- Verify contrast, dark existing routes, screenshots, check/build/test, and no layout shift.
-- Rollback is deletion of the opt-in token scope.
+- **Foundation implemented, not activated:** namespaced light-adaptive color, spacing, radius, elevation, motion, media-ratio, pane, and control-size tokens now exist under `.mapetite-adaptive-scope`.
+- Optional surface, card, result-card, place-card, button, chip, toolbar, sheet, banner, and media-fallback primitives exist under the same scope.
+- Existing dark tokens are not replaced globally, and no production component currently opts in.
+- A later visual experiment must apply the scope to one non-structural boundary and verify contrast, screenshots, check/build/test, and no layout shift.
+- Rollback is removal of the scope class from that boundary; deleting the dormant CSS block remains safe while no opt-ins exist.
 
 ### Phase 2: primitives, still no layout movement
 
@@ -156,4 +176,4 @@ The layout may adapt; ownership may not fork.
 
 ## First safe production step
 
-The first production migration should be **namespaced adaptive design tokens only**, applied behind a narrow opt-in class to a non-structural surface. Do not start with the search sheet or three-pane shell. Tokens expose color/spacing/contrast problems cheaply, are reversible, and establish the constraints needed for cards and controls without risking search, map, or authentication behavior.
+The namespaced adaptive token foundation is now complete and dormant. The first future visual opt-in should be one low-risk, non-structural surface, approved separately and wrapped with `.mapetite-adaptive-scope`. Do not start with the search sheet, selected-place behavior, map shell, route layout, or three-pane structure. Those areas still wait for interaction and viewport proof.

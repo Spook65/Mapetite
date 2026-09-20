@@ -585,6 +585,354 @@ code {
 	}
 }
 
+/*
+ * Adaptive design foundation.
+ *
+ * Nothing opts into this light visual system by default. A future migration must
+ * add .mapetite-adaptive-scope at an intentional boundary, then apply the
+ * optional primitive classes below to individual descendants.
+ */
+@layer components {
+	.mapetite-adaptive-scope {
+		/* 60%: warm neutral base and content surfaces */
+		--mapetite-adaptive-bg: #f4f2ec;
+		--mapetite-adaptive-app-surface: #fffdf8;
+		--mapetite-adaptive-elevated-surface: rgba(255, 253, 248, 0.96);
+		--mapetite-adaptive-card-surface: #fffdf8;
+		--mapetite-adaptive-subtle-surface: #f8f6f0;
+
+		/* 30%: restrained support, grouping, and map context */
+		--mapetite-adaptive-support: #617264;
+		--mapetite-adaptive-support-strong: #405548;
+		--mapetite-adaptive-support-soft: #e2e8e1;
+		--mapetite-adaptive-group-surface: #edf1ec;
+		--mapetite-adaptive-map-surface: #dce4dd;
+
+		/* 10%: primary action and selected map pin only */
+		--mapetite-adaptive-accent: #bc542f;
+		--mapetite-adaptive-accent-hover: #a94727;
+		--mapetite-adaptive-accent-soft: #f5e1d8;
+		--mapetite-adaptive-on-accent: #fffdfc;
+
+		/* Text, structure, focus, and semantic states */
+		--mapetite-adaptive-text: #202a24;
+		--mapetite-adaptive-text-secondary: #5a665f;
+		--mapetite-adaptive-text-faint: #7a837d;
+		--mapetite-adaptive-border: rgba(32, 42, 36, 0.13);
+		--mapetite-adaptive-border-strong: rgba(32, 42, 36, 0.24);
+		--mapetite-adaptive-focus: #a94727;
+		--mapetite-adaptive-success: #3e694c;
+		--mapetite-adaptive-success-soft: #e3eee5;
+		--mapetite-adaptive-warning: #835a32;
+		--mapetite-adaptive-warning-soft: #f4e9dc;
+		--mapetite-adaptive-error: #92483e;
+		--mapetite-adaptive-error-soft: #f3e5e1;
+		--mapetite-adaptive-favorite: #617264;
+		--mapetite-adaptive-disabled-bg: #ecebe6;
+		--mapetite-adaptive-disabled-text: #858c87;
+
+		/* Four-pixel spacing rhythm */
+		--mapetite-adaptive-space-0: 0;
+		--mapetite-adaptive-space-1: 4px;
+		--mapetite-adaptive-space-2: 8px;
+		--mapetite-adaptive-space-3: 12px;
+		--mapetite-adaptive-space-4: 16px;
+		--mapetite-adaptive-space-5: 20px;
+		--mapetite-adaptive-space-6: 24px;
+		--mapetite-adaptive-space-8: 32px;
+		--mapetite-adaptive-space-10: 40px;
+		--mapetite-adaptive-space-12: 48px;
+		--mapetite-adaptive-space-16: 64px;
+
+		/* Shape and elevation */
+		--mapetite-adaptive-radius-control: 10px;
+		--mapetite-adaptive-radius-card: 14px;
+		--mapetite-adaptive-radius-panel: 18px;
+		--mapetite-adaptive-radius-sheet: 24px;
+		--mapetite-adaptive-radius-round: 999px;
+		--mapetite-adaptive-shadow-none: none;
+		--mapetite-adaptive-shadow-card: 0 1px 2px rgba(25, 35, 29, 0.06);
+		--mapetite-adaptive-shadow-popover: 0 10px 28px rgba(25, 35, 29, 0.1);
+		--mapetite-adaptive-shadow-sheet: 0 24px 64px rgba(25, 35, 29, 0.15);
+
+		/* Control and content sizing */
+		--mapetite-adaptive-button-height: 44px;
+		--mapetite-adaptive-button-height-prominent: 50px;
+		--mapetite-adaptive-card-padding: 16px;
+		--mapetite-adaptive-place-card-padding: 20px;
+		--mapetite-adaptive-sheet-padding: 20px;
+		--mapetite-adaptive-toolbar-height: 60px;
+		--mapetite-adaptive-result-media-ratio: 1 / 1;
+		--mapetite-adaptive-selected-media-ratio: 16 / 10;
+		--mapetite-adaptive-detail-media-ratio: 16 / 9;
+		--mapetite-adaptive-gallery-media-ratio: 4 / 3;
+
+		/* Future layout contracts; not applied by a production route yet */
+		--mapetite-adaptive-compact-width: 390px;
+		--mapetite-adaptive-shell-max-width: 1440px;
+		--mapetite-adaptive-list-pane-width: 320px;
+		--mapetite-adaptive-detail-pane-width: 340px;
+		--mapetite-adaptive-map-pane-min-width: 420px;
+		--mapetite-adaptive-expanded-columns: minmax(280px, 34%) minmax(0, 1fr);
+		--mapetite-adaptive-desktop-columns: var(--mapetite-adaptive-list-pane-width)
+			minmax(var(--mapetite-adaptive-map-pane-min-width), 1fr)
+			var(--mapetite-adaptive-detail-pane-width);
+
+		/* Motion stays optional and collapses under reduced-motion preferences. */
+		--mapetite-adaptive-motion-fast: 120ms;
+		--mapetite-adaptive-motion-standard: 180ms;
+		--mapetite-adaptive-motion-sheet: 240ms;
+		--mapetite-adaptive-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+		min-width: 0;
+		color-scheme: light;
+		color: var(--mapetite-adaptive-text);
+		background: var(--mapetite-adaptive-bg);
+	}
+
+	.mapetite-adaptive-scope
+		:where(button, a, [role="button"]):focus-visible {
+		outline-color: var(--mapetite-adaptive-focus);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-surface {
+		min-width: 0;
+		color: var(--mapetite-adaptive-text);
+		background: var(--mapetite-adaptive-app-surface);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-card,
+	.mapetite-adaptive-scope .mapetite-adaptive-result-card {
+		min-width: 0;
+		padding: var(--mapetite-adaptive-card-padding);
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: var(--mapetite-adaptive-radius-card);
+		background: var(--mapetite-adaptive-card-surface);
+		box-shadow: var(--mapetite-adaptive-shadow-card);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-card[aria-selected="true"],
+	.mapetite-adaptive-scope
+		.mapetite-adaptive-result-card[aria-selected="true"] {
+		border-color: var(--mapetite-adaptive-border-strong);
+		box-shadow:
+			0 0 0 2px var(--mapetite-adaptive-accent-soft),
+			var(--mapetite-adaptive-shadow-card);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-place-card {
+		min-width: 0;
+		padding: var(--mapetite-adaptive-place-card-padding);
+		border: 1px solid var(--mapetite-adaptive-border-strong);
+		border-radius: var(--mapetite-adaptive-radius-panel);
+		background: var(--mapetite-adaptive-elevated-surface);
+		box-shadow: var(--mapetite-adaptive-shadow-popover);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-button {
+		display: inline-flex;
+		min-width: 0;
+		min-height: var(--mapetite-adaptive-button-height);
+		align-items: center;
+		justify-content: center;
+		gap: var(--mapetite-adaptive-space-2);
+		padding: 0 var(--mapetite-adaptive-space-4);
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: var(--mapetite-adaptive-radius-control);
+		color: var(--mapetite-adaptive-text);
+		background: var(--mapetite-adaptive-card-surface);
+		font: inherit;
+		font-weight: 650;
+		transition:
+			background-color var(--mapetite-adaptive-motion-fast)
+				var(--mapetite-adaptive-ease),
+			border-color var(--mapetite-adaptive-motion-fast)
+				var(--mapetite-adaptive-ease),
+			color var(--mapetite-adaptive-motion-fast) var(--mapetite-adaptive-ease),
+			transform var(--mapetite-adaptive-motion-fast)
+				var(--mapetite-adaptive-ease);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-button:hover:not(:disabled) {
+		border-color: var(--mapetite-adaptive-border-strong);
+		background: var(--mapetite-adaptive-subtle-surface);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-button:active:not(:disabled) {
+		transform: translateY(1px);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-button.is-primary {
+		border-color: var(--mapetite-adaptive-accent);
+		color: var(--mapetite-adaptive-on-accent);
+		background: var(--mapetite-adaptive-accent);
+	}
+
+	.mapetite-adaptive-scope
+		.mapetite-adaptive-button.is-primary:hover:not(:disabled) {
+		border-color: var(--mapetite-adaptive-accent-hover);
+		background: var(--mapetite-adaptive-accent-hover);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-button.is-destructive {
+		border-color: color-mix(
+			in srgb,
+			var(--mapetite-adaptive-error) 32%,
+			transparent
+		);
+		color: var(--mapetite-adaptive-error);
+		background: var(--mapetite-adaptive-error-soft);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-button:disabled,
+	.mapetite-adaptive-scope
+		.mapetite-adaptive-button[aria-disabled="true"] {
+		border-color: transparent;
+		color: var(--mapetite-adaptive-disabled-text);
+		background: var(--mapetite-adaptive-disabled-bg);
+		box-shadow: none;
+		opacity: 1;
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-chip {
+		display: inline-flex;
+		min-width: 0;
+		min-height: 32px;
+		align-items: center;
+		gap: var(--mapetite-adaptive-space-1);
+		padding: var(--mapetite-adaptive-space-1)
+			var(--mapetite-adaptive-space-3);
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: var(--mapetite-adaptive-radius-round);
+		color: var(--mapetite-adaptive-text-secondary);
+		background: var(--mapetite-adaptive-card-surface);
+		font-size: 0.8125rem;
+		font-weight: 620;
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-chip[aria-pressed="true"],
+	.mapetite-adaptive-scope .mapetite-adaptive-chip[aria-selected="true"] {
+		border-color: var(--mapetite-adaptive-support);
+		color: var(--mapetite-adaptive-support-strong);
+		background: var(--mapetite-adaptive-support-soft);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-toolbar {
+		display: flex;
+		min-width: 0;
+		min-height: var(--mapetite-adaptive-toolbar-height);
+		align-items: center;
+		gap: var(--mapetite-adaptive-space-2);
+		padding: var(--mapetite-adaptive-space-2)
+			var(--mapetite-adaptive-space-4);
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: var(--mapetite-adaptive-radius-panel);
+		background: var(--mapetite-adaptive-elevated-surface);
+		box-shadow: var(--mapetite-adaptive-shadow-card);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-sheet {
+		min-width: 0;
+		max-width: 100%;
+		padding: var(--mapetite-adaptive-sheet-padding);
+		padding-bottom: max(
+			var(--mapetite-adaptive-sheet-padding),
+			env(safe-area-inset-bottom)
+		);
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: var(--mapetite-adaptive-radius-sheet)
+			var(--mapetite-adaptive-radius-sheet) 0 0;
+		background: var(--mapetite-adaptive-elevated-surface);
+		box-shadow: var(--mapetite-adaptive-shadow-sheet);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-status-banner {
+		display: flex;
+		min-width: 0;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: var(--mapetite-adaptive-space-3);
+		padding: var(--mapetite-adaptive-space-3)
+			var(--mapetite-adaptive-space-4);
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: var(--mapetite-adaptive-radius-card);
+		color: var(--mapetite-adaptive-text-secondary);
+		background: var(--mapetite-adaptive-subtle-surface);
+	}
+
+	.mapetite-adaptive-scope
+		.mapetite-adaptive-status-banner[data-tone="success"] {
+		color: var(--mapetite-adaptive-success);
+		background: var(--mapetite-adaptive-success-soft);
+	}
+
+	.mapetite-adaptive-scope
+		.mapetite-adaptive-status-banner[data-tone="warning"] {
+		color: var(--mapetite-adaptive-warning);
+		background: var(--mapetite-adaptive-warning-soft);
+	}
+
+	.mapetite-adaptive-scope
+		.mapetite-adaptive-status-banner[data-tone="error"] {
+		color: var(--mapetite-adaptive-error);
+		background: var(--mapetite-adaptive-error-soft);
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-media-fallback {
+		position: relative;
+		display: grid;
+		min-width: 0;
+		aspect-ratio: var(--mapetite-adaptive-result-media-ratio);
+		overflow: hidden;
+		place-items: center;
+		border-radius: var(--mapetite-adaptive-radius-control);
+		color: var(--mapetite-adaptive-support-strong);
+		background:
+			radial-gradient(
+				circle at 76% 18%,
+				rgba(255, 255, 255, 0.56),
+				transparent 30%
+			),
+			linear-gradient(
+				135deg,
+				var(--mapetite-adaptive-support-soft),
+				var(--mapetite-adaptive-map-surface)
+			);
+		font-weight: 720;
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-media-fallback::after {
+		content: "Photo unavailable";
+		position: absolute;
+		right: var(--mapetite-adaptive-space-2);
+		bottom: var(--mapetite-adaptive-space-2);
+		max-width: calc(100% - (var(--mapetite-adaptive-space-2) * 2));
+		overflow: hidden;
+		padding: 3px var(--mapetite-adaptive-space-2);
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: var(--mapetite-adaptive-radius-round);
+		color: var(--mapetite-adaptive-text-secondary);
+		background: var(--mapetite-adaptive-elevated-surface);
+		font-size: 0.6875rem;
+		font-weight: 620;
+		line-height: 1.35;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mapetite-adaptive-scope {
+		--mapetite-adaptive-motion-fast: 1ms;
+		--mapetite-adaptive-motion-standard: 1ms;
+		--mapetite-adaptive-motion-sheet: 1ms;
+	}
+
+	.mapetite-adaptive-scope .mapetite-adaptive-button:active:not(:disabled) {
+		transform: none;
+	}
+}
+
 /* Mobile-specific styles for "Your Expedition Begins" search container */
 @media (max-width: 768px) {
 	.search-container-mobile-centered {

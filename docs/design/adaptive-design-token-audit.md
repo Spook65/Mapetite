@@ -2,7 +2,7 @@
 
 ## Audit scope
 
-This audit compares the current production visual system in `src/styles.css` and route-level utility classes with the static adaptive prototype in `apple-adaptive-mapetite.html`. It defines a disciplined light adaptive system for a future migration; it does not authorize changing production styles yet.
+This audit compares the current production visual system in `src/styles.css` and route-level utility classes with the static adaptive prototype in `apple-adaptive-mapetite.html`. The foundation tokens and optional primitives are now implemented under `.mapetite-adaptive-scope`, but no production route or component opts into that scope. This does not authorize a structural migration.
 
 ## Current-system findings
 
@@ -25,6 +25,43 @@ The prototype has the right directional ingredients: warm light canvas, off-whit
 
 The goal is not fewer colors in the file; it is one semantic owner for every color and layout decision.
 
+## Implemented opt-in contract
+
+The adaptive foundation lives in `src/styles.css` inside `@layer components`. Every variable begins with `--mapetite-adaptive-`, and every primitive selector begins with `.mapetite-adaptive-scope .mapetite-adaptive-`. Existing `:root`, `--mapetite-*`, Tailwind theme, route classes, and MapLibre styles remain unchanged.
+
+Safe future opt-in requires an explicit boundary:
+
+```html
+<section class="mapetite-adaptive-scope">
+  <article class="mapetite-adaptive-card">...</article>
+</section>
+```
+
+Rules:
+
+1. Add the scope to the smallest independently testable surface, not `html`, `body`, `#root`, `Layout`, or every route at once.
+2. A scope provides variables plus its own light background/text context. Descendants change only when they use an adaptive primitive or consume an adaptive token explicitly.
+3. Do not alias adaptive variables onto existing global variables. Legacy production CSS and MapLibre overlays must continue reading their current tokens until their own approved phase.
+4. Do not mix adaptive and legacy primitive classes on the same element during migration; wrap a coherent surface and migrate it as a unit.
+5. Rollback removes the opt-in class from the component. If no components remain opted in, the entire adaptive block can be deleted without restoring global token values.
+
+### Optional primitive classes
+
+| Class | Intended role | Notes |
+| --- | --- | --- |
+| `.mapetite-adaptive-surface` | Neutral app/content surface | Base for a future isolated preview or pane |
+| `.mapetite-adaptive-card` | General content card | Supports `aria-selected="true"` |
+| `.mapetite-adaptive-result-card` | Restaurant list result | Same stable card foundation; content hierarchy comes later |
+| `.mapetite-adaptive-place-card` | Selected-place decision panel | Elevated surface, not a duplicate detail route |
+| `.mapetite-adaptive-button` | Neutral button | `.is-primary` and `.is-destructive` are explicit variants |
+| `.mapetite-adaptive-chip` | True filter/status chip | `aria-pressed` or `aria-selected` uses support, not accent |
+| `.mapetite-adaptive-toolbar` | Stable command row | Does not apply sticky positioning or pane layout |
+| `.mapetite-adaptive-sheet` | Safe-area-aware sheet surface | Does not implement dialogs, focus traps, or open/close behavior |
+| `.mapetite-adaptive-status-banner` | Contextual calm state | `data-tone="success|warning|error"` supplies semantic color |
+| `.mapetite-adaptive-media-fallback` | Stable no-photo material field | CSS-only, fixed ratio, and text-backed |
+
+These classes are visual building blocks only. They do not add layout state, event handling, accessibility semantics, map behavior, or route behavior.
+
 ## Strict 60/30/10 color model
 
 The ratio describes visible UI area and emphasis, not a literal per-screen measurement.
@@ -35,15 +72,16 @@ Use warm neutral base colors for the page, app shell, primary cards, text-bearin
 
 | Token | Proposed value | Role |
 | --- | --- | --- |
-| `--adaptive-bg` | `#F4F2EC` | Page/app background |
-| `--adaptive-surface` | `#FFFDF8` | Primary app and card surface |
-| `--adaptive-surface-elevated` | `rgba(255, 253, 248, 0.96)` | Sheet/popover surface with a solid fallback |
-| `--adaptive-surface-subtle` | `#F8F6F0` | Quiet grouped section, skeleton, or disabled-adjacent surface |
-| `--adaptive-text` | `#202A24` | Primary text |
-| `--adaptive-text-secondary` | `#5A665F` | Secondary text and metadata |
-| `--adaptive-text-faint` | `#7A837D` | Nonessential helper copy that still passes contrast at its intended size |
-| `--adaptive-border` | `rgba(32, 42, 36, 0.13)` | Default divider/border |
-| `--adaptive-border-strong` | `rgba(32, 42, 36, 0.24)` | Selected/focus-adjacent structural border |
+| `--mapetite-adaptive-bg` | `#F4F2EC` | Page/app background |
+| `--mapetite-adaptive-app-surface` | `#FFFDF8` | Primary app surface |
+| `--mapetite-adaptive-elevated-surface` | `rgba(255, 253, 248, 0.96)` | Sheet/popover surface with an opaque color fallback |
+| `--mapetite-adaptive-card-surface` | `#FFFDF8` | Result and place-card surface |
+| `--mapetite-adaptive-subtle-surface` | `#F8F6F0` | Quiet grouped section, skeleton, or disabled-adjacent surface |
+| `--mapetite-adaptive-text` | `#202A24` | Primary text |
+| `--mapetite-adaptive-text-secondary` | `#5A665F` | Secondary text and metadata |
+| `--mapetite-adaptive-text-faint` | `#7A837D` | Nonessential helper copy that still passes contrast at its intended size |
+| `--mapetite-adaptive-border` | `rgba(32, 42, 36, 0.13)` | Default divider/border |
+| `--mapetite-adaptive-border-strong` | `rgba(32, 42, 36, 0.24)` | Selected/focus-adjacent structural border |
 
 ### 30%: supportive sage and map context
 
@@ -51,12 +89,11 @@ Sage organizes the shell, map, secondary selected surfaces, and calm success/sup
 
 | Token | Proposed value | Role |
 | --- | --- | --- |
-| `--adaptive-support` | `#617264` | Secondary action text/icon and structural accent |
-| `--adaptive-support-strong` | `#405548` | High-contrast support foreground |
-| `--adaptive-support-soft` | `#E2E8E1` | Selected-neutral, grouped filters, calm informational surface |
-| `--adaptive-support-faint` | `#EDF1EC` | Subtle map/list linkage and quiet empty states |
-| `--adaptive-map` | `#DCE4DD` | Map placeholder/loading base |
-| `--adaptive-map-line` | `#F8F8F3` | Static/prototype map roads only; real map colors remain style-owned |
+| `--mapetite-adaptive-support` | `#617264` | Secondary action text/icon and structural accent |
+| `--mapetite-adaptive-support-strong` | `#405548` | High-contrast support foreground |
+| `--mapetite-adaptive-support-soft` | `#E2E8E1` | Selected-neutral, grouped filters, calm informational surface |
+| `--mapetite-adaptive-group-surface` | `#EDF1EC` | Subtle map/list linkage and quiet empty states |
+| `--mapetite-adaptive-map-surface` | `#DCE4DD` | Map placeholder/loading base; real map colors remain style-owned |
 
 ### 10%: apricot action and selection
 
@@ -64,11 +101,11 @@ Apricot is reserved for the primary action, selected map pin, and small focus/se
 
 | Token | Proposed value | Role |
 | --- | --- | --- |
-| `--adaptive-accent` | `#BC542F` | Primary action and selected pin |
-| `--adaptive-accent-hover` | `#A94727` | Hover/pressed action |
-| `--adaptive-accent-soft` | `#F5E1D8` | Small selected/action-support surface |
-| `--adaptive-on-accent` | `#FFFDFC` | Text/icon on accent; contrast must be verified before production |
-| `--adaptive-focus` | `#A94727` | Visible focus ring; may be paired with a neutral outer ring on busy map content |
+| `--mapetite-adaptive-accent` | `#BC542F` | Primary action and selected pin |
+| `--mapetite-adaptive-accent-hover` | `#A94727` | Hover/pressed action |
+| `--mapetite-adaptive-accent-soft` | `#F5E1D8` | Small selected/action-support surface |
+| `--mapetite-adaptive-on-accent` | `#FFFDFC` | Text/icon on accent; contrast must be verified before production |
+| `--mapetite-adaptive-focus` | `#A94727` | Visible focus ring; may be paired with a neutral outer ring on busy map content |
 
 ### State colors outside the decorative ratio
 
@@ -76,15 +113,15 @@ State colors are semantic exceptions and must remain sparse. They are not additi
 
 | Token | Proposed value | Role and rule |
 | --- | --- | --- |
-| `--adaptive-success` | `#3E694C` | Likely/listed-open text or confirmation; never “guaranteed open” |
-| `--adaptive-success-soft` | `#E3EEE5` | Small status background |
-| `--adaptive-warning` | `#835A32` | Timeout, stale, or caution text |
-| `--adaptive-warning-soft` | `#F4E9DC` | Calm retry/stale banner |
-| `--adaptive-error` | `#92483E` | Validation/provider error text, not a full-page red wall |
-| `--adaptive-error-soft` | `#F3E5E1` | Contextual error banner |
-| `--adaptive-favorite` | `#617264` | Saved state uses support green rather than inventing a pink/red brand color |
-| `--adaptive-disabled-bg` | `#ECEBE6` | Disabled control surface |
-| `--adaptive-disabled-text` | `#858C87` | Disabled label/icon; pair with more than color alone |
+| `--mapetite-adaptive-success` | `#3E694C` | Likely/listed-open text or confirmation; never “guaranteed open” |
+| `--mapetite-adaptive-success-soft` | `#E3EEE5` | Small status background |
+| `--mapetite-adaptive-warning` | `#835A32` | Timeout, stale, or caution text |
+| `--mapetite-adaptive-warning-soft` | `#F4E9DC` | Calm retry/stale banner |
+| `--mapetite-adaptive-error` | `#92483E` | Validation/provider error text, not a full-page red wall |
+| `--mapetite-adaptive-error-soft` | `#F3E5E1` | Contextual error banner |
+| `--mapetite-adaptive-favorite` | `#617264` | Saved state uses support green rather than inventing a pink/red brand color |
+| `--mapetite-adaptive-disabled-bg` | `#ECEBE6` | Disabled control surface |
+| `--mapetite-adaptive-disabled-text` | `#858C87` | Disabled label/icon; pair with more than color alone |
 
 ### Color-role rules
 
@@ -128,17 +165,17 @@ Use a 4-pixel base with a deliberately short set:
 
 | Token | Value | Typical use |
 | --- | --- | --- |
-| `--space-0` | `0` | Reset |
-| `--space-1` | `4px` | Tight icon/text gap |
-| `--space-2` | `8px` | Metadata gap |
-| `--space-3` | `12px` | Compact card gap/padding |
-| `--space-4` | `16px` | Default card/sheet padding |
-| `--space-5` | `20px` | Selected card and pane padding |
-| `--space-6` | `24px` | Desktop pane gutter |
-| `--space-8` | `32px` | Major section separation |
-| `--space-10` | `40px` | Route section separation |
-| `--space-12` | `48px` | Large web-only rhythm |
-| `--space-16` | `64px` | Landing-only separation |
+| `--mapetite-adaptive-space-0` | `0` | Reset |
+| `--mapetite-adaptive-space-1` | `4px` | Tight icon/text gap |
+| `--mapetite-adaptive-space-2` | `8px` | Metadata gap |
+| `--mapetite-adaptive-space-3` | `12px` | Compact card gap/padding |
+| `--mapetite-adaptive-space-4` | `16px` | Default card/sheet padding |
+| `--mapetite-adaptive-space-5` | `20px` | Selected card and pane padding |
+| `--mapetite-adaptive-space-6` | `24px` | Desktop pane gutter |
+| `--mapetite-adaptive-space-8` | `32px` | Major section separation |
+| `--mapetite-adaptive-space-10` | `40px` | Route section separation |
+| `--mapetite-adaptive-space-12` | `48px` | Large web-only rhythm |
+| `--mapetite-adaptive-space-16` | `64px` | Landing-only separation |
 
 Do not translate every current `0.42rem` or `0.68rem` literally. Snap to the nearest token based on role.
 
@@ -146,11 +183,11 @@ Do not translate every current `0.42rem` or `0.68rem` literally. Snap to the nea
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--radius-control` | `10px` | Inputs, compact buttons, statuses |
-| `--radius-card` | `14px` | Result cards and banners |
-| `--radius-panel` | `18px` | Selected/elevated panels |
-| `--radius-sheet` | `24px` | Top corners of sheets and major popovers |
-| `--radius-round` | `999px` | Icon buttons, badges, true chips only |
+| `--mapetite-adaptive-radius-control` | `10px` | Inputs, compact buttons, statuses |
+| `--mapetite-adaptive-radius-card` | `14px` | Result cards and banners |
+| `--mapetite-adaptive-radius-panel` | `18px` | Selected/elevated panels |
+| `--mapetite-adaptive-radius-sheet` | `24px` | Top corners of sheets and major popovers |
+| `--mapetite-adaptive-radius-round` | `999px` | Icon buttons, badges, true chips only |
 
 Pill shapes are limited to status chips, count badges, and icon controls. Full-width buttons and cards should not all be pills.
 
@@ -158,10 +195,10 @@ Pill shapes are limited to status chips, count badges, and icon controls. Full-w
 
 | Token | Proposed shadow | Use |
 | --- | --- | --- |
-| `--elevation-0` | `none` | Inline/card content separated by border or background |
-| `--elevation-1` | `0 1px 2px rgba(25, 35, 29, 0.06)` | Result card over base canvas |
-| `--elevation-2` | `0 10px 28px rgba(25, 35, 29, 0.10)` | Popover/selected card |
-| `--elevation-3` | `0 24px 64px rgba(25, 35, 29, 0.15)` | Compact modal sheet only |
+| `--mapetite-adaptive-shadow-none` | `none` | Inline/card content separated by border or background |
+| `--mapetite-adaptive-shadow-card` | `0 1px 2px rgba(25, 35, 29, 0.06)` | Result card over base canvas |
+| `--mapetite-adaptive-shadow-popover` | `0 10px 28px rgba(25, 35, 29, 0.10)` | Popover/selected card |
+| `--mapetite-adaptive-shadow-sheet` | `0 24px 64px rgba(25, 35, 29, 0.15)` | Compact modal sheet only |
 
 Use either a border or a meaningful shadow at low elevation, not both at maximum strength.
 
@@ -169,10 +206,9 @@ Use either a border or a meaningful shadow at low elevation, not both at maximum
 
 | Token | Compact | Expanded/desktop | Rule |
 | --- | --- | --- | --- |
-| `--control-height` | `44px` | `40px` visual height with `44px` hit area | Never below a 44-point tap target on touch |
-| `--control-height-prominent` | `50px` | `46px` | Search command and primary sheet action |
-| `--icon-hit` | `44px` | `40px` visual / `44px` hit | Close, Save, Account, Map controls |
-| `--toolbar-height` | `60px + safe area` | `60px` | Stable; content never changes its height |
+| `--mapetite-adaptive-button-height` | `44px` | `44px` | Default minimum; future dense desktop controls must retain a 44-pixel hit area |
+| `--mapetite-adaptive-button-height-prominent` | `50px` | `50px` | Search command and primary sheet action |
+| `--mapetite-adaptive-toolbar-height` | `60px + shell-owned safe area` | `60px` | Stable; content never changes its height |
 
 ### Content dimensions
 
@@ -184,6 +220,8 @@ Use either a border or a meaningful shadow at low elevation, not both at maximum
 | Detail hero | `16:10` or `16:9` | `16:9` |
 | Gallery tile | `4:3` | `4:3` |
 | Map | At least `280px` when explicitly opened | Flexible pane with minimum `420px` width where three panes are used |
+
+The implementation exposes these values as `--mapetite-adaptive-result-media-ratio`, `--mapetite-adaptive-selected-media-ratio`, `--mapetite-adaptive-detail-media-ratio`, `--mapetite-adaptive-gallery-media-ratio`, `--mapetite-adaptive-card-padding`, `--mapetite-adaptive-place-card-padding`, and `--mapetite-adaptive-sheet-padding`.
 
 ## Shared grid and alignment system
 
@@ -200,10 +238,10 @@ Use either a border or a meaningful shadow at low elevation, not both at maximum
 
 | Mode | Recommended grid | Notes |
 | --- | --- | --- |
-| Compact | `minmax(0, 1fr)` | One content surface plus at most one transient sheet |
-| Expanded | `minmax(280px, 34%) minmax(0, 66%)` | List + map; selected place overlays map or replaces a secondary region |
-| Wide expanded | `320px minmax(420px, 1fr)` | List + map with a compact selected card attached to map |
-| Desktop | `320px minmax(480px, 1fr) 340px` | List + map + decision/evidence panel; outer gutters remain aligned |
+| Compact | `--mapetite-adaptive-compact-width: 390px` as a test concept; actual layout remains `minmax(0, 1fr)` | One content surface plus at most one transient sheet |
+| Expanded | `--mapetite-adaptive-expanded-columns: minmax(280px, 34%) minmax(0, 1fr)` | List + map; selected place overlays map or replaces a secondary region |
+| Wide expanded | `--mapetite-adaptive-list-pane-width: 320px` plus a flexible map with `--mapetite-adaptive-map-pane-min-width: 420px` | List + map with a compact selected card attached to map |
+| Desktop | `--mapetite-adaptive-desktop-columns`, composed from `320px / flexible map / 340px` | List + map + decision/evidence panel; outer gutters remain aligned |
 
 Do not make list, map, and selected columns independent percentages at every breakpoint. Use fixed readable rails around one flexible content pane.
 
@@ -281,10 +319,10 @@ This applies interaction principles without copying Apple assets or components.
 
 ## Interaction tokens
 
-- `--motion-fast: 120ms`
-- `--motion-standard: 180ms`
-- `--motion-sheet: 240ms`
-- `--ease-standard: cubic-bezier(0.2, 0.8, 0.2, 1)`
+- `--mapetite-adaptive-motion-fast: 120ms`
+- `--mapetite-adaptive-motion-standard: 180ms`
+- `--mapetite-adaptive-motion-sheet: 240ms`
+- `--mapetite-adaptive-ease: cubic-bezier(0.2, 0.8, 0.2, 1)`
 - Animate only opacity and transform in the visual migration.
 - Under `prefers-reduced-motion: reduce`, set transition duration to near-zero and avoid sheet travel.
 - Focus rings use a 2-pixel semantic focus ring plus a 2-pixel surface separator on busy content.
@@ -319,7 +357,7 @@ Keep warm neutral, sage, and apricot, but tighten them to the strict role system
 
 ### First production migration step
 
-Introduce the namespaced token definitions behind an opt-in adaptive scope, with no global token replacement and no DOM movement. Validate the token palette and sizing on a low-risk visual surface before touching result cards. This is independently reversible and gives subsequent component work a stable contract.
+The namespaced token definitions and optional primitives now exist behind `.mapetite-adaptive-scope`, with no global token replacement and no production opt-in. The next separately approved step should validate them on one low-risk, non-structural surface before touching result cards. That experiment must be reversible by removing one scope class.
 
 ## Risks before TestFlight
 
@@ -336,4 +374,4 @@ Introduce the namespaced token definitions behind an opt-in adaptive scope, with
 
 ## Audit conclusion
 
-The adaptive prototype is directionally strong but not migration-ready as a structural shell. A strict role-based token layer, shared alignment grid, contextual states, and one-surface-at-a-time interaction contract are prerequisites. The safest next move is a small token-only production experiment after the prototype is normalized, not a route rewrite.
+The adaptive prototype is directionally strong but not migration-ready as a structural shell. Its strict role-based token layer and optional primitives are implemented but intentionally dormant. The safest next move is a separately approved, small opt-in visual experiment after the prototype is normalized, not a route rewrite.
