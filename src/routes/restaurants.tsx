@@ -87,7 +87,7 @@ import {
 // Define search params schema for the route
 type RestaurantsSearch = {
 	city?: string;
-	ui?: "adaptive-card";
+	ui?: "adaptive-card" | "adaptive-shell";
 };
 
 const INITIAL_VISIBLE_RESULTS = 36;
@@ -167,7 +167,10 @@ export const Route = createFileRoute("/restaurants")({
 	validateSearch: (search: Record<string, unknown>): RestaurantsSearch => {
 		return {
 			city: typeof search.city === "string" ? search.city : undefined,
-			ui: search.ui === "adaptive-card" ? "adaptive-card" : undefined,
+			ui:
+				search.ui === "adaptive-card" || search.ui === "adaptive-shell"
+					? search.ui
+					: undefined,
 		};
 	},
 });
@@ -474,7 +477,8 @@ function isExpectedLocationError(error: unknown) {
 
 function RestaurantSearchPage() {
 	const { city: searchCity, ui } = Route.useSearch();
-	const isAdaptiveCardPreview = ui === "adaptive-card";
+	const isAdaptiveShellPreview = ui === "adaptive-shell";
+	const isAdaptiveCardPreview = ui === "adaptive-card" || isAdaptiveShellPreview;
 
 	// Global state from Zustand store
 	const location = useRestaurantSearchStore((state) => state.location);
@@ -566,6 +570,7 @@ function RestaurantSearchPage() {
 	const [showSlowSearchMessage, setShowSlowSearchMessage] = useState(false);
 	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
 	const [isMapOpen, setIsMapOpen] = useState(false);
+	const [isAdaptiveSearchExpanded, setIsAdaptiveSearchExpanded] = useState(false);
 	const [mapUserLocation, setMapUserLocation] = useState<{
 		latitude: number;
 		longitude: number;
@@ -612,6 +617,8 @@ function RestaurantSearchPage() {
 	const hasLocationInput = Boolean(
 		location.city.trim() || location.state.trim() || location.country.trim(),
 	);
+	const isAdaptiveSearchDetailsOpen =
+		!isAdaptiveShellPreview || isAdaptiveSearchExpanded || !hasLocationInput;
 	const suggestionContext = useMemo<PlaceSuggestionContext>(
 		() => getBrowserSuggestionContext(recentSearches),
 		[recentSearches],
@@ -1585,16 +1592,28 @@ function RestaurantSearchPage() {
 
 	return (
 		<Layout>
-			<div className="mapetite-page-shell min-h-full">
+			<div
+				className={cn(
+					"mapetite-page-shell min-h-full",
+					isAdaptiveShellPreview &&
+						"mapetite-adaptive-scope mapetite-adaptive-shell-preview",
+				)}
+			>
 				<div
 					className={cn(
 						"mapetite-container px-4 pt-6 md:px-6 md:pt-8",
+						isAdaptiveShellPreview && "mapetite-adaptive-shell-container",
 						selectedRestaurant
 							? "pb-40 md:pb-12 min-[1261px]:pb-8"
 							: "pb-6 md:pb-8",
 					)}
 				>
-					<section className="mb-3 grid justify-items-center gap-4 text-center md:mb-4 md:gap-5 min-[1261px]:justify-items-start min-[1261px]:text-left">
+					<section
+						className={cn(
+							"mb-3 grid justify-items-center gap-4 text-center md:mb-4 md:gap-5 min-[1261px]:justify-items-start min-[1261px]:text-left",
+							isAdaptiveShellPreview && "mapetite-adaptive-shell-intro",
+						)}
+					>
 						<div className="grid justify-items-center min-[1261px]:justify-items-start">
 							<div className="mapetite-eyebrow">Restaurant search</div>
 							<h1 className="mt-3 max-w-[11ch] text-[clamp(2.25rem,4.6vw,3.5rem)] font-semibold leading-[0.98] tracking-[-0.06em] text-[var(--mapetite-text)]">
@@ -1608,8 +1627,57 @@ function RestaurantSearchPage() {
 						</div>
 					</section>
 
-					<section className="mapetite-panel mb-4 grid gap-4 p-4 md:gap-5 md:p-6">
-						<div className="flex flex-wrap items-end justify-between gap-4">
+					<section
+						className={cn(
+							"mapetite-panel mb-4 grid gap-4 p-4 md:gap-5 md:p-6",
+							isAdaptiveShellPreview && "mapetite-adaptive-shell-command",
+						)}
+						data-search-expanded={isAdaptiveSearchDetailsOpen}
+					>
+						{isAdaptiveShellPreview ? (
+							<div className="mapetite-adaptive-shell-command-summary">
+								<button
+									type="button"
+									onClick={() => setIsAdaptiveSearchExpanded((current) => !current)}
+									className="mapetite-adaptive-shell-command-icon"
+									aria-expanded={isAdaptiveSearchDetailsOpen}
+									aria-controls="adaptive-shell-search-details"
+									aria-label={
+										isAdaptiveSearchDetailsOpen
+											? "Collapse search fields"
+											: "Edit search location"
+									}
+								>
+									<Search className="size-4" />
+								</button>
+								<div className="min-w-0 flex-1">
+									<span>Search command</span>
+									<strong>
+										{searchCenterLabel || "Choose a city, region, or country"}
+									</strong>
+								</div>
+								<span className="mapetite-adaptive-shell-command-context">
+									{selectedCategories.size > 0
+										? Array.from(selectedCategories).join(", ")
+										: "Any cuisine"}
+								</span>
+								<Button
+									type="button"
+									onClick={handleSearch}
+									disabled={isSearching || !hasLocationInput}
+									className="mapetite-adaptive-button is-primary mapetite-adaptive-shell-command-go"
+								>
+									{isSearching ? "Searching…" : "Search"}
+								</Button>
+							</div>
+						) : null}
+
+						<div
+							className={cn(
+								"flex flex-wrap items-end justify-between gap-4",
+								isAdaptiveShellPreview && "mapetite-adaptive-shell-search-copy",
+							)}
+						>
 							<div className="w-full text-center min-[1261px]:text-left">
 								<strong className="text-[21px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 									Find restaurants by place
@@ -1621,7 +1689,13 @@ function RestaurantSearchPage() {
 							</div>
 						</div>
 
-						<div className="mx-auto grid min-w-0 w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto]">
+						<div
+							id="adaptive-shell-search-details"
+							className={cn(
+								"mx-auto grid min-w-0 w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto]",
+								isAdaptiveShellPreview && "mapetite-adaptive-shell-search-grid",
+							)}
+						>
 							<div className="grid min-w-0 gap-2">
 								<Label
 									htmlFor="city"
@@ -1782,9 +1856,14 @@ function RestaurantSearchPage() {
 							</div>
 
 							<div className="relative grid gap-2 min-[1261px]:grid-cols-2 min-[1261px]:items-end">
-								<Button
-									type="button"
-									onClick={handleSearch}
+									<Button
+										type="button"
+										onClick={() => {
+											handleSearch();
+											if (isAdaptiveShellPreview) {
+												setIsAdaptiveSearchExpanded(false);
+											}
+										}}
 									disabled={isSearching}
 									className="mapetite-accent-button h-12 w-full justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none md:h-[52px] min-[1261px]:w-auto"
 								>
@@ -1825,7 +1904,13 @@ function RestaurantSearchPage() {
 						</div>
 
 						{hasLocationInput ? (
-							<div className="hidden min-[1261px]:flex min-[1261px]:justify-end">
+							<div
+								className={cn(
+									"hidden min-[1261px]:flex min-[1261px]:justify-end",
+									isAdaptiveShellPreview &&
+										"mapetite-adaptive-shell-location-status",
+								)}
+							>
 								<div className="inline-flex items-center gap-2 rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3 py-1.5 text-xs text-[rgba(245,233,222,0.58)]">
 									<span>Location fields active</span>
 									<span aria-hidden="true" className="text-[rgba(245,233,222,0.28)]">
@@ -1843,7 +1928,12 @@ function RestaurantSearchPage() {
 						) : null}
 					</section>
 
-					<section className="mapetite-panel-soft mb-4 grid min-w-0 max-w-full gap-3 p-4 md:p-5">
+					<section
+						className={cn(
+							"mapetite-panel-soft mb-4 grid min-w-0 max-w-full gap-3 p-4 md:p-5",
+							isAdaptiveShellPreview && "mapetite-adaptive-shell-recent",
+						)}
+					>
 						<div className="grid min-w-0 gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
 							<div className="min-w-0">
 								<div className="mapetite-eyebrow">{searchChipHeading}</div>
@@ -1906,7 +1996,12 @@ function RestaurantSearchPage() {
 						) : null}
 					</section>
 
-					<section className="mapetite-panel-soft mb-4 flex flex-wrap items-center gap-2 p-3 md:p-4">
+					<section
+						className={cn(
+							"mapetite-panel-soft mb-4 flex flex-wrap items-center gap-2 p-3 md:p-4",
+							isAdaptiveShellPreview && "mapetite-adaptive-toolbar mapetite-adaptive-shell-toolbar",
+						)}
+					>
 						{hasResultsForCurrentView ? (
 							<>
 								<Button
@@ -2148,7 +2243,12 @@ function RestaurantSearchPage() {
 					)}
 
 						{hasResultsForCurrentView && showRefinements && (
-							<section className="mapetite-panel mb-4 hidden p-5 md:grid md:gap-5">
+							<section
+								className={cn(
+									"mapetite-panel mb-4 hidden p-5 md:grid md:gap-5",
+									isAdaptiveShellPreview && "mapetite-adaptive-shell-filters",
+								)}
+							>
 							<div className="flex flex-wrap items-center justify-between gap-4">
 								<div>
 									<div className="mapetite-eyebrow">Filters</div>
@@ -2268,10 +2368,23 @@ function RestaurantSearchPage() {
 							</section>
 					)}
 
-						{hasResultsForCurrentView && (
-							<section className="grid gap-6 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] min-[1261px]:items-start">
-							<div className="grid gap-4">
-								{isMapOpen && displayedRestaurants.length > 0 ? (
+							{hasResultsForCurrentView && (
+								<section
+									className={cn(
+										"grid gap-6 min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] min-[1261px]:items-start",
+										isAdaptiveShellPreview &&
+											"mapetite-adaptive-shell-results-layout",
+									)}
+								>
+								<div
+									className={cn(
+										"grid gap-4",
+										isAdaptiveShellPreview && "mapetite-adaptive-shell-results-list",
+									)}
+								>
+									{!isAdaptiveShellPreview &&
+									isMapOpen &&
+									displayedRestaurants.length > 0 ? (
 									<Suspense
 										fallback={
 											<section className="mapetite-panel grid min-h-[584px] place-items-center p-5 text-center md:min-h-[556px]">
@@ -2296,7 +2409,13 @@ function RestaurantSearchPage() {
 									</Suspense>
 								) : null}
 
-								<div className="mapetite-panel flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+								<div
+									className={cn(
+										"mapetite-panel flex flex-wrap items-center justify-between gap-3 px-5 py-4",
+										isAdaptiveShellPreview &&
+											"mapetite-adaptive-shell-results-summary",
+									)}
+								>
 									<div>
 										<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											{resultHeading}
@@ -2770,9 +2889,84 @@ function RestaurantSearchPage() {
 									)}
 							</div>
 
+							{isAdaptiveShellPreview ? (
+								<div
+									className={cn(
+										"mapetite-adaptive-shell-map-pane",
+										!isMapOpen && "is-placeholder",
+									)}
+								>
+									{isMapOpen && displayedRestaurants.length > 0 ? (
+										<Suspense
+											fallback={
+												<section className="mapetite-adaptive-shell-map-loading grid min-h-[520px] place-items-center p-5 text-center">
+													<div>
+														<MapPinned className="mx-auto size-6" />
+														<p className="mt-3 text-sm">Loading map view…</p>
+													</div>
+												</section>
+											}
+										>
+											<SearchResultsMap
+												restaurants={displayedRestaurants}
+												selectedRestaurantId={selectedRestaurantId}
+												userLocation={mapUserLocation}
+												distanceOrigin={mapDistanceOrigin}
+												searchCenterLabel={searchCenterLabel || null}
+												onSelectRestaurant={handleSelectRestaurant}
+												onClose={() => setIsMapOpen(false)}
+											/>
+										</Suspense>
+									) : (
+										<section className="mapetite-adaptive-shell-map-placeholder">
+											<div className="mapetite-adaptive-shell-map-grid" aria-hidden="true">
+												<span />
+												<span />
+												<span />
+											</div>
+											<div className="mapetite-adaptive-shell-map-placeholder-copy">
+												<MapPinned className="size-5" />
+												<strong>
+													{displayedRestaurants.length > 0
+														? "Map ready when you are"
+														: "No visible restaurants to map"}
+												</strong>
+												<p>
+													{displayedRestaurants.length > 0
+														? "Open the existing map to compare visible results. No camera or pin behavior changes in this preview."
+														: "Adjust the current filters to restore visible map pins."}
+												</p>
+												{displayedRestaurants.length > 0 ? (
+													<Button
+														type="button"
+														variant="outline"
+														onClick={() => setIsMapOpen(true)}
+														className="mapetite-adaptive-button"
+													>
+														Open map
+													</Button>
+												) : null}
+											</div>
+										</section>
+									)}
+								</div>
+							) : null}
+
 							{displayedRestaurants.length > 0 && (
-								<aside className="mapetite-panel hidden h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:grid min-[1261px]:self-start">
-									<div className="flex flex-wrap items-center justify-between gap-3">
+								<aside
+									className={cn(
+										"mapetite-panel hidden h-fit gap-[18px] p-[22px] min-[1261px]:sticky min-[1261px]:top-[94px] min-[1261px]:grid min-[1261px]:self-start",
+										isAdaptiveShellPreview &&
+											"mapetite-adaptive-place-card mapetite-adaptive-shell-selected-panel",
+									)}
+								>
+									<div
+										className={cn(
+											"flex flex-wrap items-center justify-between gap-3",
+											isAdaptiveShellPreview &&
+												"mapetite-adaptive-shell-selected-heading",
+										)}
+									>
 										<span className="text-[12px] uppercase tracking-[0.14em] text-[rgba(245,233,222,0.5)]">
 											Compare selection
 										</span>
@@ -2785,11 +2979,23 @@ function RestaurantSearchPage() {
 
 									{selectedRestaurant ? (
 										<>
-											<h2 className="m-0 text-[34px] font-semibold leading-[1.02] tracking-[-0.05em] text-[var(--mapetite-text)]">
+											<h2
+												className={cn(
+													"m-0 text-[34px] font-semibold leading-[1.02] tracking-[-0.05em] text-[var(--mapetite-text)]",
+													isAdaptiveShellPreview &&
+														"mapetite-adaptive-shell-selected-title",
+												)}
+											>
 												{selectedRestaurant.name}
 											</h2>
 
-											<div className="h-[172px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)]">
+										<div
+											className={cn(
+												"h-[172px] overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)]",
+												isAdaptiveShellPreview &&
+													"mapetite-adaptive-shell-selected-media",
+											)}
+										>
 												{shouldShowSelectedPreviewImage ? (
 													<div className="relative h-full">
 														<img
@@ -2817,8 +3023,20 @@ function RestaurantSearchPage() {
 														</div>
 													</div>
 												) : (
-													<div className="mapetite-media-fallback grid h-full grid-rows-[auto_1fr_auto] p-4">
-														<strong className="text-[28px] font-semibold tracking-[-0.05em] text-[rgba(255,244,236,0.92)]">
+											<div
+												className={cn(
+													"mapetite-media-fallback grid h-full grid-rows-[auto_1fr_auto] p-4",
+													isAdaptiveShellPreview &&
+														"mapetite-adaptive-media-fallback mapetite-adaptive-shell-selected-fallback",
+												)}
+											>
+												<strong
+													className={cn(
+														"text-[28px] font-semibold tracking-[-0.05em] text-[rgba(255,244,236,0.92)]",
+														isAdaptiveShellPreview &&
+															"text-[var(--mapetite-adaptive-support-strong)]",
+													)}
+												>
 															{getRestaurantInitials(selectedRestaurant)}
 														</strong>
 														<div />
@@ -2831,7 +3049,13 @@ function RestaurantSearchPage() {
 												)}
 											</div>
 
-											<p className="text-[15px] leading-[1.68] text-[var(--mapetite-text-soft)]">
+											<p
+												className={cn(
+													"text-[15px] leading-[1.68] text-[var(--mapetite-text-soft)]",
+													isAdaptiveShellPreview &&
+														"mapetite-adaptive-shell-selected-description",
+												)}
+											>
 												{truncateCopy(
 													selectedRestaurant.description,
 													220,
@@ -2839,7 +3063,13 @@ function RestaurantSearchPage() {
 												)}
 											</p>
 
-											<div className="flex flex-wrap gap-2">
+											<div
+												className={cn(
+													"flex flex-wrap gap-2",
+													isAdaptiveShellPreview &&
+														"mapetite-adaptive-shell-selected-signals",
+												)}
+											>
 												{getDisplayCategory(selectedRestaurant) ? (
 													<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
 														{getDisplayCategory(selectedRestaurant)}
@@ -2866,7 +3096,13 @@ function RestaurantSearchPage() {
 												) : null}
 											</div>
 
-											<div className="grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-3">
+											<div
+												className={cn(
+													"grid gap-2 rounded-[12px] border border-[rgba(255,236,220,0.08)] bg-white/[0.025] p-3",
+													isAdaptiveShellPreview &&
+														"mapetite-adaptive-shell-selected-evidence",
+												)}
+											>
 												<div className="flex items-center justify-between gap-3">
 													<strong className="text-[13px] font-semibold text-[var(--mapetite-text)]">
 														Why consider it
@@ -2894,7 +3130,13 @@ function RestaurantSearchPage() {
 												</div>
 											</div>
 
-											<div className="grid gap-3 sm:flex sm:flex-wrap">
+											<div
+												className={cn(
+													"grid gap-3 sm:flex sm:flex-wrap",
+													isAdaptiveShellPreview &&
+														"mapetite-adaptive-shell-selected-actions",
+												)}
+											>
 												<Button
 													asChild
 													className="mapetite-accent-button h-[46px] w-full justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none sm:w-auto"
@@ -2952,7 +3194,13 @@ function RestaurantSearchPage() {
 												)}
 											</div>
 
-											<div className="grid gap-3 border-t border-[rgba(255,236,220,0.08)] pt-4">
+											<div
+												className={cn(
+													"grid gap-3 border-t border-[rgba(255,236,220,0.08)] pt-4",
+													isAdaptiveShellPreview &&
+														"mapetite-adaptive-shell-selected-address",
+												)}
+											>
 												<div>
 													<strong className="text-[15px] font-semibold tracking-[-0.02em] text-[var(--mapetite-text)]">
 														{getFullAddressLine(selectedRestaurant) || "Address available in details"}
@@ -2966,12 +3214,30 @@ function RestaurantSearchPage() {
 										</>
 									) : (
 										<div className="grid gap-4">
-											<div className="mapetite-media-fallback grid h-[220px] grid-rows-[auto_1fr_auto] rounded-[14px] p-4">
-												<strong className="text-[28px] font-semibold tracking-[-0.05em] text-[rgba(255,244,236,0.92)]">
+										<div
+											className={cn(
+												"mapetite-media-fallback grid h-[220px] grid-rows-[auto_1fr_auto] rounded-[14px] p-4",
+												isAdaptiveShellPreview &&
+													"mapetite-adaptive-media-fallback mapetite-adaptive-shell-selected-fallback",
+											)}
+										>
+											<strong
+												className={cn(
+													"text-[28px] font-semibold tracking-[-0.05em] text-[rgba(255,244,236,0.92)]",
+													isAdaptiveShellPreview &&
+														"text-[var(--mapetite-adaptive-support-strong)]",
+												)}
+											>
 													MP
 												</strong>
 												<div />
-												<span className="text-[13px] text-[rgba(245,233,222,0.68)]">
+												<span
+													className={cn(
+														"text-[13px] text-[rgba(245,233,222,0.68)]",
+														isAdaptiveShellPreview &&
+															"text-[var(--mapetite-adaptive-text-secondary)]",
+													)}
+												>
 													Preview one room while the rest of the shortlist stays visible.
 												</span>
 											</div>
@@ -3097,10 +3363,49 @@ function RestaurantSearchPage() {
 						)}
 				</div>
 
-				{selectedRestaurant && (
-					<div className="fixed inset-x-4 bottom-4 z-40 min-[1261px]:hidden">
-						<div className="mapetite-panel-soft border border-[rgba(255,236,220,0.12)] bg-[rgba(24,18,14,0.94)] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] backdrop-blur pb-[calc(env(safe-area-inset-bottom)+0.75rem)]">
-							<div className="flex items-start justify-between gap-3">
+				{selectedRestaurant &&
+					(!isAdaptiveShellPreview || !isAdaptiveSearchExpanded) && (
+					<div
+						className={cn(
+							"fixed inset-x-4 bottom-4 z-40 min-[1261px]:hidden",
+							isAdaptiveShellPreview && "mapetite-adaptive-shell-mobile-selection-wrap",
+						)}
+					>
+						<div
+							className={cn(
+								"mapetite-panel-soft border border-[rgba(255,236,220,0.12)] bg-[rgba(24,18,14,0.94)] p-4 shadow-[0_18px_40px_rgba(0,0,0,0.22)] backdrop-blur pb-[calc(env(safe-area-inset-bottom)+0.75rem)]",
+								isAdaptiveShellPreview &&
+									"mapetite-adaptive-sheet mapetite-adaptive-shell-mobile-selection",
+							)}
+						>
+							<div
+								className={cn(
+									"flex items-start justify-between gap-3",
+									isAdaptiveShellPreview &&
+										"mapetite-adaptive-shell-mobile-summary",
+								)}
+							>
+								{isAdaptiveShellPreview ? (
+									<div className="mapetite-adaptive-shell-mobile-media" aria-hidden="true">
+										{shouldShowSelectedPreviewImage ? (
+											<img
+												src={selectedPreviewImage ?? ""}
+												alt=""
+												className="h-full w-full object-cover"
+												referrerPolicy="no-referrer"
+												onError={() => {
+													if (selectedPreviewImageKey) {
+														handleResultImageError(selectedPreviewImageKey);
+													}
+												}}
+											/>
+										) : (
+											<div className="mapetite-adaptive-media-fallback mapetite-adaptive-shell-mobile-media-fallback">
+												{getRestaurantInitials(selectedRestaurant)}
+											</div>
+										)}
+									</div>
+								) : null}
 								<div className="min-w-0">
 									<div className="flex flex-wrap items-center gap-2">
 										<strong className="truncate text-[18px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
@@ -3140,6 +3445,12 @@ function RestaurantSearchPage() {
 									<X className="size-4" />
 								</button>
 							</div>
+
+							{isAdaptiveShellPreview && selectedHelpfulReasons[0] ? (
+								<p className="mapetite-adaptive-shell-mobile-evidence">
+									<strong>Why consider it:</strong> {selectedHelpfulReasons[0]}
+								</p>
+							) : null}
 
 							<div className="mt-3 grid grid-cols-2 gap-2">
 								<Button

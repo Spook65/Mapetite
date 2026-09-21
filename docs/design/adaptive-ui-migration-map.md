@@ -192,3 +192,111 @@ The layout may adapt; ownership may not fork.
 ## First safe production step
 
 The namespaced adaptive token foundation is complete, and the low-risk result-card preview is the first explicit opt-in. Keep it query-gated until its real-data, fallback, selected, signed-in/out, keyboard, desktop, and 390-pixel states are approved. The next step is review and refinement, not another surface migration. Do not proceed to the search sheet, selected-place behavior, map shell, route layout, or three-pane structure; those areas still wait for interaction and viewport proof.
+
+## Adaptive shell visual spike
+
+The result-card-only preview at `/restaurants?ui=adaptive-card` proved that the scoped tokens work with real data and actions, but it could not answer whether the Apple-inspired direction fits Mapetite. The prototype's quality comes from the relationship between command, list, map, and selected place rather than from card decoration alone.
+
+`/restaurants?ui=adaptive-shell` is therefore a second, explicit visual spike. It opts the restaurant search page into the same namespaced token scope and composes existing production state into:
+
+- a restrained floating search-command surface with the resolved place and cuisine context;
+- the existing search fields, autocomplete, location action, recent/restore state, toolbar, filters, counts, and banners;
+- a narrow results rail using the adaptive card preview;
+- the existing `SearchResultsMap` in a flexible center pane when open, or an honest interactive map placeholder when closed;
+- the existing selected restaurant comparison as a wide decision panel and the existing compact selected state as a safe-area-aware bottom sheet.
+
+The map is not cloned. Default and `adaptive-card` modes render it in the existing list column; `adaptive-shell` renders that same component once in the center pane. Its pins, selection, camera, popup, origin markers, close behavior, and callbacks are unchanged.
+
+### Production features represented
+
+- City, region, and country fields, autocomplete, paused/unavailable suggestion copy, Search, Use My Location, and Clear all.
+- Recent searches, quick examples, local result-count badges, clear recents, restore last search, and stale-results labeling.
+- Filters, sort, Saved only, map toggle, refresh, active-filter chips, matching count, mapped count, and city-scope headings.
+- Real result cards, selection, image failure handling, View details, Save/Unsave, Directions, signed-out save feedback, show more, and empty/loading/error states.
+- Real selected restaurant data, rating, listing signals, location, distance, hours, address, and existing actions.
+
+### Still not migrated
+
+- Search now collapses to a resolved-place command and expands the real fields on demand; a keyboard-aware phone sheet and anchored wide popover are not implemented.
+- Filters retain the existing mobile drawer and desktop expansion rather than the proposed one-surface sheet/popover coordinator.
+- Saved and Account remain existing routes and Layout navigation; shell-specific navigation is not introduced.
+- The selected mobile sheet remains intentionally compact and does not duplicate the full desktop evidence panel.
+- The detail route, landing page, persistent adaptive navigation, native wrapper behavior, and map internals are unchanged.
+
+These items are deferred, not removed. Structural migration still requires separate interaction, focus, keyboard, Dynamic Type, map-resize, and route-history proof.
+
+### Enable and rollback
+
+- Enable the card experiment with `?ui=adaptive-card`.
+- Enable the shell experiment with `?ui=adaptive-shell`.
+- The validated query value is not persisted and does not enter backend requests or cache keys.
+- Roll back the shell by removing the `adaptive-shell` query branch, the conditional shell classes/map placement, and the `mapetite-adaptive-shell-*` CSS block. Default markup behavior remains available throughout.
+
+### Decision criteria
+
+Continue only if review confirms all three:
+
+1. The live shell resembles the Apple-inspired prototype more closely than card restyling alone.
+2. Real search, autocomplete, recent/restore, filters, counts, map, selection, save, directions, details, stale/error states, and mobile behavior remain intact.
+3. The composition improves scan and comparison quality enough to justify the later interaction work for coordinated search/filter sheets and responsive pane ownership.
+
+If any criterion fails, retain the token foundation and card experiment, remove the shell branch, and make no default visual migration.
+
+### Prototype parity review
+
+Comparison against `apple-adaptive-mapetite.html` shows that the live spike is now structurally close but intentionally not interaction-complete.
+
+| Prototype element | Live adaptive shell | Current closeness | Remaining gap |
+| --- | --- | --- | --- |
+| Compact search command | Resolved place, cuisine context, edit control, and live Search action; existing fields expand on demand | High | Compact fields still expand in the page rather than a keyboard-aware bottom sheet |
+| Functional material | Warm opaque fallback plus restrained blur on command, toolbar, selected panel, and compact sheet | High | Increase Contrast and real busy-map contrast still need device testing |
+| Desktop pane model | Bounded result rail, flexible real-map pane/closed state, and real selected evidence panel | High | Persistent-map policy and pane resize behavior are not approved |
+| Compact result scan | Stable media, title, location/distance, status, evidence, and existing actions | Medium-high | Production actions keep rows taller than the prototype's action-free 66px rows |
+| Map surface | Existing MapLibre map moves into the spatial center with unchanged pins/camera; closed state is honest | High | Prototype's small selected overlay is omitted to avoid duplicating the decision panel |
+| Wide selected place | Real media/fallback, name, listing signals, evidence, distance, address, and actions | High | Action priority still follows production rather than selecting the prototype's proposed order |
+| Compact selected sheet | Real 54px media/fallback, identity, status/distance, one evidence line, dismiss, and all actions | High | Larger-text and keyboard coexistence still need device testing |
+| Search/selection coordination | Expanding Search suppresses the compact selected sheet without clearing selection | Medium-high | Focus return and true one-sheet coordination are deferred |
+| Filters command | Existing filter controls and handlers remain available in the scoped shell | Medium | Existing mobile drawer/desktop panel are not yet the prototype's shared command surface |
+| App navigation | Existing `Layout` keeps Saved, Account, and signed-in/out behavior | Low-medium | TestFlight-style shell navigation is deliberately not part of this spike |
+
+The meaningful match is information architecture, not visual imitation: command over content, a spatial center, bounded result scanning, one decision surface, and progressive disclosure. The remaining differences are mostly coordinated-sheet/navigation work with materially higher behavior and accessibility risk.
+
+## Prototype-parity refinement audit
+
+The first live shell established the correct information architecture, but a matched comparison against the prototype exposed several visual gaps before this refinement:
+
+| Area | Before refinement | Prototype target |
+| --- | --- | --- |
+| Shell composition | List, map, and selected place read as three independent rounded cards separated by 16-pixel gaps | One app surface divided into three aligned panes |
+| Map dominance | The real MapLibre canvas retained the production 380-pixel desktop height | A spatial center approximately 620 to 654 pixels tall |
+| Result density | 96-pixel media, large headings, and a separate full action row made each rail item substantially taller | 66- to 84-pixel media, compact scan lines, and a dense comparison rhythm |
+| Selected hierarchy | Name appeared before media and the panel retained web-card elevation | Media first, then selected label, identity, evidence, facts, and actions |
+| Command/material | Strong popover shadow and 16-pixel blur made the command more decorative than the prototype | Restrained 12-pixel blur, opaque fallback, and compact 54- to 60-pixel command rhythm |
+| Compact cards | Mobile adaptive cards inherited the production single-column media treatment | 88- to 92-pixel media beside concise content with actions below |
+| Compact selection | The sheet was usable but allowed up to 54 percent of the viewport and 420 pixels | A tighter safe-area inset decision sheet with one clamped evidence statement |
+
+### Refinements made
+
+- The wide preview now uses one bordered, 20-pixel-radius shell for list, live map, and selected place, with structural dividers instead of inter-pane gaps and repeated elevation.
+- The existing MapLibre component is unchanged, but its preview-only container expands to 620 pixels and its existing heading/actions become a restrained overlay over the spatial surface.
+- The result rail uses 76-pixel media, smaller scan typography, 8-pixel internal rhythm, 36-pixel action controls, and the selected card styling itself instead of a redundant `Previewing` control.
+- The selected panel becomes media-first, uses the shared pane rather than its own floating card, reduces explanatory type, and gives the evidence block one calm sage structural edge.
+- The compact preview uses 88-pixel side media, a one-line evidence summary, three retained actions, and a selected sheet capped at 50 percent/380 pixels.
+- Command, recent, and toolbar surfaces use more opaque fallbacks, less blur, reduced shadow, and tighter spacing. Default `/restaurants` does not match any of these selectors.
+
+### Remaining differences
+
+- Production result actions remain directly available on every card. The prototype omits them from dense desktop rows, so the live rail remains taller by design.
+- Recent searches and restore status remain visible production surfaces instead of moving into the prototype's search popover.
+- Search fields expand inline rather than using a keyboard-aware compact sheet or anchored wide popover.
+- Filters retain the existing drawer/panel behavior rather than sharing a coordinated transient-surface controller.
+- Existing `Layout` navigation and footer remain outside the query-scoped shell; no TestFlight navigation structure is introduced.
+- The real map keeps its existing controls, attribution, popup behavior, and provider style rather than imitating the static map artwork.
+
+### Continue or stop
+
+The refined shell is close enough to continue as an opt-in design experiment because its composition, density, spatial emphasis, and selected-place hierarchy now track the prototype while retaining real data and handlers. It is not ready to become the default. Search/filter transient-surface behavior, keyboard focus restoration, Dynamic Type, live-device safe areas, and signed-in/out visual states remain explicit approval gates.
+
+### Rollback
+
+Remove the `adaptive-shell` value from the validated `ui` query parameter, remove the conditional `mapetite-adaptive-shell-*` class hooks from `restaurants.tsx`, and delete the query-scoped shell rules. The default route, adaptive-card experiment, map component, store, cache, and backend require no migration or data cleanup.

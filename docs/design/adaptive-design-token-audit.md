@@ -406,3 +406,83 @@ The namespaced token definitions and optional primitives now exist behind `.mape
 ## Audit conclusion
 
 The adaptive prototype is directionally strong but not migration-ready as a structural shell. Its strict role-based token layer and optional primitives are implemented but intentionally dormant. The safest next move is a separately approved, small opt-in visual experiment after the prototype is normalized, not a route rewrite.
+
+## Query-gated shell usage
+
+The token layer now supports two non-persistent restaurant-page previews:
+
+- `/restaurants?ui=adaptive-card` applies adaptive primitives only to real result cards.
+- `/restaurants?ui=adaptive-shell` applies the scope at the restaurant-page boundary and composes the existing command, list, map, and selected-place surfaces into a higher-fidelity shell.
+
+The shell aliases existing `--mapetite-*` roles to namespaced adaptive roles only inside `.mapetite-adaptive-scope.mapetite-adaptive-shell-preview`. Global production tokens remain unchanged. Neutral base/card surfaces remain dominant, sage is limited to grouping/map context, and apricot remains reserved for primary actions and selected map markers.
+
+### Shell classes and token roles
+
+| Optional class | Role | Primary tokens |
+| --- | --- | --- |
+| `mapetite-adaptive-shell-preview` | Scoped light app canvas and legacy-role aliases | base, text, border, accent, shell width |
+| `mapetite-adaptive-shell-command` | Elevated search-command material | elevated surface, panel radius, popover shadow |
+| `mapetite-adaptive-shell-toolbar` | Compact control layer | toolbar height, border, elevated surface |
+| `mapetite-adaptive-shell-results-layout` | Wide list/map/place composition | desktop pane columns, 16-pixel gutter |
+| `mapetite-adaptive-shell-results-list` | Bounded comparison rail | list width, spacing, thin overflow rail |
+| `mapetite-adaptive-shell-map-pane` | Flexible existing map or honest closed state | map surface, panel radius, card shadow |
+| `mapetite-adaptive-shell-selected-panel` | Wide decision/evidence surface | place-card padding, elevated surface, popover shadow |
+| `mapetite-adaptive-shell-mobile-selection` | Compact safe-area selected sheet | sheet radius, sheet shadow, sheet padding |
+| `mapetite-adaptive-shell-selected-fallback` | Mature no-photo material | support soft, map surface, stable ratio/badge |
+
+Translucent shell surfaces declare an opaque warm surface first and enhance it with restrained `backdrop-filter` only where supported. Text never relies on the background blur for contrast. Motion remains limited to existing opacity/transform transitions and collapses under `prefers-reduced-motion`.
+
+### Usage limits
+
+- Do not place `mapetite-adaptive-shell-preview` on `Layout`, `body`, or another global ancestor.
+- Do not reuse shell aliases outside an explicit query-gated or separately approved boundary.
+- Do not use accent orange for decorative map fields, helper cards, recent-search backgrounds, or broad selected surfaces.
+- Do not convert the closed-map placeholder into a fake map or routing claim; it is a preview affordance that opens the real map.
+- Do not treat independent list/map scrolling as approved production interaction until keyboard, touch, MapLibre resize, and Dynamic Type testing passes.
+
+### Safe rollback
+
+Remove the validated `adaptive-shell` query value, conditional shell classes and map placement in the restaurant route, and the scoped `mapetite-adaptive-shell-*` rules. The global palette, default restaurant page, backend/cache requests, store, route handlers, and map component require no reversal. The card preview and dormant token foundation can remain independently for review.
+
+### Review still required
+
+- Whether the command should become a real compact sheet/wide popover rather than an expanded elevated form.
+- Whether the independent results rail is comfortable for keyboard and touch users.
+- Whether the center map should be persistently visible at the final wide breakpoint.
+- Whether the right decision panel should keep View details or Directions as its primary action.
+- Whether compact selection needs one evidence line without becoming too tall.
+- Contrast on live map tiles, 200% text scaling, image failure, signed-out Save, stale restore, provider errors, and 390-pixel width.
+
+## Refined shell token application
+
+The prototype-parity pass keeps the token values and semantic ownership intact while changing how the opt-in shell composes them:
+
+- `--mapetite-adaptive-border` now provides pane dividers inside one shared shell rather than outlining three elevated cards.
+- `--mapetite-adaptive-shadow-card` owns ordinary command/toolbar elevation; the stronger popover shadow is limited to the map command overlay and true transient surfaces.
+- `--mapetite-adaptive-map-surface` remains the honest closed/loading base and real MapLibre tiles remain provider-owned.
+- `--mapetite-adaptive-selected-media-ratio` controls the media-first desktop decision panel without affecting production cards or the detail route.
+- `--mapetite-adaptive-space-2` and `--mapetite-adaptive-space-3` now drive the dense result rail; larger spacing tokens remain reserved for selected evidence and route-level separation.
+- Accent orange remains limited to primary actions and selected map emphasis. Selection surfaces use support sage and neutral structure.
+
+### Preview-only dimensions
+
+| Surface | Refined adaptive-shell preview | Reason |
+| --- | --- | --- |
+| Wide shared composition | `320px / minmax(420px, 1fr) / 340px` | Preserves readable fixed rails around one flexible spatial pane |
+| Wide composition height | `620px` minimum | Approaches the prototype's 654-pixel content surface without changing map logic |
+| Wide result media | `76px` square | Fits the documented dense-row range while preserving all actions |
+| Compact result media | `88px` square | Matches the mobile token recommendation and stable fallback dimensions |
+| Map header material | Opaque warm fallback plus 10-pixel blur enhancement | Keeps controls legible over arbitrary tiles without blur dependence |
+| Compact selected sheet | `min(50vh, 380px)` | Keeps results and dismissal context visible while retaining actions |
+
+These dimensions are deliberately attached to `.mapetite-adaptive-shell-preview`. They do not replace global size tokens or modify `SearchResultsMap` outside the query-gated composition.
+
+### Material constraints after refinement
+
+1. The shared list/map/place shell gets one meaningful low elevation, not a shadow per pane.
+2. Content panes remain opaque or nearly opaque. Blur is limited to command controls and the map header overlay.
+3. Map text always has a warm opaque fallback under it.
+4. Result cards rely on border and selected inset/ring hierarchy; hover elevation remains enhancement only.
+5. Reduced-motion behavior and stable media dimensions remain unchanged.
+
+Rollback remains selector-based: removing the query-gated scope/class hooks makes every refined rule non-matching, with no token, state, cache, or backend reversal.

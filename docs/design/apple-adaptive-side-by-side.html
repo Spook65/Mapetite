@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mapetite Adaptive Prototype Comparison</title>
+    <style>
+      :root {
+        color-scheme: light;
+        font-family:
+          ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        --ink: #18251e;
+        --muted: #657069;
+        --line: #d9ded8;
+        --paper: #f5f4ef;
+        --surface: #fffffc;
+        --sage: #526d5a;
+        --apricot: #cc7651;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        min-width: 320px;
+        margin: 0;
+        color: var(--ink);
+        background: var(--paper);
+      }
+
+      button {
+        min-height: 42px;
+        padding: 0 16px;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        color: var(--ink);
+        background: var(--surface);
+        font: inherit;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button[aria-pressed="true"] {
+        border-color: var(--sage);
+        color: #fff;
+        background: var(--sage);
+      }
+
+      button:focus-visible,
+      iframe:focus-visible {
+        outline: 3px solid rgba(204, 118, 81, 0.55);
+        outline-offset: 3px;
+      }
+
+      .page-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: end;
+        justify-content: space-between;
+        gap: 18px;
+        padding: 22px clamp(16px, 3vw, 40px);
+        border-bottom: 1px solid var(--line);
+        background: rgba(255, 255, 252, 0.94);
+      }
+
+      .page-header h1 {
+        margin: 0;
+        font-size: clamp(1.35rem, 2.4vw, 2rem);
+        letter-spacing: -0.035em;
+      }
+
+      .page-header p {
+        max-width: 720px;
+        margin: 7px 0 0;
+        color: var(--muted);
+        line-height: 1.55;
+      }
+
+      .mode-switcher {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      main {
+        padding: clamp(16px, 3vw, 40px);
+      }
+
+      .comparison-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: clamp(14px, 2vw, 26px);
+        align-items: start;
+      }
+
+      .comparison-card {
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: var(--surface);
+        box-shadow: 0 12px 38px rgba(27, 38, 31, 0.08);
+      }
+
+      .comparison-card header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .comparison-card h2 {
+        margin: 0;
+        font-size: 0.96rem;
+      }
+
+      .comparison-card small {
+        color: var(--muted);
+      }
+
+      .viewport-stage {
+        --virtual-width: 1280;
+        --virtual-height: 820;
+        position: relative;
+        width: 100%;
+        height: min(72vh, 760px);
+        overflow: hidden;
+        background: #e8ebe6;
+      }
+
+      .viewport-stage iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(var(--virtual-width) * 1px);
+        height: calc(var(--virtual-height) * 1px);
+        border: 0;
+        transform: scale(var(--frame-scale, 0.5));
+        transform-origin: top left;
+        background: #fff;
+      }
+
+      body[data-mode="mobile"] .comparison-grid {
+        justify-content: center;
+      }
+
+      body[data-mode="mobile"] .comparison-card {
+        width: min(100%, 460px);
+        justify-self: center;
+      }
+
+      body[data-mode="mobile"] .viewport-stage {
+        --virtual-width: 390;
+        --virtual-height: 844;
+        height: min(844px, 78vh);
+        background: #dfe4df;
+      }
+
+      .notes {
+        margin-top: clamp(20px, 3vw, 34px);
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: var(--surface);
+      }
+
+      .notes h2 {
+        margin: 0;
+        padding: 17px 18px;
+        border-bottom: 1px solid var(--line);
+        font-size: 1rem;
+      }
+
+      .notes-grid {
+        display: grid;
+        grid-template-columns: 150px repeat(2, minmax(0, 1fr));
+      }
+
+      .notes-grid > div {
+        min-width: 0;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--line);
+        line-height: 1.45;
+      }
+
+      .notes-grid > div:nth-child(3n + 1) {
+        color: var(--sage);
+        font-weight: 800;
+      }
+
+      .notes-grid > div:nth-child(3n + 2) {
+        border-inline: 1px solid var(--line);
+      }
+
+      .notes-grid > div:nth-last-child(-n + 3) {
+        border-bottom: 0;
+      }
+
+      .tip {
+        margin: 16px 0 0;
+        color: var(--muted);
+        font-size: 0.86rem;
+        line-height: 1.5;
+      }
+
+      @media (max-width: 900px) {
+        .comparison-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .viewport-stage {
+          height: 620px;
+        }
+
+        .notes-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .notes-grid > div {
+          border-bottom: 0;
+        }
+
+        .notes-grid > div:nth-child(3n + 1) {
+          padding-bottom: 4px;
+          border-top: 1px solid var(--line);
+        }
+
+        .notes-grid > div:nth-child(3n + 2) {
+          border-inline: 0;
+        }
+
+        .notes-grid > div:first-child {
+          border-top: 0;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+          scroll-behavior: auto !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+    </style>
+  </head>
+  <body data-mode="desktop">
+    <header class="page-header">
+      <div>
+        <h1>Adaptive prototype vs. live shell</h1>
+        <p>
+          Matched local viewports make spacing, pane ratios, cards, map treatment,
+          selected-place hierarchy, and the compact bottom sheet easier to compare.
+        </p>
+      </div>
+      <div class="mode-switcher" aria-label="Comparison viewport">
+        <button type="button" data-mode-button="desktop" aria-pressed="true">
+          Desktop
+        </button>
+        <button type="button" data-mode-button="mobile" aria-pressed="false">
+          Mobile 390 × 844
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="comparison-grid" aria-label="Side-by-side adaptive UI comparison">
+        <article class="comparison-card">
+          <header>
+            <h2>Static adaptive prototype</h2>
+            <small>Design target</small>
+          </header>
+          <div class="viewport-stage">
+            <iframe
+              id="prototype-frame"
+              title="Apple-inspired static Mapetite prototype"
+              src="./apple-adaptive-mapetite.html"
+            ></iframe>
+          </div>
+        </article>
+
+        <article class="comparison-card">
+          <header>
+            <h2>Live adaptive shell</h2>
+            <small>Real state and handlers</small>
+          </header>
+          <div class="viewport-stage">
+            <iframe
+              id="shell-frame"
+              title="Live Mapetite adaptive shell preview"
+              src="/restaurants?ui=adaptive-shell"
+            ></iframe>
+          </div>
+        </article>
+      </section>
+
+      <section class="notes" aria-labelledby="comparison-notes-title">
+        <h2 id="comparison-notes-title">What to compare</h2>
+        <div class="notes-grid">
+          <div>Area</div>
+          <div>Prototype target</div>
+          <div>Live shell today</div>
+
+          <div>Spacing</div>
+          <div>Tighter 8–12px card rhythm with content-led density.</div>
+          <div>Uses the same 8–12px rail rhythm; real actions still add intentional height.</div>
+
+          <div>Pane widths</div>
+          <div>Approx. 0.82 : 1.42 : 0.86 for list, map, and decision panel.</div>
+          <div>Fixed 320px list, flexible map from 420px, and 340px decision panel.</div>
+
+          <div>Result cards</div>
+          <div>66px media, compact scan lines, one evidence line, no inline action row.</div>
+          <div>76px desktop and 88px mobile media; all three production actions remain.</div>
+
+          <div>Map</div>
+          <div>Visually dominant center content with a concise selected overlay.</div>
+          <div>Uses the real MapLibre surface; the closed state remains an honest placeholder.</div>
+
+          <div>Selected panel</div>
+          <div>Strong image-first hierarchy with compact facts and one primary utility.</div>
+          <div>Now media-first with real evidence/actions, but keeps more production context.</div>
+
+          <div>Mobile sheet</div>
+          <div>Safe-area inset sheet, 54px media, one evidence line, three 44px actions.</div>
+          <div>54px media, clamped evidence, reachable actions, and a 50vh/380px cap.</div>
+        </div>
+      </section>
+
+      <p class="tip">
+        Tip: select a live result or open the live map inside the right frame to compare
+        real selected and map states. This page is documentation-only and changes no
+        production route behavior.
+      </p>
+    </main>
+
+    <script>
+      (() => {
+        const body = document.body;
+        const buttons = Array.from(document.querySelectorAll("[data-mode-button]"));
+        const stages = Array.from(document.querySelectorAll(".viewport-stage"));
+        const prototypeFrame = document.querySelector("#prototype-frame");
+
+        function scaleFrames() {
+          stages.forEach((stage) => {
+            const virtualWidth = Number.parseFloat(
+              getComputedStyle(stage).getPropertyValue("--virtual-width"),
+            );
+            const scale = Math.min(1, stage.clientWidth / virtualWidth);
+            stage.style.setProperty("--frame-scale", String(scale));
+          });
+        }
+
+        function syncPrototype(mode) {
+          const targetId = mode === "mobile" ? "compact-tab" : "desktop-tab";
+          const target = prototypeFrame.contentDocument?.getElementById(targetId);
+          target?.click();
+        }
+
+        function setMode(mode) {
+          body.dataset.mode = mode;
+          buttons.forEach((button) => {
+            button.setAttribute(
+              "aria-pressed",
+              String(button.dataset.modeButton === mode),
+            );
+          });
+          scaleFrames();
+          syncPrototype(mode);
+        }
+
+        buttons.forEach((button) => {
+          button.addEventListener("click", () => setMode(button.dataset.modeButton));
+        });
+
+        prototypeFrame.addEventListener("load", () => syncPrototype(body.dataset.mode));
+        window.addEventListener("resize", scaleFrames);
+        scaleFrames();
+      })();
+    </script>
+  </body>
+</html>
