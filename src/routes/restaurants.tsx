@@ -87,6 +87,7 @@ import {
 // Define search params schema for the route
 type RestaurantsSearch = {
 	city?: string;
+	ui?: "adaptive-card";
 };
 
 const INITIAL_VISIBLE_RESULTS = 36;
@@ -166,6 +167,7 @@ export const Route = createFileRoute("/restaurants")({
 	validateSearch: (search: Record<string, unknown>): RestaurantsSearch => {
 		return {
 			city: typeof search.city === "string" ? search.city : undefined,
+			ui: search.ui === "adaptive-card" ? "adaptive-card" : undefined,
 		};
 	},
 });
@@ -471,7 +473,8 @@ function isExpectedLocationError(error: unknown) {
 }
 
 function RestaurantSearchPage() {
-	const { city: searchCity } = Route.useSearch();
+	const { city: searchCity, ui } = Route.useSearch();
+	const isAdaptiveCardPreview = ui === "adaptive-card";
 
 	// Global state from Zustand store
 	const location = useRestaurantSearchStore((state) => state.location);
@@ -2408,9 +2411,19 @@ function RestaurantSearchPage() {
 										);
 										const isSelected = selectedRestaurantId === restaurant.id;
 										const openLabel = getSearchHoursLabel(restaurant);
+										const hasOpenStatus =
+											restaurant.hoursStatus?.state === "confirmed_open" ||
+											restaurant.hoursStatus?.state === "listed_hours_open" ||
+											restaurant.isOpenNow === true;
 										const cityScopeLabel = getCityScopeLabel(restaurant);
 										const directionsUrl =
 											buildGoogleMapsDirectionsUrl(restaurant);
+										const distanceLabel = isAdaptiveCardPreview
+											? getRestaurantMapPins(
+													[restaurant],
+													mapDistanceOrigin,
+												)[0]?.distanceLabel ?? null
+											: null;
 										const summary = truncateCopy(
 											restaurant.description,
 											88,
@@ -2429,14 +2442,29 @@ function RestaurantSearchPage() {
 														handleSelectRestaurant(restaurant.id);
 													}
 												}}
+												aria-pressed={
+													isAdaptiveCardPreview ? isSelected : undefined
+												}
 												className={cn(
-													"grid gap-3 rounded-[14px] border p-4 text-center transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)] min-[981px]:grid-cols-[154px_minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:text-left",
-													isSelected
-														? "border-[rgba(213,154,104,0.24)] bg-[rgba(255,248,242,0.05)] shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
-														: "border-[rgba(255,236,220,0.08)] bg-[var(--mapetite-surface)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:border-[rgba(213,154,104,0.24)] hover:bg-[rgba(255,248,242,0.05)] hover:-translate-y-[1px]",
+													"grid min-w-0 gap-3 text-center min-[981px]:grid-cols-[154px_minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:text-left",
+													isAdaptiveCardPreview
+														? "mapetite-adaptive-scope mapetite-adaptive-result-card mapetite-adaptive-result-card-preview"
+														: cn(
+																"rounded-[14px] border p-4 transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)]",
+																isSelected
+																	? "border-[rgba(213,154,104,0.24)] bg-[rgba(255,248,242,0.05)] shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
+																	: "border-[rgba(255,236,220,0.08)] bg-[var(--mapetite-surface)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:border-[rgba(213,154,104,0.24)] hover:bg-[rgba(255,248,242,0.05)] hover:-translate-y-[1px]",
+															),
 												)}
 											>
-												<div className="grid h-[132px] grid-rows-[auto_1fr_auto] overflow-hidden rounded-[12px] border border-[rgba(255,236,220,0.08)]">
+												<div
+													className={cn(
+														"grid h-[132px] grid-rows-[auto_1fr_auto] overflow-hidden",
+														isAdaptiveCardPreview
+															? "mapetite-adaptive-result-media"
+															: "rounded-[12px] border border-[rgba(255,236,220,0.08)]",
+													)}
+												>
 													{shouldShowPreviewImage ? (
 														<div className="relative h-full">
 															<img
@@ -2466,12 +2494,32 @@ function RestaurantSearchPage() {
 															</div>
 														</div>
 													) : (
-														<div className="mapetite-media-fallback grid h-full grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left">
-															<strong className="text-[22px] font-semibold tracking-[-0.04em] text-[rgba(255,244,236,0.92)]">
+														<div
+															className={cn(
+																"mapetite-media-fallback grid h-full grid-rows-[auto_1fr_auto] justify-items-center p-[14px] text-center min-[981px]:justify-items-start min-[981px]:text-left",
+																isAdaptiveCardPreview &&
+																	"mapetite-adaptive-media-fallback mapetite-adaptive-result-media-fallback",
+															)}
+														>
+															<strong
+																className={cn(
+																	"text-[22px] font-semibold tracking-[-0.04em]",
+																	isAdaptiveCardPreview
+																		? "mapetite-adaptive-result-media-mark"
+																		: "text-[rgba(255,244,236,0.92)]",
+																)}
+															>
 																{getRestaurantInitials(restaurant)}
 															</strong>
 															<div />
-															<span className="block max-w-full truncate text-[12px] text-[rgba(245,233,222,0.68)]">
+															<span
+																className={cn(
+																	"block max-w-full truncate text-[12px]",
+																	isAdaptiveCardPreview
+																		? "mapetite-adaptive-result-media-label"
+																		: "text-[rgba(245,233,222,0.68)]",
+																)}
+															>
 																{displayCategory
 																	? `${displayCategory} · ${getLocationHint(restaurant)}`
 																	: getLocationHint(restaurant)}
@@ -2480,46 +2528,114 @@ function RestaurantSearchPage() {
 													)}
 												</div>
 
-												<div className="grid content-start gap-2.5">
+												<div
+													className={cn(
+														"grid content-start gap-2.5",
+														isAdaptiveCardPreview &&
+															"mapetite-adaptive-result-copy",
+													)}
+												>
 													<div className="flex flex-wrap items-start justify-center gap-2.5 min-[981px]:justify-between">
 														<div className="w-full min-[981px]:w-auto">
-															<h3 className="m-0 min-h-[3.25rem] overflow-hidden text-[clamp(1.55rem,2vw,1.85rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[var(--mapetite-text)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+															<h3
+																className={cn(
+																	"m-0 min-h-[3.25rem] overflow-hidden text-[clamp(1.55rem,2vw,1.85rem)] font-semibold leading-[1.04] tracking-[-0.04em] text-[var(--mapetite-text)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]",
+																	isAdaptiveCardPreview &&
+																		"mapetite-adaptive-result-heading",
+																)}
+															>
 																{restaurant.name}
 															</h3>
-															<p className="mapetite-muted-copy mt-1.5 min-h-[1.375rem] overflow-hidden text-ellipsis whitespace-nowrap text-[14px]">
-																{displayCategory
-																	? `${displayCategory} · ${getLocationHint(restaurant)}`
-																	: getLocationHint(restaurant)}
+															<p
+																className={cn(
+																	"mapetite-muted-copy mt-1.5 min-h-[1.375rem] overflow-hidden text-ellipsis whitespace-nowrap text-[14px]",
+																	isAdaptiveCardPreview &&
+																		"mapetite-adaptive-result-meta",
+																)}
+															>
+																<span>
+																	{displayCategory
+																		? `${displayCategory} · ${getLocationHint(restaurant)}`
+																		: getLocationHint(restaurant)}
+																</span>
+																{distanceLabel ? (
+																	<span className="mapetite-adaptive-result-distance">
+																		{distanceLabel}
+																	</span>
+																) : null}
 															</p>
 														</div>
 
-														<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]">
+														<span
+															className={cn(
+																"rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-3 py-2 text-[13px] text-[var(--mapetite-text-soft)]",
+																isAdaptiveCardPreview &&
+																	"mapetite-adaptive-result-rating",
+															)}
+														>
 															{getRatingSummary(restaurant)}
 														</span>
 													</div>
 
-													<p className="m-0 min-h-[2.75rem] overflow-hidden text-[14px] leading-[1.55] text-[var(--mapetite-text-soft)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]">
+													<p
+														className={cn(
+															"m-0 min-h-[2.75rem] overflow-hidden text-[14px] leading-[1.55] text-[var(--mapetite-text-soft)] [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2]",
+															isAdaptiveCardPreview &&
+																"mapetite-adaptive-result-summary",
+														)}
+													>
 														{summary}
 													</p>
 
-													<div className="flex min-h-8 flex-wrap justify-center gap-2 min-[981px]:justify-start">
+													<div
+														className={cn(
+															"flex min-h-8 flex-wrap justify-center gap-2 min-[981px]:justify-start",
+															isAdaptiveCardPreview &&
+																"mapetite-adaptive-result-chip-row",
+														)}
+													>
 														{cityScopeLabel ? (
-															<span className="rounded-full border border-[rgba(183,177,118,0.18)] bg-[rgba(183,177,118,0.08)] px-3 py-1.5 text-[12px] text-[var(--mapetite-text-soft)]">
+															<span
+																className={cn(
+																	"rounded-full border border-[rgba(183,177,118,0.18)] bg-[rgba(183,177,118,0.08)] px-3 py-1.5 text-[12px] text-[var(--mapetite-text-soft)]",
+																	isAdaptiveCardPreview &&
+																		"mapetite-adaptive-chip mapetite-adaptive-result-status",
+																)}
+															>
 																{cityScopeLabel}
 															</span>
 														) : null}
 														{openLabel ? (
-															<span className="rounded-full border border-[rgba(255,236,220,0.09)] bg-[rgba(255,248,242,0.025)] px-3 py-1.5 text-[12px] text-[var(--mapetite-text-soft)]">
+															<span
+																className={cn(
+																	"rounded-full border border-[rgba(255,236,220,0.09)] bg-[rgba(255,248,242,0.025)] px-3 py-1.5 text-[12px] text-[var(--mapetite-text-soft)]",
+																	isAdaptiveCardPreview &&
+																		"mapetite-adaptive-chip mapetite-adaptive-result-status",
+																	hasOpenStatus &&
+																		isAdaptiveCardPreview &&
+																		"is-open-status",
+																)}
+															>
 																{openLabel}
 															</span>
 														) : null}
 													</div>
 												</div>
 
-												<div className="grid grid-cols-2 content-start gap-2 min-[981px]:grid-cols-1 min-[981px]:min-w-[118px] min-[981px]:justify-items-end">
+												<div
+													className={cn(
+														"grid grid-cols-2 content-start gap-2 min-[981px]:grid-cols-1 min-[981px]:min-w-[118px] min-[981px]:justify-items-end",
+														isAdaptiveCardPreview &&
+															"mapetite-adaptive-result-actions",
+													)}
+												>
 													<Button
 														asChild
-														className="mapetite-accent-button col-span-2 h-11 w-full justify-center rounded-full px-4 text-[15px] font-semibold text-[#20140d] shadow-none min-[981px]:col-span-1 min-[981px]:w-[118px] min-[981px]:px-3.5"
+														className={cn(
+															"mapetite-accent-button col-span-2 h-11 w-full justify-center rounded-full px-4 text-[15px] font-semibold text-[#20140d] shadow-none min-[981px]:col-span-1 min-[981px]:w-[118px] min-[981px]:px-3.5",
+															isAdaptiveCardPreview &&
+																"mapetite-adaptive-button mapetite-adaptive-result-action is-primary",
+														)}
 														onClick={(event) => event.stopPropagation()}
 													>
 														<Link
@@ -2540,8 +2656,12 @@ function RestaurantSearchPage() {
 														disabled={isTogglingFavorite}
 														className={cn(
 															"mapetite-quiet-button h-10 w-full justify-center gap-1.5 rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5",
+															isAdaptiveCardPreview &&
+																"mapetite-adaptive-button mapetite-adaptive-result-action",
 															favoriteIds.has(restaurant.id) &&
-																"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+																(isAdaptiveCardPreview
+																	? "is-saved"
+																	: "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"),
 														)}
 													>
 														<Heart
@@ -2555,9 +2675,13 @@ function RestaurantSearchPage() {
 
 													{directionsUrl ? (
 														<Button
-															asChild
-															variant="outline"
-															className="mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5"
+																asChild
+																variant="outline"
+																className={cn(
+																	"mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5",
+																	isAdaptiveCardPreview &&
+																		"mapetite-adaptive-button mapetite-adaptive-result-action",
+																)}
 															onClick={(event) => event.stopPropagation()}
 														>
 															<a
@@ -2570,16 +2694,26 @@ function RestaurantSearchPage() {
 														</Button>
 													) : (
 														<Button
-															disabled
-															variant="outline"
-															className="mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] opacity-60 shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5"
+																disabled
+																variant="outline"
+																className={cn(
+																	"mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] opacity-60 shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5",
+																	isAdaptiveCardPreview &&
+																		"mapetite-adaptive-button mapetite-adaptive-result-action",
+																)}
 														>
 															No directions
 														</Button>
 													)}
 
 													{isSelected ? (
-														<span className="hidden h-10 w-[118px] items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3.5 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:inline-flex">
+														<span
+															className={cn(
+																"hidden h-10 w-[118px] items-center justify-center rounded-full border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3.5 text-center text-[13px] text-[var(--mapetite-text)] min-[981px]:inline-flex",
+																isAdaptiveCardPreview &&
+																	"mapetite-adaptive-chip mapetite-adaptive-result-previewing",
+															)}
+														>
 															Previewing
 														</span>
 													) : null}

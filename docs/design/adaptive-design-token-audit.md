@@ -2,7 +2,7 @@
 
 ## Audit scope
 
-This audit compares the current production visual system in `src/styles.css` and route-level utility classes with the static adaptive prototype in `apple-adaptive-mapetite.html`. The foundation tokens and optional primitives are now implemented under `.mapetite-adaptive-scope`, but no production route or component opts into that scope. This does not authorize a structural migration.
+This audit compares the current production visual system in `src/styles.css` and route-level utility classes with the static adaptive prototype in `apple-adaptive-mapetite.html`. The foundation tokens and optional primitives are implemented under `.mapetite-adaptive-scope`. The restaurant result list now has one explicit query-param preview; the default route still does not opt in. This does not authorize a structural migration.
 
 ## Current-system findings
 
@@ -27,7 +27,7 @@ The goal is not fewer colors in the file; it is one semantic owner for every col
 
 ## Implemented opt-in contract
 
-The adaptive foundation lives in `src/styles.css` inside `@layer components`. Every variable begins with `--mapetite-adaptive-`, and every primitive selector begins with `.mapetite-adaptive-scope .mapetite-adaptive-`. Existing `:root`, `--mapetite-*`, Tailwind theme, route classes, and MapLibre styles remain unchanged.
+The adaptive foundation lives in a namespaced, unlayered block in `src/styles.css`. Keeping the block unlayered lets an explicitly opted-in adaptive primitive override Tailwind utility output without `!important`; the `.mapetite-adaptive-scope` prefix prevents those rules from matching the default UI. Every variable begins with `--mapetite-adaptive-`, and every primitive selector begins with `.mapetite-adaptive-scope`. Existing `:root`, `--mapetite-*`, Tailwind theme, route classes, and MapLibre styles remain unchanged.
 
 Safe future opt-in requires an explicit boundary:
 
@@ -42,8 +42,39 @@ Rules:
 1. Add the scope to the smallest independently testable surface, not `html`, `body`, `#root`, `Layout`, or every route at once.
 2. A scope provides variables plus its own light background/text context. Descendants change only when they use an adaptive primitive or consume an adaptive token explicitly.
 3. Do not alias adaptive variables onto existing global variables. Legacy production CSS and MapLibre overlays must continue reading their current tokens until their own approved phase.
-4. Do not mix adaptive and legacy primitive classes on the same element during migration; wrap a coherent surface and migrate it as a unit.
+4. Prefer one coherent adaptive surface. The result-card preview temporarily retains legacy utility classes for shared dimensions and event-safe rollback, while the scoped adaptive classes own the preview's visible colors, shape, hierarchy, and controls. Do not extend this exception to new surfaces without review.
 5. Rollback removes the opt-in class from the component. If no components remain opted in, the entire adaptive block can be deleted without restoring global token values.
+
+## Result-card opt-in preview
+
+The first visible experiment is intentionally limited to restaurant result cards:
+
+- Default: `/restaurants`
+- Preview: `/restaurants?ui=adaptive-card`
+- Scope boundary: each rendered result-card `<article>`, not the route, results container, layout, or document root
+- Persistence: none; `ui` is read from the current URL and is not written to local storage or the search store
+- Data/network effect: none; `ui` is not passed to restaurant search, autocomplete, map, directions, favorites, or auth APIs
+
+The preview uses the existing card markup, real result data, image failure state, selection handler, detail link, favorite mutation, and Google Maps directions helper. Adaptive classes provide:
+
+- `mapetite-adaptive-result-card-preview` for the light card and selected/focus states
+- `mapetite-adaptive-result-media` plus `mapetite-adaptive-media-fallback` for stable media and a text-backed no-photo state
+- result heading, metadata, rating, evidence, status, and action classes for the scan hierarchy
+- `mapetite-adaptive-button`, `mapetite-adaptive-chip`, and semantic success/support tokens for controls and states
+
+Orange remains limited to the primary View details action and a small selected-card ring. Saved uses support sage. Only confirmed or likely-open hours receive the success treatment; closed or unknown hours stay neutral.
+
+### Disable and rollback
+
+Remove `ui` from `RestaurantsSearch`, remove `isAdaptiveCardPreview` and the conditional adaptive classes in `src/routes/restaurants.tsx`, then delete the result-preview-only CSS rules. No state migration, local-storage cleanup, backend rollback, or DOM reorder is required. Removing `?ui=adaptive-card` from the URL disables the preview immediately for a reviewer.
+
+### Design review still required
+
+- Compare real-image and failed-image cards across long international restaurant names.
+- Verify larger text and keyboard focus in addition to the 390-pixel viewport.
+- Review whether approximate distance adds enough value to keep in a full migration.
+- Approve the light card beside the still-dark surrounding results page before any default rollout.
+- Capture visual regression baselines before migrating selected-place, map, search, or filter surfaces.
 
 ### Optional primitive classes
 

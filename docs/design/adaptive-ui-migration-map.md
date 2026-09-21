@@ -8,21 +8,36 @@ The source of truth for behavior is `mapetite-functionality-inventory.md`. This 
 
 ## Foundation status and safe opt-in
 
-Phase 1 now has a dormant implementation in `src/styles.css`:
+Phase 1 is implemented in `src/styles.css`, and the first non-default visual experiment is available on restaurant result cards:
 
 - `.mapetite-adaptive-scope` owns all `--mapetite-adaptive-*` variables.
-- Optional visual primitives are available only as descendants of that scope.
-- No production route, layout, map, modal, or component includes the scope class.
+- Optional visual primitives are available only inside that scope.
+- `/restaurants?ui=adaptive-card` applies the scope to individual result-card articles. The default `/restaurants` route, layout, map, modal, selected preview, detail, Saved, and Account surfaces do not opt in.
 - Existing `:root`, legacy `--mapetite-*` tokens, Tailwind theme values, global focus rules, and MapLibre styling remain the active production system.
 - No adaptive grid or pane ratio is applied; layout variables are contracts for later phases only.
 
-Future opt-in rules:
+Opt-in rules:
 
 1. Select one low-risk, non-structural surface with existing behavior and tests.
 2. Add `.mapetite-adaptive-scope` at the smallest coherent wrapper.
-3. Add only the primitive classes needed by that surface; do not mix adaptive and legacy primitives on one element.
+3. Add only the primitive classes needed by that surface. The result-card preview keeps legacy utility classes only for shared dimensions and rollback safety; adaptive classes own its visible preview treatment. Do not extend that temporary overlap without review.
 4. Capture before/after desktop and 390-pixel screenshots and verify focus, contrast, overflow, CLS, and route behavior.
-5. Roll back by removing the wrapper scope class. No global token restoration or state rollback should be necessary.
+5. Roll back by removing the scope/primitive classes and the validated query value. No global token restoration, backend change, local-storage cleanup, or state rollback should be necessary.
+
+## Result-card preview experiment
+
+| Concern | Contract |
+| --- | --- |
+| Activation | Explicit `ui=adaptive-card` query value only |
+| Persistence | None; refresh without the query returns to the default cards |
+| Scope | One class boundary per result-card article |
+| Behavior | Existing selection, detail, save/unsave, signed-out save handling, directions, image failure, and keyboard handling stay in place |
+| Data | Existing real search results only; no API request or cache key includes the UI flag |
+| Media | Existing image branch; adaptive CSS-only initial and `Photo unavailable` fallback when media is missing or fails |
+| Mobile | Existing single-column card flow and two-column action grid, with scoped `min-width: 0`, stable 132-pixel media, and full-width controls |
+| Rollback | Remove the route query parser branch and adaptive conditional classes, then remove preview-only CSS |
+
+The experiment is a design-review surface, not a rollout flag. It must not be persisted, advertised as a user preference, or expanded to route-level styling until desktop/mobile visual review is approved.
 
 Accent may style only the primary action, selected map pin, focus emphasis, or a small selected-state detail. It must not style generic cards, passive chips, page backgrounds, navigation decoration, map surfaces, success states, or ordinary borders.
 
@@ -94,11 +109,11 @@ The layout may adapt; ownership may not fork.
 
 ### Phase 1: adaptive tokens only
 
-- **Foundation implemented, not activated:** namespaced light-adaptive color, spacing, radius, elevation, motion, media-ratio, pane, and control-size tokens now exist under `.mapetite-adaptive-scope`.
+- **Foundation implemented with one explicit preview:** namespaced light-adaptive color, spacing, radius, elevation, motion, media-ratio, pane, and control-size tokens exist under `.mapetite-adaptive-scope`.
 - Optional surface, card, result-card, place-card, button, chip, toolbar, sheet, banner, and media-fallback primitives exist under the same scope.
-- Existing dark tokens are not replaced globally, and no production component currently opts in.
-- A later visual experiment must apply the scope to one non-structural boundary and verify contrast, screenshots, check/build/test, and no layout shift.
-- Rollback is removal of the scope class from that boundary; deleting the dormant CSS block remains safe while no opt-ins exist.
+- Existing dark tokens are not replaced globally. Only result cards explicitly opened with `?ui=adaptive-card` opt in.
+- This visual experiment keeps DOM order and handlers intact and must verify contrast, screenshots, check/build/test, and no layout shift before broader use.
+- Rollback is removal of the scope/query branch plus the result-preview-only CSS. The foundation block can be deleted only after every opt-in has been removed.
 
 ### Phase 2: primitives, still no layout movement
 
@@ -109,7 +124,7 @@ The layout may adapt; ownership may not fork.
 
 ### Phase 3: result cards and results header
 
-- Migrate the most repeated content surface first.
+- The query-param card preview begins this phase without changing the default UI; a default migration still requires design approval.
 - Preserve exact action handlers, evidence helpers, city-scope labels, image fallback, and stable aspect ratios.
 - Validate compact card height and Dynamic Type before selected-place work.
 
@@ -176,4 +191,4 @@ The layout may adapt; ownership may not fork.
 
 ## First safe production step
 
-The namespaced adaptive token foundation is now complete and dormant. The first future visual opt-in should be one low-risk, non-structural surface, approved separately and wrapped with `.mapetite-adaptive-scope`. Do not start with the search sheet, selected-place behavior, map shell, route layout, or three-pane structure. Those areas still wait for interaction and viewport proof.
+The namespaced adaptive token foundation is complete, and the low-risk result-card preview is the first explicit opt-in. Keep it query-gated until its real-data, fallback, selected, signed-in/out, keyboard, desktop, and 390-pixel states are approved. The next step is review and refinement, not another surface migration. Do not proceed to the search sheet, selected-place behavior, map shell, route layout, or three-pane structure; those areas still wait for interaction and viewport proof.
