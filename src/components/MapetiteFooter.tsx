@@ -2,9 +2,9 @@ const feedbackUrl = import.meta.env.VITE_FEEDBACK_URL?.trim();
 
 export function MapetiteFooter() {
 	return (
-		<footer className="mt-auto border-t border-[rgba(255,236,220,0.08)]">
-			<div className="mapetite-container px-4 pt-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] md:px-6 md:py-8">
-				<div className="mapetite-panel-soft grid justify-items-center gap-4 px-5 py-5 text-center">
+		<footer className="mapetite-layout-footer mt-auto border-t border-[rgba(255,236,220,0.08)]">
+			<div className="mapetite-layout-footer-container mapetite-container px-4 pt-6 pb-[calc(env(safe-area-inset-bottom)+1.5rem)] md:px-6 md:py-8">
+				<div className="mapetite-layout-footer-panel mapetite-panel-soft grid justify-items-center gap-4 px-5 py-5 text-center">
 					<div className="mx-auto grid max-w-4xl gap-2 text-[12px] leading-5 text-[var(--mapetite-text-faint)]">
 						<p>&copy; 2026 Brandon Hann. Mapetite. Portfolio MVP demo.</p>
 						<p>

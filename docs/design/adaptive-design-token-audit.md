@@ -446,7 +446,7 @@ Remove the validated `adaptive-shell` query value, conditional shell classes and
 
 ### Review still required
 
-- Whether the command should become a real compact sheet/wide popover rather than an expanded elevated form.
+- Whether the query-gated compact search sheet and wide popover should become the approved production interaction after focus, keyboard, and large-text testing.
 - Whether the independent results rail is comfortable for keyboard and touch users.
 - Whether the center map should be persistently visible at the final wide breakpoint.
 - Whether the right decision panel should keep View details or Directions as its primary action.
@@ -486,3 +486,54 @@ These dimensions are deliberately attached to `.mapetite-adaptive-shell-preview`
 5. Reduced-motion behavior and stable media dimensions remain unchanged.
 
 Rollback remains selector-based: removing the query-gated scope/class hooks makes every refined rule non-matching, with no token, state, cache, or backend reversal.
+
+## Transient command-surface tokens
+
+The adaptive shell now applies existing namespaced tokens to coordinated search and filter surfaces without changing global styles.
+
+| Surface role | Token usage | Constraint |
+| --- | --- | --- |
+| Sheet/popover base | elevated surface, sheet radius, sheet shadow, border | Opaque warm fallback is required before restrained blur enhancement |
+| Surface spacing | space 3 and 4, sheet padding | Internal scroll absorbs compact height pressure; page width must not grow |
+| Search helpers | subtle/support surfaces, control radius | Recent labels shrink; result-count badges remain fixed inside the row |
+| Filter selection | accent soft plus semantic border | Orange marks explicit selections and is not a decorative panel fill |
+| Surface actions | 44-pixel control target, accent primary, quiet secondary | Sticky only within the bounded sheet, never over map attribution |
+| Active-count badge | accent plus on-accent text | Reports category, price, rating, open, non-default sort, and Saved-only state |
+
+### Presentation rules
+
+- At 640 pixels and below, both command surfaces use viewport-fixed safe-area sheets capped at 82 dynamic viewport height.
+- Above 640 pixels, Search is anchored to its command and Filters is a restrained right-side popover. Neither inserts layout height above results.
+- One local `search | filters | null` value owns visibility. This value is not stored, sent to the backend, or included in cache keys.
+- The compact selected-place sheet appears only when the transient value is `null`; restaurant selection itself is never cleared merely to open a command.
+- Search, filter, sort, Saved-only, recent, restore, geolocation, map, and refresh values continue to use their existing production state and handlers.
+
+### Accessibility limits
+
+Escape and explicit Close/Done return focus to the triggering command. Existing autocomplete arrow-key and Enter behavior is retained. Full focus trapping, inert background behavior, first-field focus, 200-percent text scaling, and real iOS keyboard/safe-area testing remain required before default-route adoption.
+
+### Rollback boundary
+
+Delete only the `mapetite-adaptive-shell-transient-surface`, search-surface, filter-surface, helper, and related responsive selectors, then remove their shell-only JSX branches. No global token, default route class, store schema, localStorage value, backend request, or lockfile needs reversal.
+
+## Locked-prototype chrome alignment
+
+The adaptive token system now treats the compact view in `apple-adaptive-mapetite.html` as a locked reference for shell chrome. The update does not replace global production tokens. Instead, a page-presence gate, `body:has(.mapetite-adaptive-shell-preview)`, aliases the existing shared Layout chrome to the same light neutral, sage, text, border, and apricot roles only while the explicit shell preview is mounted.
+
+### Scoped role ownership
+
+| Shared surface | Preview token role | Constraint |
+| --- | --- | --- |
+| App canvas and main | 60% warm neutral base | No legacy dark backdrop or decorative glow inside the preview |
+| App bar and command | Elevated warm surface with restrained transparency | 62-pixel stable bar; blur is enhancement over an opaque fallback |
+| Mobile drawer | Elevated warm surface | Navigation/auth behavior is unchanged; no second visual theme |
+| Empty/loading cards | App/card surface plus sage support icon | Search remains the primary recovery action; no fake content |
+| Search/filter sheet | Elevated surface, sheet radius, reduced sheet shadow | One transient owner and existing controls remain unchanged |
+| Map popup | Elevated warm surface | Attribution, map controls, and camera behavior are untouched |
+| Footer/disclosures | Base surface and faint text | Accessible below the app viewport; not a framed first-screen block |
+
+Apricot remains limited to primary actions and selected map emphasis. Sage organizes icons, maps, and support states. Neither color is used to decorate the entire shell.
+
+### Safe opt-in and rollback
+
+The `mapetite-layout-*` hooks are inert class names with no default declarations. Their declarations require the adaptive-shell descendant gate, so default `/restaurants` and all other routes keep their existing output. Roll back by deleting the gated chrome block and the optional hooks; then remove `mapetite-adaptive-shell-state-*` if the empty/loading experiment is also rejected. No global variable, component behavior, or DOM ownership must be restored.

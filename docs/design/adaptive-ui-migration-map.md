@@ -191,7 +191,7 @@ The layout may adapt; ownership may not fork.
 
 ## First safe production step
 
-The namespaced adaptive token foundation is complete, and the low-risk result-card preview is the first explicit opt-in. Keep it query-gated until its real-data, fallback, selected, signed-in/out, keyboard, desktop, and 390-pixel states are approved. The next step is review and refinement, not another surface migration. Do not proceed to the search sheet, selected-place behavior, map shell, route layout, or three-pane structure; those areas still wait for interaction and viewport proof.
+The namespaced adaptive token foundation is complete, and all visible migration work remains explicitly query-gated. The result-card and shell previews now include a coordinated search/filter interaction experiment, but none of these surfaces are approved for the default route. Review real-data, missing-media, signed-in/out, keyboard, desktop, and 390-pixel states before any broader migration.
 
 ## Adaptive shell visual spike
 
@@ -217,8 +217,8 @@ The map is not cloned. Default and `adaptive-card` modes render it in the existi
 
 ### Still not migrated
 
-- Search now collapses to a resolved-place command and expands the real fields on demand; a keyboard-aware phone sheet and anchored wide popover are not implemented.
-- Filters retain the existing mobile drawer and desktop expansion rather than the proposed one-surface sheet/popover coordinator.
+- Search now collapses to a resolved-place command and opens the real fields, autocomplete, recents, restore action, location action, and validation guidance in a compact sheet or wide popover.
+- Filters and sort share one compact sheet or wide popover. The default route retains its existing mobile drawer and desktop refinement panel.
 - Saved and Account remain existing routes and Layout navigation; shell-specific navigation is not introduced.
 - The selected mobile sheet remains intentionally compact and does not duplicate the full desktop evidence panel.
 - The detail route, landing page, persistent adaptive navigation, native wrapper behavior, and map internals are unchanged.
@@ -255,8 +255,8 @@ Comparison against `apple-adaptive-mapetite.html` shows that the live spike is n
 | Map surface | Existing MapLibre map moves into the spatial center with unchanged pins/camera; closed state is honest | High | Prototype's small selected overlay is omitted to avoid duplicating the decision panel |
 | Wide selected place | Real media/fallback, name, listing signals, evidence, distance, address, and actions | High | Action priority still follows production rather than selecting the prototype's proposed order |
 | Compact selected sheet | Real 54px media/fallback, identity, status/distance, one evidence line, dismiss, and all actions | High | Larger-text and keyboard coexistence still need device testing |
-| Search/selection coordination | Expanding Search suppresses the compact selected sheet without clearing selection | Medium-high | Focus return and true one-sheet coordination are deferred |
-| Filters command | Existing filter controls and handlers remain available in the scoped shell | Medium | Existing mobile drawer/desktop panel are not yet the prototype's shared command surface |
+| Search/selection coordination | Search and filters share one transient-surface state; either surface visually yields the compact selected sheet without clearing selection | High | Full focus trapping and real-device keyboard overlap remain deferred |
+| Filters command | Existing filter, sort, and Saved-only state is presented once in the shell sheet/popover | High | Larger-text wrapping and signed-out Saved-only guidance still need device review |
 | App navigation | Existing `Layout` keeps Saved, Account, and signed-in/out behavior | Low-medium | TestFlight-style shell navigation is deliberately not part of this spike |
 
 The meaningful match is information architecture, not visual imitation: command over content, a spatial center, bounded result scanning, one decision surface, and progressive disclosure. The remaining differences are mostly coordinated-sheet/navigation work with materially higher behavior and accessibility risk.
@@ -287,16 +287,77 @@ The first live shell established the correct information architecture, but a mat
 ### Remaining differences
 
 - Production result actions remain directly available on every card. The prototype omits them from dense desktop rows, so the live rail remains taller by design.
-- Recent searches and restore status remain visible production surfaces instead of moving into the prototype's search popover.
-- Search fields expand inline rather than using a keyboard-aware compact sheet or anchored wide popover.
-- Filters retain the existing drawer/panel behavior rather than sharing a coordinated transient-surface controller.
+- Recent searches and restore controls now live primarily in the search surface; stale restored-result status remains in results where it has context.
+- Search uses a safe-area compact sheet and a wide anchored popover while retaining the existing fields, autocomplete, validation, and submit handlers.
+- Filters and sort share one shell-only transient surface; the default drawer/panel branches are unchanged.
 - Existing `Layout` navigation and footer remain outside the query-scoped shell; no TestFlight navigation structure is introduced.
 - The real map keeps its existing controls, attribution, popup behavior, and provider style rather than imitating the static map artwork.
 
 ### Continue or stop
 
-The refined shell is close enough to continue as an opt-in design experiment because its composition, density, spatial emphasis, and selected-place hierarchy now track the prototype while retaining real data and handlers. It is not ready to become the default. Search/filter transient-surface behavior, keyboard focus restoration, Dynamic Type, live-device safe areas, and signed-in/out visual states remain explicit approval gates.
+The refined shell is close enough to continue as an opt-in design experiment because its composition, density, spatial emphasis, selected-place hierarchy, and command surfaces now track the prototype while retaining real data and handlers. It is not ready to become the default. Full focus containment, Dynamic Type, live-device safe areas and software-keyboard overlap, and signed-in/out visual states remain explicit approval gates.
 
 ### Rollback
 
 Remove the `adaptive-shell` value from the validated `ui` query parameter, remove the conditional `mapetite-adaptive-shell-*` class hooks from `restaurants.tsx`, and delete the query-scoped shell rules. The default route, adaptive-card experiment, map component, store, cache, and backend require no migration or data cleanup.
+
+## Coordinated adaptive search and filter surfaces
+
+The shell-only interaction layer uses one local, non-persisted state with three visible outcomes: search, filters, or neither. The compact selected restaurant sheet is shown only in the third state. Opening Search or Filters therefore hides the selected sheet without clearing restaurant selection; selecting a restaurant closes any command surface and restores the selected sheet.
+
+### Search surface
+
+- Compact widths use a safe-area-aware bottom sheet with bounded internal scrolling.
+- Expanded widths use a popover anchored below the collapsed search command, leaving results, map, and selection visible.
+- The surface reuses production city, region, and country state; autocomplete, keyboard selection, loading/no-match/paused copy; recent and quick searches; clear recents; restore; Use My Location; Clear all; and Search handlers.
+- Ambiguity guidance remains calm and directs users to choose a suggestion or add region/country context.
+- Recents are browser-local and precise location is not stored by this presentation change.
+
+### Filter surface
+
+- Compact widths use a bottom sheet; expanded widths use a right-side popover.
+- Category, price, minimum rating, prioritize-open, sort, and Saved-only state use the existing store setters.
+- Sort is removed from the shell toolbar so it appears only once.
+- Clear filters keeps its existing semantics and does not clear location or silently change Saved-only state.
+- Map and Refresh remain direct toolbar actions.
+
+### Accessibility and deferred gaps
+
+- Escape closes the active shell surface and returns focus to its command trigger.
+- Close and Done controls return focus; a submitted search deliberately closes without moving focus while results update.
+- Visible focus, pressed, selected, disabled, and reduced-motion styles remain scoped to the adaptive token system.
+- The prototype does not yet implement a full modal focus trap, automatic first-field focus, inert background content, or measured software-keyboard avoidance on physical iOS hardware.
+- Dynamic Type at accessibility sizes remains a production-migration gate; sheets use internal scrolling rather than fixed content assumptions.
+
+### Rollback
+
+Remove the `AdaptiveTransientSurface` state and the `ui=adaptive-shell` search/filter branches, then remove the scoped transient-surface selectors. The default search form, mobile filter drawer, desktop refinements, store values, cache data, map state, and backend requests remain untouched and require no cleanup.
+
+## Locked visual-parity target
+
+The compact state in `apple-adaptive-mapetite.html` is the locked visual target for the next migration review. This is a parity constraint, not a new direction: a light app canvas, calm app bar, compact search command, results-first flow, one selected bottom sheet, and disclosures that remain available without becoming the primary phone content.
+
+The live preview previously looked weaker because the query-scoped light shell sat inside the production dark header, drawer, page canvas, popup material, and large footer panel. Empty and loading states also retained web-page spacing, so an empty first screen emphasized framing rather than the Search command.
+
+The parity pass keeps every shared element and handler, but adds inert Layout/Footer class hooks and activates their light treatment only when `body:has(.mapetite-adaptive-shell-preview)` matches. In that explicit preview:
+
+- the shared header becomes a 62-pixel calm app bar and retains Home, Search, Saved, account, sign-in, and mobile-menu access;
+- the mobile navigation drawer uses the same warm light material rather than reintroducing the dark production frame;
+- the restaurant route owns a continuous light canvas beneath the app bar;
+- initial, loading, and saved-empty states use bounded app surfaces with stable minimum height;
+- required attribution and portfolio disclosures remain in the DOM and readable, but move below a full app viewport and use a compact, unframed treatment;
+- search/filter sheets retain their production handlers while using lighter elevation, a compact drag indicator, and the prototype's quieter vertical rhythm;
+- MapLibre popup content uses a light readable surface only within the preview page.
+
+Default `/restaurants`, the default mobile drawer, and every other route retain the production palette because none contains the adaptive-shell marker.
+
+### Remaining parity gaps
+
+- Real result cards keep all production actions, so list rows remain taller than the static prototype.
+- The installed-app navigation model is not implemented; the shared web Layout is only visually reconciled for this preview.
+- Dynamic Type, Increase Contrast, VoiceOver focus containment, and physical-iOS keyboard overlap still require device testing.
+- The legal/disclosure footer needs an eventual installed-app About destination before TestFlight, rather than permanent visual compression.
+
+### Visual rollback
+
+Remove the `body:has(.mapetite-adaptive-shell-preview)` chrome rules, the inert `mapetite-layout-*` class hooks, and the `mapetite-adaptive-shell-state-*` classes/rules. Removing the validated `ui=adaptive-shell` query branch remains the complete preview rollback. No search, store, cache, provider, map, auth, or persistence migration is involved.

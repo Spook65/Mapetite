@@ -58,22 +58,22 @@ export function Layout({ children }: LayoutProps) {
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
 	return (
-		<div className="mapetite-page-shell flex min-h-screen w-full overflow-x-clip text-[var(--mapetite-text)]">
+		<div className="mapetite-layout mapetite-page-shell flex min-h-screen w-full overflow-x-clip text-[var(--mapetite-text)]">
 			{isMobileMenuOpen && (
 				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
 				<div
-					className="fixed inset-0 z-50 bg-black/50 md:hidden"
+					className="mapetite-layout-mobile-overlay fixed inset-0 z-50 bg-black/50 md:hidden"
 					onClick={closeMobileMenu}
 				>
 					{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
 					<aside
-						className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
+						className="mapetite-layout-mobile-drawer absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="flex h-full flex-col">
 							<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] p-4">
 								<div className="flex items-center gap-3">
-									<div className="flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
+									<div className="mapetite-layout-brand-mark flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
 										<Utensils className="size-4" />
 									</div>
 									<div>
@@ -180,12 +180,12 @@ export function Layout({ children }: LayoutProps) {
 			)}
 
 			<div className="flex min-w-0 flex-1 flex-col">
-				<header className="sticky top-0 z-10">
-					<div className="mapetite-container px-4 pt-4 pb-6 md:px-6 md:pt-8 md:pb-8">
-						<div className="mapetite-panel-soft flex items-center justify-between gap-4 px-5 py-3 backdrop-blur md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center">
+				<header className="mapetite-layout-header sticky top-0 z-10">
+					<div className="mapetite-layout-header-container mapetite-container px-4 pt-4 pb-6 md:px-6 md:pt-8 md:pb-8">
+						<div className="mapetite-layout-app-bar mapetite-panel-soft flex items-center justify-between gap-4 px-5 py-3 backdrop-blur md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center">
 							<div className="flex min-w-0 items-center gap-6 md:justify-self-start">
 								<Link to="/" className="flex min-w-0 items-center gap-3">
-									<div className="flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
+									<div className="mapetite-layout-brand-mark flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
 										<Utensils className="size-4" />
 									</div>
 									<div className="min-w-0">
@@ -276,7 +276,7 @@ export function Layout({ children }: LayoutProps) {
 								<button
 									type="button"
 									onClick={() => setIsMobileMenuOpen(true)}
-									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] md:hidden"
+									className="mapetite-layout-menu-button inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] md:hidden"
 									aria-label="Open menu"
 								>
 									<Menu className="size-4" />
@@ -286,7 +286,7 @@ export function Layout({ children }: LayoutProps) {
 					</div>
 				</header>
 
-				<main className="min-w-0 flex-1">
+				<main className="mapetite-layout-main min-w-0 flex-1">
 					{children}
 				</main>
 				<MapetiteFooter />

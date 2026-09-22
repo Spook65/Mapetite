@@ -90,6 +90,8 @@ type RestaurantsSearch = {
 	ui?: "adaptive-card" | "adaptive-shell";
 };
 
+type AdaptiveTransientSurface = "search" | "filters" | null;
+
 const INITIAL_VISIBLE_RESULTS = 36;
 const RESULTS_BATCH_SIZE = 36;
 const FAVORITE_SNAPSHOTS_STORAGE_KEY = "mapetite-favorite-snapshots-v1";
@@ -570,7 +572,15 @@ function RestaurantSearchPage() {
 	const [showSlowSearchMessage, setShowSlowSearchMessage] = useState(false);
 	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
 	const [isMapOpen, setIsMapOpen] = useState(false);
-	const [isAdaptiveSearchExpanded, setIsAdaptiveSearchExpanded] = useState(false);
+	const [adaptiveTransientSurface, setAdaptiveTransientSurface] =
+		useState<AdaptiveTransientSurface>(() =>
+			isAdaptiveShellPreview &&
+			!location.city.trim() &&
+			!location.state.trim() &&
+			!location.country.trim()
+				? "search"
+				: null,
+		);
 	const [mapUserLocation, setMapUserLocation] = useState<{
 		latitude: number;
 		longitude: number;
@@ -609,6 +619,8 @@ function RestaurantSearchPage() {
 		Record<string, Restaurant>
 	>(() => loadFavoriteSnapshotsFromStorage());
 	const activeSearchIdRef = useRef(0);
+	const adaptiveSearchTriggerRef = useRef<HTMLButtonElement>(null);
+	const adaptiveFilterTriggerRef = useRef<HTMLButtonElement>(null);
 	const favoriteHydrationAttemptsRef = useRef<Set<string>>(new Set());
 	const suppressedSuggestionQueryRef = useRef("");
 	const placeSuggestionPausedUntilRef = useRef(0);
@@ -618,7 +630,7 @@ function RestaurantSearchPage() {
 		location.city.trim() || location.state.trim() || location.country.trim(),
 	);
 	const isAdaptiveSearchDetailsOpen =
-		!isAdaptiveShellPreview || isAdaptiveSearchExpanded || !hasLocationInput;
+		!isAdaptiveShellPreview || adaptiveTransientSurface === "search";
 	const suggestionContext = useMemo<PlaceSuggestionContext>(
 		() => getBrowserSuggestionContext(recentSearches),
 		[recentSearches],
@@ -885,8 +897,12 @@ function RestaurantSearchPage() {
 		event: KeyboardEvent<HTMLInputElement>,
 	) => {
 		if (event.key === "Escape") {
+			const hadOpenSuggestionMenu = isPlaceSuggestionsOpen;
 			setIsPlaceSuggestionsOpen(false);
 			setActivePlaceSuggestionIndex(-1);
+			if (isAdaptiveShellPreview && hadOpenSuggestionMenu) {
+				event.stopPropagation();
+			}
 			return;
 		}
 
@@ -1568,6 +1584,8 @@ function RestaurantSearchPage() {
 		Number(isPriceFilterActive(priceFilter)) +
 		Number(minRating > 0) +
 		Number(openNowOnly);
+	const adaptiveActiveControlCount =
+		activeFilterCount + Number(sortBy !== "none") + Number(showFavorites);
 	const resultHeading = showFavorites
 		? "Saved restaurants"
 		: location.city
@@ -1580,9 +1598,68 @@ function RestaurantSearchPage() {
 				? `${location.country} results`
 				: "Search results";
 
-	const handleSelectRestaurant = useCallback((restaurantId: string) => {
-		setSelectedRestaurantId(restaurantId);
-	}, []);
+	const closeAdaptiveTransientSurface = useCallback(
+		(restoreFocus = true) => {
+			const trigger =
+				adaptiveTransientSurface === "search"
+					? adaptiveSearchTriggerRef.current
+					: adaptiveTransientSurface === "filters"
+						? adaptiveFilterTriggerRef.current
+						: null;
+
+			setAdaptiveTransientSurface(null);
+			if (restoreFocus && trigger) {
+				window.requestAnimationFrame(() => trigger.focus());
+			}
+		},
+		[adaptiveTransientSurface],
+	);
+
+	const toggleAdaptiveTransientSurface = useCallback(
+		(surface: Exclude<AdaptiveTransientSurface, null>) => {
+			setAdaptiveTransientSurface((current) =>
+				current === surface ? null : surface,
+			);
+		},
+		[],
+	);
+
+	const handleSelectRestaurant = useCallback(
+		(restaurantId: string) => {
+			if (isAdaptiveShellPreview) {
+				setAdaptiveTransientSurface(null);
+			}
+			setSelectedRestaurantId(restaurantId);
+		},
+		[isAdaptiveShellPreview],
+	);
+
+	useEffect(() => {
+		if (
+			!isAdaptiveShellPreview ||
+			(adaptiveTransientSurface === null && selectedRestaurantId === null)
+		) {
+			return;
+		}
+
+		const handleEscape = (event: globalThis.KeyboardEvent) => {
+			if (event.key !== "Escape") return;
+			event.preventDefault();
+			if (adaptiveTransientSurface !== null) {
+				closeAdaptiveTransientSurface();
+				return;
+			}
+			setSelectedRestaurantId(null);
+		};
+
+		document.addEventListener("keydown", handleEscape);
+		return () => document.removeEventListener("keydown", handleEscape);
+	}, [
+		adaptiveTransientSurface,
+		closeAdaptiveTransientSurface,
+		isAdaptiveShellPreview,
+		selectedRestaurantId,
+	]);
 
 	useEffect(() => {
 		if (displayedRestaurants.length === 0) {
@@ -1638,7 +1715,7 @@ function RestaurantSearchPage() {
 							<div className="mapetite-adaptive-shell-command-summary">
 								<button
 									type="button"
-									onClick={() => setIsAdaptiveSearchExpanded((current) => !current)}
+									onClick={() => toggleAdaptiveTransientSurface("search")}
 									className="mapetite-adaptive-shell-command-icon"
 									aria-expanded={isAdaptiveSearchDetailsOpen}
 									aria-controls="adaptive-shell-search-details"
@@ -1662,13 +1739,44 @@ function RestaurantSearchPage() {
 										: "Any cuisine"}
 								</span>
 								<Button
+									ref={adaptiveSearchTriggerRef}
 									type="button"
-									onClick={handleSearch}
-									disabled={isSearching || !hasLocationInput}
+									onClick={() => toggleAdaptiveTransientSurface("search")}
+									aria-expanded={isAdaptiveSearchDetailsOpen}
+									aria-controls="adaptive-shell-search-details"
 									className="mapetite-adaptive-button is-primary mapetite-adaptive-shell-command-go"
 								>
-									{isSearching ? "Searching…" : "Search"}
+									{isAdaptiveSearchDetailsOpen ? "Close" : "Edit search"}
 								</Button>
+							</div>
+						) : null}
+
+					<div
+						id="adaptive-shell-search-details"
+						role={isAdaptiveShellPreview ? "dialog" : undefined}
+						aria-modal={isAdaptiveShellPreview ? "true" : undefined}
+						aria-label={isAdaptiveShellPreview ? "Edit restaurant search" : undefined}
+						className={cn(
+							!isAdaptiveShellPreview && "contents",
+							isAdaptiveShellPreview &&
+								"mapetite-adaptive-shell-transient-surface mapetite-adaptive-shell-search-surface",
+						)}
+					>
+						{isAdaptiveShellPreview ? (
+							<div className="mapetite-adaptive-shell-surface-heading">
+								<div>
+									<div className="mapetite-eyebrow">Search</div>
+									<h2>Edit your place</h2>
+									<p>Choose a suggestion or add region and country when a city name is shared.</p>
+								</div>
+								<button
+									type="button"
+									onClick={() => closeAdaptiveTransientSurface()}
+									className="mapetite-adaptive-shell-surface-close"
+									aria-label="Close search"
+								>
+									<X className="size-4" />
+								</button>
 							</div>
 						) : null}
 
@@ -1690,7 +1798,6 @@ function RestaurantSearchPage() {
 						</div>
 
 						<div
-							id="adaptive-shell-search-details"
 							className={cn(
 								"mx-auto grid min-w-0 w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto]",
 								isAdaptiveShellPreview && "mapetite-adaptive-shell-search-grid",
@@ -1859,9 +1966,9 @@ function RestaurantSearchPage() {
 									<Button
 										type="button"
 										onClick={() => {
-											handleSearch();
+											void handleSearch();
 											if (isAdaptiveShellPreview) {
-												setIsAdaptiveSearchExpanded(false);
+												closeAdaptiveTransientSurface(false);
 											}
 										}}
 									disabled={isSearching}
@@ -1926,12 +2033,78 @@ function RestaurantSearchPage() {
 								</div>
 							</div>
 						) : null}
-					</section>
+
+						{isAdaptiveShellPreview ? (
+							<div className="mapetite-adaptive-shell-search-helpers">
+								<div className="mapetite-adaptive-shell-helper-heading">
+									<div className="min-w-0">
+										<div className="mapetite-eyebrow">{searchChipHeading}</div>
+										<p className="mapetite-muted-copy mt-1 text-sm">{searchChipCopy}</p>
+									</div>
+									{recentSearches.length > 0 ? (
+										<button
+											type="button"
+											onClick={handleClearRecentSearches}
+											className="mapetite-adaptive-shell-text-action"
+										>
+											Clear recent searches
+										</button>
+									) : null}
+								</div>
+
+								<div className="mapetite-adaptive-shell-search-chips">
+									{searchChips.map((search) => (
+										<button
+											key={`${search.city}-${search.state}-${search.country}`}
+											type="button"
+											onClick={() => {
+												closeAdaptiveTransientSurface(false);
+												void handleRunSearchChip(search);
+											}}
+											disabled={isSearching}
+											className="mapetite-adaptive-shell-search-chip"
+										>
+											<span>{search.label}</span>
+											{formatRecentSearchResultCount(search.resultCount) ? (
+												<small>{formatRecentSearchResultCount(search.resultCount)}</small>
+											) : null}
+										</button>
+									))}
+								</div>
+
+								{shouldShowLastSearchRestore && lastSearchSnapshot ? (
+									<div className="mapetite-adaptive-shell-restore-card">
+										<p>
+											<strong>Last saved search:</strong> {lastSearchSnapshot.search.label}.
+											 Browser-saved results refresh against current provider data.
+										</p>
+										<Button
+											type="button"
+											variant="outline"
+											onClick={() => {
+												closeAdaptiveTransientSurface(false);
+												void handleRestoreLastSearch();
+											}}
+											disabled={isSearching}
+											className="mapetite-quiet-button h-10 shrink-0 rounded-full px-4 text-sm shadow-none"
+										>
+											Restore
+										</Button>
+									</div>
+								) : null}
+
+								<p className="mapetite-adaptive-shell-search-guidance">
+									If a place is ambiguous, select a suggestion or add its region and country.
+								</p>
+							</div>
+						) : null}
+					</div>
+				</section>
 
 					<section
 						className={cn(
 							"mapetite-panel-soft mb-4 grid min-w-0 max-w-full gap-3 p-4 md:p-5",
-							isAdaptiveShellPreview && "mapetite-adaptive-shell-recent",
+							isAdaptiveShellPreview && "hidden",
 						)}
 					>
 						<div className="grid min-w-0 gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
@@ -2002,7 +2175,30 @@ function RestaurantSearchPage() {
 							isAdaptiveShellPreview && "mapetite-adaptive-toolbar mapetite-adaptive-shell-toolbar",
 						)}
 					>
-						{hasResultsForCurrentView ? (
+						{isAdaptiveShellPreview ? (
+							<Button
+								ref={adaptiveFilterTriggerRef}
+								type="button"
+								variant="outline"
+								onClick={() => toggleAdaptiveTransientSurface("filters")}
+								aria-expanded={adaptiveTransientSurface === "filters"}
+								aria-controls="adaptive-shell-filter-surface"
+								aria-label={`Open filters and sort${adaptiveActiveControlCount ? `, ${adaptiveActiveControlCount} active` : ""}`}
+								className={cn(
+									"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
+									adaptiveActiveControlCount > 0 &&
+										"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+								)}
+							>
+								<SlidersHorizontal className="size-4" />
+								Filters &amp; sort
+								{adaptiveActiveControlCount > 0 ? (
+									<span className="mapetite-adaptive-shell-control-count">
+										{adaptiveActiveControlCount}
+									</span>
+								) : null}
+							</Button>
+						) : hasResultsForCurrentView ? (
 							<>
 								<Button
 									type="button"
@@ -2033,6 +2229,7 @@ function RestaurantSearchPage() {
 							</>
 						) : null}
 
+						{!isAdaptiveShellPreview ? (
 						<div className="min-w-[180px] flex-1 sm:flex-none">
 									<Select
 										value={sortBy}
@@ -2053,7 +2250,9 @@ function RestaurantSearchPage() {
 										</SelectContent>
 									</Select>
 						</div>
+						) : null}
 
+						{!isAdaptiveShellPreview ? (
 									<Button
 										type="button"
 										variant="outline"
@@ -2070,6 +2269,7 @@ function RestaurantSearchPage() {
 										/>
 										{showFavorites ? "Viewing saved places" : "Saved only"}
 									</Button>
+							) : null}
 
 								{hasResultsForCurrentView && (
 										<Button
@@ -2087,7 +2287,7 @@ function RestaurantSearchPage() {
 											<MapPinned className="size-4" />
 											{isMapOpen ? "Hide map" : "Map"}
 										</Button>
-								)}
+									)}
 
 								{hasResultsForCurrentView && (
 										<Button
@@ -2105,7 +2305,151 @@ function RestaurantSearchPage() {
 									)}
 						</section>
 
-					{showMobileFilters && (
+						{isAdaptiveShellPreview && adaptiveTransientSurface === "filters" ? (
+							<section
+								id="adaptive-shell-filter-surface"
+								role="dialog"
+								aria-modal="true"
+								aria-label="Filters and sort"
+								className="mapetite-adaptive-shell-transient-surface mapetite-adaptive-shell-filter-surface"
+							>
+								<div className="mapetite-adaptive-shell-surface-heading">
+									<div>
+										<div className="mapetite-eyebrow">Refine</div>
+										<h2>Filters &amp; sort</h2>
+										<p>{adaptiveActiveControlCount} active selections</p>
+									</div>
+									<button
+										type="button"
+										onClick={() => closeAdaptiveTransientSurface()}
+										className="mapetite-adaptive-shell-surface-close"
+										aria-label="Close filters and sort"
+									>
+										<X className="size-4" />
+									</button>
+								</div>
+
+								<div className="mapetite-adaptive-shell-filter-grid">
+									<div className="mapetite-adaptive-shell-filter-group is-wide">
+										<Label>Quick categories</Label>
+										<div className="flex flex-wrap gap-2">
+											{categories.map((category) => {
+												const isActive = selectedCategories.has(category);
+												return (
+													<button
+														key={category}
+														type="button"
+														onClick={() => toggleCategory(category)}
+														aria-pressed={isActive}
+														className={cn(
+															"mapetite-adaptive-chip",
+															isActive && "is-selected",
+														)}
+													>
+														{category}
+													</button>
+												);
+											})}
+										</div>
+									</div>
+
+									<div className="mapetite-adaptive-shell-filter-group">
+										<Label>Price range</Label>
+										<div className="grid grid-cols-4 gap-2">
+											{[1, 2, 3, 4].map((price) => {
+												const isActive =
+													isPriceFilterActive(priceFilter) && priceFilter.includes(price);
+												return (
+													<Button
+														key={price}
+														type="button"
+														variant="outline"
+														onClick={() => togglePriceFilter(price)}
+														aria-pressed={isActive}
+														className={cn(
+															"mapetite-quiet-button h-10 rounded-full px-2 shadow-none",
+															isActive && "is-selected",
+														)}
+													>
+														{"$".repeat(price)}
+													</Button>
+												);
+											})}
+										</div>
+									</div>
+
+									<div className="mapetite-adaptive-shell-filter-group">
+										<div className="flex items-center justify-between gap-3">
+											<Label>Minimum rating</Label>
+											<span>{minRating === 0 ? "Any" : `${minRating.toFixed(1)}+`}</span>
+										</div>
+										<Slider
+											value={[minRating]}
+											onValueChange={(values) => setMinRating(values[0])}
+											min={0}
+											max={5}
+											step={0.5}
+										/>
+									</div>
+
+									<div className="mapetite-adaptive-shell-filter-group">
+										<Label htmlFor="adaptive-shell-sort">Sort</Label>
+										<Select
+											value={sortBy}
+											onValueChange={(value) =>
+												setSortBy(value as "distance" | "rating" | "reviews" | "none")
+											}
+										>
+											<SelectTrigger id="adaptive-shell-sort" aria-label="Sort restaurants">
+												<SelectValue />
+											</SelectTrigger>
+											<SelectContent>
+												<SelectItem value="none">Best match</SelectItem>
+												<SelectItem value="rating">Highest rated</SelectItem>
+												<SelectItem value="distance">Closest first</SelectItem>
+												<SelectItem value="reviews">Most reviews</SelectItem>
+											</SelectContent>
+										</Select>
+									</div>
+
+									<div className="mapetite-adaptive-shell-filter-row is-wide">
+										<div>
+											<Label>Prioritize open</Label>
+											<p>{openNowStatusCopy}</p>
+										</div>
+										<Switch checked={openNowOnly} onCheckedChange={setOpenNowOnly} />
+									</div>
+
+									<div className="mapetite-adaptive-shell-filter-row is-wide">
+										<div>
+											<Label>Saved only</Label>
+											<p>Show your saved shortlist in this results view.</p>
+										</div>
+										<Switch checked={showFavorites} onCheckedChange={setShowFavorites} />
+									</div>
+								</div>
+
+								<div className="mapetite-adaptive-shell-surface-actions">
+									<Button
+										type="button"
+										variant="outline"
+										onClick={clearAllFilters}
+										className="mapetite-quiet-button h-11 flex-1 rounded-full shadow-none"
+									>
+										Clear filters
+									</Button>
+									<Button
+										type="button"
+										onClick={() => closeAdaptiveTransientSurface()}
+										className="mapetite-accent-button h-11 flex-1 rounded-full shadow-none"
+									>
+										Done
+									</Button>
+								</div>
+							</section>
+						) : null}
+
+					{!isAdaptiveShellPreview && showMobileFilters && (
 						// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
 						<div
 							className="fixed inset-0 z-50 bg-black/50 md:hidden"
@@ -2242,7 +2586,9 @@ function RestaurantSearchPage() {
 						</div>
 					)}
 
-						{hasResultsForCurrentView && showRefinements && (
+						{!isAdaptiveShellPreview &&
+							hasResultsForCurrentView &&
+							showRefinements && (
 							<section
 								className={cn(
 									"mapetite-panel mb-4 hidden p-5 md:grid md:gap-5",
@@ -3263,8 +3609,18 @@ function RestaurantSearchPage() {
 					)}
 
 					{isSearching && !(restoredSearchLabel && restaurants.length > 0) && (
-						<section className="mt-6 grid gap-4">
-							<div className="mapetite-panel grid gap-3 px-6 py-5">
+						<section
+							className={cn(
+								"mt-6 grid gap-4",
+								isAdaptiveShellPreview && "mapetite-adaptive-shell-state-wrap",
+							)}
+						>
+							<div
+								className={cn(
+									"mapetite-panel grid gap-3 px-6 py-5",
+									isAdaptiveShellPreview && "mapetite-adaptive-shell-state-card is-loading",
+								)}
+							>
 								<div className="h-4 w-40 rounded-full bg-[rgba(255,248,242,0.08)]" />
 								<div className="h-3 w-[58%] rounded-full bg-[rgba(255,248,242,0.08)]" />
 								<div className="min-h-6">
@@ -3297,8 +3653,18 @@ function RestaurantSearchPage() {
 					)}
 
 						{!showFavorites && restaurants.length === 0 && !isSearching && (
-							<section className="mt-6">
-							<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+							<section
+								className={cn(
+									"mt-6",
+									isAdaptiveShellPreview && "mapetite-adaptive-shell-state-wrap",
+								)}
+							>
+							<div
+								className={cn(
+									"mapetite-panel grid gap-4 px-6 py-10 text-center",
+									isAdaptiveShellPreview && "mapetite-adaptive-shell-state-card",
+								)}
+							>
 								<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 									<Search className="size-5" />
 								</div>
@@ -3317,8 +3683,18 @@ function RestaurantSearchPage() {
 						{showFavorites &&
 							!isHydratingFavorites &&
 							displayedRestaurants.length === 0 && (
-								<section className="mt-6">
-									<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+									<section
+										className={cn(
+											"mt-6",
+											isAdaptiveShellPreview && "mapetite-adaptive-shell-state-wrap",
+										)}
+									>
+										<div
+											className={cn(
+												"mapetite-panel grid gap-4 px-6 py-10 text-center",
+												isAdaptiveShellPreview && "mapetite-adaptive-shell-state-card",
+											)}
+										>
 										<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
 										<div>
 											<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
@@ -3347,8 +3723,18 @@ function RestaurantSearchPage() {
 						)}
 
 						{showFavorites && isHydratingFavorites && displayedRestaurants.length === 0 && (
-							<section className="mt-6">
-								<div className="mapetite-panel grid gap-4 px-6 py-10 text-center">
+								<section
+									className={cn(
+										"mt-6",
+										isAdaptiveShellPreview && "mapetite-adaptive-shell-state-wrap",
+									)}
+								>
+									<div
+										className={cn(
+											"mapetite-panel grid gap-4 px-6 py-10 text-center",
+											isAdaptiveShellPreview && "mapetite-adaptive-shell-state-card is-loading",
+										)}
+									>
 									<Heart className="mx-auto size-8 text-[var(--mapetite-text-faint)]" />
 									<div>
 										<h3 className="text-xl font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
@@ -3364,7 +3750,7 @@ function RestaurantSearchPage() {
 				</div>
 
 				{selectedRestaurant &&
-					(!isAdaptiveShellPreview || !isAdaptiveSearchExpanded) && (
+					(!isAdaptiveShellPreview || adaptiveTransientSurface === null) && (
 					<div
 						className={cn(
 							"fixed inset-x-4 bottom-4 z-40 min-[1261px]:hidden",
