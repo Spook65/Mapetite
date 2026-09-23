@@ -28,3 +28,24 @@ The agent must:
 - use dev-only instrumentation
 - remove or gate temporary logs before final output
 - report exactly what it clicked, observed, changed, and verified
+
+## Mapetite adaptive UI migration rules
+
+The adaptive-shell preview is experimental and must remain query-gated behind `?ui=adaptive-shell` until explicitly approved.
+
+For UI tasks:
+
+- Do not invent a new visual direction.
+- Do not perform broad redesigns.
+- Do not move DOM structure unless the prompt explicitly allows it.
+- Default `/restaurants` must remain unchanged unless explicitly requested.
+- Use existing handlers and state. Do not reimplement search, filters, map, save, or directions.
+- Keep changes scoped to named adaptive-shell classes.
+- Prefer exact design algorithms over subjective styling words.
+- Mobile `<768px`: sheets.
+- Tablet: centered compact panels.
+- Desktop: anchored popovers.
+- Only one transient surface may be active at once.
+- Do not run browser QA until after typecheck/build passes unless debugging a browser-only issue.
+- Report diff size before final response.
+- If a prompt is broad, ask for a narrower target instead of redesigning multiple areas.
