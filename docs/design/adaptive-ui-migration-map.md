@@ -361,3 +361,19 @@ Default `/restaurants`, the default mobile drawer, and every other route retain 
 ### Visual rollback
 
 Remove the `body:has(.mapetite-adaptive-shell-preview)` chrome rules, the inert `mapetite-layout-*` class hooks, and the `mapetite-adaptive-shell-state-*` classes/rules. Removing the validated `ui=adaptive-shell` query branch remains the complete preview rollback. No search, store, cache, provider, map, auth, or persistence migration is involved.
+
+## Command-popover refinement gate
+
+The desktop interaction now follows one explicit placement protocol:
+
+- compact Search and Filters remain bottom sheets;
+- tablet and small-desktop surfaces are centered, bounded panels;
+- wide-desktop Search anchors beneath the Search command at 500px maximum width;
+- wide-desktop Filters anchors beneath its toolbar trigger at 420px maximum width;
+- both surfaces cap at `min(70vh, 680px)` and scroll internally;
+- Search fields are vertical rather than a wide horizontal form grid;
+- the existing one-active-surface, Escape, focus-return, submit, filter, map, and selected-place behavior remains authoritative.
+
+This closes the pasted-form-box gap without promoting the preview or changing the production layout. While the shell is active, navbar Search returns to `/restaurants?ui=adaptive-shell`; Home and Saved leave preview mode until those routes have an approved adaptive destination. Default navigation remains unchanged.
+
+Rollback is limited to the toolbar anchor wrapper, scoped placement selectors, and preview-only Search query forwarding. The state/store layer and default restaurant page need no reversal.

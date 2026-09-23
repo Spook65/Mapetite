@@ -54,6 +54,8 @@ export function Layout({ children }: LayoutProps) {
 			: location.pathname.startsWith("/restaurants/")
 				? "Detail"
 				: "Search";
+	const isAdaptiveShellPreview =
+		new URLSearchParams(location.searchStr).get("ui") === "adaptive-shell";
 
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 
@@ -104,6 +106,11 @@ export function Layout({ children }: LayoutProps) {
 											<Link
 												key={item.path}
 												to={item.path}
+												search={
+													item.path === "/restaurants" && isAdaptiveShellPreview
+														? { ui: "adaptive-shell" }
+														: undefined
+												}
 												onClick={closeMobileMenu}
 												className={cn(
 													"flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm transition-colors",
@@ -210,6 +217,11 @@ export function Layout({ children }: LayoutProps) {
 										<Link
 											key={item.path}
 											to={item.path}
+											search={
+												item.path === "/restaurants" && isAdaptiveShellPreview
+													? { ui: "adaptive-shell" }
+													: undefined
+											}
 											className={cn(
 												"text-sm transition-colors",
 												isActive

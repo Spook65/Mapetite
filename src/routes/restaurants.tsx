@@ -2169,6 +2169,12 @@ function RestaurantSearchPage() {
 						) : null}
 					</section>
 
+					<div
+						className={cn(
+							!isAdaptiveShellPreview && "contents",
+							isAdaptiveShellPreview && "mapetite-adaptive-shell-toolbar-anchor",
+						)}
+					>
 					<section
 						className={cn(
 							"mapetite-panel-soft mb-4 flex flex-wrap items-center gap-2 p-3 md:p-4",
@@ -2447,7 +2453,8 @@ function RestaurantSearchPage() {
 									</Button>
 								</div>
 							</section>
-						) : null}
+							) : null}
+					</div>
 
 					{!isAdaptiveShellPreview && showMobileFilters && (
 						// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern

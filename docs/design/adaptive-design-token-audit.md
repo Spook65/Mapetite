@@ -537,3 +537,21 @@ Apricot remains limited to primary actions and selected map emphasis. Sage organ
 ### Safe opt-in and rollback
 
 The `mapetite-layout-*` hooks are inert class names with no default declarations. Their declarations require the adaptive-shell descendant gate, so default `/restaurants` and all other routes keep their existing output. Roll back by deleting the gated chrome block and the optional hooks; then remove `mapetite-adaptive-shell-state-*` if the empty/loading experiment is also rejected. No global variable, component behavior, or DOM ownership must be restored.
+
+## Adaptive command-popover placement protocol
+
+The query-gated shell distinguishes command popovers from compact sheets instead of stretching one form treatment across every viewport.
+
+| Viewport | Search | Filters and sort |
+| --- | --- | --- |
+| Compact, up to 640px | Safe-area bottom sheet, bounded to 82dvh | Safe-area bottom sheet, bounded to 82dvh |
+| Tablet/small desktop, 641-1260px | Centered 500px panel | Centered 420px panel |
+| Wide desktop, 1261px and above | 500px popover anchored below the Search command | 420px popover anchored below the Filters and sort command |
+
+Both desktop surfaces use `min(70vh, 680px)` as their height ceiling and scroll internally. City, region, and country remain a single vertical field sequence. Search actions can share one row, while filter actions remain sticky inside their bounded surface. The close control stays in the heading and the existing Escape/focus-return behavior is unchanged.
+
+The toolbar anchor is opt-in and route-local. It wraps the existing toolbar only when `ui=adaptive-shell`; the default branch uses `display: contents`, so it does not acquire a new visual box. Search navigation preserves `ui=adaptive-shell` only when the preview is already active. Home and Saved intentionally leave the preview because those routes have not adopted the shell.
+
+### Placement rollback
+
+Remove `mapetite-adaptive-shell-toolbar-anchor`, restore the previous search/filter positioning declarations, and remove the conditional Search-link query forwarding. No form handler, filter setter, route search schema, cache key, or persisted value needs rollback.
