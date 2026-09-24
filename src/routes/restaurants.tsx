@@ -1744,7 +1744,7 @@ function RestaurantSearchPage() {
 									onClick={() => toggleAdaptiveTransientSurface("search")}
 									aria-expanded={isAdaptiveSearchDetailsOpen}
 									aria-controls="adaptive-shell-search-details"
-									className="mapetite-adaptive-button is-primary mapetite-adaptive-shell-command-go"
+									className="mapetite-adaptive-button mapetite-adaptive-shell-command-go"
 								>
 									{isAdaptiveSearchDetailsOpen ? "Close" : "Edit search"}
 								</Button>
@@ -1962,7 +1962,7 @@ function RestaurantSearchPage() {
 								/>
 							</div>
 
-							<div className="relative grid gap-2 min-[1261px]:grid-cols-2 min-[1261px]:items-end">
+							<div className="mapetite-adaptive-shell-search-actions relative grid gap-2 min-[1261px]:grid-cols-2 min-[1261px]:items-end">
 									<Button
 										type="button"
 										onClick={() => {

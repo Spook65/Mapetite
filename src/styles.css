@@ -1037,8 +1037,7 @@ code {
 
 	.mapetite-adaptive-scope .mapetite-adaptive-result-rating {
 		align-self: start;
-		padding: var(--mapetite-adaptive-space-2)
-			var(--mapetite-adaptive-space-3);
+		padding: var(--mapetite-adaptive-space-2) var(--mapetite-adaptive-space-3);
 		border: 1px solid var(--mapetite-adaptive-border);
 		border-radius: var(--mapetite-adaptive-radius-round);
 		color: var(--mapetite-adaptive-text);
@@ -1206,6 +1205,9 @@ code {
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-command {
 		position: relative;
 		z-index: 12;
+		gap: 0;
+		padding: var(--mapetite-adaptive-space-2)
+			var(--mapetite-adaptive-space-3);
 		border-radius: var(--mapetite-adaptive-radius-card);
 		background: rgba(255, 254, 250, 0.96);
 		box-shadow: 0 6px 18px rgba(25, 35, 29, 0.065);
@@ -1259,6 +1261,9 @@ code {
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-command-go {
 		min-height: 40px;
 		padding-inline: var(--mapetite-adaptive-space-5);
+		border-color: var(--mapetite-adaptive-border);
+		color: var(--mapetite-adaptive-support-strong);
+		background: var(--mapetite-adaptive-support-soft);
 		white-space: nowrap;
 	}
 
@@ -1281,7 +1286,7 @@ code {
 		min-width: 0;
 		overflow: hidden;
 		color: var(--mapetite-adaptive-text);
-		font-size: 1rem;
+		font-size: 1.06rem;
 		font-weight: 690;
 		line-height: 1.35;
 		text-overflow: ellipsis;
@@ -1294,11 +1299,12 @@ code {
 		max-width: 30%;
 		flex: 0 1 auto;
 		overflow: hidden;
-		padding: 6px 10px;
-		border: 1px solid var(--mapetite-adaptive-border);
-		border-radius: var(--mapetite-adaptive-radius-round);
+		padding: 2px 12px;
+		border: 0;
+		border-left: 1px solid var(--mapetite-adaptive-border);
+		border-radius: 0;
 		color: var(--mapetite-adaptive-text-secondary);
-		background: var(--mapetite-adaptive-subtle-surface);
+		background: transparent;
 		letter-spacing: 0;
 		text-overflow: ellipsis;
 		text-transform: none;
@@ -1337,9 +1343,22 @@ code {
 		top: calc(100% + var(--mapetite-adaptive-space-2));
 		left: 0;
 		display: grid;
-		width: min(500px, calc(100vw - 48px));
+		width: min(488px, calc(100vw - 48px));
 		max-height: min(70vh, 680px);
-		gap: var(--mapetite-adaptive-space-4);
+		gap: var(--mapetite-adaptive-space-5);
+		padding: var(--mapetite-adaptive-space-5);
+		border-radius: 20px;
+		background: rgba(255, 254, 250, 0.992);
+		box-shadow: 0 14px 36px rgba(25, 35, 29, 0.11);
+		backdrop-filter: blur(6px) saturate(104%);
+		-webkit-backdrop-filter: blur(6px) saturate(104%);
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-surface > .mapetite-adaptive-shell-surface-heading {
+		position: sticky;
+		z-index: 4;
+		top: 0;
+		background: rgba(255, 254, 250, 0.992);
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-toolbar-anchor {
@@ -1419,6 +1438,12 @@ code {
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-grid {
 		max-width: none;
 		grid-template-columns: minmax(0, 1fr);
+		gap: var(--mapetite-adaptive-space-3);
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-grid label,
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-grid input {
+		text-align: left;
 	}
 
 	.mapetite-adaptive-shell-preview
@@ -1426,6 +1451,41 @@ code {
 		> :last-child {
 		grid-column: auto;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-actions > div,
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-location-status > div {
+		justify-self: start;
+		padding: 2px 0;
+		border: 0;
+		background: transparent;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-actions > div {
+		width: 100%;
+		grid-column: 1 / -1;
+		justify-content: flex-end;
+	}
+
+	.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-search-actions
+		> div
+		span,
+	.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-location-status
+		span {
+		color: var(--mapetite-adaptive-text-faint);
+	}
+
+	.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-search-actions
+		> div
+		button,
+	.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-location-status
+		button {
+		color: var(--mapetite-adaptive-support-strong);
+		white-space: nowrap;
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-helpers {
@@ -2138,7 +2198,6 @@ code {
 	}
 
 	@media (min-width: 641px) and (max-width: 1260px) {
-		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-surface,
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-filter-surface {
 			position: fixed;
 			top: 92px;
@@ -2147,12 +2206,52 @@ code {
 			transform: translateX(-50%);
 		}
 
-		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-surface {
-			width: min(500px, calc(100vw - 32px));
-		}
-
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-filter-surface {
 			width: min(420px, calc(100vw - 32px));
+		}
+	}
+
+	@media (min-width: 641px) and (max-width: 767px) {
+		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-surface {
+			position: fixed;
+			top: auto;
+			right: 12px;
+			bottom: max(12px, env(safe-area-inset-bottom));
+			left: 12px;
+			width: auto;
+			max-width: none;
+			max-height: min(82dvh, 720px);
+			padding-bottom: calc(
+				var(--mapetite-adaptive-space-5) + env(safe-area-inset-bottom)
+			);
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-search-surface::before {
+			content: "";
+			display: block;
+			width: 38px;
+			height: 4px;
+			margin: -5px auto -8px;
+			border-radius: var(--mapetite-adaptive-radius-round);
+			background: var(--mapetite-adaptive-border-strong);
+		}
+	}
+
+	@media (max-width: 767px) {
+		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-grid > .mapetite-adaptive-shell-search-actions {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	@media (min-width: 768px) and (max-width: 1179px) {
+		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-surface {
+			position: fixed;
+			top: 92px;
+			right: auto;
+			left: 50%;
+			width: min(488px, calc(100vw - 32px));
+			transform: translateX(-50%);
 		}
 	}
 
@@ -2200,6 +2299,14 @@ code {
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-surface,
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-filter-surface {
 			gap: var(--mapetite-adaptive-space-3);
+		}
+
+		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-surface {
+			gap: var(--mapetite-adaptive-space-5);
+			padding: var(--mapetite-adaptive-space-5)
+				var(--mapetite-adaptive-space-5)
+				calc(var(--mapetite-adaptive-space-5) + env(safe-area-inset-bottom));
+			border-radius: 20px;
 		}
 
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-filter-grid {

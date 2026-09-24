@@ -366,9 +366,10 @@ Remove the `body:has(.mapetite-adaptive-shell-preview)` chrome rules, the inert 
 
 The desktop interaction now follows one explicit placement protocol:
 
-- compact Search and Filters remain bottom sheets;
-- tablet and small-desktop surfaces are centered, bounded panels;
-- wide-desktop Search anchors beneath the Search command at 500px maximum width;
+- compact Search remains a safe-area bottom sheet below 768px;
+- tablet and small-desktop Search is a centered 488px panel from 768-1179px;
+- wide-desktop Search anchors beneath the Search command at 488px from 1180px;
+- existing Filter placement remains unchanged;
 - wide-desktop Filters anchors beneath its toolbar trigger at 420px maximum width;
 - both surfaces cap at `min(70vh, 680px)` and scroll internally;
 - Search fields are vertical rather than a wide horizontal form grid;
