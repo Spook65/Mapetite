@@ -2191,9 +2191,8 @@ function RestaurantSearchPage() {
 								aria-controls="adaptive-shell-filter-surface"
 								aria-label={`Open filters and sort${adaptiveActiveControlCount ? `, ${adaptiveActiveControlCount} active` : ""}`}
 								className={cn(
-									"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
-									adaptiveActiveControlCount > 0 &&
-										"border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+									"mapetite-quiet-button mapetite-adaptive-shell-filter-trigger h-10 justify-center gap-1.5 px-4 text-sm font-medium shadow-none",
+									adaptiveActiveControlCount > 0 && "is-active",
 								)}
 							>
 								<SlidersHorizontal className="size-4" />
@@ -2323,7 +2322,9 @@ function RestaurantSearchPage() {
 									<div>
 										<div className="mapetite-eyebrow">Refine</div>
 										<h2>Filters &amp; sort</h2>
-										<p>{adaptiveActiveControlCount} active selections</p>
+										{adaptiveActiveControlCount > 0 ? (
+											<p>{adaptiveActiveControlCount} active selections</p>
+										) : null}
 									</div>
 									<button
 										type="button"
