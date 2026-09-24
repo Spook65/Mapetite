@@ -1870,42 +1870,69 @@ code {
 		border-color: var(--mapetite-adaptive-border);
 		background: rgba(255, 253, 248, 0.96);
 		box-shadow: var(--mapetite-adaptive-shadow-card);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(6px);
+		-webkit-backdrop-filter: blur(6px);
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-media {
 		order: -3;
+		width: 100%;
 		height: auto;
-		aspect-ratio: var(--mapetite-adaptive-selected-media-ratio);
+		max-height: none;
+		aspect-ratio: 2 / 1;
 		border-color: var(--mapetite-adaptive-border);
 		background: var(--mapetite-adaptive-map-surface);
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-heading {
-		order: -2;
+		order: -1;
+		justify-content: flex-start;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-heading > span:first-child {
+		display: none;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-heading > span:last-child {
+		padding: 3px 7px;
+		border-color: var(--mapetite-adaptive-border);
+		color: var(--mapetite-adaptive-text-secondary);
+		background: var(--mapetite-adaptive-group-surface);
+		font-size: 0.75rem;
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-title {
-		order: -1;
+		order: -2;
 		font-size: clamp(1.45rem, 2vw, 1.85rem);
 		line-height: 1.08;
+		overflow: hidden;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-description {
 		margin: 0;
+		overflow: hidden;
 		font-size: 0.8125rem;
 		line-height: 1.5;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-signals {
-		gap: var(--mapetite-adaptive-space-2);
+		gap: var(--mapetite-adaptive-space-1)
+			var(--mapetite-adaptive-space-2);
 	}
 
 	.mapetite-adaptive-shell-preview
 		.mapetite-adaptive-shell-selected-signals
 		> span {
-		padding: 5px 9px;
+		min-height: 24px;
+		padding: 3px 7px;
+		border-color: var(--mapetite-adaptive-border);
+		background: var(--mapetite-adaptive-group-surface);
 		font-size: 0.75rem;
 	}
 
@@ -1914,6 +1941,7 @@ code {
 		border-left: 3px solid var(--mapetite-adaptive-support);
 		border-radius: 3px var(--mapetite-adaptive-radius-control)
 			var(--mapetite-adaptive-radius-control) 3px;
+		padding: var(--mapetite-adaptive-space-3);
 		background: color-mix(
 			in srgb,
 			var(--mapetite-adaptive-support-soft) 72%,
@@ -1921,13 +1949,35 @@ code {
 		);
 	}
 
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-evidence > div:last-child > :nth-child(n + 4) {
+		display: none;
+	}
+
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-actions {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: var(--mapetite-adaptive-space-2);
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-actions > :first-child {
+		grid-column: 1 / -1;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-actions :is(a, button) {
+		width: 100%;
+		height: 36px;
+		min-height: 36px;
+		padding-inline: var(--mapetite-adaptive-space-3);
+		font-size: 0.78rem;
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-address {
 		padding-top: var(--mapetite-adaptive-space-3);
 		border-color: var(--mapetite-adaptive-border);
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-address p {
+		display: none;
 	}
 
 	.mapetite-adaptive-shell-preview
@@ -1936,6 +1986,38 @@ code {
 		height: 100%;
 		aspect-ratio: auto;
 		border-radius: 0;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-media .mapetite-adaptive-shell-selected-fallback > span {
+		display: none;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-empty {
+		gap: var(--mapetite-adaptive-space-3);
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-empty > :first-child {
+		height: 124px;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-empty h2 {
+		font-size: 1.25rem;
+		line-height: 1.15;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-empty p {
+		margin: 0;
+		overflow: hidden;
+		font-size: 0.8125rem;
+		line-height: 1.5;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-empty > :first-child > span,
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-empty > :last-child {
+		display: none;
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-mobile-selection {
@@ -1975,7 +2057,28 @@ code {
 
 	.mapetite-adaptive-shell-preview
 		.mapetite-adaptive-shell-mobile-media-fallback::after {
-		display: none;
+		display: block;
+		right: 3px;
+		bottom: 3px;
+		padding: 1px 3px;
+		border: 0;
+		content: "No photo";
+		font-size: 0.5rem;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-mobile-title {
+		overflow: hidden;
+		white-space: normal;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-mobile-actions :is(a, button) {
+		height: 40px;
+		min-height: 40px;
+		border-radius: var(--mapetite-adaptive-radius-control);
+		font-size: 0.8rem;
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-mobile-evidence {
@@ -2270,9 +2373,9 @@ code {
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-selected-panel {
 			position: relative;
 			top: 0;
-			align-self: stretch;
-			gap: var(--mapetite-adaptive-space-3);
-			min-height: 620px;
+			align-self: start;
+			gap: var(--mapetite-adaptive-space-4);
+			min-height: 0;
 			max-height: calc(100vh - 116px);
 			overflow-y: auto;
 			overscroll-behavior: contain;
@@ -2351,6 +2454,7 @@ code {
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-grid > .mapetite-adaptive-shell-search-actions {
 			grid-template-columns: minmax(0, 1fr);
 		}
+
 	}
 
 	@media (min-width: 768px) and (max-width: 1179px) {

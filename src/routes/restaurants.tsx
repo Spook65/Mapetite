@@ -3567,7 +3567,13 @@ function RestaurantSearchPage() {
 											</div>
 										</>
 									) : (
-										<div className="grid gap-4">
+										<div
+											className={cn(
+												"grid gap-4",
+												isAdaptiveShellPreview &&
+													"mapetite-adaptive-shell-selected-empty",
+											)}
+										>
 										<div
 											className={cn(
 												"mapetite-media-fallback grid h-[220px] grid-rows-[auto_1fr_auto] rounded-[14px] p-4",
@@ -3802,7 +3808,7 @@ function RestaurantSearchPage() {
 								) : null}
 								<div className="min-w-0">
 									<div className="flex flex-wrap items-center gap-2">
-										<strong className="truncate text-[18px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+										<strong className="mapetite-adaptive-shell-mobile-title truncate text-[18px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											{selectedRestaurant.name}
 										</strong>
 										{selectedRestaurant.rating != null ? (
@@ -3846,7 +3852,13 @@ function RestaurantSearchPage() {
 								</p>
 							) : null}
 
-							<div className="mt-3 grid grid-cols-2 gap-2">
+							<div
+								className={cn(
+									"mt-3 grid grid-cols-2 gap-2",
+									isAdaptiveShellPreview &&
+										"mapetite-adaptive-shell-mobile-actions",
+								)}
+							>
 								<Button
 									asChild
 									className="mapetite-accent-button col-span-2 h-11 w-full justify-center rounded-full px-4 text-[14px] font-semibold text-[#20140d] shadow-none"
