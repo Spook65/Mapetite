@@ -2761,10 +2761,10 @@ body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-main {
 body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-header {
 	z-index: 30;
 	border-bottom: 1px solid var(--mapetite-border);
-	background: rgba(248, 247, 242, 0.9);
-	box-shadow: 0 1px 0 rgba(255, 255, 255, 0.72);
-	backdrop-filter: blur(14px) saturate(108%);
-	-webkit-backdrop-filter: blur(14px) saturate(108%);
+	background: rgba(248, 247, 242, 0.96);
+	box-shadow: none;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
 }
 
 body:has(.mapetite-adaptive-shell-preview)
@@ -2775,10 +2775,11 @@ body:has(.mapetite-adaptive-shell-preview)
 }
 
 body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-app-bar {
-	width: min(1440px, calc(100vw - 24px));
+	width: min(1440px, 100%);
+	height: 62px;
 	min-height: 62px;
 	margin-inline: auto;
-	padding: 10px 4px;
+	padding: 0 20px;
 	border: 0;
 	border-radius: 0;
 	background: transparent;
@@ -2787,9 +2788,75 @@ body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-app-bar {
 }
 
 body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-brand-mark {
+	width: 34px;
+	height: 34px;
 	border-color: rgba(97, 117, 101, 0.18);
+	border-radius: 9px;
 	color: #405548;
 	background: #dfe7dd;
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-app-bar
+	> div:first-child
+	> a {
+	gap: 10px;
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-app-bar
+	> div:first-child
+	h1 {
+	font-size: 0.875rem;
+	font-weight: 650;
+	letter-spacing: -0.015em;
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-app-bar
+	> nav {
+	min-width: 0;
+	gap: 8px;
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-app-bar
+	> nav
+	a {
+	position: relative;
+	height: 36px;
+	padding: 8px 10px;
+	border-radius: 9px;
+	color: var(--mapetite-text-soft);
+	font-size: 0.8125rem;
+	font-weight: 500;
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-app-bar
+	> nav
+	a:hover {
+	color: var(--mapetite-text);
+	background: rgba(97, 117, 101, 0.07);
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-app-bar
+	> nav
+	a[href^="/restaurants"] {
+	color: #405548;
+	box-shadow: inset 0 -2px #6d8272;
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-app-bar
+	> div:last-child
+	button,
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-app-bar
+	> div:last-child
+	a {
+	min-height: 36px;
 }
 
 body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-menu-button {
@@ -2809,6 +2876,53 @@ body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-mobile-drawer {
 	color: var(--mapetite-text);
 	background: #fffefa;
 	box-shadow: -18px 0 44px rgba(42, 54, 47, 0.13);
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-mobile-drawer
+	> div {
+	padding-top: env(safe-area-inset-top);
+}
+
+body:has(.mapetite-adaptive-shell-preview)
+	.mapetite-layout-mobile-drawer
+	nav
+	a[href^="/restaurants"] {
+	border-color: rgba(97, 117, 101, 0.18);
+	color: #405548;
+	background: #edf1ec;
+}
+
+@media (max-width: 959px) {
+	body:has(.mapetite-adaptive-shell-preview)
+		.mapetite-layout-app-bar
+		> nav,
+	body:has(.mapetite-adaptive-shell-preview)
+		.mapetite-layout-app-bar
+		> div:last-child
+		> div {
+		display: none;
+	}
+
+	body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-menu-button {
+		display: inline-flex;
+	}
+
+	body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-mobile-overlay {
+		display: block;
+	}
+}
+
+@media (max-width: 767px) {
+	body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-main {
+		min-height: calc(100dvh - 58px - env(safe-area-inset-top));
+	}
+
+	body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-app-bar {
+		height: calc(58px + env(safe-area-inset-top));
+		min-height: calc(58px + env(safe-area-inset-top));
+		padding: env(safe-area-inset-top) 16px 0;
+	}
 }
 
 body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-footer {
@@ -2888,11 +3002,11 @@ body:has(.mapetite-adaptive-shell-preview)
 
 @media (max-width: 640px) {
 	body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-app-bar {
-		padding-inline: 2px;
+		padding-inline: 16px;
 	}
 
 	body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-main {
-		min-height: calc(100dvh - 62px);
+		min-height: calc(100dvh - 58px - env(safe-area-inset-top));
 	}
 
 	body:has(.mapetite-adaptive-shell-preview)

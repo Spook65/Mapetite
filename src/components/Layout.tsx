@@ -91,6 +91,7 @@ export function Layout({ children }: LayoutProps) {
 									type="button"
 									onClick={closeMobileMenu}
 									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
+									aria-label="Close menu"
 								>
 									<X className="size-4" />
 								</button>
