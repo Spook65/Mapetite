@@ -1,5 +1,7 @@
 # Adaptive UI Migration Map
 
+> **Architecture notice:** [`mapetite-platform-architecture.md`](./mapetite-platform-architecture.md) is authoritative for current Web, installed iPhone, and installed iPad architecture. This document remains useful as historical migration and design context. Do not implement conflicting installed-app navigation or Search guidance from this document. Differences in installed-app architecture do not automatically deprecate current production web behavior.
+
 ## Decision
 
 Keep the Apple-inspired adaptive direction. Do not migrate its static markup literally. The production app already has stronger behavior than the prototype, so the safe path is to introduce a shared visual system first and move structure only after state ownership and viewport behavior are proven.

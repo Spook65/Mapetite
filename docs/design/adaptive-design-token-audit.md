@@ -1,5 +1,7 @@
 # Adaptive Design Token and Alignment Audit
 
+> **Architecture notice:** [`mapetite-platform-architecture.md`](./mapetite-platform-architecture.md) is authoritative for current Web, installed iPhone, and installed iPad architecture. This document remains useful as historical migration and design context. Do not implement conflicting installed-app navigation or Search guidance from this document. Differences in installed-app architecture do not automatically deprecate current production web behavior.
+
 ## Audit scope
 
 This audit compares the current production visual system in `src/styles.css` and route-level utility classes with the static adaptive prototype in `apple-adaptive-mapetite.html`. The foundation tokens and optional primitives are implemented under `.mapetite-adaptive-scope`. The restaurant result list now has one explicit query-param preview; the default route still does not opt in. This does not authorize a structural migration.
