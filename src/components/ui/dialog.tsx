@@ -103,6 +103,7 @@ function DialogOverlay({
 
 function DialogContent({
 	className,
+	overlayClassName,
 	children,
 	showCloseButton = true,
 	id,
@@ -112,6 +113,7 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
 	showCloseButton?: boolean;
 	id?: string;
+	overlayClassName?: string;
 }) {
 	const handleOpenAutoFocus = useDelegatedComponentEventHandler(
 		onOpenAutoFocus,
@@ -136,7 +138,7 @@ function DialogContent({
 	);
 	return (
 		<DialogPortal data-slot="dialog-portal">
-			<DialogOverlay />
+			<DialogOverlay className={overlayClassName} />
 			<DialogPrimitive.Content
 				data-slot="dialog-content"
 				onOpenAutoFocus={handleOpenAutoFocus}

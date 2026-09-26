@@ -2,6 +2,14 @@ import { LogInModal } from "@/components/auth/LogInModal";
 import { SignUpModal } from "@/components/auth/SignUpModal";
 import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
 import { cn } from "@/lib/utils";
@@ -17,7 +25,7 @@ import {
 	Utensils,
 	X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface LayoutProps {
 	children: React.ReactNode;
@@ -28,6 +36,9 @@ export function Layout({ children }: LayoutProps) {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 	const [isLogInOpen, setIsLogInOpen] = useState(false);
+	const shouldRestoreMenuFocusRef = useRef(true);
+	const shouldRestoreFocusAfterAuthRef = useRef(false);
+	const mobileMenuTriggerRef = useRef<HTMLButtonElement>(null);
 
 	// Get authentication state
 	const { isAuthenticated, profile, logout } = useAuthState();
@@ -58,21 +69,49 @@ export function Layout({ children }: LayoutProps) {
 		new URLSearchParams(location.searchStr).get("ui") === "adaptive-shell";
 
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
+	const closeMobileMenuForTransition = () => {
+		shouldRestoreMenuFocusRef.current = false;
+		setIsMobileMenuOpen(false);
+	};
+	const handleMobileMenuOpenChange = (open: boolean) => {
+		if (open) shouldRestoreMenuFocusRef.current = true;
+		setIsMobileMenuOpen(open);
+	};
+	const restoreMenuFocusAfterAuth = () => {
+		if (!shouldRestoreFocusAfterAuthRef.current) return;
+		shouldRestoreFocusAfterAuthRef.current = false;
+		requestAnimationFrame(() => mobileMenuTriggerRef.current?.focus());
+	};
+
+	useEffect(() => {
+		const desktopMedia = window.matchMedia("(min-width: 768px)");
+		const closeAtDesktop = (event: MediaQueryListEvent) => {
+			if (event.matches) closeMobileMenuForTransition();
+		};
+		desktopMedia.addEventListener("change", closeAtDesktop);
+		return () => desktopMedia.removeEventListener("change", closeAtDesktop);
+	}, []);
 
 	return (
-		<div className="mapetite-layout mapetite-page-shell flex min-h-screen w-full overflow-x-clip text-[var(--mapetite-text)]">
-			{isMobileMenuOpen && (
-				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
-				<div
-					className="mapetite-layout-mobile-overlay fixed inset-0 z-50 bg-black/50 md:hidden"
-					onClick={closeMobileMenu}
+		<Dialog open={isMobileMenuOpen} onOpenChange={handleMobileMenuOpenChange}>
+			<div className="mapetite-layout mapetite-page-shell flex min-h-screen w-full overflow-x-clip text-[var(--mapetite-text)]">
+				<DialogContent
+					aria-modal="true"
+					showCloseButton={false}
+					overlayClassName="mapetite-layout-mobile-overlay md:hidden"
+					onCloseAutoFocus={(event) => {
+						if (!shouldRestoreMenuFocusRef.current) {
+							event.preventDefault();
+							shouldRestoreMenuFocusRef.current = true;
+						}
+					}}
+					className="mapetite-layout-mobile-drawer top-0 right-0 bottom-0 left-auto h-dvh w-80 max-w-[85vw] translate-x-0 translate-y-0 gap-0 rounded-none border-y-0 border-r-0 border-l border-[var(--mapetite-border)] bg-[#16110e] p-0 shadow-none md:hidden"
 				>
-					{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
-					<aside
-						className="mapetite-layout-mobile-drawer absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
-						onClick={(e) => e.stopPropagation()}
-					>
-						<div className="flex h-full flex-col">
+					<DialogTitle className="sr-only">Navigation</DialogTitle>
+					<DialogDescription className="sr-only">
+						Primary navigation and account actions.
+					</DialogDescription>
+					<div className="flex h-full flex-col">
 							<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] p-4">
 								<div className="flex items-center gap-3">
 									<div className="mapetite-layout-brand-mark flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
@@ -87,14 +126,15 @@ export function Layout({ children }: LayoutProps) {
 										</p>
 									</div>
 								</div>
-								<button
-									type="button"
-									onClick={closeMobileMenu}
-									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
-									aria-label="Close menu"
-								>
-									<X className="size-4" />
-								</button>
+								<DialogClose asChild>
+									<button
+										type="button"
+										className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
+										aria-label="Close menu"
+									>
+										<X className="size-4" />
+									</button>
+								</DialogClose>
 							</div>
 
 							<nav className="flex-1 px-3 py-4">
@@ -112,7 +152,8 @@ export function Layout({ children }: LayoutProps) {
 														? { ui: "adaptive-shell" }
 														: undefined
 												}
-												onClick={closeMobileMenu}
+												onClick={closeMobileMenuForTransition}
+												aria-current={isActive ? "page" : undefined}
 												className={cn(
 													"flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm transition-colors",
 													isActive
@@ -132,7 +173,7 @@ export function Layout({ children }: LayoutProps) {
 										<>
 											<Link
 												to="/account"
-												onClick={closeMobileMenu}
+												onClick={closeMobileMenuForTransition}
 												className="block rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] p-3 transition-colors hover:bg-[rgba(255,248,242,0.07)]"
 											>
 												<p className="text-xs text-[var(--mapetite-text-faint)]">
@@ -159,7 +200,8 @@ export function Layout({ children }: LayoutProps) {
 										<>
 											<Button
 												onClick={() => {
-													closeMobileMenu();
+													shouldRestoreFocusAfterAuthRef.current = true;
+													closeMobileMenuForTransition();
 													setIsLogInOpen(true);
 												}}
 												variant="outline"
@@ -170,7 +212,8 @@ export function Layout({ children }: LayoutProps) {
 											</Button>
 											<Button
 												onClick={() => {
-													closeMobileMenu();
+													shouldRestoreFocusAfterAuthRef.current = true;
+													closeMobileMenuForTransition();
 													setIsSignUpOpen(true);
 												}}
 												className="mapetite-accent-button w-full rounded-[10px] text-[#20140d]"
@@ -182,12 +225,10 @@ export function Layout({ children }: LayoutProps) {
 									)}
 								</div>
 							</nav>
-						</div>
-					</aside>
-				</div>
-			)}
+					</div>
+				</DialogContent>
 
-			<div className="flex min-w-0 flex-1 flex-col">
+				<div className="flex min-w-0 flex-1 flex-col">
 				<header className="mapetite-layout-header sticky top-0 z-10">
 					<div className="mapetite-layout-header-container mapetite-container px-4 pt-4 pb-6 md:px-6 md:pt-8 md:pb-8">
 						<div className="mapetite-layout-app-bar mapetite-panel-soft flex items-center justify-between gap-4 px-5 py-3 backdrop-blur md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center">
@@ -286,14 +327,16 @@ export function Layout({ children }: LayoutProps) {
 								)}
 								</div>
 
-								<button
-									type="button"
-									onClick={() => setIsMobileMenuOpen(true)}
-									className="mapetite-layout-menu-button inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] md:hidden"
-									aria-label="Open menu"
-								>
-									<Menu className="size-4" />
-								</button>
+								<DialogTrigger asChild>
+									<button
+										ref={mobileMenuTriggerRef}
+										type="button"
+										className="mapetite-layout-menu-button inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] md:hidden"
+										aria-label="Open menu"
+									>
+										<Menu className="size-4" />
+									</button>
+								</DialogTrigger>
 							</div>
 						</div>
 					</div>
@@ -305,8 +348,21 @@ export function Layout({ children }: LayoutProps) {
 				<MapetiteFooter />
 			</div>
 
-			<SignUpModal open={isSignUpOpen} onOpenChange={setIsSignUpOpen} />
-			<LogInModal open={isLogInOpen} onOpenChange={setIsLogInOpen} />
-		</div>
+			<SignUpModal
+				open={isSignUpOpen}
+				onOpenChange={(open) => {
+					setIsSignUpOpen(open);
+					if (!open) restoreMenuFocusAfterAuth();
+				}}
+			/>
+			<LogInModal
+				open={isLogInOpen}
+				onOpenChange={(open) => {
+					setIsLogInOpen(open);
+					if (!open) restoreMenuFocusAfterAuth();
+				}}
+			/>
+			</div>
+		</Dialog>
 	);
 }
