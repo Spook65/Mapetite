@@ -2929,30 +2929,25 @@ function RestaurantSearchPage() {
 										return (
 											<article
 												key={restaurant.id}
-												role="button"
-												tabIndex={0}
-												onClick={() => handleSelectRestaurant(restaurant.id)}
-												onKeyDown={(event) => {
-													if (event.key === "Enter" || event.key === " ") {
-														event.preventDefault();
-														handleSelectRestaurant(restaurant.id);
-													}
-												}}
-												aria-pressed={
-													isAdaptiveCardPreview ? isSelected : undefined
-												}
+												data-selected={isSelected ? "true" : undefined}
 												className={cn(
-													"grid min-w-0 gap-3 text-center min-[981px]:grid-cols-[154px_minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:text-left",
+													"grid min-w-0 gap-3 text-center min-[981px]:grid-cols-[minmax(0,1fr)_auto] min-[981px]:gap-4 min-[981px]:text-left",
 													isAdaptiveCardPreview
 														? "mapetite-adaptive-scope mapetite-adaptive-result-card mapetite-adaptive-result-card-preview"
 														: cn(
-																"rounded-[14px] border p-4 transition-all duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)]",
+																"rounded-[14px] border p-4 transition-all duration-150",
 																isSelected
 																	? "border-[rgba(213,154,104,0.24)] bg-[rgba(255,248,242,0.05)] shadow-[0_18px_40px_rgba(0,0,0,0.18)]"
 																	: "border-[rgba(255,236,220,0.08)] bg-[var(--mapetite-surface)] shadow-[0_18px_40px_rgba(0,0,0,0.18)] hover:border-[rgba(213,154,104,0.24)] hover:bg-[rgba(255,248,242,0.05)] hover:-translate-y-[1px]",
 															),
 												)}
 											>
+												<button
+													type="button"
+													onClick={() => handleSelectRestaurant(restaurant.id)}
+													aria-label={`Select ${restaurant.name}${isSelected ? ", currently selected" : ""}`}
+													className="mapetite-result-selection-target grid w-full min-w-0 cursor-pointer appearance-none gap-3 rounded-[12px] border-0 bg-transparent p-0 text-center text-inherit outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[rgba(213,154,104,0.92)] min-[981px]:grid-cols-[154px_minmax(0,1fr)] min-[981px]:gap-4 min-[981px]:text-left [font:inherit]"
+												>
 												<div
 													className={cn(
 														"grid h-[132px] grid-rows-[auto_1fr_auto] overflow-hidden",
@@ -3022,7 +3017,7 @@ function RestaurantSearchPage() {
 															</span>
 														</div>
 													)}
-												</div>
+													</div>
 
 												<div
 													className={cn(
@@ -3115,8 +3110,9 @@ function RestaurantSearchPage() {
 																{openLabel}
 															</span>
 														) : null}
-													</div>
-												</div>
+															</div>
+														</div>
+												</button>
 
 												<div
 													className={cn(
@@ -3132,7 +3128,6 @@ function RestaurantSearchPage() {
 															isAdaptiveCardPreview &&
 																"mapetite-adaptive-button mapetite-adaptive-result-action is-primary",
 														)}
-														onClick={(event) => event.stopPropagation()}
 													>
 														<Link
 															to="/restaurants/$restaurantId"
@@ -3145,10 +3140,7 @@ function RestaurantSearchPage() {
 													<Button
 														type="button"
 														variant="outline"
-														onClick={(event) => {
-															event.stopPropagation();
-															toggleFavorite(restaurant.id);
-														}}
+														onClick={() => toggleFavorite(restaurant.id)}
 														disabled={isTogglingFavorite}
 														className={cn(
 															"mapetite-quiet-button h-10 w-full justify-center gap-1.5 rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5",
@@ -3178,8 +3170,7 @@ function RestaurantSearchPage() {
 																	isAdaptiveCardPreview &&
 																		"mapetite-adaptive-button mapetite-adaptive-result-action",
 																)}
-															onClick={(event) => event.stopPropagation()}
-														>
+													>
 															<a
 																href={directionsUrl}
 																target="_blank"
