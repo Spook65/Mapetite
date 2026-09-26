@@ -1,5 +1,13 @@
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -1667,8 +1675,25 @@ function RestaurantSearchPage() {
 		}
 	}, [displayedRestaurants.length]);
 
+	useEffect(() => {
+		if (isAdaptiveShellPreview) return;
+
+		const desktopMedia = window.matchMedia("(min-width: 768px)");
+		const closeAtDesktop = (event: MediaQueryListEvent) => {
+			if (event.matches) setShowMobileFilters(false);
+		};
+
+		if (desktopMedia.matches) setShowMobileFilters(false);
+		desktopMedia.addEventListener("change", closeAtDesktop);
+		return () => desktopMedia.removeEventListener("change", closeAtDesktop);
+	}, [isAdaptiveShellPreview, setShowMobileFilters]);
+
 	return (
 		<Layout>
+			<Dialog
+				open={!isAdaptiveShellPreview && showMobileFilters}
+				onOpenChange={setShowMobileFilters}
+			>
 			<div
 				className={cn(
 					"mapetite-page-shell min-h-full",
@@ -2205,19 +2230,20 @@ function RestaurantSearchPage() {
 							</Button>
 						) : hasResultsForCurrentView ? (
 							<>
-								<Button
-									type="button"
-									variant="outline"
-									onClick={() => setShowMobileFilters(true)}
-									aria-label={`Open filters${activeFilterCount ? `, ${activeFilterCount} active` : ""}`}
-									className={cn(
-										"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none md:hidden",
-										hasActiveFilters && "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
-									)}
-								>
-									<SlidersHorizontal className="size-4" />
-									Filters{activeFilterCount ? ` (${activeFilterCount})` : ""}
-								</Button>
+								<DialogTrigger asChild>
+									<Button
+										type="button"
+										variant="outline"
+										aria-label={`Open filters${activeFilterCount ? `, ${activeFilterCount} active` : ""}`}
+										className={cn(
+											"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none md:hidden",
+											hasActiveFilters && "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
+										)}
+									>
+										<SlidersHorizontal className="size-4" />
+										Filters{activeFilterCount ? ` (${activeFilterCount})` : ""}
+									</Button>
+								</DialogTrigger>
 								<Button
 									type="button"
 									variant="outline"
@@ -2470,33 +2496,31 @@ function RestaurantSearchPage() {
 							) : null}
 					</div>
 
-					{!isAdaptiveShellPreview && showMobileFilters && (
-						// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
-						<div
-							className="fixed inset-0 z-50 bg-black/50 md:hidden"
-							onClick={() => setShowMobileFilters(false)}
+					{!isAdaptiveShellPreview && (
+						<DialogContent
+							aria-modal="true"
+							showCloseButton={false}
+							overlayClassName="md:hidden"
+							className="top-0 right-0 bottom-0 left-auto block h-dvh w-80 max-w-[85vw] translate-x-0 translate-y-0 gap-0 overflow-y-auto rounded-none border-y-0 border-r-0 border-l border-[var(--mapetite-border)] bg-[#16110e] p-0 pb-[env(safe-area-inset-bottom)] shadow-[-18px_0_40px_rgba(0,0,0,0.28)] md:hidden"
 						>
-							{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
-							<div
-								className="absolute right-0 top-0 h-full w-80 max-w-[85vw] overflow-y-auto border-l border-[var(--mapetite-border)] bg-[#16110e] pb-[env(safe-area-inset-bottom)] shadow-[-18px_0_40px_rgba(0,0,0,0.28)]"
-								onClick={(e) => e.stopPropagation()}
-							>
 								<div className="relative flex items-center justify-center border-b border-[var(--mapetite-border)] px-14 py-4 text-center">
 									<div>
-										<h2 className="text-base font-semibold text-[var(--mapetite-text)]">
-										Filters
-										</h2>
-										<p className="mapetite-muted-copy text-sm">
+										<DialogTitle className="text-base font-semibold text-[var(--mapetite-text)]">
+											Filters &amp; sort
+										</DialogTitle>
+										<DialogDescription className="mapetite-muted-copy text-sm">
 										Narrow the current restaurant list.
-										</p>
+										</DialogDescription>
 									</div>
-									<button
-										type="button"
-										onClick={() => setShowMobileFilters(false)}
-										className="absolute right-4 inline-flex size-9 items-center justify-center rounded-md border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
-									>
-										<X className="size-4" />
-									</button>
+									<DialogClose asChild>
+										<button
+											type="button"
+											className="absolute right-4 inline-flex size-9 items-center justify-center rounded-md border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
+											aria-label="Close filters"
+										>
+											<X className="size-4" />
+										</button>
+									</DialogClose>
 								</div>
 
 								<div className="space-y-5 px-4 py-4">
@@ -2599,17 +2623,17 @@ function RestaurantSearchPage() {
 										>
 											Clear filters
 										</Button>
-										<Button
-											type="button"
-											className="mapetite-accent-button h-11 flex-1 rounded-[10px] text-sm shadow-none"
-											onClick={() => setShowMobileFilters(false)}
-										>
-											Apply
-										</Button>
+										<DialogClose asChild>
+											<Button
+												type="button"
+												className="mapetite-accent-button h-11 flex-1 rounded-[10px] text-sm shadow-none"
+											>
+												Apply
+											</Button>
+										</DialogClose>
 									</div>
 								</div>
-							</div>
-						</div>
+						</DialogContent>
 					)}
 
 						{!isAdaptiveShellPreview &&
@@ -3933,6 +3957,7 @@ function RestaurantSearchPage() {
 					</div>
 				)}
 			</div>
+			</Dialog>
 		</Layout>
 	);
 }
