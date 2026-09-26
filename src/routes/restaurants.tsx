@@ -175,6 +175,73 @@ function AdaptiveSearchDetailsSurface({
 	);
 }
 
+type AdaptiveFilterDialogRootProps = Pick<
+	ComponentProps<typeof Dialog>,
+	"children" | "onOpenChange" | "open"
+> & {
+	isAdaptive: boolean;
+	isCompact: boolean;
+};
+
+function AdaptiveFilterDialogRoot({
+	isAdaptive,
+	isCompact,
+	children,
+	...dialogProps
+}: AdaptiveFilterDialogRootProps) {
+	if (!isAdaptive) return <>{children}</>;
+
+	return (
+		<Dialog modal={isCompact} {...dialogProps}>
+			{children}
+		</Dialog>
+	);
+}
+
+type AdaptiveFilterSurfaceProps = Pick<
+	ComponentProps<typeof DialogContent>,
+	"children" | "className" | "onCloseAutoFocus" | "onOpenAutoFocus"
+> & {
+	isCompact: boolean;
+};
+
+function AdaptiveFilterSurface({
+	isCompact,
+	children,
+	className,
+	...dialogProps
+}: AdaptiveFilterSurfaceProps) {
+	if (!isCompact) {
+		return (
+			<section
+				id="adaptive-shell-filter-surface"
+				role="dialog"
+				aria-labelledby="adaptive-shell-filter-heading"
+				className={className}
+			>
+				{children}
+			</section>
+		);
+	}
+
+	return (
+		<DialogContent
+			id="adaptive-shell-filter-surface"
+			aria-modal="true"
+			aria-describedby={undefined}
+			showCloseButton={false}
+			showOverlay
+			overlayClassName="md:hidden"
+			portalled={false}
+			unstyled
+			className={className}
+			{...dialogProps}
+		>
+			{children}
+		</DialogContent>
+	);
+}
+
 function loadFavoriteSnapshotsFromStorage(): Record<string, Restaurant> {
 	if (typeof window === "undefined") return {};
 
@@ -700,6 +767,8 @@ function RestaurantSearchPage() {
 	const adaptiveSearchCityRef = useRef<HTMLInputElement>(null);
 	const shouldRestoreAdaptiveSearchFocusRef = useRef(true);
 	const adaptiveFilterTriggerRef = useRef<HTMLButtonElement>(null);
+	const adaptiveFilterCloseRef = useRef<HTMLButtonElement>(null);
+	const shouldRestoreAdaptiveFilterFocusRef = useRef(true);
 	const favoriteHydrationAttemptsRef = useRef<Set<string>>(new Set());
 	const suppressedSuggestionQueryRef = useRef("");
 	const placeSuggestionPausedUntilRef = useRef(0);
@@ -1693,14 +1762,14 @@ function RestaurantSearchPage() {
 				return;
 			}
 
-			const trigger =
-				adaptiveTransientSurface === "filters"
-						? adaptiveFilterTriggerRef.current
-						: null;
-
 			setAdaptiveTransientSurface(null);
-			if (restoreFocus && trigger) {
-				window.requestAnimationFrame(() => trigger.focus());
+			if (adaptiveTransientSurface === "filters") {
+				shouldRestoreAdaptiveFilterFocusRef.current = restoreFocus;
+				if (restoreFocus && !isAdaptiveSearchCompact) {
+					window.requestAnimationFrame(() =>
+						adaptiveFilterTriggerRef.current?.focus(),
+					);
+				}
 			}
 		},
 		[adaptiveTransientSurface, isAdaptiveSearchCompact],
@@ -1708,9 +1777,12 @@ function RestaurantSearchPage() {
 
 	const toggleAdaptiveTransientSurface = useCallback(
 		(surface: Exclude<AdaptiveTransientSurface, null>) => {
-			setAdaptiveTransientSurface((current) =>
-				current === surface ? null : surface,
-			);
+			setAdaptiveTransientSurface((current) => {
+				if (current === "filters" && surface === "search") {
+					shouldRestoreAdaptiveFilterFocusRef.current = false;
+				}
+				return current === surface ? null : surface;
+			});
 		},
 		[],
 	);
@@ -1735,10 +1807,7 @@ function RestaurantSearchPage() {
 
 		const handleEscape = (event: globalThis.KeyboardEvent) => {
 			if (event.key !== "Escape") return;
-			if (
-				adaptiveTransientSurface === "search" &&
-				isAdaptiveSearchCompact
-			) {
+			if (adaptiveTransientSurface !== null && isAdaptiveSearchCompact) {
 				return;
 			}
 			event.preventDefault();
@@ -1776,17 +1845,35 @@ function RestaurantSearchPage() {
 	]);
 
 	useEffect(() => {
+		if (
+			!isAdaptiveShellPreview ||
+			isAdaptiveSearchCompact ||
+			adaptiveTransientSurface !== "filters"
+		) {
+			return;
+		}
+
+		window.requestAnimationFrame(() => adaptiveFilterCloseRef.current?.focus());
+	}, [
+		adaptiveTransientSurface,
+		isAdaptiveSearchCompact,
+		isAdaptiveShellPreview,
+	]);
+
+	useEffect(() => {
 		const compactMedia = window.matchMedia("(max-width: 767px)");
 		setIsAdaptiveSearchCompact(compactMedia.matches);
 
 		const handleCompactChange = (event: MediaQueryListEvent) => {
 			setIsAdaptiveSearchCompact(event.matches);
 			setAdaptiveTransientSurface((current) => {
-				if (current !== "search") return current;
+				if (current === null) return current;
 				window.requestAnimationFrame(() => {
 					const trigger =
-						adaptiveSearchLastTriggerRef.current ??
-						adaptiveSearchTriggerRef.current;
+						current === "search"
+							? adaptiveSearchLastTriggerRef.current ??
+								adaptiveSearchTriggerRef.current
+							: adaptiveFilterTriggerRef.current;
 					if (trigger?.isConnected) trigger.focus();
 				});
 				return null;
@@ -2383,6 +2470,24 @@ function RestaurantSearchPage() {
 							isAdaptiveShellPreview && "mapetite-adaptive-shell-toolbar-anchor",
 						)}
 					>
+					<AdaptiveFilterDialogRoot
+						isAdaptive={isAdaptiveShellPreview}
+						isCompact={isAdaptiveSearchCompact}
+						open={
+							isAdaptiveShellPreview &&
+							adaptiveTransientSurface === "filters"
+						}
+						onOpenChange={(open) => {
+							if (open) {
+								shouldRestoreAdaptiveFilterFocusRef.current = true;
+								setAdaptiveTransientSurface("filters");
+							} else {
+								setAdaptiveTransientSurface((current) =>
+									current === "filters" ? null : current,
+								);
+							}
+						}}
+					>
 					<section
 						className={cn(
 							"mapetite-panel-soft mb-4 flex flex-wrap items-center gap-2 p-3 md:p-4",
@@ -2394,7 +2499,10 @@ function RestaurantSearchPage() {
 								ref={adaptiveFilterTriggerRef}
 								type="button"
 								variant="outline"
-								onClick={() => toggleAdaptiveTransientSurface("filters")}
+								onClick={() => {
+									shouldRestoreAdaptiveFilterFocusRef.current = true;
+									toggleAdaptiveTransientSurface("filters");
+								}}
 								aria-expanded={adaptiveTransientSurface === "filters"}
 								aria-controls="adaptive-shell-filter-surface"
 								aria-label={`Open filters and sort${adaptiveActiveControlCount ? `, ${adaptiveActiveControlCount} active` : ""}`}
@@ -2520,22 +2628,40 @@ function RestaurantSearchPage() {
 						</section>
 
 						{isAdaptiveShellPreview && adaptiveTransientSurface === "filters" ? (
-							<section
-								id="adaptive-shell-filter-surface"
-								role="dialog"
-								aria-modal="true"
-								aria-label="Filters and sort"
+							<AdaptiveFilterSurface
+								isCompact={isAdaptiveSearchCompact}
+								onOpenAutoFocus={(event) => {
+									event.preventDefault();
+									window.requestAnimationFrame(() =>
+										adaptiveFilterCloseRef.current?.focus(),
+									);
+								}}
+								onCloseAutoFocus={(event) => {
+									event.preventDefault();
+					if (!shouldRestoreAdaptiveFilterFocusRef.current) {
+										shouldRestoreAdaptiveFilterFocusRef.current = true;
+										return;
+									}
+									window.requestAnimationFrame(() =>
+										adaptiveFilterTriggerRef.current?.focus(),
+									);
+								}}
 								className="mapetite-adaptive-shell-transient-surface mapetite-adaptive-shell-filter-surface"
 							>
 								<div className="mapetite-adaptive-shell-surface-heading">
 									<div>
 										<div className="mapetite-eyebrow">Refine</div>
-										<h2>Filters &amp; sort</h2>
+					{isAdaptiveSearchCompact ? (
+						<DialogTitle>Filters &amp; sort</DialogTitle>
+					) : (
+						<h2 id="adaptive-shell-filter-heading">Filters &amp; sort</h2>
+					)}
 										{adaptiveActiveControlCount > 0 ? (
 											<p>{adaptiveActiveControlCount} active selections</p>
 										) : null}
 									</div>
 									<button
+										ref={adaptiveFilterCloseRef}
 										type="button"
 										onClick={() => closeAdaptiveTransientSurface()}
 										className="mapetite-adaptive-shell-surface-close"
@@ -2675,8 +2801,9 @@ function RestaurantSearchPage() {
 										Done
 									</Button>
 								</div>
-							</section>
+							</AdaptiveFilterSurface>
 							) : null}
+					</AdaptiveFilterDialogRoot>
 					</div>
 
 					{!isAdaptiveShellPreview && (
