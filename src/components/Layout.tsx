@@ -129,7 +129,7 @@ export function Layout({ children }: LayoutProps) {
 								<DialogClose asChild>
 									<button
 										type="button"
-										className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
+										className="inline-flex size-11 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
 										aria-label="Close menu"
 									>
 										<X className="size-4" />
@@ -155,7 +155,7 @@ export function Layout({ children }: LayoutProps) {
 												onClick={closeMobileMenuForTransition}
 												aria-current={isActive ? "page" : undefined}
 												className={cn(
-													"flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm transition-colors",
+													"flex min-h-11 items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm transition-colors",
 													isActive
 														? "border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 														: "text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]",
@@ -190,7 +190,7 @@ export function Layout({ children }: LayoutProps) {
 													logout();
 												}}
 												variant="outline"
-												className="mapetite-quiet-button w-full rounded-[10px]"
+												className="mapetite-quiet-button min-h-11 w-full rounded-[10px]"
 											>
 												<LogOut className="mr-2 size-4" />
 												Log Out
@@ -205,7 +205,7 @@ export function Layout({ children }: LayoutProps) {
 													setIsLogInOpen(true);
 												}}
 												variant="outline"
-												className="mapetite-quiet-button w-full rounded-[10px]"
+												className="mapetite-quiet-button min-h-11 w-full rounded-[10px]"
 											>
 												<LogIn className="mr-2 size-4" />
 												Log In
@@ -216,7 +216,7 @@ export function Layout({ children }: LayoutProps) {
 													closeMobileMenuForTransition();
 													setIsSignUpOpen(true);
 												}}
-												className="mapetite-accent-button w-full rounded-[10px] text-[#20140d]"
+												className="mapetite-accent-button min-h-11 w-full rounded-[10px] text-[#20140d]"
 											>
 												<UserPlus className="mr-2 size-4" />
 												Sign Up
@@ -331,7 +331,7 @@ export function Layout({ children }: LayoutProps) {
 									<button
 										ref={mobileMenuTriggerRef}
 										type="button"
-										className="mapetite-layout-menu-button inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] md:hidden"
+										className="mapetite-layout-menu-button inline-flex size-11 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] md:hidden"
 										aria-label="Open menu"
 									>
 										<Menu className="size-4" />

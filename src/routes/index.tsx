@@ -279,7 +279,7 @@ function LandingPage() {
 								<DialogClose asChild>
 									<button
 										type="button"
-										className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
+										className="inline-flex size-11 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
 										aria-label="Close menu"
 									>
 										<X className="size-4" />
@@ -293,7 +293,7 @@ function LandingPage() {
 										to="/"
 										onClick={closeMobileMenuForTransition}
 										aria-current="page"
-										className="flex items-center gap-3 rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3 py-2.5 text-sm text-[var(--mapetite-text)] transition-colors"
+										className="flex min-h-11 items-center gap-3 rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3 py-2.5 text-sm text-[var(--mapetite-text)] transition-colors"
 									>
 										<Home className="size-4" />
 										<span>Home</span>
@@ -301,7 +301,7 @@ function LandingPage() {
 									<Link
 										to="/restaurants"
 										onClick={closeMobileMenuForTransition}
-										className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+										className="flex min-h-11 items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 									>
 										<Utensils className="size-4" />
 										<span>Search restaurants</span>
@@ -310,7 +310,7 @@ function LandingPage() {
 										<Link
 											to="/account"
 											onClick={closeMobileMenuForTransition}
-											className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+											className="flex min-h-11 items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 										>
 											<UserRound className="size-4" />
 											<span>Account</span>
@@ -326,28 +326,28 @@ function LandingPage() {
 										<a
 											href="#discover"
 											onClick={closeMobileMenu}
-											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+											className="flex min-h-11 items-center rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 										>
 											Discover
 										</a>
 										<a
 											href="#search"
 											onClick={closeMobileMenu}
-											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+											className="flex min-h-11 items-center rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 										>
 											Search preview
 										</a>
 										<a
 											href="#experience"
 											onClick={closeMobileMenu}
-											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+											className="flex min-h-11 items-center rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 										>
 											How it works
 										</a>
 										<a
 											href="#city-starts"
 											onClick={closeMobileMenu}
-											className="block rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+											className="flex min-h-11 items-center rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 										>
 											Start searching
 										</a>
@@ -376,7 +376,7 @@ function LandingPage() {
 													logout();
 												}}
 												variant="outline"
-												className="mapetite-quiet-button w-full rounded-[10px]"
+												className="mapetite-quiet-button min-h-11 w-full rounded-[10px]"
 											>
 												<LogOut className="mr-2 size-4" />
 												Log Out
@@ -391,7 +391,7 @@ function LandingPage() {
 													setIsLogInOpen(true);
 												}}
 												variant="outline"
-												className="mapetite-quiet-button w-full rounded-[10px]"
+												className="mapetite-quiet-button min-h-11 w-full rounded-[10px]"
 											>
 												<LogIn className="mr-2 size-4" />
 												Log In
@@ -402,7 +402,7 @@ function LandingPage() {
 													closeMobileMenuForTransition();
 													setIsSignUpOpen(true);
 												}}
-												className="mapetite-accent-button w-full rounded-[10px] text-[#20140d]"
+												className="mapetite-accent-button min-h-11 w-full rounded-[10px] text-[#20140d]"
 											>
 												<UserPlus className="mr-2 size-4" />
 												Sign Up
@@ -429,7 +429,7 @@ function LandingPage() {
 							<button
 								ref={mobileMenuTriggerRef}
 								type="button"
-								className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
+								className="inline-flex size-11 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
 								aria-label="Open menu"
 							>
 								<Menu className="size-4" />
