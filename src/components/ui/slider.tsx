@@ -7,6 +7,11 @@ import { useDelegatedComponentEventHandler } from "@/lib/report-parent-window";
 
 import { cn } from "@/lib/utils";
 
+type SliderThumbAriaProps = Pick<
+	React.ComponentPropsWithoutRef<typeof SliderPrimitive.Thumb>,
+	"aria-label" | "aria-labelledby" | "aria-describedby"
+>;
+
 function Slider({
 	className,
 	defaultValue,
@@ -16,9 +21,11 @@ function Slider({
 	id,
 	onValueChange,
 	onValueCommit,
+	getThumbAriaProps,
 	...props
 }: React.ComponentProps<typeof SliderPrimitive.Root> & {
 	id?: string;
+	getThumbAriaProps?: (index: number) => SliderThumbAriaProps;
 }) {
 	const domRef = React.useRef<HTMLSpanElement>(null);
 
@@ -94,6 +101,7 @@ function Slider({
 				<SliderPrimitive.Thumb
 					data-slot="slider-thumb"
 					key={`thumb-${_values.length}-${index}`}
+					{...getThumbAriaProps?.(index)}
 					className="border-primary bg-background ring-ring/50 block size-4 shrink-0 rounded-full border shadow-sm transition-[color,box-shadow] hover:ring-4 focus-visible:ring-4 focus-visible:outline-hidden disabled:pointer-events-none disabled:opacity-50"
 				/>
 			))}

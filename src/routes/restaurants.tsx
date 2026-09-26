@@ -2387,7 +2387,7 @@ function RestaurantSearchPage() {
 
 									<div className="mapetite-adaptive-shell-filter-group">
 										<div className="flex items-center justify-between gap-3">
-											<Label>Minimum rating</Label>
+											<Label id="adaptive-filters-minimum-rating-label">Minimum rating</Label>
 											<span>{minRating === 0 ? "Any" : `${minRating.toFixed(1)}+`}</span>
 										</div>
 										<Slider
@@ -2396,6 +2396,9 @@ function RestaurantSearchPage() {
 											min={0}
 											max={5}
 											step={0.5}
+											getThumbAriaProps={() => ({
+												"aria-labelledby": "adaptive-filters-minimum-rating-label",
+											})}
 										/>
 									</div>
 
@@ -2421,18 +2424,28 @@ function RestaurantSearchPage() {
 
 									<div className="mapetite-adaptive-shell-filter-row is-wide">
 										<div>
-											<Label>Prioritize open</Label>
-											<p>{openNowStatusCopy}</p>
+											<Label id="adaptive-filters-prioritize-open-label">Prioritize open</Label>
+											<p id="adaptive-filters-prioritize-open-description">{openNowStatusCopy}</p>
 										</div>
-										<Switch checked={openNowOnly} onCheckedChange={setOpenNowOnly} />
+										<Switch
+											checked={openNowOnly}
+											onCheckedChange={setOpenNowOnly}
+											aria-labelledby="adaptive-filters-prioritize-open-label"
+											aria-describedby="adaptive-filters-prioritize-open-description"
+										/>
 									</div>
 
 									<div className="mapetite-adaptive-shell-filter-row is-wide">
 										<div>
-											<Label>Saved only</Label>
-											<p>Show your saved shortlist in this results view.</p>
+											<Label id="adaptive-filters-saved-only-label">Saved only</Label>
+											<p id="adaptive-filters-saved-only-description">Show your saved shortlist in this results view.</p>
 										</div>
-										<Switch checked={showFavorites} onCheckedChange={setShowFavorites} />
+										<Switch
+											checked={showFavorites}
+											onCheckedChange={setShowFavorites}
+											aria-labelledby="adaptive-filters-saved-only-label"
+											aria-describedby="adaptive-filters-saved-only-description"
+										/>
 									</div>
 								</div>
 
@@ -2540,7 +2553,7 @@ function RestaurantSearchPage() {
 
 									<div className="space-y-3">
 										<div className="flex items-center justify-between">
-											<Label className="text-[var(--mapetite-text)]">
+											<Label id="mobile-filters-minimum-rating-label" className="text-[var(--mapetite-text)]">
 												Minimum rating
 											</Label>
 											<span className="mapetite-muted-copy text-sm">
@@ -2553,22 +2566,27 @@ function RestaurantSearchPage() {
 											min={0}
 											max={5}
 											step={0.5}
+											getThumbAriaProps={() => ({
+												"aria-labelledby": "mobile-filters-minimum-rating-label",
+											})}
 											className="[&_[data-slot=slider-range]]:bg-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:border-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:bg-[#20140d] [&_[data-slot=slider-thumb]]:shadow-none [&_[data-slot=slider-thumb]]:hover:ring-[rgba(213,154,104,0.22)] [&_[data-slot=slider-thumb]]:focus-visible:ring-[rgba(213,154,104,0.32)] [&_[data-slot=slider-track]]:bg-[rgba(255,248,242,0.08)]"
 										/>
 									</div>
 
 									<div className="flex items-center justify-between gap-4">
 										<div className="space-y-1">
-											<Label className="text-[var(--mapetite-text)]">
+											<Label id="mobile-filters-prioritize-open-label" className="text-[var(--mapetite-text)]">
 												Prioritize open
 											</Label>
-											<p className="mapetite-muted-copy text-sm">
+											<p id="mobile-filters-prioritize-open-description" className="mapetite-muted-copy text-sm">
 												{openNowStatusCopy}
 											</p>
 										</div>
 										<Switch
 											checked={openNowOnly}
 											onCheckedChange={setOpenNowOnly}
+											aria-labelledby="mobile-filters-prioritize-open-label"
+											aria-describedby="mobile-filters-prioritize-open-description"
 										/>
 									</div>
 
@@ -2675,7 +2693,7 @@ function RestaurantSearchPage() {
 
 										<div className="grid gap-3">
 											<div className="flex items-center justify-between">
-												<Label className="text-[var(--mapetite-text)]">
+												<Label id="desktop-filters-minimum-rating-label" className="text-[var(--mapetite-text)]">
 													Minimum rating
 												</Label>
 												<span className="mapetite-muted-copy text-sm">
@@ -2688,6 +2706,9 @@ function RestaurantSearchPage() {
 												min={0}
 												max={5}
 												step={0.5}
+												getThumbAriaProps={() => ({
+													"aria-labelledby": "desktop-filters-minimum-rating-label",
+												})}
 												className="[&_[data-slot=slider-range]]:bg-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:border-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:bg-[#20140d] [&_[data-slot=slider-thumb]]:shadow-none [&_[data-slot=slider-track]]:bg-[rgba(255,248,242,0.08)]"
 											/>
 										</div>
@@ -2695,16 +2716,18 @@ function RestaurantSearchPage() {
 
 									<div className="flex items-center justify-between gap-4">
 										<div className="space-y-1">
-											<Label className="text-[var(--mapetite-text)]">
+											<Label id="desktop-filters-prioritize-open-label" className="text-[var(--mapetite-text)]">
 												Prioritize open
 											</Label>
-											<p className="mapetite-muted-copy text-sm">
+											<p id="desktop-filters-prioritize-open-description" className="mapetite-muted-copy text-sm">
 												{openNowStatusCopy}
 											</p>
 										</div>
 										<Switch
 											checked={openNowOnly}
 											onCheckedChange={setOpenNowOnly}
+											aria-labelledby="desktop-filters-prioritize-open-label"
+											aria-describedby="desktop-filters-prioritize-open-description"
 										/>
 									</div>
 
