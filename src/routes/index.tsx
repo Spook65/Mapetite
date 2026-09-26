@@ -2,6 +2,14 @@ import { LogInModal } from "@/components/auth/LogInModal";
 import { SignUpModal } from "@/components/auth/SignUpModal";
 import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogTitle,
+	DialogTrigger,
+} from "@/components/ui/dialog";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
 import { warmRestaurantsApiHealth } from "@/lib/api/restaurants";
@@ -18,7 +26,7 @@ import {
 	Utensils,
 	X,
 } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 export const Route = createFileRoute("/")({
 	component: LandingPage,
@@ -176,6 +184,9 @@ function LandingPage() {
 	const [selectedRestaurantIndex, setSelectedRestaurantIndex] = useState(0);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+	const shouldRestoreMenuFocusRef = useRef(true);
+	const shouldRestoreFocusAfterAuthRef = useRef(false);
+	const mobileMenuTriggerRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
 		warmRestaurantsApiHealth();
@@ -208,20 +219,48 @@ function LandingPage() {
 	};
 
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
+	const closeMobileMenuForTransition = () => {
+		shouldRestoreMenuFocusRef.current = false;
+		setIsMobileMenuOpen(false);
+	};
+	const handleMobileMenuOpenChange = (open: boolean) => {
+		if (open) shouldRestoreMenuFocusRef.current = true;
+		setIsMobileMenuOpen(open);
+	};
+	const restoreMenuFocusAfterAuth = () => {
+		if (!shouldRestoreFocusAfterAuthRef.current) return;
+		shouldRestoreFocusAfterAuthRef.current = false;
+		requestAnimationFrame(() => mobileMenuTriggerRef.current?.focus());
+	};
+
+	useEffect(() => {
+		const desktopMedia = window.matchMedia("(min-width: 768px)");
+		const closeAtDesktop = (event: MediaQueryListEvent) => {
+			if (event.matches) closeMobileMenuForTransition();
+		};
+		desktopMedia.addEventListener("change", closeAtDesktop);
+		return () => desktopMedia.removeEventListener("change", closeAtDesktop);
+	}, []);
 
 	return (
-		<div className="mapetite-page-shell">
-			{isMobileMenuOpen && (
-				// biome-ignore lint/a11y/useKeyWithClickEvents: Overlay background for modal - intentional click-to-dismiss UX pattern
-				<div
-					className="fixed inset-0 z-50 bg-black/50 md:hidden"
-					onClick={closeMobileMenu}
+		<Dialog open={isMobileMenuOpen} onOpenChange={handleMobileMenuOpenChange}>
+			<div className="mapetite-page-shell">
+				<DialogContent
+					aria-modal="true"
+					showCloseButton={false}
+					overlayClassName="md:hidden"
+					onCloseAutoFocus={(event) => {
+						if (!shouldRestoreMenuFocusRef.current) {
+							event.preventDefault();
+							shouldRestoreMenuFocusRef.current = true;
+						}
+					}}
+					className="top-0 right-0 bottom-0 left-auto h-dvh w-80 max-w-[85vw] translate-x-0 translate-y-0 gap-0 rounded-none border-y-0 border-r-0 border-l border-[var(--mapetite-border)] bg-[#16110e] p-0 shadow-none md:hidden"
 				>
-					{/* biome-ignore lint/a11y/useKeyWithClickEvents: Prevents click propagation to overlay - intentional UX pattern */}
-					<aside
-						className="absolute right-0 top-0 h-full w-80 max-w-[85vw] border-l border-[var(--mapetite-border)] bg-[#16110e]"
-						onClick={(event) => event.stopPropagation()}
-					>
+					<DialogTitle className="sr-only">Navigation</DialogTitle>
+					<DialogDescription className="sr-only">
+						Primary navigation, landing sections, and account actions.
+					</DialogDescription>
 						<div className="flex h-full flex-col">
 							<div className="flex items-center justify-between border-b border-[var(--mapetite-border)] p-4">
 								<div className="flex items-center gap-3">
@@ -237,20 +276,23 @@ function LandingPage() {
 										</p>
 									</div>
 								</div>
-								<button
-									type="button"
-									onClick={closeMobileMenu}
-									className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
-								>
-									<X className="size-4" />
-								</button>
+								<DialogClose asChild>
+									<button
+										type="button"
+										className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)] transition-colors hover:bg-[rgba(255,248,242,0.08)]"
+										aria-label="Close menu"
+									>
+										<X className="size-4" />
+									</button>
+								</DialogClose>
 							</div>
 
 							<nav className="flex-1 px-3 py-4">
 								<div className="space-y-1">
 									<Link
 										to="/"
-										onClick={closeMobileMenu}
+										onClick={closeMobileMenuForTransition}
+										aria-current="page"
 										className="flex items-center gap-3 rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[rgba(213,154,104,0.12)] px-3 py-2.5 text-sm text-[var(--mapetite-text)] transition-colors"
 									>
 										<Home className="size-4" />
@@ -258,7 +300,7 @@ function LandingPage() {
 									</Link>
 									<Link
 										to="/restaurants"
-										onClick={closeMobileMenu}
+										onClick={closeMobileMenuForTransition}
 										className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 									>
 										<Utensils className="size-4" />
@@ -267,7 +309,7 @@ function LandingPage() {
 									{isAuthenticated ? (
 										<Link
 											to="/account"
-											onClick={closeMobileMenu}
+											onClick={closeMobileMenuForTransition}
 											className="flex items-center gap-3 rounded-[10px] px-3 py-2.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 										>
 											<UserRound className="size-4" />
@@ -317,7 +359,7 @@ function LandingPage() {
 										<>
 											<Link
 												to="/account"
-												onClick={closeMobileMenu}
+												onClick={closeMobileMenuForTransition}
 												className="block rounded-[10px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] p-3 transition-colors hover:bg-[rgba(255,248,242,0.07)]"
 											>
 												<p className="text-xs text-[var(--mapetite-text-faint)]">
@@ -344,7 +386,8 @@ function LandingPage() {
 										<>
 											<Button
 												onClick={() => {
-													closeMobileMenu();
+													shouldRestoreFocusAfterAuthRef.current = true;
+													closeMobileMenuForTransition();
 													setIsLogInOpen(true);
 												}}
 												variant="outline"
@@ -355,7 +398,8 @@ function LandingPage() {
 											</Button>
 											<Button
 												onClick={() => {
-													closeMobileMenu();
+													shouldRestoreFocusAfterAuthRef.current = true;
+													closeMobileMenuForTransition();
 													setIsSignUpOpen(true);
 												}}
 												className="mapetite-accent-button w-full rounded-[10px] text-[#20140d]"
@@ -368,9 +412,7 @@ function LandingPage() {
 								</div>
 							</nav>
 						</div>
-					</aside>
-				</div>
-			)}
+				</DialogContent>
 
 			<header className="sticky top-0 z-10 md:hidden">
 				<div className="mapetite-container px-4 pt-4 pb-6">
@@ -383,14 +425,16 @@ function LandingPage() {
 								Mapetite
 							</span>
 						</div>
-						<button
-							type="button"
-							onClick={() => setIsMobileMenuOpen(true)}
-							className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
-							aria-label="Open menu"
-						>
-							<Menu className="size-4" />
-						</button>
+						<DialogTrigger asChild>
+							<button
+								ref={mobileMenuTriggerRef}
+								type="button"
+								className="inline-flex size-9 items-center justify-center rounded-[10px] border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
+								aria-label="Open menu"
+							>
+								<Menu className="size-4" />
+							</button>
+						</DialogTrigger>
 					</div>
 				</div>
 			</header>
@@ -699,8 +743,21 @@ function LandingPage() {
 			</div>
 			<MapetiteFooter />
 
-			<SignUpModal open={isSignUpOpen} onOpenChange={setIsSignUpOpen} />
-			<LogInModal open={isLogInOpen} onOpenChange={setIsLogInOpen} />
-		</div>
+				<SignUpModal
+					open={isSignUpOpen}
+					onOpenChange={(open) => {
+						setIsSignUpOpen(open);
+						if (!open) restoreMenuFocusAfterAuth();
+					}}
+				/>
+				<LogInModal
+					open={isLogInOpen}
+					onOpenChange={(open) => {
+						setIsLogInOpen(open);
+						if (!open) restoreMenuFocusAfterAuth();
+					}}
+				/>
+			</div>
+		</Dialog>
 	);
 }
