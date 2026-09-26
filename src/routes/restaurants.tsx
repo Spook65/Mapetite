@@ -69,6 +69,7 @@ import {
 } from "lucide-react";
 import {
 	Suspense,
+	type ComponentProps,
 	type FocusEvent,
 	type KeyboardEvent,
 	lazy,
@@ -112,6 +113,67 @@ const SearchResultsMap = lazy(() =>
 		default: module.SearchResultsMap,
 	})),
 );
+
+type AdaptiveSearchDetailsSurfaceProps = Pick<
+	ComponentProps<typeof DialogContent>,
+	| "children"
+	| "className"
+	| "onCloseAutoFocus"
+	| "onEscapeKeyDown"
+	| "onInteractOutside"
+	| "onOpenAutoFocus"
+> & {
+	isAdaptive: boolean;
+	isCompact: boolean;
+};
+
+function AdaptiveSearchDetailsSurface({
+	isAdaptive,
+	isCompact,
+	children,
+	className,
+	...dialogProps
+}: AdaptiveSearchDetailsSurfaceProps) {
+	if (!isAdaptive) {
+		return (
+			<div id="adaptive-shell-search-details" className={className}>
+				{children}
+			</div>
+		);
+	}
+
+	if (!isCompact) {
+		return (
+			<div
+				id="adaptive-shell-search-details"
+				role="dialog"
+				aria-labelledby="adaptive-shell-search-heading"
+				aria-describedby="adaptive-shell-search-description"
+				className={className}
+			>
+				{children}
+			</div>
+		);
+	}
+
+	return (
+		<DialogContent
+			id="adaptive-shell-search-details"
+			aria-modal="true"
+			aria-labelledby="adaptive-shell-search-heading"
+			aria-describedby="adaptive-shell-search-description"
+			showCloseButton={false}
+			showOverlay={isCompact}
+			overlayClassName="md:hidden"
+			portalled={false}
+			unstyled
+			className={className}
+			{...dialogProps}
+		>
+			{children}
+		</DialogContent>
+	);
+}
 
 function loadFavoriteSnapshotsFromStorage(): Record<string, Restaurant> {
 	if (typeof window === "undefined") return {};
@@ -580,6 +642,11 @@ function RestaurantSearchPage() {
 	const [showSlowSearchMessage, setShowSlowSearchMessage] = useState(false);
 	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
 	const [isMapOpen, setIsMapOpen] = useState(false);
+	const [isAdaptiveSearchCompact, setIsAdaptiveSearchCompact] = useState(
+		() =>
+			typeof window !== "undefined" &&
+			window.matchMedia("(max-width: 767px)").matches,
+	);
 	const [adaptiveTransientSurface, setAdaptiveTransientSurface] =
 		useState<AdaptiveTransientSurface>(() =>
 			isAdaptiveShellPreview &&
@@ -628,6 +695,10 @@ function RestaurantSearchPage() {
 	>(() => loadFavoriteSnapshotsFromStorage());
 	const activeSearchIdRef = useRef(0);
 	const adaptiveSearchTriggerRef = useRef<HTMLButtonElement>(null);
+	const adaptiveSearchLastTriggerRef = useRef<HTMLButtonElement>(null);
+	const adaptiveSearchCloseRef = useRef<HTMLButtonElement>(null);
+	const adaptiveSearchCityRef = useRef<HTMLInputElement>(null);
+	const shouldRestoreAdaptiveSearchFocusRef = useRef(true);
 	const adaptiveFilterTriggerRef = useRef<HTMLButtonElement>(null);
 	const favoriteHydrationAttemptsRef = useRef<Set<string>>(new Set());
 	const suppressedSuggestionQueryRef = useRef("");
@@ -1608,10 +1679,22 @@ function RestaurantSearchPage() {
 
 	const closeAdaptiveTransientSurface = useCallback(
 		(restoreFocus = true) => {
+			if (adaptiveTransientSurface === "search") {
+				shouldRestoreAdaptiveSearchFocusRef.current = restoreFocus;
+				setAdaptiveTransientSurface(null);
+				if (restoreFocus && !isAdaptiveSearchCompact) {
+					window.requestAnimationFrame(() => {
+						const trigger =
+							adaptiveSearchLastTriggerRef.current ??
+							adaptiveSearchTriggerRef.current;
+						if (trigger?.isConnected) trigger.focus();
+					});
+				}
+				return;
+			}
+
 			const trigger =
-				adaptiveTransientSurface === "search"
-					? adaptiveSearchTriggerRef.current
-					: adaptiveTransientSurface === "filters"
+				adaptiveTransientSurface === "filters"
 						? adaptiveFilterTriggerRef.current
 						: null;
 
@@ -1620,7 +1703,7 @@ function RestaurantSearchPage() {
 				window.requestAnimationFrame(() => trigger.focus());
 			}
 		},
-		[adaptiveTransientSurface],
+		[adaptiveTransientSurface, isAdaptiveSearchCompact],
 	);
 
 	const toggleAdaptiveTransientSurface = useCallback(
@@ -1652,6 +1735,12 @@ function RestaurantSearchPage() {
 
 		const handleEscape = (event: globalThis.KeyboardEvent) => {
 			if (event.key !== "Escape") return;
+			if (
+				adaptiveTransientSurface === "search" &&
+				isAdaptiveSearchCompact
+			) {
+				return;
+			}
 			event.preventDefault();
 			if (adaptiveTransientSurface !== null) {
 				closeAdaptiveTransientSurface();
@@ -1665,9 +1754,48 @@ function RestaurantSearchPage() {
 	}, [
 		adaptiveTransientSurface,
 		closeAdaptiveTransientSurface,
+		isAdaptiveSearchCompact,
 		isAdaptiveShellPreview,
 		selectedRestaurantId,
 	]);
+
+	useEffect(() => {
+		if (
+			!isAdaptiveShellPreview ||
+			isAdaptiveSearchCompact ||
+			adaptiveTransientSurface !== "search"
+		) {
+			return;
+		}
+
+		window.requestAnimationFrame(() => adaptiveSearchCityRef.current?.focus());
+	}, [
+		adaptiveTransientSurface,
+		isAdaptiveSearchCompact,
+		isAdaptiveShellPreview,
+	]);
+
+	useEffect(() => {
+		const compactMedia = window.matchMedia("(max-width: 767px)");
+		setIsAdaptiveSearchCompact(compactMedia.matches);
+
+		const handleCompactChange = (event: MediaQueryListEvent) => {
+			setIsAdaptiveSearchCompact(event.matches);
+			setAdaptiveTransientSurface((current) => {
+				if (current !== "search") return current;
+				window.requestAnimationFrame(() => {
+					const trigger =
+						adaptiveSearchLastTriggerRef.current ??
+						adaptiveSearchTriggerRef.current;
+					if (trigger?.isConnected) trigger.focus();
+				});
+				return null;
+			});
+		};
+
+		compactMedia.addEventListener("change", handleCompactChange);
+		return () => compactMedia.removeEventListener("change", handleCompactChange);
+	}, []);
 
 	useEffect(() => {
 		if (displayedRestaurants.length === 0) {
@@ -1736,11 +1864,32 @@ function RestaurantSearchPage() {
 						)}
 						data-search-expanded={isAdaptiveSearchDetailsOpen}
 					>
+						<Dialog
+							open={
+								isAdaptiveShellPreview &&
+								adaptiveTransientSurface === "search"
+							}
+							modal={isAdaptiveSearchCompact}
+							onOpenChange={(open) => {
+								if (open) {
+									shouldRestoreAdaptiveSearchFocusRef.current = true;
+									setAdaptiveTransientSurface("search");
+								} else {
+									setAdaptiveTransientSurface((current) =>
+										current === "search" ? null : current,
+									);
+								}
+							}}
+						>
 						{isAdaptiveShellPreview ? (
 							<div className="mapetite-adaptive-shell-command-summary">
 								<button
 									type="button"
-									onClick={() => toggleAdaptiveTransientSurface("search")}
+									onClick={(event) => {
+										adaptiveSearchLastTriggerRef.current = event.currentTarget;
+										shouldRestoreAdaptiveSearchFocusRef.current = true;
+										toggleAdaptiveTransientSurface("search");
+									}}
 									className="mapetite-adaptive-shell-command-icon"
 									aria-expanded={isAdaptiveSearchDetailsOpen}
 									aria-controls="adaptive-shell-search-details"
@@ -1766,7 +1915,11 @@ function RestaurantSearchPage() {
 								<Button
 									ref={adaptiveSearchTriggerRef}
 									type="button"
-									onClick={() => toggleAdaptiveTransientSurface("search")}
+									onClick={(event) => {
+										adaptiveSearchLastTriggerRef.current = event.currentTarget;
+										shouldRestoreAdaptiveSearchFocusRef.current = true;
+										toggleAdaptiveTransientSurface("search");
+									}}
 									aria-expanded={isAdaptiveSearchDetailsOpen}
 									aria-controls="adaptive-shell-search-details"
 									className="mapetite-adaptive-button mapetite-adaptive-shell-command-go"
@@ -1776,11 +1929,38 @@ function RestaurantSearchPage() {
 							</div>
 						) : null}
 
-					<div
-						id="adaptive-shell-search-details"
-						role={isAdaptiveShellPreview ? "dialog" : undefined}
-						aria-modal={isAdaptiveShellPreview ? "true" : undefined}
-						aria-label={isAdaptiveShellPreview ? "Edit restaurant search" : undefined}
+					<AdaptiveSearchDetailsSurface
+						isAdaptive={isAdaptiveShellPreview}
+						isCompact={isAdaptiveSearchCompact}
+						onOpenAutoFocus={(event) => {
+							event.preventDefault();
+							window.requestAnimationFrame(() => {
+								if (isAdaptiveSearchCompact) {
+									adaptiveSearchCloseRef.current?.focus();
+								} else {
+									adaptiveSearchCityRef.current?.focus();
+								}
+							});
+						}}
+						onCloseAutoFocus={(event) => {
+							event.preventDefault();
+							if (!shouldRestoreAdaptiveSearchFocusRef.current) {
+								shouldRestoreAdaptiveSearchFocusRef.current = true;
+								return;
+							}
+							window.requestAnimationFrame(() => {
+								const trigger =
+									adaptiveSearchLastTriggerRef.current ??
+									adaptiveSearchTriggerRef.current;
+								if (trigger?.isConnected) trigger.focus();
+							});
+						}}
+						onEscapeKeyDown={(event) => {
+							if (isPlaceSuggestionsOpen) event.preventDefault();
+						}}
+						onInteractOutside={(event) => {
+							if (!isAdaptiveSearchCompact) event.preventDefault();
+						}}
 						className={cn(
 							!isAdaptiveShellPreview && "contents",
 							isAdaptiveShellPreview &&
@@ -1791,10 +1971,11 @@ function RestaurantSearchPage() {
 							<div className="mapetite-adaptive-shell-surface-heading">
 								<div>
 									<div className="mapetite-eyebrow">Search</div>
-									<h2>Edit your place</h2>
-									<p>Choose a suggestion or add region and country when a city name is shared.</p>
+									<DialogTitle id="adaptive-shell-search-heading">Edit your place</DialogTitle>
+									<DialogDescription id="adaptive-shell-search-description">Choose a suggestion or add region and country when a city name is shared.</DialogDescription>
 								</div>
 								<button
+									ref={adaptiveSearchCloseRef}
 									type="button"
 									onClick={() => closeAdaptiveTransientSurface()}
 									className="mapetite-adaptive-shell-surface-close"
@@ -1837,6 +2018,7 @@ function RestaurantSearchPage() {
 								</Label>
 								<div className="relative min-w-0" onBlur={handlePlaceSuggestionBlur}>
 									<Input
+										ref={adaptiveSearchCityRef}
 										id="city"
 										placeholder="Paris, Tokyo, Chicago"
 									value={location.city}
@@ -2123,7 +2305,8 @@ function RestaurantSearchPage() {
 								</p>
 							</div>
 						) : null}
-					</div>
+					</AdaptiveSearchDetailsSurface>
+						</Dialog>
 				</section>
 
 					<section
