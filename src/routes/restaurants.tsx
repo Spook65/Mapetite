@@ -2380,7 +2380,7 @@ function RestaurantSearchPage() {
 												void handleRestoreLastSearch();
 											}}
 											disabled={isSearching}
-											className="mapetite-quiet-button h-10 shrink-0 rounded-full px-4 text-sm shadow-none"
+											className="mapetite-quiet-button h-11 shrink-0 rounded-full px-4 text-sm shadow-none"
 										>
 											Restore
 										</Button>
@@ -2507,7 +2507,7 @@ function RestaurantSearchPage() {
 								aria-controls="adaptive-shell-filter-surface"
 								aria-label={`Open filters and sort${adaptiveActiveControlCount ? `, ${adaptiveActiveControlCount} active` : ""}`}
 								className={cn(
-									"mapetite-quiet-button mapetite-adaptive-shell-filter-trigger h-10 justify-center gap-1.5 px-4 text-sm font-medium shadow-none",
+									"mapetite-quiet-button mapetite-adaptive-shell-filter-trigger h-11 justify-center gap-1.5 px-4 text-sm font-medium shadow-none",
 									adaptiveActiveControlCount > 0 && "is-active",
 								)}
 							>
@@ -2527,7 +2527,7 @@ function RestaurantSearchPage() {
 										variant="outline"
 										aria-label={`Open filters${activeFilterCount ? `, ${activeFilterCount} active` : ""}`}
 										className={cn(
-											"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none md:hidden",
+											"mapetite-quiet-button h-11 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none md:hidden",
 											hasActiveFilters && "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]",
 										)}
 									>
@@ -2561,7 +2561,7 @@ function RestaurantSearchPage() {
 											)
 										}
 									>
-										<SelectTrigger aria-label="Sort restaurants" className="h-10 w-full rounded-full border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-3 text-[var(--mapetite-text)] sm:min-w-[190px]">
+										<SelectTrigger aria-label="Sort restaurants" className="w-full rounded-full border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-3 text-[var(--mapetite-text)] data-[size=default]:h-11 sm:min-w-[190px]">
 											<SelectValue />
 										</SelectTrigger>
 										<SelectContent>
@@ -2580,7 +2580,7 @@ function RestaurantSearchPage() {
 										variant="outline"
 										onClick={() => setShowFavorites(!showFavorites)}
 										className={cn(
-											"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
+											"mapetite-quiet-button h-11 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
 											showFavorites
 												? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 												: null,
@@ -2709,7 +2709,7 @@ function RestaurantSearchPage() {
 														onClick={() => togglePriceFilter(price)}
 														aria-pressed={isActive}
 														className={cn(
-															"mapetite-quiet-button h-10 rounded-full px-2 shadow-none",
+														"mapetite-quiet-button h-11 rounded-full px-2 shadow-none",
 															isActive && "is-selected",
 														)}
 													>
@@ -2731,6 +2731,7 @@ function RestaurantSearchPage() {
 											min={0}
 											max={5}
 											step={0.5}
+											className="mapetite-touch-target-slider"
 											getThumbAriaProps={() => ({
 												"aria-labelledby": "adaptive-filters-minimum-rating-label",
 											})}
@@ -2745,7 +2746,7 @@ function RestaurantSearchPage() {
 												setSortBy(value as "distance" | "rating" | "reviews" | "none")
 											}
 										>
-											<SelectTrigger id="adaptive-shell-sort" aria-label="Sort restaurants">
+											<SelectTrigger id="adaptive-shell-sort" aria-label="Sort restaurants" className="data-[size=default]:h-11">
 												<SelectValue />
 											</SelectTrigger>
 											<SelectContent>
@@ -2767,6 +2768,7 @@ function RestaurantSearchPage() {
 											onCheckedChange={setOpenNowOnly}
 											aria-labelledby="adaptive-filters-prioritize-open-label"
 											aria-describedby="adaptive-filters-prioritize-open-description"
+											className="mapetite-touch-target-switch"
 										/>
 									</div>
 
@@ -2780,6 +2782,7 @@ function RestaurantSearchPage() {
 											onCheckedChange={setShowFavorites}
 											aria-labelledby="adaptive-filters-saved-only-label"
 											aria-describedby="adaptive-filters-saved-only-description"
+											className="mapetite-touch-target-switch"
 										/>
 									</div>
 								</div>
@@ -2825,7 +2828,7 @@ function RestaurantSearchPage() {
 									<DialogClose asChild>
 										<button
 											type="button"
-											className="absolute right-4 inline-flex size-9 items-center justify-center rounded-md border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
+											className="absolute right-4 inline-flex size-11 items-center justify-center rounded-md border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]"
 											aria-label="Close filters"
 										>
 											<X className="size-4" />
@@ -2847,7 +2850,7 @@ function RestaurantSearchPage() {
 														type="button"
 														onClick={() => toggleCategory(category)}
 														className={cn(
-															"rounded-full border px-3 py-2 text-sm transition-colors",
+															"min-h-11 rounded-full border px-3 py-2 text-sm transition-colors",
 															isActive
 																? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 																: "border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.02)] text-[var(--mapetite-text-soft)]",
@@ -2872,7 +2875,7 @@ function RestaurantSearchPage() {
 													variant="outline"
 													onClick={() => togglePriceFilter(price)}
 											className={cn(
-												"h-10 rounded-full px-2 shadow-none",
+												"h-11 rounded-full px-2 shadow-none",
 														isPriceFilterActive(priceFilter) &&
 															priceFilter.includes(price)
 															? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
@@ -2900,10 +2903,10 @@ function RestaurantSearchPage() {
 											min={0}
 											max={5}
 											step={0.5}
+											className="mapetite-touch-target-slider [&_[data-slot=slider-range]]:bg-[var(--mapetite-accent)] [&_[data-slot=slider-track]]:bg-[rgba(255,248,242,0.08)]"
 											getThumbAriaProps={() => ({
 												"aria-labelledby": "mobile-filters-minimum-rating-label",
 											})}
-											className="[&_[data-slot=slider-range]]:bg-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:border-[var(--mapetite-accent)] [&_[data-slot=slider-thumb]]:bg-[#20140d] [&_[data-slot=slider-thumb]]:shadow-none [&_[data-slot=slider-thumb]]:hover:ring-[rgba(213,154,104,0.22)] [&_[data-slot=slider-thumb]]:focus-visible:ring-[rgba(213,154,104,0.32)] [&_[data-slot=slider-track]]:bg-[rgba(255,248,242,0.08)]"
 										/>
 									</div>
 
@@ -2921,6 +2924,7 @@ function RestaurantSearchPage() {
 											onCheckedChange={setOpenNowOnly}
 											aria-labelledby="mobile-filters-prioritize-open-label"
 											aria-describedby="mobile-filters-prioritize-open-description"
+											className="mapetite-touch-target-switch"
 										/>
 									</div>
 

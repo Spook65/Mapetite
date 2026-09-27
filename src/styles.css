@@ -1249,8 +1249,8 @@ code {
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-command-icon {
 		display: grid;
-		width: 36px;
-		height: 36px;
+		width: 44px;
+		height: 44px;
 		flex: 0 0 auto;
 		place-items: center;
 		border-radius: var(--mapetite-adaptive-radius-control);
@@ -1259,7 +1259,7 @@ code {
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-command-go {
-		min-height: 40px;
+		min-height: 44px;
 		padding-inline: var(--mapetite-adaptive-space-5);
 		border-color: var(--mapetite-adaptive-border);
 		color: var(--mapetite-adaptive-support-strong);
@@ -1426,8 +1426,8 @@ code {
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-surface-close {
 		display: grid;
-		width: 38px;
-		height: 38px;
+		width: 44px;
+		height: 44px;
 		flex: 0 0 auto;
 		place-items: center;
 		border: 1px solid var(--mapetite-adaptive-border);
@@ -1490,6 +1490,9 @@ code {
 	.mapetite-adaptive-shell-preview
 		.mapetite-adaptive-shell-location-status
 		button {
+		display: inline-flex;
+		min-height: 44px;
+		align-items: center;
 		color: var(--mapetite-adaptive-support-strong);
 		white-space: nowrap;
 	}
@@ -1503,6 +1506,9 @@ code {
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-text-action {
+		display: inline-flex;
+		min-height: 44px;
+		align-items: center;
 		flex: 0 0 auto;
 		color: var(--mapetite-adaptive-support-strong);
 		font-size: 0.75rem;
@@ -1519,6 +1525,7 @@ code {
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-search-chip {
 		display: inline-flex;
+		min-height: 44px;
 		min-width: 0;
 		max-width: 100%;
 		align-items: center;
@@ -1632,7 +1639,7 @@ code {
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-filter-surface .mapetite-adaptive-chip,
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-filter-surface .mapetite-quiet-button {
-		min-height: 40px;
+		min-height: 44px;
 		border-radius: var(--mapetite-adaptive-radius-control);
 	}
 
@@ -1649,6 +1656,71 @@ code {
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-filter-surface .mapetite-adaptive-shell-surface-actions button {
 		border-radius: var(--mapetite-adaptive-radius-control);
+	}
+
+	.mapetite-touch-target-slider {
+		min-height: 44px;
+	}
+
+	.mapetite-touch-target-slider [data-slot="slider-thumb"] {
+		display: grid;
+		width: 44px;
+		height: 44px;
+		place-items: center;
+		border: 0 !important;
+		background: transparent !important;
+		box-shadow: none !important;
+	}
+
+	.mapetite-touch-target-slider [data-slot="slider-thumb"]::before {
+		width: 16px;
+		height: 16px;
+		border: 1px solid var(--mapetite-accent);
+		border-radius: 999px;
+		background: #20140d;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
+		content: "";
+	}
+
+	.mapetite-touch-target-slider [data-slot="slider-thumb"]:hover::before,
+	.mapetite-touch-target-slider [data-slot="slider-thumb"]:focus-visible::before {
+		box-shadow: 0 0 0 4px rgba(213, 154, 104, 0.24);
+	}
+
+	.mapetite-touch-target-switch {
+		position: relative;
+		display: inline-grid;
+		width: 44px;
+		height: 44px;
+		place-items: center;
+		border-color: transparent;
+		background: transparent;
+		box-shadow: none;
+	}
+
+	.mapetite-touch-target-switch[data-state="checked"],
+	.mapetite-touch-target-switch[data-state="unchecked"] {
+		background: transparent;
+	}
+
+	.mapetite-touch-target-switch::before {
+		position: absolute;
+		width: 32px;
+		height: 18.4px;
+		border: 1px solid rgba(255, 236, 220, 0.12);
+		border-radius: 999px;
+		background: rgba(255, 248, 242, 0.08);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.12);
+		content: "";
+	}
+
+	.mapetite-touch-target-switch[data-state="checked"]::before {
+		background: var(--mapetite-accent);
+	}
+
+	.mapetite-touch-target-switch [data-slot="switch-thumb"] {
+		position: absolute;
+		left: 6px;
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-surface-actions {
@@ -2684,7 +2756,7 @@ code {
 		}
 
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-command-go {
-			min-height: 40px;
+			min-height: 44px;
 			padding-inline: var(--mapetite-adaptive-space-3);
 		}
 
