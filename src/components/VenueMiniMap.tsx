@@ -174,7 +174,7 @@ export function VenueMiniMap({ restaurant }: VenueMiniMapProps) {
 	}
 
 	return (
-		<div className="mapetite-map-frame relative overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.035),rgba(255,248,242,0.01)),linear-gradient(145deg,rgba(183,177,118,0.12),rgba(16,13,10,0.42))]">
+		<div className="mapetite-map-frame mapetite-venue-mini-map relative overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.035),rgba(255,248,242,0.01)),linear-gradient(145deg,rgba(183,177,118,0.12),rgba(16,13,10,0.42))]">
 			<div ref={mapContainerRef} className="h-[280px] w-full md:h-[320px]" />
 			{!isMapReady && !mapError ? (
 				<div className="pointer-events-none absolute inset-0 grid place-items-center bg-[rgba(16,14,12,0.54)] text-sm text-[var(--mapetite-text-soft)] backdrop-blur-[1px]">

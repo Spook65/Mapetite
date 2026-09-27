@@ -495,7 +495,7 @@ export function SearchResultsMap({
 							fitMapToCurrentResults();
 							fittedViewportSignatureRef.current = viewportSignature;
 						}}
-						className="rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+						className="min-h-11 rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 					>
 						<MapPinned className="mr-2 size-4" />
 						Show all
@@ -504,7 +504,7 @@ export function SearchResultsMap({
 						type="button"
 						variant="ghost"
 						onClick={onClose}
-						className="rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+						className="min-h-11 rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
 					>
 						<X className="mr-2 size-4" />
 						Hide map

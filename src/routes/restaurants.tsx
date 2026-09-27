@@ -2600,7 +2600,7 @@ function RestaurantSearchPage() {
 											onClick={() => setIsMapOpen((current) => !current)}
 											aria-pressed={isMapOpen}
 											className={cn(
-												"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
+												"mapetite-quiet-button h-11 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
 												isMapOpen
 													? "border-[rgba(213,154,104,0.34)] bg-[rgba(213,154,104,0.12)] text-[var(--mapetite-text)]"
 													: null,

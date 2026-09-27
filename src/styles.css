@@ -3319,3 +3319,114 @@ body:has(.mapetite-adaptive-shell-preview)
 		margin-top: 3px;
 	}
 }
+
+/* Keep map artwork compact while the focusable controls own touch-sized targets. */
+.mapetite-map-frame .mapetite-map-marker,
+.mapetite-map-frame .mapetite-map-search-area-marker {
+	padding: 0;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+}
+
+.mapetite-map-frame .mapetite-map-marker {
+	width: 28px;
+	height: 28px;
+}
+
+.mapetite-map-frame.mapetite-venue-mini-map .mapetite-map-marker,
+.mapetite-map-frame .mapetite-map-search-area-marker {
+	width: 44px;
+	height: 44px;
+}
+
+.mapetite-map-frame .mapetite-map-marker::before,
+.mapetite-map-frame .mapetite-map-search-area-marker::before {
+	content: "";
+	position: absolute;
+	left: 50%;
+	bottom: 0;
+	width: 18px;
+	height: 18px;
+	border: 2px solid rgba(255, 248, 242, 0.9);
+	background:
+		radial-gradient(circle, rgba(16, 13, 10, 0.78) 0 3px, transparent 3.2px),
+		var(--mapetite-accent);
+	box-shadow: 0 10px 22px rgba(0, 0, 0, 0.32);
+	transform: translateX(-50%) rotate(-45deg);
+	transition:
+		transform 160ms ease,
+		box-shadow 160ms ease,
+		background 160ms ease;
+}
+
+.mapetite-map-frame .mapetite-map-marker::before {
+	border-radius: 999px 999px 999px 3px;
+}
+
+.mapetite-map-frame .mapetite-map-marker::after,
+.mapetite-map-frame .mapetite-map-search-area-marker::after {
+	content: none;
+}
+
+.mapetite-map-frame .mapetite-map-marker:hover::before,
+.mapetite-map-frame .mapetite-map-marker:focus-visible::before,
+.mapetite-map-frame .mapetite-map-marker.is-hovered::before {
+	box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4);
+	transform: translateX(-50%) rotate(-45deg) scale(1.12);
+}
+
+.mapetite-map-frame .mapetite-map-marker.is-selected::before {
+	width: 22px;
+	height: 22px;
+	background:
+		radial-gradient(circle, rgba(16, 13, 10, 0.78) 0 3px, transparent 3.2px),
+		#ffd1a3;
+	box-shadow:
+		0 0 0 5px rgba(213, 154, 104, 0.22),
+		0 14px 30px rgba(0, 0, 0, 0.38);
+}
+
+.mapetite-map-frame .mapetite-map-search-area-marker::before {
+	bottom: 13px;
+	border-color: rgba(255, 248, 242, 0.94);
+	border-radius: 6px;
+	background:
+		radial-gradient(circle, rgba(16, 13, 10, 0.54) 0 2px, transparent 2.2px),
+		rgba(183, 177, 118, 0.9);
+	box-shadow:
+		0 0 0 6px rgba(183, 177, 118, 0.16),
+		0 12px 26px rgba(0, 0, 0, 0.28);
+	transform: translateX(-50%) rotate(45deg);
+}
+
+.mapetite-map-frame .mapetite-map-search-area-marker:hover::before,
+.mapetite-map-frame .mapetite-map-search-area-marker:focus-visible::before {
+	box-shadow:
+		0 0 0 7px rgba(183, 177, 118, 0.2),
+		0 14px 30px rgba(0, 0, 0, 0.34);
+}
+
+.mapetite-map-frame .maplibregl-ctrl-group button,
+.mapetite-map-frame .maplibregl-ctrl-attrib-button {
+	width: 44px;
+	height: 44px;
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-content {
+	padding-right: 44px;
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-close-button {
+	width: 44px;
+	height: 44px;
+	padding: 0;
+	line-height: 44px;
+}
+
+.mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .mapetite-map-popup a {
+	display: inline-flex;
+	min-height: 44px;
+	align-items: center;
+}
