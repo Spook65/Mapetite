@@ -1086,8 +1086,8 @@ code {
 	.mapetite-adaptive-scope .mapetite-adaptive-result-action {
 		width: 100%;
 		min-width: 0;
-		min-height: 40px;
-		height: 40px;
+		min-height: 44px;
+		height: 44px;
 		padding-inline: var(--mapetite-adaptive-space-3);
 		border-radius: var(--mapetite-adaptive-radius-control);
 		font-size: 0.875rem;
@@ -2147,8 +2147,8 @@ code {
 	}
 
 	.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-mobile-actions :is(a, button) {
-		height: 40px;
-		min-height: 40px;
+		height: 44px;
+		min-height: 44px;
 		border-radius: var(--mapetite-adaptive-radius-control);
 		font-size: 0.8rem;
 	}
@@ -2818,8 +2818,8 @@ code {
 			.mapetite-adaptive-shell-results-list
 			.mapetite-adaptive-result-action {
 			grid-column: auto;
-			height: 40px;
-			min-height: 40px;
+			height: 44px;
+			min-height: 44px;
 			padding-inline: var(--mapetite-adaptive-space-2);
 			font-size: 0.78rem;
 		}

@@ -3481,7 +3481,7 @@ function RestaurantSearchPage() {
 														onClick={() => toggleFavorite(restaurant.id)}
 														disabled={isTogglingFavorite}
 														className={cn(
-															"mapetite-quiet-button h-10 w-full justify-center gap-1.5 rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5",
+															"mapetite-quiet-button h-11 w-full justify-center gap-1.5 rounded-full px-4 text-[14px] shadow-none min-[981px]:h-10 min-[981px]:w-[118px] min-[981px]:px-3.5",
 															isAdaptiveCardPreview &&
 																"mapetite-adaptive-button mapetite-adaptive-result-action",
 															favoriteIds.has(restaurant.id) &&
@@ -3504,7 +3504,7 @@ function RestaurantSearchPage() {
 																asChild
 																variant="outline"
 																className={cn(
-																	"mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5",
+																	"mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 text-[14px] shadow-none min-[981px]:h-10 min-[981px]:w-[118px] min-[981px]:px-3.5",
 																	isAdaptiveCardPreview &&
 																		"mapetite-adaptive-button mapetite-adaptive-result-action",
 																)}
@@ -3522,7 +3522,7 @@ function RestaurantSearchPage() {
 																disabled
 																variant="outline"
 																className={cn(
-																	"mapetite-quiet-button h-10 w-full justify-center rounded-full px-4 text-[14px] opacity-60 shadow-none min-[981px]:w-[118px] min-[981px]:px-3.5",
+																	"mapetite-quiet-button h-11 w-full justify-center rounded-full px-4 text-[14px] opacity-60 shadow-none min-[981px]:h-10 min-[981px]:w-[118px] min-[981px]:px-3.5",
 																	isAdaptiveCardPreview &&
 																		"mapetite-adaptive-button mapetite-adaptive-result-action",
 																)}
@@ -4191,7 +4191,7 @@ function RestaurantSearchPage() {
 								<button
 									type="button"
 									onClick={() => setSelectedRestaurantId(null)}
-									className="inline-flex size-9 shrink-0 items-center justify-center rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+									className="inline-flex size-11 shrink-0 items-center justify-center rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
 									aria-label="Dismiss selected restaurant preview"
 								>
 									<X className="size-4" />
