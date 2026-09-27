@@ -485,7 +485,7 @@ function RestaurantDetailPage() {
 							<button
 								type="button"
 								onClick={() => navigate({ to: "/restaurants" })}
-								className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+								className="inline-flex min-h-11 items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 							>
 								<ArrowLeft className="size-4" />
 								Back to shortlist
@@ -537,14 +537,14 @@ function RestaurantDetailPage() {
 
 									<div className="flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:flex-wrap sm:justify-center">
 										{directionsUrl ? (
-											<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
+											<Button asChild className="mapetite-accent-button min-h-11 rounded-[10px] px-5 min-[1180px]:min-h-9">
 												<a href={directionsUrl} target="_blank" rel="noreferrer">
 													<Navigation className="mr-2 size-4" />
 													Open directions
 												</a>
 											</Button>
 										) : (
-											<Button disabled className="mapetite-accent-button rounded-[10px] px-5 opacity-60">
+											<Button disabled className="mapetite-accent-button min-h-11 rounded-[10px] px-5 opacity-60 min-[1180px]:min-h-9">
 												<Navigation className="mr-2 size-4" />
 												Directions unavailable
 											</Button>
@@ -554,7 +554,7 @@ function RestaurantDetailPage() {
 											variant="outline"
 											onClick={() => toggleFavorite(restaurant.id)}
 											disabled={isTogglingFavorite}
-											className="mapetite-quiet-button rounded-[10px] px-5"
+											className="mapetite-quiet-button min-h-11 rounded-[10px] px-5 min-[1180px]:min-h-9"
 										>
 											<Heart
 												className={cn("mr-2 size-4", isFavorite && "fill-current")}
@@ -565,7 +565,7 @@ function RestaurantDetailPage() {
 											type="button"
 											variant="ghost"
 											onClick={() => navigate({ to: "/restaurants" })}
-											className="rounded-[10px] border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-4 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)]"
+											className="min-h-11 rounded-[10px] border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-4 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)] min-[1180px]:min-h-9"
 										>
 											<ArrowLeft className="mr-2 size-4" />
 											Back to results
@@ -1047,13 +1047,13 @@ function RestaurantDetailPage() {
 													))}
 											</div>
 											{directionsUrl ? (
-												<Button asChild className="mapetite-quiet-button w-fit rounded-[10px] px-5">
+												<Button asChild className="mapetite-quiet-button min-h-11 w-fit rounded-[10px] px-5 min-[1180px]:min-h-9">
 													<a href={directionsUrl} target="_blank" rel="noreferrer">
 														Open directions
 													</a>
 												</Button>
 											) : (
-												<Button disabled className="mapetite-quiet-button w-fit rounded-[10px] px-5 opacity-60">
+												<Button disabled className="mapetite-quiet-button min-h-11 w-fit rounded-[10px] px-5 opacity-60 min-[1180px]:min-h-9">
 													Directions unavailable
 												</Button>
 											)}
@@ -1072,7 +1072,7 @@ function RestaurantDetailPage() {
 													href={openStreetMapUrl}
 													target="_blank"
 													rel="noreferrer"
-													className="text-sm font-semibold text-[var(--mapetite-accent-strong)] underline underline-offset-4 transition hover:text-[var(--mapetite-text)]"
+													className="inline-flex min-h-11 items-center text-sm font-semibold text-[var(--mapetite-accent-strong)] underline underline-offset-4 transition hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 												>
 													Open in OpenStreetMap
 												</a>
@@ -1131,14 +1131,14 @@ function RestaurantDetailPage() {
 
 									<div className="grid gap-3">
 										{directionsUrl ? (
-											<Button asChild size="lg" className="mapetite-accent-button rounded-[10px] px-5">
+											<Button asChild size="lg" className="mapetite-accent-button min-h-11 rounded-[10px] px-5 min-[1180px]:min-h-10">
 												<a href={directionsUrl} target="_blank" rel="noreferrer">
 													<Navigation className="mr-2 size-4" />
 													Open directions
 												</a>
 											</Button>
 										) : (
-											<Button disabled size="lg" className="mapetite-accent-button rounded-[10px] px-5 opacity-60">
+											<Button disabled size="lg" className="mapetite-accent-button min-h-11 rounded-[10px] px-5 opacity-60 min-[1180px]:min-h-10">
 												<Navigation className="mr-2 size-4" />
 												Directions unavailable
 											</Button>
@@ -1148,7 +1148,7 @@ function RestaurantDetailPage() {
 											variant="outline"
 											onClick={() => toggleFavorite(restaurant.id)}
 											disabled={isTogglingFavorite}
-											className="mapetite-quiet-button rounded-[10px] px-5"
+											className="mapetite-quiet-button min-h-11 rounded-[10px] px-5 min-[1180px]:min-h-9"
 										>
 											<Heart
 												className={cn("mr-2 size-4", isFavorite && "fill-current")}
@@ -1159,7 +1159,7 @@ function RestaurantDetailPage() {
 											type="button"
 											variant="ghost"
 											onClick={() => navigate({ to: "/restaurants" })}
-											className="rounded-[10px] border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-4 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)]"
+											className="min-h-11 rounded-[10px] border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-4 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)] min-[1180px]:min-h-9"
 										>
 											<ArrowLeft className="mr-2 size-4" />
 											Back to results
@@ -1177,7 +1177,7 @@ function RestaurantDetailPage() {
 														href={restaurant.menuUrl}
 														target="_blank"
 														rel="noreferrer"
-														className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+														className="inline-flex min-h-11 items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 													>
 														<ExternalLink className="size-4" />
 														View menu
@@ -1188,7 +1188,7 @@ function RestaurantDetailPage() {
 														href={restaurant.website}
 														target="_blank"
 														rel="noreferrer"
-														className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+														className="inline-flex min-h-11 items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 													>
 														<ExternalLink className="size-4" />
 														Visit website
@@ -1197,7 +1197,7 @@ function RestaurantDetailPage() {
 												{hasPhone ? (
 													<a
 														href={`tel:${restaurant.phone}`}
-														className="inline-flex items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)]"
+														className="inline-flex min-h-11 items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 													>
 														<Phone className="size-4" />
 														Call restaurant
@@ -1220,7 +1220,7 @@ function RestaurantDetailPage() {
 									keeping the route back to the shortlist clear.
 								</p>
 							</div>
-							<Button asChild className="mapetite-accent-button rounded-[10px] px-5">
+							<Button asChild className="mapetite-accent-button min-h-11 rounded-[10px] px-5 min-[1180px]:min-h-9">
 								<Link to="/restaurants">Back to search results</Link>
 							</Button>
 						</section>

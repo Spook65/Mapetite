@@ -233,7 +233,10 @@ export function Layout({ children }: LayoutProps) {
 					<div className="mapetite-layout-header-container mapetite-container px-4 pt-4 pb-6 md:px-6 md:pt-8 md:pb-8">
 						<div className="mapetite-layout-app-bar mapetite-panel-soft flex items-center justify-between gap-4 px-5 py-3 backdrop-blur md:grid md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center">
 							<div className="flex min-w-0 items-center gap-6 md:justify-self-start">
-								<Link to="/" className="flex min-w-0 items-center gap-3">
+								<Link
+									to="/"
+									className="flex min-h-11 min-w-0 items-center gap-3 min-[1180px]:min-h-0"
+								>
 									<div className="mapetite-layout-brand-mark flex size-9 items-center justify-center rounded-[10px] border border-[rgba(213,154,104,0.24)] bg-[linear-gradient(180deg,rgba(213,154,104,0.2),rgba(180,108,67,0.08))] text-[var(--mapetite-text)]">
 										<Utensils className="size-4" />
 									</div>
@@ -265,7 +268,7 @@ export function Layout({ children }: LayoutProps) {
 													: undefined
 											}
 											className={cn(
-												"text-sm transition-colors",
+												"inline-flex min-h-11 items-center text-sm transition-colors min-[1180px]:min-h-0",
 												isActive
 													? "text-[var(--mapetite-text)]"
 													: "text-[var(--mapetite-text-soft)] hover:text-[var(--mapetite-text)]",
@@ -281,10 +284,10 @@ export function Layout({ children }: LayoutProps) {
 								<div className="hidden items-center gap-2 md:flex">
 								{isAuthenticated ? (
 									<>
-										<Link
-											to="/account"
-											className={cn(
-												"inline-flex items-center gap-2 rounded-[10px] border px-2 py-1.5 text-sm transition-colors",
+									<Link
+										to="/account"
+										className={cn(
+												"inline-flex min-h-11 items-center gap-2 rounded-[10px] border px-2 py-1.5 text-sm transition-colors min-[1180px]:min-h-0",
 												location.pathname.startsWith("/account")
 													? "border-[rgba(213,154,104,0.28)] bg-[rgba(213,154,104,0.1)] text-[var(--mapetite-text)]"
 													: "border-transparent text-[var(--mapetite-text-soft)] hover:border-[rgba(255,236,220,0.1)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]",
@@ -300,7 +303,7 @@ export function Layout({ children }: LayoutProps) {
 											onClick={logout}
 											variant="outline"
 											size="sm"
-											className="mapetite-quiet-button rounded-[10px]"
+											className="mapetite-quiet-button min-h-11 rounded-[10px] min-[1180px]:min-h-8"
 										>
 											<LogOut className="mr-2 size-4" />
 											Log Out
@@ -312,14 +315,14 @@ export function Layout({ children }: LayoutProps) {
 											onClick={() => setIsLogInOpen(true)}
 											size="sm"
 											variant="ghost"
-											className="rounded-[10px] text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
+											className="min-h-11 rounded-[10px] text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)] min-[1180px]:min-h-8"
 										>
 											Log In
 										</Button>
 										<Button
 											onClick={() => setIsSignUpOpen(true)}
 											size="sm"
-											className="mapetite-accent-button rounded-[10px] px-4 text-[#20140d]"
+											className="mapetite-accent-button min-h-11 rounded-[10px] px-4 text-[#20140d] min-[1180px]:min-h-8"
 										>
 											Sign Up
 										</Button>

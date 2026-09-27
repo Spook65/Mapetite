@@ -450,25 +450,25 @@ function LandingPage() {
 					<div className="hidden min-w-0 items-center gap-3 text-sm text-[var(--mapetite-text-soft)] lg:flex xl:gap-5">
 						<a
 							href="#discover"
-							className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]"
+							className="inline-flex min-h-11 items-center whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 						>
 							Discover
 						</a>
 						<a
 							href="#search"
-							className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]"
+							className="inline-flex min-h-11 items-center whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 						>
 							Preview
 						</a>
 						<a
 							href="#experience"
-							className="hidden whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)] xl:inline"
+							className="min-h-11 items-center whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0 xl:inline-flex"
 						>
 							How it works
 						</a>
 						<a
 							href="#city-starts"
-							className="whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)]"
+							className="inline-flex min-h-11 items-center whitespace-nowrap transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 						>
 							Start
 						</a>
@@ -478,7 +478,7 @@ function LandingPage() {
 							<>
 								<Link
 									to="/account"
-									className="inline-flex items-center gap-2 rounded-[10px] border border-transparent px-2 py-1.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(255,236,220,0.1)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+									className="inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-transparent px-2 py-1.5 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(255,236,220,0.1)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 									aria-label="Open account"
 								>
 									<span className="hidden xl:inline">{firstName}</span>
@@ -490,7 +490,7 @@ function LandingPage() {
 									onClick={logout}
 									variant="outline"
 									size="sm"
-									className="mapetite-quiet-button rounded-[10px] whitespace-nowrap"
+									className="mapetite-quiet-button min-h-11 rounded-[10px] whitespace-nowrap min-[1180px]:min-h-8"
 								>
 									<LogOut className="mr-2 size-4" />
 									Log Out
@@ -502,14 +502,14 @@ function LandingPage() {
 									onClick={() => setIsLogInOpen(true)}
 									size="sm"
 									variant="ghost"
-									className="rounded-[10px] whitespace-nowrap text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)]"
+									className="min-h-11 rounded-[10px] whitespace-nowrap text-[var(--mapetite-text-soft)] hover:bg-transparent hover:text-[var(--mapetite-text)] min-[1180px]:min-h-8"
 								>
 									Log In
 								</Button>
 								<Button
 									onClick={() => setIsSignUpOpen(true)}
 									size="sm"
-									className="mapetite-accent-button rounded-[10px] px-4 whitespace-nowrap text-[#20140d]"
+									className="mapetite-accent-button min-h-11 rounded-[10px] px-4 whitespace-nowrap text-[#20140d] min-[1180px]:min-h-8"
 								>
 									Sign Up
 								</Button>
@@ -518,7 +518,7 @@ function LandingPage() {
 						<Button
 							asChild
 							size="sm"
-							className="mapetite-accent-button rounded-[10px] px-4 text-sm whitespace-nowrap"
+							className="mapetite-accent-button min-h-11 rounded-[10px] px-4 text-sm whitespace-nowrap min-[1180px]:min-h-8"
 						>
 							<Link to="/restaurants">Open search</Link>
 						</Button>
@@ -544,7 +544,7 @@ function LandingPage() {
 							<Button
 								asChild
 								size="lg"
-								className="mapetite-accent-button w-full max-w-[340px] rounded-[10px] px-7 sm:w-auto"
+								className="mapetite-accent-button min-h-11 w-full max-w-[340px] rounded-[10px] px-7 sm:w-auto min-[1180px]:min-h-10"
 							>
 								<Link to="/restaurants">Search restaurants</Link>
 							</Button>
@@ -552,7 +552,7 @@ function LandingPage() {
 								asChild
 								variant="outline"
 								size="lg"
-								className="mapetite-quiet-button w-full max-w-[340px] rounded-[10px] px-7 sm:w-auto"
+								className="mapetite-quiet-button min-h-11 w-full max-w-[340px] rounded-[10px] px-7 sm:w-auto min-[1180px]:min-h-10"
 							>
 								<a href="#search">Preview the flow</a>
 							</Button>
@@ -582,7 +582,7 @@ function LandingPage() {
 											onClick={() => handleSelectCity(city.key)}
 											aria-pressed={selectedCityKey === city.key}
 											className={cn(
-												"rounded-full border px-4 py-2 text-sm font-medium transition-colors",
+												"min-h-11 rounded-full border px-4 py-2 text-sm font-medium transition-colors min-[1180px]:min-h-0",
 												selectedCityKey === city.key
 													? "border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]"
 													: "border-[var(--mapetite-border)] bg-white/[0.03] text-[var(--mapetite-text-soft)] hover:bg-white/[0.06] hover:text-[var(--mapetite-text)]",
@@ -596,7 +596,7 @@ function LandingPage() {
 									type="button"
 									size="lg"
 									onClick={() => handleCityStart(selectedCity.name)}
-									className="mapetite-accent-button mx-auto w-full max-w-[340px] rounded-[10px] px-6 lg:mx-0 lg:w-auto"
+									className="mapetite-accent-button mx-auto min-h-11 w-full max-w-[340px] rounded-[10px] px-6 lg:mx-0 lg:w-auto min-[1180px]:min-h-10"
 								>
 									Search {selectedCity.name}
 									<ArrowRight className="ml-2 size-4" />
@@ -730,7 +730,7 @@ function LandingPage() {
 							<Button
 								asChild
 								size="lg"
-								className="mapetite-accent-button rounded-[10px] px-6"
+								className="mapetite-accent-button min-h-11 rounded-[10px] px-6 min-[1180px]:min-h-10"
 							>
 								<Link to="/restaurants">
 									Start searching

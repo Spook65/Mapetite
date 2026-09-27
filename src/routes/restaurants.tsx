@@ -2292,10 +2292,14 @@ function RestaurantSearchPage() {
 										>
 											·
 										</span>
-										<button
-											type="button"
-											onClick={handleClearLocation}
-											className="font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:text-[var(--mapetite-text)]"
+									<button
+										type="button"
+										onClick={handleClearLocation}
+										className={cn(
+											"font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:text-[var(--mapetite-text)]",
+											!isAdaptiveShellPreview &&
+												"inline-flex min-h-11 min-w-11 items-center min-[1180px]:min-h-0 min-[1180px]:min-w-0",
+										)}
 										>
 											Clear all
 										</button>
@@ -2413,7 +2417,7 @@ function RestaurantSearchPage() {
 								<button
 									type="button"
 									onClick={handleClearRecentSearches}
-									className="w-full max-w-full whitespace-normal rounded-full border border-[rgba(255,236,220,0.1)] px-3 py-2 text-xs font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:text-[var(--mapetite-text)] sm:w-auto sm:py-1.5"
+									className="min-h-11 w-full max-w-full whitespace-normal rounded-full border border-[rgba(255,236,220,0.1)] px-3 py-2 text-xs font-medium text-[rgba(213,154,104,0.9)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:text-[var(--mapetite-text)] sm:w-auto sm:py-1.5 min-[1180px]:min-h-0"
 								>
 									Clear recent searches
 								</button>
@@ -2427,7 +2431,7 @@ function RestaurantSearchPage() {
 									type="button"
 									onClick={() => handleRunSearchChip(search)}
 									disabled={isSearching}
-										className="inline-flex w-full min-w-0 max-w-full items-center justify-between gap-2 overflow-hidden rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3.5 py-2 text-left text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+										className="inline-flex min-h-11 w-full min-w-0 max-w-full items-center justify-between gap-2 overflow-hidden rounded-full border border-[rgba(255,236,220,0.12)] bg-[rgba(255,248,242,0.03)] px-3.5 py-2 text-left text-sm text-[var(--mapetite-text-soft)] transition-colors hover:border-[rgba(213,154,104,0.26)] hover:bg-[rgba(213,154,104,0.08)] hover:text-[var(--mapetite-text)] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto min-[1180px]:min-h-0"
 									>
 										<span className="block min-w-0 flex-1 truncate">{search.label}</span>
 										{formatRecentSearchResultCount(search.resultCount) ? (
@@ -2454,7 +2458,7 @@ function RestaurantSearchPage() {
 									variant="outline"
 									onClick={handleRestoreLastSearch}
 									disabled={isSearching}
-										className="mapetite-quiet-button h-10 w-full max-w-full rounded-full px-4 text-sm shadow-none sm:w-auto"
+										className="mapetite-quiet-button h-10 min-h-11 w-full max-w-full rounded-full px-4 text-sm shadow-none sm:w-auto min-[1180px]:min-h-10"
 								>
 									{isSearching && restoredSearchLabel
 										? "Refreshing..."
@@ -2619,7 +2623,11 @@ function RestaurantSearchPage() {
 											disabled={isSearching}
 											title="Refreshes current provider data. Results may stay the same."
 											aria-label="Refresh current search results"
-											className="mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none"
+										className={cn(
+											"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
+											!isAdaptiveShellPreview &&
+												"min-h-11 min-[1180px]:min-h-10",
+										)}
 										>
 											<RefreshCw className={cn("size-4", isSearching && "animate-spin")} />
 											{isSearching ? "Refreshing..." : "Refresh current search"}

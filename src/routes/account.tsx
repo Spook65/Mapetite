@@ -77,7 +77,7 @@ function AccountPage() {
 										<Button
 											type="button"
 											onClick={() => setIsLogInOpen(true)}
-											className="mapetite-accent-button rounded-full px-6 text-[#20140d]"
+											className="mapetite-accent-button min-h-11 rounded-full px-6 text-[#20140d] min-[1180px]:min-h-9"
 										>
 											Log In
 										</Button>
@@ -85,14 +85,14 @@ function AccountPage() {
 											type="button"
 											onClick={() => setIsSignUpOpen(true)}
 											variant="outline"
-											className="mapetite-quiet-button rounded-full px-6 shadow-none"
+											className="mapetite-quiet-button min-h-11 rounded-full px-6 shadow-none min-[1180px]:min-h-9"
 										>
 											Sign Up
 										</Button>
 										<Button
 											asChild
 											variant="ghost"
-											className="rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-5 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)]"
+											className="min-h-11 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-5 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)] min-[1180px]:min-h-9"
 										>
 											<Link to="/restaurants">
 												<Search className="mr-2 size-4" />
