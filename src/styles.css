@@ -2799,6 +2799,50 @@ code {
 
 		.mapetite-adaptive-shell-preview
 			.mapetite-adaptive-shell-results-list
+			.mapetite-adaptive-result-copy
+			> :first-child {
+			grid-template-columns: minmax(0, 1fr);
+			gap: var(--mapetite-adaptive-space-1);
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-results-list
+			.mapetite-adaptive-result-heading {
+			display: -webkit-box;
+			white-space: normal;
+			text-overflow: clip;
+			-webkit-box-orient: vertical;
+			-webkit-line-clamp: 2;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-results-list
+			.mapetite-adaptive-result-meta {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr);
+			gap: 0;
+			white-space: normal;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-results-list
+			.mapetite-adaptive-result-meta
+			> span {
+			display: block;
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-results-list
+			.mapetite-adaptive-result-rating {
+			justify-self: start;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-results-list
 			.mapetite-adaptive-result-summary {
 			min-height: 2rem;
 			font-size: 0.78rem;
