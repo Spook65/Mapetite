@@ -52,7 +52,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="gap-0 overflow-hidden border-[rgba(255,236,220,0.14)] bg-[rgba(28,22,18,0.96)] p-0 text-[var(--mapetite-text)] shadow-[0_24px_60px_rgba(0,0,0,0.34)] backdrop-blur sm:max-w-md">
+			<DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden border-[rgba(255,236,220,0.14)] bg-[rgba(28,22,18,0.96)] p-0 text-[var(--mapetite-text)] shadow-[0_24px_60px_rgba(0,0,0,0.34)] backdrop-blur sm:max-w-md">
 				<DialogHeader className="gap-3 border-b border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(213,154,104,0.12),rgba(213,154,104,0.02))] px-6 py-6 text-left">
 					<DialogTitle className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 						Create Account
@@ -63,7 +63,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 				</DialogHeader>
 
 				{showSuccess ? (
-					<div className="px-6 py-8 text-center">
+					<div className="min-h-0 overflow-y-auto overscroll-contain px-6 py-8 text-center">
 						<div className="mb-4 flex justify-center">
 							<div className="flex h-16 w-16 items-center justify-center rounded-[14px] border border-[rgba(255,236,220,0.12)] bg-white/[0.05]">
 								<svg
@@ -92,7 +92,10 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 						</p>
 					</div>
 				) : (
-					<form onSubmit={handleSubmit} className="space-y-5 px-6 py-6">
+					<form
+						onSubmit={handleSubmit}
+						className="min-h-0 space-y-5 overflow-y-auto overscroll-contain px-6 py-6"
+					>
 						<div className="space-y-2">
 							<Label
 								htmlFor="name"
