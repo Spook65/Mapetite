@@ -2638,6 +2638,7 @@ code {
 			right: auto;
 			left: 50%;
 			width: min(680px, calc(100vw - 32px));
+			max-height: min(70dvh, calc(100dvh - 204px), 680px);
 			transform: translateX(-50%);
 		}
 
