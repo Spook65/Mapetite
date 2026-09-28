@@ -96,7 +96,7 @@ import {
 // Define search params schema for the route
 type RestaurantsSearch = {
 	city?: string;
-	ui?: "adaptive-card" | "adaptive-shell";
+	ui?: "adaptive-card" | "adaptive-shell" | "installed-shell";
 };
 
 type AdaptiveTransientSurface = "search" | "filters" | null;
@@ -305,7 +305,9 @@ export const Route = createFileRoute("/restaurants")({
 		return {
 			city: typeof search.city === "string" ? search.city : undefined,
 			ui:
-				search.ui === "adaptive-card" || search.ui === "adaptive-shell"
+				search.ui === "adaptive-card" ||
+				search.ui === "adaptive-shell" ||
+				search.ui === "installed-shell"
 					? search.ui
 					: undefined,
 		};
@@ -614,7 +616,8 @@ function isExpectedLocationError(error: unknown) {
 
 function RestaurantSearchPage() {
 	const { city: searchCity, ui } = Route.useSearch();
-	const isAdaptiveShellPreview = ui === "adaptive-shell";
+	const isInstalledShellPreview = ui === "installed-shell";
+	const isAdaptiveShellPreview = ui === "adaptive-shell" || isInstalledShellPreview;
 	const isAdaptiveCardPreview = ui === "adaptive-card" || isAdaptiveShellPreview;
 
 	// Global state from Zustand store
@@ -3485,10 +3488,15 @@ function RestaurantSearchPage() {
 																"mapetite-adaptive-button mapetite-adaptive-result-action is-primary",
 														)}
 													>
-														<Link
-															to="/restaurants/$restaurantId"
-															params={{ restaurantId: restaurant.id }}
-														>
+												<Link
+													to="/restaurants/$restaurantId"
+													params={{ restaurantId: restaurant.id }}
+													search={
+														isInstalledShellPreview
+															? { ui: "installed-shell" }
+															: undefined
+													}
+												>
 															View details
 														</Link>
 													</Button>
@@ -3868,10 +3876,15 @@ function RestaurantSearchPage() {
 													asChild
 													className="mapetite-accent-button h-[46px] w-full justify-center rounded-[10px] px-5 text-[15px] font-semibold text-[#20140d] shadow-none sm:w-auto"
 												>
-													<Link
-														to="/restaurants/$restaurantId"
-														params={{ restaurantId: selectedRestaurant.id }}
-													>
+											<Link
+												to="/restaurants/$restaurantId"
+												params={{ restaurantId: selectedRestaurant.id }}
+												search={
+													isInstalledShellPreview
+														? { ui: "installed-shell" }
+														: undefined
+												}
+											>
 														View details
 													</Link>
 												</Button>
@@ -4239,6 +4252,11 @@ function RestaurantSearchPage() {
 									<Link
 										to="/restaurants/$restaurantId"
 										params={{ restaurantId: selectedRestaurant.id }}
+										search={
+											isInstalledShellPreview
+												? { ui: "installed-shell" }
+												: undefined
+										}
 									>
 										View details
 									</Link>

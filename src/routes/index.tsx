@@ -13,8 +13,18 @@ import {
 import { useAuthState } from "@/hooks/use-auth-api";
 import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
 import { warmRestaurantsApiHealth } from "@/lib/api/restaurants";
+import {
+	isInstalledShellSearch,
+	INSTALLED_SHELL_UI,
+} from "@/lib/installed-shell";
 import { cn } from "@/lib/utils";
-import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import {
+	Link,
+	Navigate,
+	createFileRoute,
+	useLocation,
+	useNavigate,
+} from "@tanstack/react-router";
 import {
 	ArrowRight,
 	Home,
@@ -179,6 +189,8 @@ const howItWorks = [
 
 function LandingPage() {
 	const navigate = useNavigate();
+	const location = useLocation();
+	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
 	const [selectedCityKey, setSelectedCityKey] =
 		useState<(typeof cityStarts)[number]["key"]>("tokyo");
 	const [selectedRestaurantIndex, setSelectedRestaurantIndex] = useState(0);
@@ -189,8 +201,9 @@ function LandingPage() {
 	const mobileMenuTriggerRef = useRef<HTMLButtonElement>(null);
 
 	useEffect(() => {
+		if (isInstalledShellPreview) return;
 		warmRestaurantsApiHealth();
-	}, []);
+	}, [isInstalledShellPreview]);
 	const [isLogInOpen, setIsLogInOpen] = useState(false);
 	const { isAuthenticated, profile, logout } = useAuthState();
 
@@ -234,13 +247,24 @@ function LandingPage() {
 	};
 
 	useEffect(() => {
+		if (isInstalledShellPreview) return;
 		const desktopMedia = window.matchMedia("(min-width: 768px)");
 		const closeAtDesktop = (event: MediaQueryListEvent) => {
 			if (event.matches) closeMobileMenuForTransition();
 		};
 		desktopMedia.addEventListener("change", closeAtDesktop);
 		return () => desktopMedia.removeEventListener("change", closeAtDesktop);
-	}, []);
+	}, [isInstalledShellPreview]);
+
+	if (isInstalledShellPreview) {
+		return (
+			<Navigate
+				to="/restaurants"
+				search={{ ui: INSTALLED_SHELL_UI }}
+				replace
+			/>
+		);
+	}
 
 	return (
 		<Dialog open={isMobileMenuOpen} onOpenChange={handleMobileMenuOpenChange}>

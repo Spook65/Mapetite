@@ -1,5 +1,6 @@
 import { LogInModal } from "@/components/auth/LogInModal";
 import { SignUpModal } from "@/components/auth/SignUpModal";
+import { InstalledAppShell } from "@/components/InstalledAppShell";
 import { MapetiteFooter } from "@/components/MapetiteFooter";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
+import { isInstalledShellSearch } from "@/lib/installed-shell";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
@@ -67,6 +69,7 @@ export function Layout({ children }: LayoutProps) {
 				: "Search";
 	const isAdaptiveShellPreview =
 		new URLSearchParams(location.searchStr).get("ui") === "adaptive-shell";
+	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
 
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 	const closeMobileMenuForTransition = () => {
@@ -84,13 +87,18 @@ export function Layout({ children }: LayoutProps) {
 	};
 
 	useEffect(() => {
+		if (isInstalledShellPreview) return;
 		const desktopMedia = window.matchMedia("(min-width: 768px)");
 		const closeAtDesktop = (event: MediaQueryListEvent) => {
 			if (event.matches) closeMobileMenuForTransition();
 		};
 		desktopMedia.addEventListener("change", closeAtDesktop);
 		return () => desktopMedia.removeEventListener("change", closeAtDesktop);
-	}, []);
+	}, [isInstalledShellPreview]);
+
+	if (isInstalledShellPreview) {
+		return <InstalledAppShell>{children}</InstalledAppShell>;
+	}
 
 	return (
 		<Dialog open={isMobileMenuOpen} onOpenChange={handleMobileMenuOpenChange}>

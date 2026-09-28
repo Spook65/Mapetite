@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { useFavorites } from "@/hooks/use-favorites";
 import { getAccountInitials } from "@/lib/account-display";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { isInstalledShellSearch } from "@/lib/installed-shell";
+import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { Heart, LogOut, Search, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
 
@@ -14,6 +15,8 @@ export const Route = createFileRoute("/account")({
 });
 
 function AccountPage() {
+	const location = useLocation();
+	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
 	const { isAuthenticated, isLoading, profile, logout } = useAuthState();
 	const [isLogInOpen, setIsLogInOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -94,7 +97,14 @@ function AccountPage() {
 											variant="ghost"
 											className="min-h-11 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-5 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)] min-[1180px]:min-h-9"
 										>
-											<Link to="/restaurants">
+											<Link
+												to="/restaurants"
+												search={
+													isInstalledShellPreview
+														? { ui: "installed-shell" }
+														: undefined
+												}
+											>
 												<Search className="mr-2 size-4" />
 												Search restaurants
 											</Link>
@@ -157,7 +167,14 @@ function AccountPage() {
 												asChild
 												className="mapetite-accent-button rounded-full px-6 text-[#20140d]"
 											>
-												<Link to="/saved">
+												<Link
+													to="/saved"
+													search={
+														isInstalledShellPreview
+															? { ui: "installed-shell" }
+															: undefined
+													}
+												>
 													<Heart className="mr-2 size-4" />
 													View Saved Places
 												</Link>
@@ -167,7 +184,14 @@ function AccountPage() {
 												variant="outline"
 												className="mapetite-quiet-button rounded-full px-6 shadow-none"
 											>
-												<Link to="/restaurants">
+												<Link
+													to="/restaurants"
+													search={
+														isInstalledShellPreview
+															? { ui: "installed-shell" }
+															: undefined
+													}
+												>
 													<Search className="mr-2 size-4" />
 													Search restaurants
 												</Link>

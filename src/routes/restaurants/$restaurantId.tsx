@@ -3,6 +3,10 @@ import { Button } from "@/components/ui/button";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
 import {
+	isInstalledShellSearch,
+	INSTALLED_SHELL_UI,
+} from "@/lib/installed-shell";
+import {
 	buildGoogleMapsDirectionsUrl,
 	buildOpenStreetMapLocationUrl,
 	buildRestaurantAddressLine,
@@ -13,7 +17,12 @@ import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
 import { useRestaurantSearchStore } from "@/store/restaurant-search-store";
 import type { Restaurant } from "@/store/restaurant-search-store";
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import {
+	createFileRoute,
+	Link,
+	useLocation,
+	useNavigate,
+} from "@tanstack/react-router";
 import {
 	ArrowLeft,
 	ExternalLink,
@@ -182,6 +191,15 @@ function RestaurantDetailPage() {
 	const params = Route.useParams();
 	const restaurantId = params.restaurantId as string;
 	const navigate = useNavigate();
+	const location = useLocation();
+	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
+	const navigateToSearch = () =>
+		navigate({
+			to: "/restaurants",
+			search: isInstalledShellPreview
+				? { ui: INSTALLED_SHELL_UI }
+				: undefined,
+		});
 	const restaurants = useRestaurantSearchStore((state) => state.restaurants);
 	const [fetchedRestaurant, setFetchedRestaurant] = useState<Restaurant | null>(
 		null,
@@ -339,7 +357,7 @@ function RestaurantDetailPage() {
 							</p>
 							<div className="mt-8">
 								<Button
-									onClick={() => navigate({ to: "/restaurants" })}
+									onClick={navigateToSearch}
 									className="mapetite-accent-button rounded-[10px] px-6"
 								>
 									<ArrowLeft className="mr-2 size-4" />
@@ -484,7 +502,7 @@ function RestaurantDetailPage() {
 						<div className="flex flex-col items-center justify-center gap-3 text-center md:flex-row md:justify-between md:text-left">
 							<button
 								type="button"
-								onClick={() => navigate({ to: "/restaurants" })}
+							onClick={navigateToSearch}
 								className="inline-flex min-h-11 items-center gap-2 text-sm text-[var(--mapetite-text-soft)] transition-colors hover:text-[var(--mapetite-text)] min-[1180px]:min-h-0"
 							>
 								<ArrowLeft className="size-4" />
@@ -564,7 +582,7 @@ function RestaurantDetailPage() {
 										<Button
 											type="button"
 											variant="ghost"
-											onClick={() => navigate({ to: "/restaurants" })}
+											onClick={navigateToSearch}
 											className="min-h-11 rounded-[10px] border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-4 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)] min-[1180px]:min-h-9"
 										>
 											<ArrowLeft className="mr-2 size-4" />
@@ -1158,7 +1176,7 @@ function RestaurantDetailPage() {
 										<Button
 											type="button"
 											variant="ghost"
-											onClick={() => navigate({ to: "/restaurants" })}
+											onClick={navigateToSearch}
 											className="min-h-11 rounded-[10px] border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-4 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)] min-[1180px]:min-h-9"
 										>
 											<ArrowLeft className="mr-2 size-4" />
@@ -1221,7 +1239,16 @@ function RestaurantDetailPage() {
 								</p>
 							</div>
 							<Button asChild className="mapetite-accent-button min-h-11 rounded-[10px] px-5 min-[1180px]:min-h-9">
-								<Link to="/restaurants">Back to search results</Link>
+								<Link
+									to="/restaurants"
+									search={
+										isInstalledShellPreview
+											? { ui: INSTALLED_SHELL_UI }
+											: undefined
+									}
+								>
+									Back to search results
+								</Link>
 							</Button>
 						</section>
 					</main>

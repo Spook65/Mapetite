@@ -4,6 +4,7 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
+import { isInstalledShellSearch } from "@/lib/installed-shell";
 import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
@@ -11,7 +12,7 @@ import {
 	type Restaurant,
 	useRestaurantSearchStore,
 } from "@/store/restaurant-search-store";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import {
 	ArrowLeft,
 	Clock,
@@ -139,6 +140,8 @@ function getHoursLabel(restaurant: Restaurant) {
 }
 
 function SavedPlacesPage() {
+	const location = useLocation();
+	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
 	const restaurants = useRestaurantSearchStore((state) => state.restaurants);
 	const { isAuthenticated, isLoading: isAuthLoading } = useAuthState();
 	const { data: favoritesData, isLoading: isFavoritesLoading } = useFavorites({
@@ -341,7 +344,14 @@ function SavedPlacesPage() {
 								variant="outline"
 								className="mapetite-quiet-button min-h-11 rounded-full px-5 shadow-none min-[1180px]:min-h-9"
 							>
-								<Link to="/restaurants">
+								<Link
+									to="/restaurants"
+									search={
+										isInstalledShellPreview
+											? { ui: "installed-shell" }
+											: undefined
+									}
+								>
 									<ArrowLeft className="mr-2 size-4" />
 									Back to search
 								</Link>
@@ -397,7 +407,14 @@ function SavedPlacesPage() {
 										variant="ghost"
 										className="min-h-11 rounded-full border border-[rgba(255,236,220,0.1)] bg-white/[0.02] px-5 text-[var(--mapetite-text-soft)] hover:bg-white/[0.05] hover:text-[var(--mapetite-text)] min-[1180px]:min-h-9"
 									>
-										<Link to="/restaurants">
+										<Link
+											to="/restaurants"
+											search={
+												isInstalledShellPreview
+													? { ui: "installed-shell" }
+													: undefined
+											}
+										>
 											<Search className="mr-2 size-4" />
 											Search restaurants
 										</Link>
@@ -423,7 +440,14 @@ function SavedPlacesPage() {
 										asChild
 										className="mapetite-accent-button rounded-full px-6 text-[#20140d]"
 									>
-										<Link to="/restaurants">
+										<Link
+											to="/restaurants"
+											search={
+												isInstalledShellPreview
+													? { ui: "installed-shell" }
+													: undefined
+											}
+										>
 											<Search className="mr-2 size-4" />
 											Search restaurants
 										</Link>
@@ -507,10 +531,15 @@ function SavedPlacesPage() {
 														asChild
 														className="mapetite-accent-button h-10 justify-center rounded-full px-4 text-[#20140d] shadow-none"
 													>
-														<Link
-															to="/restaurants/$restaurantId"
-															params={{ restaurantId: restaurant.id }}
-														>
+													<Link
+														to="/restaurants/$restaurantId"
+														params={{ restaurantId: restaurant.id }}
+														search={
+															isInstalledShellPreview
+																? { ui: "installed-shell" }
+																: undefined
+														}
+													>
 															View details
 														</Link>
 													</Button>
