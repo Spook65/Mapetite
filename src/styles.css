@@ -3332,6 +3332,12 @@ body:has(.mapetite-adaptive-shell-preview)
 		justify-items: start;
 		text-align: left;
 	}
+
+	body:has(.mapetite-adaptive-shell-preview)
+		.mapetite-layout-footer-panel
+		> div {
+		font-size: 12px;
+	}
 }
 
 /* MapLibre's stylesheet loads with the lazy map chunk, so these unlayered
