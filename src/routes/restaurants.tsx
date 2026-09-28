@@ -3608,6 +3608,9 @@ function RestaurantSearchPage() {
 									className={cn(
 										"mapetite-adaptive-shell-map-pane",
 										!isMapOpen && "is-placeholder",
+										selectedRestaurant &&
+											adaptiveTransientSurface === null &&
+											"has-compact-selection",
 									)}
 								>
 									{isMapOpen && displayedRestaurants.length > 0 ? (

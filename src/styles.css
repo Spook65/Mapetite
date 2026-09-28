@@ -2873,6 +2873,84 @@ code {
 			bottom: max(12px, env(safe-area-inset-bottom));
 		}
 
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection:not(.is-placeholder) {
+			position: fixed;
+			z-index: 30;
+			top: calc(55px + max(12px, env(safe-area-inset-top)));
+			right: 28px;
+			bottom: calc(
+				min(50dvh, 324px) + max(24px, calc(12px + env(safe-area-inset-bottom)))
+			);
+			left: 28px;
+			overflow-y: auto;
+			overscroll-behavior: contain;
+			scrollbar-width: thin;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection
+			> .mapetite-panel,
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection
+			.mapetite-map-frame {
+			overflow: visible !important;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection
+			.mapetite-map-frame
+			> .maplibregl-map {
+			height: 258px;
+			overflow: visible;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection
+			.maplibregl-ctrl-bottom-right {
+			bottom: 74px;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection
+			.maplibregl-popup.mapetite-restaurant-popup {
+			max-width: min(210px, calc(100vw - 140px)) !important;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection
+			.maplibregl-popup.mapetite-restaurant-popup
+			.mapetite-map-popup {
+			min-width: 0;
+		}
+
+		@media (max-width: 340px) {
+			.mapetite-adaptive-shell-preview
+				.mapetite-adaptive-shell-map-pane.has-compact-selection
+				.maplibregl-popup.mapetite-restaurant-popup
+				.maplibregl-popup-close-button {
+				right: 40px;
+			}
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection
+			> .mapetite-panel
+			> :first-child
+			> :last-child {
+			flex-wrap: nowrap;
+			gap: 0;
+		}
+
+		.mapetite-adaptive-shell-preview
+			.mapetite-adaptive-shell-map-pane.has-compact-selection
+			> .mapetite-panel
+			> :first-child
+			> :last-child
+			> button {
+			padding-inline: 8px;
+		}
+
 		.mapetite-adaptive-shell-preview .mapetite-adaptive-shell-mobile-selection {
 			max-height: min(50vh, 380px);
 			overflow-y: auto;
