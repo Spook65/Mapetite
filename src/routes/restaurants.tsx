@@ -160,8 +160,6 @@ function AdaptiveSearchDetailsSurface({
 		<DialogContent
 			id="adaptive-shell-search-details"
 			aria-modal="true"
-			aria-labelledby="adaptive-shell-search-heading"
-			aria-describedby="adaptive-shell-search-description"
 			showCloseButton={false}
 			showOverlay={isCompact}
 			overlayClassName="md:hidden"
@@ -2058,8 +2056,20 @@ function RestaurantSearchPage() {
 							<div className="mapetite-adaptive-shell-surface-heading">
 								<div>
 									<div className="mapetite-eyebrow">Search</div>
-									<DialogTitle id="adaptive-shell-search-heading">Edit your place</DialogTitle>
-									<DialogDescription id="adaptive-shell-search-description">Choose a suggestion or add region and country when a city name is shared.</DialogDescription>
+									<DialogTitle
+										{...(!isAdaptiveSearchCompact
+											? { id: "adaptive-shell-search-heading" }
+											: {})}
+									>
+										Edit your place
+									</DialogTitle>
+									<DialogDescription
+										{...(!isAdaptiveSearchCompact
+											? { id: "adaptive-shell-search-description" }
+											: {})}
+									>
+										Choose a suggestion or add region and country when a city name is shared.
+									</DialogDescription>
 								</div>
 								<button
 									ref={adaptiveSearchCloseRef}

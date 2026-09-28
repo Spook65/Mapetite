@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRegister } from "@/hooks/use-auth-api";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 interface SignUpModalProps {
 	open: boolean;
@@ -22,6 +22,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 	const [password, setPassword] = useState("");
 	const [name, setName] = useState("");
 	const [showSuccess, setShowSuccess] = useState(false);
+	const openerRef = useRef<HTMLElement | null>(null);
 
 	const {
 		mutate: register,
@@ -52,7 +53,24 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 
 	return (
 		<Dialog open={open} onOpenChange={onOpenChange}>
-			<DialogContent className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden border-[rgba(255,236,220,0.14)] bg-[rgba(28,22,18,0.96)] p-0 text-[var(--mapetite-text)] shadow-[0_24px_60px_rgba(0,0,0,0.34)] backdrop-blur sm:max-w-md">
+			<DialogContent
+				onOpenAutoFocus={() => {
+					const activeElement = document.activeElement;
+					openerRef.current =
+						activeElement instanceof HTMLElement && activeElement !== document.body
+							? activeElement
+							: null;
+				}}
+				onCloseAutoFocus={(event) => {
+					const opener = openerRef.current;
+					openerRef.current = null;
+					if (!opener?.isConnected) return;
+
+					event.preventDefault();
+					opener.focus();
+				}}
+				className="grid max-h-[calc(100dvh-2rem)] grid-rows-[auto_minmax(0,1fr)] gap-0 overflow-hidden border-[rgba(255,236,220,0.14)] bg-[rgba(28,22,18,0.96)] p-0 text-[var(--mapetite-text)] shadow-[0_24px_60px_rgba(0,0,0,0.34)] backdrop-blur sm:max-w-md"
+			>
 				<DialogHeader className="gap-3 border-b border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(213,154,104,0.12),rgba(213,154,104,0.02))] px-6 py-6 text-left">
 					<DialogTitle className="text-[28px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 						Create Account
