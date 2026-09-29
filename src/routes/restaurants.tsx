@@ -1864,7 +1864,7 @@ function RestaurantSearchPage() {
 		}
 
 		const handleEscape = (event: globalThis.KeyboardEvent) => {
-			if (event.key !== "Escape") return;
+			if (event.key !== "Escape" || event.defaultPrevented) return;
 			if (adaptiveTransientSurface !== null && isAdaptiveSearchCompact) {
 				return;
 			}
@@ -2655,7 +2655,7 @@ function RestaurantSearchPage() {
 								)}
 							>
 								<SlidersHorizontal className="size-4" />
-								Filters &amp; sort
+								{isInstalledShellPreview ? "Filters" : "Filters & sort"}
 								{adaptiveActiveControlCount > 0 ? (
 									<span className="mapetite-adaptive-shell-control-count">
 										{adaptiveActiveControlCount}
@@ -2742,6 +2742,13 @@ function RestaurantSearchPage() {
 											variant="outline"
 											onClick={() => setIsMapOpen((current) => !current)}
 											aria-pressed={isMapOpen}
+											aria-label={
+												isInstalledShellPreview
+													? isMapOpen
+														? "Hide map"
+														: "Show map"
+													: undefined
+											}
 											className={cn(
 												"mapetite-quiet-button h-11 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
 												isMapOpen
@@ -2750,7 +2757,20 @@ function RestaurantSearchPage() {
 											)}
 										>
 											<MapPinned className="size-4" />
-											{isMapOpen ? "Hide map" : "Map"}
+											{isInstalledShellPreview ? (
+												<>
+													<span className="mapetite-installed-toolbar-label-compact">
+														{isMapOpen ? "Hide" : "Map"}
+													</span>
+													<span className="mapetite-installed-toolbar-label-expanded">
+														{isMapOpen ? "Hide map" : "Show map"}
+													</span>
+												</>
+											) : isMapOpen ? (
+												"Hide map"
+											) : (
+												"Map"
+											)}
 										</Button>
 									)}
 
@@ -2761,7 +2781,11 @@ function RestaurantSearchPage() {
 											onClick={handleRefreshResults}
 											disabled={isSearching}
 											title="Refreshes current provider data. Results may stay the same."
-											aria-label="Refresh current search results"
+											aria-label={
+												isSearching
+													? "Refreshing current search results"
+													: "Refresh current search results"
+											}
 										className={cn(
 											"mapetite-quiet-button h-10 justify-center gap-1.5 rounded-full px-4 text-sm font-medium shadow-none",
 											!isAdaptiveShellPreview &&
@@ -2769,7 +2793,13 @@ function RestaurantSearchPage() {
 										)}
 										>
 											<RefreshCw className={cn("size-4", isSearching && "animate-spin")} />
-											{isSearching ? "Refreshing..." : "Refresh current search"}
+											{isInstalledShellPreview
+												? isSearching
+													? "Refreshing"
+													: "Refresh"
+												: isSearching
+													? "Refreshing..."
+													: "Refresh current search"}
 										</Button>
 									)}
 						</section>
@@ -4323,13 +4353,13 @@ function RestaurantSearchPage() {
 										)}
 									</div>
 								) : null}
-								<div className="min-w-0">
-									<div className="flex flex-wrap items-center gap-2">
+								<div className="mapetite-adaptive-shell-mobile-copy min-w-0">
+									<div className="mapetite-adaptive-shell-mobile-heading flex flex-wrap items-center gap-2">
 										<strong className="mapetite-adaptive-shell-mobile-title truncate text-[18px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
 											{selectedRestaurant.name}
 										</strong>
 										{selectedRestaurant.rating != null ? (
-											<span className="rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-2.5 py-1 text-[12px] text-[var(--mapetite-text-soft)]">
+											<span className="mapetite-adaptive-shell-mobile-rating rounded-full border border-[rgba(255,236,220,0.1)] bg-[rgba(255,248,242,0.03)] px-2.5 py-1 text-[12px] text-[var(--mapetite-text-soft)]">
 												{selectedRestaurant.rating.toFixed(1)}
 											</span>
 										) : null}

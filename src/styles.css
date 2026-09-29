@@ -3802,6 +3802,169 @@ body:has(.mapetite-adaptive-shell-preview)
 	}
 }
 
+/* Installed results controls stay concise while preserving full accessible names. */
+.mapetite-installed-shell .mapetite-adaptive-shell-toolbar {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: 6px;
+	padding: 8px;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-toolbar-anchor {
+	z-index: 50;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-toolbar > button {
+	width: 100%;
+	min-width: 0;
+	height: 44px;
+	min-height: 44px;
+	gap: 4px;
+	padding-inline: 6px;
+	font-size: 0.75rem;
+	white-space: nowrap;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-filter-trigger {
+	position: relative;
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-toolbar
+	.mapetite-adaptive-shell-control-count {
+	position: absolute;
+	top: -5px;
+	right: -3px;
+}
+
+.mapetite-installed-shell .mapetite-installed-toolbar-label-expanded {
+	display: none;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-filter-grid {
+	gap: var(--mapetite-adaptive-space-4);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-filter-group > label,
+.mapetite-installed-shell .mapetite-adaptive-shell-filter-row label {
+	font-weight: 700;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-summary {
+	align-items: start;
+	gap: 10px;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-copy {
+	display: grid;
+	gap: 2px;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-heading {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: start;
+	gap: 8px;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-rating {
+	white-space: nowrap;
+}
+
+@media (min-width: 600px) {
+	.mapetite-installed-shell .mapetite-adaptive-shell-toolbar {
+		display: flex;
+		min-height: 62px;
+		flex-wrap: nowrap;
+		gap: 8px;
+		padding: 8px 12px;
+	}
+
+	.mapetite-installed-shell .mapetite-adaptive-shell-toolbar > button {
+		width: auto;
+		padding-inline: 14px;
+		font-size: 0.875rem;
+	}
+
+	.mapetite-installed-shell .mapetite-installed-toolbar-label-compact {
+		display: none;
+	}
+
+	.mapetite-installed-shell .mapetite-installed-toolbar-label-expanded {
+		display: inline;
+	}
+
+	.mapetite-installed-shell .mapetite-adaptive-shell-filter-grid {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-filter-grid
+		> :first-child,
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-filter-grid
+		> :nth-child(4) {
+		grid-column: 1 / -1;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-mobile-selection-wrap {
+		right: 24px;
+		left: auto;
+		width: min(420px, calc(100vw - 48px));
+	}
+
+	.mapetite-installed-shell .mapetite-adaptive-shell-mobile-actions {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-mobile-actions
+		> :first-child {
+		grid-column: auto;
+	}
+}
+
+@media (min-width: 768px) {
+	.mapetite-installed-shell .mapetite-adaptive-shell-filter-surface {
+		position: absolute;
+		top: calc(100% + var(--mapetite-adaptive-space-2));
+		right: auto;
+		left: 12px;
+		width: min(560px, calc(100vw - 48px));
+		max-height: min(680px, calc(100dvh - 192px));
+		transform: none;
+	}
+}
+
+@media (min-width: 1024px) {
+	.mapetite-installed-shell .mapetite-adaptive-shell-filter-grid {
+		grid-template-columns: repeat(6, minmax(0, 1fr));
+		gap: var(--mapetite-adaptive-space-3);
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-filter-grid
+		> :first-child {
+		grid-column: 1 / -1;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-filter-grid
+		> :nth-child(2),
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-filter-grid
+		> :nth-child(3) {
+		grid-column: span 3;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-filter-grid
+		> :nth-child(n + 4) {
+		grid-column: span 2;
+	}
+}
+
 @media (min-width: 768px) {
 	.mapetite-installed-shell {
 		--mapetite-installed-workspace-height: min(720px, calc(100dvh - 48px));
