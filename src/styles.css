@@ -3634,3 +3634,128 @@ body:has(.mapetite-adaptive-shell-preview)
 		);
 	}
 }
+
+.mapetite-installed-shell .mapetite-installed-search-intro {
+	display: none;
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-command[data-search-expanded="true"] {
+	z-index: 10;
+	margin-bottom: 12px;
+	padding: 0;
+	border: 0;
+	background: transparent;
+	box-shadow: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-command[data-search-expanded="false"] {
+	margin-bottom: 12px;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-surface {
+	position: static;
+	display: grid;
+	width: 100%;
+	max-width: none;
+	max-height: none;
+	transform: none;
+	gap: 18px;
+	overflow: visible;
+	padding: 18px 4px 22px;
+	border: 0;
+	border-radius: 0;
+	background: transparent;
+	box-shadow: none;
+	backdrop-filter: none;
+	-webkit-backdrop-filter: none;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-surface::before {
+	display: none;
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-surface
+	> .mapetite-adaptive-shell-surface-heading {
+	position: static;
+	padding: 0 0 16px;
+	background: transparent;
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-surface
+	.mapetite-adaptive-shell-surface-heading h2 {
+	max-width: 14ch;
+	font-size: clamp(1.8rem, 9vw, 2.4rem);
+	line-height: 1.02;
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-surface
+	.mapetite-adaptive-shell-surface-heading p {
+	max-width: 34rem;
+	font-size: 0.9rem;
+	line-height: 1.6;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-grid {
+	width: 100%;
+	max-width: 36rem;
+	gap: 12px;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-grid > :first-child {
+	position: relative;
+	z-index: 2;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-qualifier-toggle {
+	display: inline-flex;
+	min-height: 44px;
+	align-items: center;
+	justify-self: start;
+	padding-inline: 4px;
+	color: var(--mapetite-adaptive-support-strong);
+	font-size: 0.82rem;
+	font-weight: 680;
+	text-align: left;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-grid input {
+	font-size: 1rem;
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-surface
+	.mapetite-adaptive-shell-search-helpers {
+	gap: 12px;
+	padding-top: 16px;
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-surface
+	.mapetite-adaptive-shell-search-guidance {
+	margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+	.mapetite-installed-shell .mapetite-installed-search-page {
+		min-height: calc(100dvh - var(--mapetite-installed-nav-height));
+	}
+
+	.mapetite-installed-shell
+		.mapetite-installed-search-page
+		.mapetite-adaptive-shell-container {
+		padding-top: 12px;
+	}
+
+	.mapetite-installed-shell .mapetite-installed-search-surface {
+		right: auto;
+		bottom: auto;
+		left: auto;
+	}
+}

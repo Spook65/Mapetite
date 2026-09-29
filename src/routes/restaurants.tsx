@@ -23,6 +23,11 @@ import {
 import { reverseGeocode } from "@/lib/api/nominatim";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
 import {
+	shouldShowInstalledQualifiers,
+	shouldShowInstalledSearchEntry,
+} from "@/lib/installed-search";
+import { getInstalledShellSearch } from "@/lib/installed-shell";
+import {
 	clearRecentSearches,
 	formatRecentSearchResultCount,
 	loadLastSearchSnapshot,
@@ -619,6 +624,9 @@ function RestaurantSearchPage() {
 	const isInstalledShellPreview = ui === "installed-shell";
 	const isAdaptiveShellPreview = ui === "adaptive-shell" || isInstalledShellPreview;
 	const isAdaptiveCardPreview = ui === "adaptive-card" || isAdaptiveShellPreview;
+	const installedDetailSearch = isInstalledShellPreview
+		? getInstalledShellSearch(searchCity ? { city: searchCity } : undefined)
+		: undefined;
 
 	// Global state from Zustand store
 	const location = useRestaurantSearchStore((state) => state.location);
@@ -710,6 +718,8 @@ function RestaurantSearchPage() {
 	const [showSlowSearchMessage, setShowSlowSearchMessage] = useState(false);
 	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
 	const [isMapOpen, setIsMapOpen] = useState(false);
+	const [isInstalledQualifierDisclosureOpen, setIsInstalledQualifierDisclosureOpen] =
+		useState<boolean | null>(null);
 	const [isAdaptiveSearchCompact, setIsAdaptiveSearchCompact] = useState(
 		() =>
 			typeof window !== "undefined" &&
@@ -717,10 +727,12 @@ function RestaurantSearchPage() {
 	);
 	const [adaptiveTransientSurface, setAdaptiveTransientSurface] =
 		useState<AdaptiveTransientSurface>(() =>
-			isAdaptiveShellPreview &&
-			!location.city.trim() &&
-			!location.state.trim() &&
-			!location.country.trim()
+			(isInstalledShellPreview
+				? restaurants.length === 0
+				: isAdaptiveShellPreview &&
+						!location.city.trim() &&
+						!location.state.trim() &&
+						!location.country.trim())
 				? "search"
 				: null,
 		);
@@ -778,8 +790,25 @@ function RestaurantSearchPage() {
 	const hasLocationInput = Boolean(
 		location.city.trim() || location.state.trim() || location.country.trim(),
 	);
+	const isInstalledSearchEntryVisible =
+		isInstalledShellPreview &&
+		shouldShowInstalledSearchEntry({
+			hasResults: restaurants.length > 0,
+			isEditing: adaptiveTransientSurface === "search",
+		});
 	const isAdaptiveSearchDetailsOpen =
-		!isAdaptiveShellPreview || adaptiveTransientSurface === "search";
+		!isAdaptiveShellPreview ||
+		adaptiveTransientSurface === "search" ||
+		isInstalledSearchEntryVisible;
+	const showInstalledQualifiers = shouldShowInstalledQualifiers({
+		country: location.country,
+		isDisclosed: isInstalledQualifierDisclosureOpen,
+		region: location.state,
+	});
+	const isInstalledSearchSuggesting =
+		isInstalledShellPreview &&
+		location.city.trim().length >= 2 &&
+		isPlaceSuggestionsOpen;
 	const suggestionContext = useMemo<PlaceSuggestionContext>(
 		() => getBrowserSuggestionContext(recentSearches),
 		[recentSearches],
@@ -973,6 +1002,7 @@ function RestaurantSearchPage() {
 					setRestaurants(results);
 					setShowFavorites(false);
 					setRestoredSearchLabel(null);
+					if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
 					recordSuccessfulTypedSearch(nextLocation, results);
 				} catch (error) {
 					if (searchId !== activeSearchIdRef.current) {
@@ -980,6 +1010,14 @@ function RestaurantSearchPage() {
 					}
 					if (!isExpectedPlaceValidationError(error)) {
 						console.error("Search failed", error);
+					}
+					if (
+						isInstalledShellPreview &&
+						error instanceof RestaurantSearchApiError &&
+						error.code === "PLACE_AMBIGUOUS"
+					) {
+						setIsInstalledQualifierDisclosureOpen(true);
+						setAdaptiveTransientSurface("search");
 					}
 					toast.error(getSearchErrorTitle(error), {
 						description: getSearchErrorDescription(error),
@@ -1018,6 +1056,7 @@ function RestaurantSearchPage() {
 			setLocation(nextLocation);
 			setRestaurants(results);
 			setShowFavorites(false);
+			if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
 			recordSuccessfulTypedSearch(nextLocation, results);
 			debugSearchPerf("results_render_queued", {
 				total_ms: Math.round(performance.now() - startedAt),
@@ -1027,6 +1066,14 @@ function RestaurantSearchPage() {
 		} catch (error) {
 			if (!isExpectedPlaceValidationError(error)) {
 				console.error("Search failed", error);
+			}
+			if (
+				isInstalledShellPreview &&
+				error instanceof RestaurantSearchApiError &&
+				error.code === "PLACE_AMBIGUOUS"
+			) {
+				setIsInstalledQualifierDisclosureOpen(true);
+				setAdaptiveTransientSurface("search");
 			}
 			debugSearchPerf("error_shown", {
 				total_ms: Math.round(performance.now() - startedAt),
@@ -1132,6 +1179,7 @@ function RestaurantSearchPage() {
 			setRestaurants(results);
 			setShowFavorites(false);
 			setRestoredSearchLabel(null);
+			if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
 		} catch (error) {
 			if (!isExpectedLocationError(error)) {
 				console.error("Geolocation search failed", error);
@@ -1208,6 +1256,7 @@ function RestaurantSearchPage() {
 			setLocation(nextLocation);
 			setRestaurants(results);
 			setShowFavorites(false);
+			if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
 			recordSuccessfulTypedSearch(nextLocation, results);
 			debugSearchPerf("results_render_queued", {
 				total_ms: Math.round(performance.now() - startedAt),
@@ -1263,6 +1312,7 @@ function RestaurantSearchPage() {
 			setLocation(nextLocation);
 			setRestaurants(results);
 			setRestoredSearchLabel(null);
+			if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
 			recordSuccessfulTypedSearch(nextLocation, results);
 		} catch (error) {
 			if (!isExpectedPlaceValidationError(error)) {
@@ -1752,7 +1802,10 @@ function RestaurantSearchPage() {
 			if (adaptiveTransientSurface === "search") {
 				shouldRestoreAdaptiveSearchFocusRef.current = restoreFocus;
 				setAdaptiveTransientSurface(null);
-				if (restoreFocus && !isAdaptiveSearchCompact) {
+				if (
+					restoreFocus &&
+					(isInstalledShellPreview || !isAdaptiveSearchCompact)
+				) {
 					window.requestAnimationFrame(() => {
 						const trigger =
 							adaptiveSearchLastTriggerRef.current ??
@@ -1773,7 +1826,11 @@ function RestaurantSearchPage() {
 				}
 			}
 		},
-		[adaptiveTransientSurface, isAdaptiveSearchCompact],
+		[
+			adaptiveTransientSurface,
+			isAdaptiveSearchCompact,
+			isInstalledShellPreview,
+		],
 	);
 
 	const toggleAdaptiveTransientSurface = useCallback(
@@ -1915,6 +1972,7 @@ function RestaurantSearchPage() {
 					"mapetite-page-shell min-h-full",
 					isAdaptiveShellPreview &&
 						"mapetite-adaptive-scope mapetite-adaptive-shell-preview",
+					isInstalledShellPreview && "mapetite-installed-search-page",
 				)}
 			>
 				<div
@@ -1930,6 +1988,7 @@ function RestaurantSearchPage() {
 						className={cn(
 							"mb-3 grid justify-items-center gap-4 text-center md:mb-4 md:gap-5 min-[1261px]:justify-items-start min-[1261px]:text-left",
 							isAdaptiveShellPreview && "mapetite-adaptive-shell-intro",
+							isInstalledShellPreview && "mapetite-installed-search-intro",
 						)}
 					>
 						<div className="grid justify-items-center min-[1261px]:justify-items-start">
@@ -1949,15 +2008,17 @@ function RestaurantSearchPage() {
 						className={cn(
 							"mapetite-panel mb-4 grid gap-4 p-4 md:gap-5 md:p-6",
 							isAdaptiveShellPreview && "mapetite-adaptive-shell-command",
+							isInstalledShellPreview && "mapetite-installed-search-command",
 						)}
 						data-search-expanded={isAdaptiveSearchDetailsOpen}
 					>
 						<Dialog
 							open={
 								isAdaptiveShellPreview &&
+								!isInstalledShellPreview &&
 								adaptiveTransientSurface === "search"
 							}
-							modal={isAdaptiveSearchCompact}
+							modal={!isInstalledShellPreview && isAdaptiveSearchCompact}
 							onOpenChange={(open) => {
 								if (open) {
 									shouldRestoreAdaptiveSearchFocusRef.current = true;
@@ -1969,7 +2030,8 @@ function RestaurantSearchPage() {
 								}
 							}}
 						>
-						{isAdaptiveShellPreview ? (
+						{isAdaptiveShellPreview &&
+						(!isInstalledShellPreview || !isInstalledSearchEntryVisible) ? (
 							<div className="mapetite-adaptive-shell-command-summary">
 								<button
 									type="button"
@@ -1977,6 +2039,11 @@ function RestaurantSearchPage() {
 										adaptiveSearchLastTriggerRef.current = event.currentTarget;
 										shouldRestoreAdaptiveSearchFocusRef.current = true;
 										toggleAdaptiveTransientSurface("search");
+										if (isInstalledShellPreview) {
+											window.requestAnimationFrame(() =>
+												adaptiveSearchCityRef.current?.focus(),
+											);
+										}
 									}}
 									className="mapetite-adaptive-shell-command-icon"
 									aria-expanded={isAdaptiveSearchDetailsOpen}
@@ -1990,7 +2057,7 @@ function RestaurantSearchPage() {
 									<Search className="size-4" />
 								</button>
 								<div className="min-w-0 flex-1">
-									<span>Search command</span>
+									<span>{isInstalledShellPreview ? "Search" : "Search command"}</span>
 									<strong>
 										{searchCenterLabel || "Choose a city, region, or country"}
 									</strong>
@@ -2007,6 +2074,11 @@ function RestaurantSearchPage() {
 										adaptiveSearchLastTriggerRef.current = event.currentTarget;
 										shouldRestoreAdaptiveSearchFocusRef.current = true;
 										toggleAdaptiveTransientSurface("search");
+										if (isInstalledShellPreview) {
+											window.requestAnimationFrame(() =>
+												adaptiveSearchCityRef.current?.focus(),
+											);
+										}
 									}}
 									aria-expanded={isAdaptiveSearchDetailsOpen}
 									aria-controls="adaptive-shell-search-details"
@@ -2018,7 +2090,7 @@ function RestaurantSearchPage() {
 						) : null}
 
 					<AdaptiveSearchDetailsSurface
-						isAdaptive={isAdaptiveShellPreview}
+						isAdaptive={isAdaptiveShellPreview && !isInstalledShellPreview}
 						isCompact={isAdaptiveSearchCompact}
 						onOpenAutoFocus={(event) => {
 							event.preventDefault();
@@ -2053,36 +2125,45 @@ function RestaurantSearchPage() {
 							!isAdaptiveShellPreview && "contents",
 							isAdaptiveShellPreview &&
 								"mapetite-adaptive-shell-transient-surface mapetite-adaptive-shell-search-surface",
+							isInstalledShellPreview && "mapetite-installed-search-surface",
 						)}
 					>
 						{isAdaptiveShellPreview ? (
 							<div className="mapetite-adaptive-shell-surface-heading">
 								<div>
-									<div className="mapetite-eyebrow">Search</div>
+									<div className="mapetite-eyebrow">
+										{isInstalledShellPreview ? "Mapetite Search" : "Search"}
+									</div>
 									<DialogTitle
 										{...(!isAdaptiveSearchCompact
 											? { id: "adaptive-shell-search-heading" }
 											: {})}
 									>
-										Edit your place
+										{isInstalledShellPreview
+											? "Where do you want to eat?"
+											: "Edit your place"}
 									</DialogTitle>
 									<DialogDescription
 										{...(!isAdaptiveSearchCompact
 											? { id: "adaptive-shell-search-description" }
 											: {})}
 									>
-										Choose a suggestion or add region and country when a city name is shared.
+										{isInstalledShellPreview
+											? "Search for a city. Add region or country only when it helps identify the right place."
+											: "Choose a suggestion or add region and country when a city name is shared."}
 									</DialogDescription>
 								</div>
-								<button
-									ref={adaptiveSearchCloseRef}
-									type="button"
-									onClick={() => closeAdaptiveTransientSurface()}
-									className="mapetite-adaptive-shell-surface-close"
-									aria-label="Close search"
-								>
-									<X className="size-4" />
-								</button>
+								{!isInstalledShellPreview || restaurants.length > 0 ? (
+									<button
+										ref={adaptiveSearchCloseRef}
+										type="button"
+										onClick={() => closeAdaptiveTransientSurface()}
+										className="mapetite-adaptive-shell-surface-close"
+										aria-label="Close search"
+									>
+										<X className="size-4" />
+									</button>
+								) : null}
 							</div>
 						) : null}
 
@@ -2107,6 +2188,7 @@ function RestaurantSearchPage() {
 							className={cn(
 								"mx-auto grid min-w-0 w-full max-w-[720px] gap-3 min-[1261px]:max-w-none min-[1261px]:items-end min-[1261px]:grid-cols-[minmax(0,1.15fr)_minmax(0,0.8fr)_minmax(0,0.8fr)_auto]",
 								isAdaptiveShellPreview && "mapetite-adaptive-shell-search-grid",
+								isInstalledShellPreview && "mapetite-installed-search-grid",
 							)}
 						>
 							<div className="grid min-w-0 gap-2">
@@ -2114,13 +2196,17 @@ function RestaurantSearchPage() {
 									htmlFor="city"
 									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
 								>
-									City
+									{isInstalledShellPreview ? "Search for a city" : "City"}
 								</Label>
 								<div className="relative min-w-0" onBlur={handlePlaceSuggestionBlur}>
 									<Input
 										ref={adaptiveSearchCityRef}
 										id="city"
-										placeholder="Paris, Tokyo, Chicago"
+										placeholder={
+											isInstalledShellPreview
+												? "City or place"
+												: "Paris, Tokyo, Chicago"
+										}
 									value={location.city}
 									onChange={(e) => {
 										suppressedSuggestionQueryRef.current = "";
@@ -2237,45 +2323,78 @@ function RestaurantSearchPage() {
 								</div>
 							</div>
 
-							<div className="grid gap-2">
-								<Label
-									htmlFor="state"
-									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
+							{isInstalledShellPreview ? (
+								<button
+									type="button"
+									onClick={() =>
+										setIsInstalledQualifierDisclosureOpen(
+											showInstalledQualifiers ? false : true,
+										)
+									}
+									aria-expanded={showInstalledQualifiers}
+									aria-controls="installed-search-qualifiers"
+									className="mapetite-installed-search-qualifier-toggle"
 								>
-									State / Province / Region
-								</Label>
-								<Input
-									id="state"
-									placeholder="Optional state, province, or region"
-									value={location.state}
-									onChange={(e) => updateLocation({ state: e.target.value })}
-									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
-								/>
-							</div>
+									{showInstalledQualifiers
+										? "Hide region and country"
+										: "Add region or country"}
+								</button>
+							) : null}
 
-							<div className="grid gap-2">
-								<Label
-									htmlFor="country"
-									className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
+							{!isInstalledShellPreview || showInstalledQualifiers ? (
+								<div
+									id={
+										isInstalledShellPreview
+											? "installed-search-qualifiers"
+											: undefined
+									}
+									className={cn(
+										"contents",
+										isInstalledShellPreview &&
+											"mapetite-installed-search-qualifiers",
+									)}
 								>
-									Country
-								</Label>
-								<Input
-									id="country"
-									placeholder="Optional country"
-									value={location.country}
-									onChange={(e) => updateLocation({ country: e.target.value })}
-									className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
-								/>
-							</div>
+									<div className="grid gap-2">
+										<Label
+											htmlFor="state"
+											className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
+										>
+											State / Province / Region
+										</Label>
+										<Input
+											id="state"
+											placeholder="Optional state, province, or region"
+											value={location.state}
+											onChange={(e) => updateLocation({ state: e.target.value })}
+											className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
+										/>
+									</div>
+
+									<div className="grid gap-2">
+										<Label
+											htmlFor="country"
+											className="text-center text-[12px] tracking-[0.14em] text-[rgba(245,233,222,0.48)] uppercase min-[1261px]:text-left"
+										>
+											Country
+										</Label>
+										<Input
+											id="country"
+											placeholder="Optional country"
+											value={location.country}
+											onChange={(e) => updateLocation({ country: e.target.value })}
+											className="h-[52px] rounded-[10px] border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] px-4 text-center text-[var(--mapetite-text)] placeholder:text-center placeholder:text-[var(--mapetite-text-faint)] min-[1261px]:text-left min-[1261px]:placeholder:text-left"
+										/>
+									</div>
+								</div>
+							) : null}
 
 							<div className="mapetite-adaptive-shell-search-actions relative grid gap-2 min-[1261px]:grid-cols-2 min-[1261px]:items-end">
 									<Button
 										type="button"
-										onClick={() => {
-											void handleSearch();
-											if (isAdaptiveShellPreview) {
-												closeAdaptiveTransientSurface(false);
+									onClick={() => {
+										void handleSearch();
+										if (isAdaptiveShellPreview && !isInstalledShellPreview) {
+											closeAdaptiveTransientSurface(false);
 											}
 										}}
 									disabled={isSearching}
@@ -2345,7 +2464,7 @@ function RestaurantSearchPage() {
 							</div>
 						) : null}
 
-						{isAdaptiveShellPreview ? (
+						{isAdaptiveShellPreview && !isInstalledSearchSuggesting ? (
 							<div className="mapetite-adaptive-shell-search-helpers">
 								<div className="mapetite-adaptive-shell-helper-heading">
 									<div className="min-w-0">
@@ -2368,9 +2487,11 @@ function RestaurantSearchPage() {
 										<button
 											key={`${search.city}-${search.state}-${search.country}`}
 											type="button"
-											onClick={() => {
-												closeAdaptiveTransientSurface(false);
-												void handleRunSearchChip(search);
+									onClick={() => {
+										if (!isInstalledShellPreview) {
+											closeAdaptiveTransientSurface(false);
+										}
+										void handleRunSearchChip(search);
 											}}
 											disabled={isSearching}
 											className="mapetite-adaptive-shell-search-chip"
@@ -2392,9 +2513,11 @@ function RestaurantSearchPage() {
 										<Button
 											type="button"
 											variant="outline"
-											onClick={() => {
+										onClick={() => {
+											if (!isInstalledShellPreview) {
 												closeAdaptiveTransientSurface(false);
-												void handleRestoreLastSearch();
+											}
+											void handleRestoreLastSearch();
 											}}
 											disabled={isSearching}
 											className="mapetite-quiet-button h-11 shrink-0 rounded-full px-4 text-sm shadow-none"
@@ -2485,6 +2608,9 @@ function RestaurantSearchPage() {
 						className={cn(
 							!isAdaptiveShellPreview && "contents",
 							isAdaptiveShellPreview && "mapetite-adaptive-shell-toolbar-anchor",
+							isInstalledSearchEntryVisible &&
+								restaurants.length === 0 &&
+								"hidden",
 						)}
 					>
 					<AdaptiveFilterDialogRoot
@@ -3141,6 +3267,7 @@ function RestaurantSearchPage() {
 											searchCenterLabel={searchCenterLabel || null}
 											onSelectRestaurant={handleSelectRestaurant}
 											onClose={() => setIsMapOpen(false)}
+											restaurantDetailSearch={installedDetailSearch}
 										/>
 									</Suspense>
 								) : null}
@@ -3493,7 +3620,7 @@ function RestaurantSearchPage() {
 													params={{ restaurantId: restaurant.id }}
 													search={
 														isInstalledShellPreview
-															? { ui: "installed-shell" }
+															? installedDetailSearch
 															: undefined
 													}
 												>
@@ -3650,6 +3777,7 @@ function RestaurantSearchPage() {
 												searchCenterLabel={searchCenterLabel || null}
 												onSelectRestaurant={handleSelectRestaurant}
 												onClose={() => setIsMapOpen(false)}
+												restaurantDetailSearch={installedDetailSearch}
 											/>
 										</Suspense>
 									) : (
@@ -3881,7 +4009,7 @@ function RestaurantSearchPage() {
 												params={{ restaurantId: selectedRestaurant.id }}
 												search={
 													isInstalledShellPreview
-														? { ui: "installed-shell" }
+														? installedDetailSearch
 														: undefined
 												}
 											>
@@ -4052,7 +4180,10 @@ function RestaurantSearchPage() {
 						</section>
 					)}
 
-						{!showFavorites && restaurants.length === 0 && !isSearching && (
+						{!showFavorites &&
+							restaurants.length === 0 &&
+							!isSearching &&
+							!isInstalledSearchEntryVisible && (
 							<section
 								className={cn(
 									"mt-6",
@@ -4254,7 +4385,7 @@ function RestaurantSearchPage() {
 										params={{ restaurantId: selectedRestaurant.id }}
 										search={
 											isInstalledShellPreview
-												? { ui: "installed-shell" }
+												? installedDetailSearch
 												: undefined
 										}
 									>

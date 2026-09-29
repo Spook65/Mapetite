@@ -19,6 +19,7 @@ import maplibreWorkerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&ur
 import { MapPinned, X } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "@tanstack/react-router";
 
 const DEFAULT_MAP_STYLE_URL = "https://tiles.openfreemap.org/styles/liberty";
 const MAP_STYLE_URL =
@@ -42,9 +43,17 @@ interface SearchResultsMapProps {
 	searchCenterLabel?: string | null;
 	onSelectRestaurant: (restaurantId: string) => void;
 	onClose: () => void;
+	restaurantDetailSearch?: {
+		city?: string;
+		ui: "installed-shell";
+	};
 }
 
-function buildPopupContent(pin: RestaurantMapPin) {
+function buildPopupContent(
+	pin: RestaurantMapPin,
+	detailHref: string,
+	onOpenDetails: () => void,
+) {
 	const container = document.createElement("div");
 	container.className = "mapetite-map-popup";
 
@@ -75,8 +84,22 @@ function buildPopupContent(pin: RestaurantMapPin) {
 	}
 
 	const link = document.createElement("a");
-	link.href = `/restaurants/${encodeURIComponent(pin.id)}`;
+	link.href = detailHref;
 	link.textContent = "View details";
+	link.addEventListener("click", (event) => {
+		if (
+			event.defaultPrevented ||
+			event.button !== 0 ||
+			event.metaKey ||
+			event.ctrlKey ||
+			event.shiftKey ||
+			event.altKey
+		) {
+			return;
+		}
+		event.preventDefault();
+		onOpenDetails();
+	});
 	container.append(link);
 
 	return container;
@@ -99,7 +122,12 @@ function buildOriginPopupContent(title: string, label?: string | null) {
 	return container;
 }
 
-function buildPopup(pin: RestaurantMapPin, closeButton = true) {
+function buildPopup(
+	pin: RestaurantMapPin,
+	detailHref: string,
+	onOpenDetails: () => void,
+	closeButton = true,
+) {
 	return new Popup({
 		className: "mapetite-restaurant-popup",
 		closeButton,
@@ -108,7 +136,7 @@ function buildPopup(pin: RestaurantMapPin, closeButton = true) {
 		maxWidth: "240px",
 		offset: 18,
 	})
-		.setDOMContent(buildPopupContent(pin))
+		.setDOMContent(buildPopupContent(pin, detailHref, onOpenDetails))
 		.setLngLat([pin.longitude, pin.latitude]);
 }
 
@@ -120,7 +148,9 @@ export function SearchResultsMap({
 	searchCenterLabel,
 	onSelectRestaurant,
 	onClose,
+	restaurantDetailSearch,
 }: SearchResultsMapProps) {
+	const router = useRouter();
 	const mapContainerRef = useRef<HTMLDivElement | null>(null);
 	const mapRef = useRef<MapLibreMap | null>(null);
 	const restaurantMarkersRef = useRef<globalThis.Map<string, Marker>>(
@@ -172,6 +202,25 @@ export function SearchResultsMap({
 		userLocationKey,
 		searchCenterOriginKey,
 	].join("::");
+	const getRestaurantDetailHref = useCallback(
+		(restaurantId: string) =>
+			router.buildLocation({
+				to: "/restaurants/$restaurantId",
+				params: { restaurantId },
+				search: restaurantDetailSearch,
+			}).publicHref,
+		[router, restaurantDetailSearch?.city, restaurantDetailSearch?.ui],
+	);
+	const openRestaurantDetails = useCallback(
+		(restaurantId: string) => {
+			void router.navigate({
+				to: "/restaurants/$restaurantId",
+				params: { restaurantId },
+				search: restaurantDetailSearch,
+			});
+		},
+		[router, restaurantDetailSearch?.city, restaurantDetailSearch?.ui],
+	);
 
 	const fitMapToCurrentResults = useCallback(
 		(duration = 450) => {
@@ -291,7 +340,11 @@ export function SearchResultsMap({
 				originPopupRef.current?.remove();
 				originPopupRef.current = null;
 				popupRef.current?.remove();
-				const popup = buildPopup(pin).addTo(map);
+				const popup = buildPopup(
+					pin,
+					getRestaurantDetailHref(pin.id),
+					() => openRestaurantDetails(pin.id),
+				).addTo(map);
 				popup.on("close", () => {
 					if (popupRef.current !== popup) return;
 					popupRef.current = null;
@@ -332,7 +385,12 @@ export function SearchResultsMap({
 			restaurantMarkersRef.current.set(pin.id, marker);
 		}
 		setIsMapReady(true);
-	}, [pins, onSelectRestaurant]);
+	}, [
+		pins,
+		onSelectRestaurant,
+		getRestaurantDetailHref,
+		openRestaurantDetails,
+	]);
 
 	useEffect(() => {
 		for (const [restaurantId, marker] of restaurantMarkersRef.current) {

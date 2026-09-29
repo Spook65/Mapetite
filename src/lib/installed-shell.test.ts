@@ -1,5 +1,6 @@
 import {
 	getInstalledDestination,
+	getInstalledShellSearch,
 	isInstalledShellSearch,
 } from "@/lib/installed-shell";
 import { describe, expect, it } from "vitest";
@@ -17,5 +18,12 @@ describe("installed shell routing", () => {
 		expect(getInstalledDestination("/saved")).toBe("saved");
 		expect(getInstalledDestination("/account")).toBe("account");
 		expect(getInstalledDestination("/")).toBeNull();
+	});
+
+	it("adds installed presentation without discarding route search values", () => {
+		expect(getInstalledShellSearch({ city: "Stockton" })).toEqual({
+			city: "Stockton",
+			ui: "installed-shell",
+		});
 	});
 });

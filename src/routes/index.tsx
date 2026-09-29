@@ -14,8 +14,8 @@ import { useAuthState } from "@/hooks/use-auth-api";
 import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
 import { warmRestaurantsApiHealth } from "@/lib/api/restaurants";
 import {
+	getInstalledShellSearch,
 	isInstalledShellSearch,
-	INSTALLED_SHELL_UI,
 } from "@/lib/installed-shell";
 import { cn } from "@/lib/utils";
 import {
@@ -260,7 +260,7 @@ function LandingPage() {
 		return (
 			<Navigate
 				to="/restaurants"
-				search={{ ui: INSTALLED_SHELL_UI }}
+				search={getInstalledShellSearch()}
 				replace
 			/>
 		);

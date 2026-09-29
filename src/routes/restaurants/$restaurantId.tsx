@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
 import {
+	getInstalledShellSearch,
 	isInstalledShellSearch,
-	INSTALLED_SHELL_UI,
 } from "@/lib/installed-shell";
 import {
 	buildGoogleMapsDirectionsUrl,
@@ -197,7 +197,7 @@ function RestaurantDetailPage() {
 		navigate({
 			to: "/restaurants",
 			search: isInstalledShellPreview
-				? { ui: INSTALLED_SHELL_UI }
+				? getInstalledShellSearch()
 				: undefined,
 		});
 	const restaurants = useRestaurantSearchStore((state) => state.restaurants);
@@ -1243,7 +1243,7 @@ function RestaurantDetailPage() {
 									to="/restaurants"
 									search={
 										isInstalledShellPreview
-											? { ui: INSTALLED_SHELL_UI }
+											? getInstalledShellSearch()
 											: undefined
 									}
 								>

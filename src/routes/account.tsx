@@ -5,7 +5,10 @@ import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { useFavorites } from "@/hooks/use-favorites";
 import { getAccountInitials } from "@/lib/account-display";
-import { isInstalledShellSearch } from "@/lib/installed-shell";
+import {
+	getInstalledShellSearch,
+	isInstalledShellSearch,
+} from "@/lib/installed-shell";
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { Heart, LogOut, Search, ShieldCheck, UserRound } from "lucide-react";
 import { useState } from "react";
@@ -101,7 +104,7 @@ function AccountPage() {
 												to="/restaurants"
 												search={
 													isInstalledShellPreview
-														? { ui: "installed-shell" }
+														? getInstalledShellSearch()
 														: undefined
 												}
 											>
@@ -171,7 +174,7 @@ function AccountPage() {
 													to="/saved"
 													search={
 														isInstalledShellPreview
-															? { ui: "installed-shell" }
+															? getInstalledShellSearch()
 															: undefined
 													}
 												>
@@ -188,7 +191,7 @@ function AccountPage() {
 													to="/restaurants"
 													search={
 														isInstalledShellPreview
-															? { ui: "installed-shell" }
+															? getInstalledShellSearch()
 															: undefined
 													}
 												>

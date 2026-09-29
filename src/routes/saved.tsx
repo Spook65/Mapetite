@@ -4,7 +4,10 @@ import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
-import { isInstalledShellSearch } from "@/lib/installed-shell";
+import {
+	getInstalledShellSearch,
+	isInstalledShellSearch,
+} from "@/lib/installed-shell";
 import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantById } from "@/lib/search-restaurants";
 import { cn } from "@/lib/utils";
@@ -348,7 +351,7 @@ function SavedPlacesPage() {
 									to="/restaurants"
 									search={
 										isInstalledShellPreview
-											? { ui: "installed-shell" }
+											? getInstalledShellSearch()
 											: undefined
 									}
 								>
@@ -411,7 +414,7 @@ function SavedPlacesPage() {
 											to="/restaurants"
 											search={
 												isInstalledShellPreview
-													? { ui: "installed-shell" }
+													? getInstalledShellSearch()
 													: undefined
 											}
 										>
@@ -444,7 +447,7 @@ function SavedPlacesPage() {
 											to="/restaurants"
 											search={
 												isInstalledShellPreview
-													? { ui: "installed-shell" }
+													? getInstalledShellSearch()
 													: undefined
 											}
 										>
@@ -536,7 +539,7 @@ function SavedPlacesPage() {
 														params={{ restaurantId: restaurant.id }}
 														search={
 															isInstalledShellPreview
-																? { ui: "installed-shell" }
+																? getInstalledShellSearch()
 																: undefined
 														}
 													>
