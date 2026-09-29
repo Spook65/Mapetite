@@ -3242,10 +3242,17 @@ body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-mobile-overlay {
 }
 
 body:has(.mapetite-adaptive-shell-preview) .mapetite-layout-mobile-drawer {
+	--mapetite-border: rgba(42, 58, 49, 0.12);
+	--mapetite-border-strong: rgba(42, 58, 49, 0.22);
+	--mapetite-text: #1d2722;
+	--mapetite-text-soft: #52605a;
+	--mapetite-text-faint: #747f79;
+	--mapetite-focus-ring: #a94727;
 	border-color: var(--mapetite-border);
 	color: var(--mapetite-text);
 	background: #fffefa;
 	box-shadow: -18px 0 44px rgba(42, 54, 47, 0.13);
+	color-scheme: light;
 }
 
 body:has(.mapetite-adaptive-shell-preview)
