@@ -3766,3 +3766,319 @@ body:has(.mapetite-adaptive-shell-preview)
 		left: auto;
 	}
 }
+
+/* Installed compact, regular, and wide presentation model. */
+.mapetite-installed-shell .mapetite-installed-search-page {
+	--mapetite-page-width: min(1440px, calc(100% - 24px));
+}
+
+.mapetite-installed-shell-main
+  > .mapetite-page-shell:not(.mapetite-installed-search-page)
+  > .mapetite-container,
+.mapetite-installed-shell > .mapetite-layout-footer .mapetite-container {
+	width: min(1360px, calc(100% - 32px));
+}
+
+@media (min-width: 600px) {
+	.mapetite-installed-shell .mapetite-installed-search-command {
+		width: min(100%, 840px);
+		margin-inline: auto;
+	}
+
+	.mapetite-installed-shell .mapetite-installed-search-surface {
+		padding-inline: 24px;
+	}
+}
+
+@media (min-width: 600px) and (max-width: 767px) {
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-summary {
+		grid-column: 1 / -1;
+	}
+}
+
+@media (min-width: 768px) {
+	.mapetite-installed-shell {
+		--mapetite-installed-workspace-height: min(720px, calc(100dvh - 48px));
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-results-layout {
+		grid-template-columns: clamp(280px, 36%, 320px) minmax(0, 1fr);
+		gap: 0;
+		min-height: var(--mapetite-installed-workspace-height);
+		overflow: hidden;
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: 20px;
+		background: var(--mapetite-adaptive-app-surface);
+		box-shadow: var(--mapetite-adaptive-shadow-card);
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-results-list {
+		max-height: var(--mapetite-installed-workspace-height);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+		gap: var(--mapetite-adaptive-space-2);
+		padding: var(--mapetite-adaptive-space-3);
+		border-right: 1px solid var(--mapetite-adaptive-border);
+		scrollbar-width: thin;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-map-pane,
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-map-pane.is-placeholder {
+		position: sticky;
+		top: 16px;
+		display: block;
+		order: 0;
+		align-self: start;
+		min-height: var(--mapetite-installed-workspace-height);
+		background: var(--mapetite-adaptive-map-surface);
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-map-loading,
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-map-placeholder {
+		min-height: var(--mapetite-installed-workspace-height);
+		border: 0;
+		border-radius: 0;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-map-pane
+		> .mapetite-panel {
+		position: relative;
+		min-height: var(--mapetite-installed-workspace-height);
+		padding: 0;
+		border: 0;
+		border-radius: 0;
+		background: var(--mapetite-adaptive-map-surface);
+		box-shadow: none;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-map-pane
+		.mapetite-map-frame,
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-map-pane
+		.mapetite-map-frame
+		> .maplibregl-map {
+		height: var(--mapetite-installed-workspace-height);
+		border: 0;
+		border-radius: 0;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-adaptive-result-card-preview {
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--mapetite-adaptive-space-3);
+		padding: var(--mapetite-adaptive-space-3);
+		text-align: left;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-result-selection-target {
+		grid-template-columns: 72px minmax(0, 1fr);
+		gap: var(--mapetite-adaptive-space-3);
+		text-align: left;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-adaptive-result-media {
+		width: 72px;
+		height: 72px;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-adaptive-result-copy
+		> :first-child {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		gap: var(--mapetite-adaptive-space-1);
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-adaptive-result-copy
+		> :first-child
+		> :first-child {
+		width: 100%;
+		min-width: 0;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-adaptive-result-heading {
+		display: -webkit-box;
+		white-space: normal;
+		text-overflow: clip;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-adaptive-result-summary {
+		display: -webkit-box;
+		min-height: 0;
+		white-space: normal;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-adaptive-result-actions {
+		grid-column: 1 / -1;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: var(--mapetite-adaptive-space-2);
+		width: 100%;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-results-list
+		.mapetite-adaptive-result-action {
+		width: 100%;
+		height: 44px;
+		min-height: 44px;
+		padding-inline: var(--mapetite-adaptive-space-2);
+		font-size: 0.75rem;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-mobile-selection-wrap {
+		top: auto;
+		right: 24px;
+		bottom: calc(var(--mapetite-installed-nav-height) + 16px);
+		left: auto;
+		width: min(420px, calc(100vw - 48px));
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-mobile-selection {
+		max-height: min(42dvh, 380px);
+		overflow-y: auto;
+		overscroll-behavior: contain;
+	}
+}
+
+@media (min-width: 1024px) {
+	.mapetite-installed-shell {
+		--mapetite-installed-nav-width: 184px;
+		padding-bottom: 0;
+		padding-left: var(--mapetite-installed-nav-width);
+	}
+
+	.mapetite-installed-bottom-nav {
+		top: 0;
+		right: auto;
+		width: var(--mapetite-installed-nav-width);
+		height: 100dvh;
+		border-top: 0;
+		border-right: 1px solid rgba(255, 236, 220, 0.12);
+		box-shadow: 8px 0 24px rgba(16, 12, 10, 0.12);
+	}
+
+	.mapetite-installed-bottom-nav-inner {
+		grid-template-columns: minmax(0, 1fr);
+		align-content: start;
+		gap: 8px;
+		width: 100%;
+		height: auto;
+		padding: max(24px, env(safe-area-inset-top)) 12px 24px;
+	}
+
+	.mapetite-installed-bottom-nav-link {
+		min-height: 52px;
+		justify-content: flex-start;
+		gap: 12px;
+		padding: 0 14px;
+		font-size: 0.82rem;
+		flex-direction: row;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-installed-search-command[data-search-expanded="true"] {
+		width: min(100%, 1040px);
+	}
+
+	.mapetite-installed-shell .mapetite-installed-search-surface {
+		grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+		column-gap: 28px;
+		width: 100%;
+		max-width: 1040px;
+		margin-inline: auto;
+		padding: 28px;
+		border: 1px solid var(--mapetite-adaptive-border);
+		border-radius: var(--mapetite-adaptive-radius-panel);
+		background: var(--mapetite-adaptive-app-surface);
+		box-shadow: var(--mapetite-adaptive-shadow-card);
+	}
+
+	.mapetite-installed-shell
+		.mapetite-installed-search-surface
+		> :not(.mapetite-adaptive-shell-search-helpers) {
+		grid-column: 1;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-installed-search-surface
+		> .mapetite-adaptive-shell-search-helpers {
+		grid-row: 1 / span 5;
+		grid-column: 2;
+		align-self: stretch;
+		align-content: start;
+		padding-top: 0;
+		padding-left: 24px;
+		border-top: 0;
+		border-left: 1px solid var(--mapetite-adaptive-border);
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-mobile-selection-wrap {
+		right: 24px;
+		bottom: 24px;
+		width: min(
+			420px,
+			calc(100vw - var(--mapetite-installed-nav-width) - 48px)
+		);
+	}
+}
+
+@media (min-width: 1261px) {
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-results-layout {
+		grid-template-columns:
+			minmax(270px, 300px)
+			minmax(360px, 1fr)
+			minmax(280px, 300px);
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-preview
+		.mapetite-adaptive-shell-selected-panel {
+		max-height: var(--mapetite-installed-workspace-height);
+	}
+}
