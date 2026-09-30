@@ -320,7 +320,12 @@ function RestaurantDetailPage() {
 	if (!restaurant && isLoadingRestaurant) {
 		return (
 			<Layout>
-				<div className="mapetite-page-shell min-h-full">
+				<div
+					className={cn(
+						"mapetite-page-shell min-h-full",
+						isInstalledShellPreview && "mapetite-installed-detail-page",
+					)}
+				>
 					<div className="mapetite-container px-4 py-8 md:px-6 md:py-10">
 						<div className="mapetite-panel mx-auto max-w-3xl px-6 py-16 text-center md:px-10">
 							<div className="mx-auto flex size-16 items-center justify-center rounded-[12px] border border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]">
@@ -342,7 +347,12 @@ function RestaurantDetailPage() {
 	if (!restaurant) {
 		return (
 			<Layout>
-				<div className="mapetite-page-shell min-h-full">
+				<div
+					className={cn(
+						"mapetite-page-shell min-h-full",
+						isInstalledShellPreview && "mapetite-installed-detail-page",
+					)}
+				>
 					<div className="mapetite-container px-4 py-8 md:px-6 md:py-10">
 						<div className="mapetite-panel mx-auto max-w-3xl px-6 py-16 text-center md:px-10">
 							<div className="mx-auto flex size-16 items-center justify-center rounded-[12px] border border-[var(--mapetite-border-strong)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]">
@@ -496,7 +506,12 @@ function RestaurantDetailPage() {
 
 	return (
 		<Layout>
-			<div className="mapetite-page-shell min-h-full">
+			<div
+				className={cn(
+					"mapetite-page-shell min-h-full",
+					isInstalledShellPreview && "mapetite-installed-detail-page",
+				)}
+			>
 				<div className="mapetite-container px-4 py-4 md:px-6 md:py-6">
 					<main className="grid gap-6 py-6 md:py-8">
 						<div className="flex flex-col items-center justify-center gap-3 text-center md:flex-row md:justify-between md:text-left">
@@ -702,7 +717,7 @@ function RestaurantDetailPage() {
 										</div>
 
 										{galleryViews.length > 1 ? (
-											<div className="grid gap-3">
+											<div className="mapetite-installed-detail-gallery-thumbnails grid gap-3">
 												{galleryViews.map((view, index) => (
 													<button
 														key={`${view.label}-${index}`}

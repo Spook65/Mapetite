@@ -3335,7 +3335,13 @@ function RestaurantSearchPage() {
 								</div>
 
 								{hasActiveFilters && (
-									<div className="mapetite-panel-soft flex flex-wrap items-center gap-2 px-4 py-4">
+									<div
+										className={cn(
+											"mapetite-panel-soft flex flex-wrap items-center gap-2 px-4 py-4",
+											isInstalledShellPreview &&
+												"mapetite-installed-active-filter-summary",
+										)}
+									>
 										<span className="text-sm font-medium text-[var(--mapetite-text)]">
 											Active filters
 										</span>

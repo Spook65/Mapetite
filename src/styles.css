@@ -3119,6 +3119,12 @@ body:has(.mapetite-adaptive-shell-preview) .mapetite-layout {
 	background: var(--mapetite-bg);
 }
 
+.mapetite-installed-shell-main,
+.mapetite-installed-shell .mapetite-installed-search-page,
+.mapetite-installed-shell .mapetite-installed-detail-page {
+	background: transparent;
+}
+
 body:has(.mapetite-adaptive-shell-preview) .mapetite-layout::before {
 	display: none;
 }
@@ -4243,5 +4249,640 @@ body:has(.mapetite-adaptive-shell-preview)
 		.mapetite-adaptive-shell-preview
 		.mapetite-adaptive-shell-selected-panel {
 		max-height: var(--mapetite-installed-workspace-height);
+	}
+}
+
+/* Installed-only material refinement. The web and adaptive previews keep
+   their existing tokens and surface treatment. */
+.mapetite-installed-shell {
+	--mapetite-installed-canvas: #f3f1e9;
+	--mapetite-installed-surface: #fffdf8;
+	--mapetite-installed-surface-muted: #edf1eb;
+	--mapetite-installed-surface-strong: #dfe8df;
+	--mapetite-installed-forest: #263d30;
+	--mapetite-installed-forest-strong: #192b21;
+	--mapetite-installed-ink: #202a24;
+	--mapetite-installed-muted: #5c6961;
+	--mapetite-installed-faint: #7a847e;
+	--mapetite-installed-border: rgba(39, 61, 48, 0.13);
+	--mapetite-installed-border-strong: rgba(39, 61, 48, 0.22);
+	--mapetite-installed-apricot: #c8653f;
+	--mapetite-installed-apricot-hover: #b95734;
+	--mapetite-installed-apricot-soft: #f6ded2;
+	--mapetite-installed-shadow-card: 0 1px 2px rgba(27, 42, 33, 0.05),
+		0 10px 30px rgba(27, 42, 33, 0.045);
+	--mapetite-installed-shadow-float: 0 18px 48px rgba(27, 42, 33, 0.14);
+	--mapetite-bg: var(--mapetite-installed-canvas);
+	--mapetite-bg-elevated: var(--mapetite-installed-surface);
+	--mapetite-surface: rgba(255, 253, 248, 0.96);
+	--mapetite-surface-soft: var(--mapetite-installed-surface-muted);
+	--mapetite-surface-strong: var(--mapetite-installed-surface-strong);
+	--mapetite-border: var(--mapetite-installed-border);
+	--mapetite-border-strong: var(--mapetite-installed-border-strong);
+	--mapetite-text: var(--mapetite-installed-ink);
+	--mapetite-text-soft: var(--mapetite-installed-muted);
+	--mapetite-text-faint: var(--mapetite-installed-faint);
+	--mapetite-accent: var(--mapetite-installed-apricot);
+	--mapetite-accent-hover: var(--mapetite-installed-apricot-hover);
+	--mapetite-accent-active: #a94d2d;
+	--mapetite-accent-strong: #a94d2d;
+	--mapetite-accent-foreground: #20140d;
+	--mapetite-accent-soft: var(--mapetite-installed-apricot-soft);
+	--mapetite-focus-ring: #9e472b;
+	--mapetite-shadow: var(--mapetite-installed-shadow-card);
+	--mapetite-radius: 18px;
+	color-scheme: light;
+	background:
+		radial-gradient(circle at 86% 4%, rgba(200, 101, 63, 0.075), transparent 22rem),
+		radial-gradient(circle at 12% 30%, rgba(78, 112, 88, 0.07), transparent 28rem),
+		var(--mapetite-installed-canvas);
+}
+
+.mapetite-installed-shell::before {
+	background-image: linear-gradient(
+		90deg,
+		transparent,
+		rgba(39, 61, 48, 0.035) 50%,
+		transparent
+	);
+	background-size: 100% 1px;
+	mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.25), transparent 46%);
+	opacity: 0.55;
+}
+
+.mapetite-installed-bottom-nav {
+	border-color: rgba(255, 253, 248, 0.12);
+	background: rgba(25, 43, 33, 0.965);
+	box-shadow: 0 -10px 30px rgba(25, 43, 33, 0.16);
+	backdrop-filter: blur(18px) saturate(1.08);
+	-webkit-backdrop-filter: blur(18px) saturate(1.08);
+}
+
+.mapetite-installed-bottom-nav-link {
+	color: rgba(247, 241, 230, 0.7);
+	transition:
+		color 150ms ease,
+		background-color 150ms ease,
+		box-shadow 150ms ease;
+}
+
+.mapetite-installed-bottom-nav-link:hover {
+	color: #fffaf1;
+	background: rgba(255, 253, 248, 0.055);
+}
+
+.mapetite-installed-bottom-nav-link.is-active {
+	color: #fffaf1;
+	background: rgba(200, 101, 63, 0.22);
+	box-shadow: inset 0 0 0 1px rgba(239, 176, 143, 0.16);
+}
+
+.mapetite-installed-bottom-nav-link.is-active svg {
+	color: #f0ad8b;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-surface {
+	--mapetite-adaptive-shadow-card: var(--mapetite-installed-shadow-card);
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-surface
+	> .mapetite-adaptive-shell-surface-heading {
+	border-bottom-color: var(--mapetite-installed-border);
+}
+
+.mapetite-installed-shell .mapetite-installed-search-grid input {
+	border-color: var(--mapetite-installed-border-strong);
+	background: rgba(255, 254, 250, 0.98);
+	box-shadow: 0 1px 2px rgba(27, 42, 33, 0.05),
+		0 7px 20px rgba(27, 42, 33, 0.04);
+	transition:
+		border-color 150ms ease,
+		box-shadow 150ms ease,
+		background-color 150ms ease;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-grid input:focus-visible {
+	border-color: rgba(38, 61, 48, 0.48);
+	box-shadow: 0 0 0 4px rgba(70, 103, 80, 0.1),
+		0 8px 24px rgba(27, 42, 33, 0.07);
+}
+
+.mapetite-installed-shell .mapetite-installed-search-qualifier-toggle {
+	gap: 6px;
+	color: var(--mapetite-installed-forest);
+	text-decoration-color: rgba(38, 61, 48, 0.3);
+	text-underline-offset: 4px;
+}
+
+.mapetite-installed-shell .mapetite-installed-search-qualifiers {
+	gap: 12px;
+	padding: 14px;
+	border: 1px solid var(--mapetite-installed-border);
+	border-radius: 14px;
+	background: rgba(237, 241, 235, 0.72);
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-search-surface
+	.mapetite-adaptive-shell-search-helpers {
+	border-color: var(--mapetite-installed-border);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-search-chip {
+	border-color: var(--mapetite-installed-border);
+	color: var(--mapetite-installed-ink);
+	background: rgba(255, 254, 250, 0.92);
+	box-shadow: 0 1px 2px rgba(27, 42, 33, 0.04);
+	transition:
+		border-color 150ms ease,
+		background-color 150ms ease,
+		box-shadow 150ms ease;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-search-chip:hover {
+	border-color: var(--mapetite-installed-border-strong);
+	background: var(--mapetite-installed-surface);
+	box-shadow: 0 6px 18px rgba(27, 42, 33, 0.07);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-search-chip small {
+	color: var(--mapetite-installed-forest);
+	background: var(--mapetite-installed-surface-strong);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-search-guidance {
+	border-left-color: #6f8b76;
+	color: var(--mapetite-installed-muted);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-toolbar {
+	border: 1px solid var(--mapetite-installed-border);
+	background: rgba(255, 253, 248, 0.92);
+	box-shadow: 0 8px 24px rgba(27, 42, 33, 0.065);
+	backdrop-filter: blur(16px) saturate(1.06);
+	-webkit-backdrop-filter: blur(16px) saturate(1.06);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-toolbar > button {
+	border-color: transparent;
+	color: var(--mapetite-installed-muted);
+	background: transparent;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-toolbar > button:hover,
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-toolbar
+	> button[aria-expanded="true"] {
+	border-color: var(--mapetite-installed-border);
+	color: var(--mapetite-installed-forest);
+	background: var(--mapetite-installed-surface-muted);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-control-count {
+	border-color: #708a76;
+	color: var(--mapetite-installed-forest);
+	background: #e1e9e1;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-result-card-preview {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(255, 254, 250, 0.92);
+	box-shadow: var(--mapetite-installed-shadow-card);
+	transition:
+		border-color 150ms ease,
+		box-shadow 150ms ease,
+		transform 150ms ease;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-result-card-preview:hover {
+	border-color: var(--mapetite-installed-border-strong);
+	box-shadow: 0 10px 28px rgba(27, 42, 33, 0.09);
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-result-card-preview[data-selected="true"] {
+	border-color: rgba(38, 61, 48, 0.42);
+	background: linear-gradient(135deg, rgba(225, 233, 225, 0.95), #fffdf8 68%);
+	box-shadow: inset 3px 0 var(--mapetite-installed-forest),
+		0 10px 28px rgba(27, 42, 33, 0.09);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-result-media {
+	border-color: var(--mapetite-installed-border);
+	box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.34);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-result-heading {
+	color: var(--mapetite-installed-ink);
+	letter-spacing: -0.025em;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-result-meta,
+.mapetite-installed-shell .mapetite-adaptive-result-summary {
+	color: var(--mapetite-installed-muted);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-filter-surface {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(255, 253, 248, 0.98);
+	box-shadow: var(--mapetite-installed-shadow-float);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-filter-group {
+	padding: 4px 0 16px;
+	border: 0;
+	border-bottom: 1px solid var(--mapetite-installed-border);
+	border-radius: 0;
+	background: transparent;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-filter-row {
+	border-color: transparent;
+	background: rgba(237, 241, 235, 0.66);
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-filter-surface
+	.mapetite-adaptive-shell-surface-actions {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(255, 253, 248, 0.96);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-selection,
+.mapetite-installed-shell .mapetite-adaptive-shell-selected-panel {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(255, 253, 248, 0.975);
+	box-shadow: var(--mapetite-installed-shadow-float);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-media,
+.mapetite-installed-shell .mapetite-adaptive-shell-selected-media {
+	border-color: var(--mapetite-installed-border);
+	border-radius: 12px;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-title,
+.mapetite-installed-shell .mapetite-adaptive-shell-selected-title {
+	color: var(--mapetite-installed-ink);
+	letter-spacing: -0.035em;
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-rating {
+	border-color: var(--mapetite-installed-border);
+	color: var(--mapetite-installed-forest);
+	background: var(--mapetite-installed-surface-muted);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-mobile-evidence,
+.mapetite-installed-shell .mapetite-adaptive-shell-selected-evidence {
+	border-color: transparent;
+	border-left: 3px solid #6f8b76;
+	background: rgba(225, 233, 225, 0.72);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-selected-signals > span {
+	border-color: var(--mapetite-installed-border);
+	color: var(--mapetite-installed-muted);
+	background: var(--mapetite-installed-surface-muted);
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-preview
+	.mapetite-adaptive-shell-results-layout {
+	border-color: var(--mapetite-installed-border);
+	box-shadow: var(--mapetite-installed-shadow-card);
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-preview
+	.mapetite-adaptive-shell-results-list {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(248, 247, 241, 0.78);
+}
+
+.mapetite-installed-shell .mapetite-adaptive-shell-map-pane,
+.mapetite-installed-shell .mapetite-map-frame {
+	border-color: var(--mapetite-installed-border);
+	box-shadow: inset 0 0 0 1px rgba(39, 61, 48, 0.035);
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-preview
+	.mapetite-adaptive-shell-map-pane.is-placeholder {
+	background:
+		radial-gradient(circle at 50% 42%, rgba(255, 253, 248, 0.72), transparent 18rem),
+		linear-gradient(145deg, #e7ece5, #dce5dd);
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-map-placeholder
+	.mapetite-adaptive-shell-map-grid {
+	opacity: 0.28;
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-map-placeholder-copy {
+	width: min(100%, 22rem);
+	max-width: none;
+	padding: 28px;
+	border-color: var(--mapetite-installed-border);
+	background: rgba(255, 253, 248, 0.84);
+	box-shadow: var(--mapetite-installed-shadow-card);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+.mapetite-installed-shell
+	.mapetite-adaptive-shell-map-placeholder-copy
+	> svg {
+	box-sizing: content-box;
+	width: 24px;
+	height: 24px;
+	padding: 10px;
+	border: 1px solid var(--mapetite-installed-border);
+	border-radius: 999px;
+	color: var(--mapetite-installed-forest);
+	background: var(--mapetite-installed-surface-muted);
+}
+
+body:has(.mapetite-installed-shell)
+	.mapetite-installed-shell
+	> .mapetite-layout-footer {
+	border-color: var(--mapetite-installed-border);
+	color: var(--mapetite-installed-faint);
+	background: transparent;
+}
+
+.mapetite-installed-shell .mapetite-layout-footer-panel {
+	border-color: var(--mapetite-installed-border);
+	color: var(--mapetite-installed-faint);
+	background: rgba(255, 253, 248, 0.6);
+	box-shadow: none;
+}
+
+body:has(.mapetite-installed-shell) .mapetite-auth-dialog {
+	--mapetite-text: #202a24;
+	--mapetite-text-soft: #5c6961;
+	--mapetite-text-faint: #7a847e;
+	--mapetite-accent: #c8653f;
+	--mapetite-accent-hover: #b95734;
+	--mapetite-accent-foreground: #20140d;
+	--mapetite-focus-ring: #9e472b;
+	border-color: rgba(39, 61, 48, 0.16);
+	color: var(--mapetite-text);
+	background: rgba(255, 253, 248, 0.98);
+	box-shadow: 0 24px 64px rgba(25, 43, 33, 0.22);
+	color-scheme: light;
+}
+
+body:has(.mapetite-installed-shell)
+	.mapetite-auth-dialog
+	[data-slot="dialog-header"] {
+	border-color: rgba(39, 61, 48, 0.12);
+	background: linear-gradient(180deg, rgba(246, 222, 210, 0.78), rgba(255, 253, 248, 0.3));
+}
+
+body:has(.mapetite-installed-shell) .mapetite-auth-dialog input {
+	border-color: rgba(39, 61, 48, 0.16);
+	color: var(--mapetite-text);
+	background: rgba(255, 254, 250, 0.96);
+}
+
+body:has(.mapetite-installed-shell) .mapetite-auth-dialog input::placeholder {
+	color: var(--mapetite-text-faint);
+}
+
+body:has(.mapetite-installed-shell)
+	.mapetite-auth-dialog
+	[data-slot="dialog-close"] {
+	color: var(--mapetite-text-soft);
+}
+
+body:has(.mapetite-installed-shell)
+	.mapetite-auth-dialog
+	.mapetite-accent-button {
+	color: #20140d;
+	background: var(--mapetite-accent);
+}
+
+.mapetite-installed-shell[data-installed-destination="saved"]
+	.mapetite-installed-shell-main
+	> .mapetite-page-shell,
+.mapetite-installed-shell[data-installed-destination="account"]
+	.mapetite-installed-shell-main
+	> .mapetite-page-shell,
+.mapetite-installed-shell .mapetite-installed-detail-page {
+	background: transparent;
+}
+
+.mapetite-installed-shell[data-installed-destination="saved"]
+	.mapetite-installed-shell-main
+	.mapetite-panel,
+.mapetite-installed-shell[data-installed-destination="account"]
+	.mapetite-installed-shell-main
+	.mapetite-panel,
+.mapetite-installed-shell .mapetite-installed-detail-page .mapetite-panel {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(255, 253, 248, 0.94);
+	box-shadow: var(--mapetite-installed-shadow-card);
+}
+
+.mapetite-installed-shell[data-installed-destination="saved"]
+	.mapetite-installed-shell-main
+	.mapetite-panel-soft,
+.mapetite-installed-shell[data-installed-destination="account"]
+	.mapetite-installed-shell-main
+	.mapetite-panel-soft,
+.mapetite-installed-shell .mapetite-installed-detail-page .mapetite-panel-soft {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(237, 241, 235, 0.82);
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-detail-page
+	[class*="border-[rgba(255,236,220"] {
+	border-color: var(--mapetite-installed-border);
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-detail-page
+	[class*="bg-white/"] {
+	background-color: rgba(237, 241, 235, 0.72);
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-detail-page
+	.mapetite-panel
+	> aside {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(237, 241, 235, 0.72);
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-detail-page
+	.mapetite-panel
+	> aside
+	> div
+	> div {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(255, 253, 248, 0.68);
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-detail-gallery-thumbnails
+	> button {
+	border-color: var(--mapetite-installed-border);
+	background: rgba(237, 241, 235, 0.72);
+}
+
+.mapetite-installed-shell
+	.mapetite-installed-detail-gallery-thumbnails
+	> button[class*="border-[rgba(213,154,104"] {
+	border-color: rgba(200, 101, 63, 0.4);
+	background: var(--mapetite-installed-apricot-soft);
+}
+
+.mapetite-installed-shell .mapetite-installed-detail-page small {
+	color: var(--mapetite-installed-faint);
+}
+
+.mapetite-installed-shell[data-installed-destination="saved"]
+	.mapetite-installed-shell-main
+	.mapetite-quiet-button,
+.mapetite-installed-shell[data-installed-destination="account"]
+	.mapetite-installed-shell-main
+	.mapetite-quiet-button,
+.mapetite-installed-shell .mapetite-installed-detail-page .mapetite-quiet-button {
+	border-color: var(--mapetite-installed-border);
+	color: var(--mapetite-installed-muted);
+	background: rgba(255, 253, 248, 0.74);
+}
+
+.mapetite-installed-shell[data-installed-destination="saved"]
+	.mapetite-installed-shell-main
+	.mapetite-accent-button,
+.mapetite-installed-shell[data-installed-destination="account"]
+	.mapetite-installed-shell-main
+	.mapetite-accent-button,
+.mapetite-installed-shell .mapetite-installed-detail-page .mapetite-accent-button {
+	color: #20140d;
+	background: var(--mapetite-installed-apricot);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.mapetite-installed-shell .mapetite-installed-bottom-nav-link,
+	.mapetite-installed-shell .mapetite-installed-search-grid input,
+	.mapetite-installed-shell .mapetite-adaptive-shell-search-chip,
+	.mapetite-installed-shell .mapetite-adaptive-result-card-preview {
+		transition-duration: 1ms;
+	}
+}
+
+.mapetite-installed-shell[data-installed-destination="saved"]
+	.mapetite-installed-shell-main
+	.mapetite-eyebrow::before,
+.mapetite-installed-shell[data-installed-destination="account"]
+	.mapetite-installed-shell-main
+	.mapetite-eyebrow::before,
+.mapetite-installed-shell .mapetite-installed-detail-page .mapetite-eyebrow::before {
+	background: rgba(200, 101, 63, 0.52);
+}
+
+@media (min-width: 600px) {
+	.mapetite-installed-shell .mapetite-installed-search-surface {
+		padding-block: 26px;
+	}
+
+	.mapetite-installed-shell .mapetite-adaptive-shell-search-chip {
+		border-radius: 12px;
+	}
+}
+
+@media (max-width: 1023px) {
+	.mapetite-installed-shell
+		.mapetite-installed-detail-gallery-thumbnails {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.mapetite-installed-shell
+		.mapetite-installed-detail-gallery-thumbnails
+		> button {
+		align-content: start;
+		padding: 10px;
+	}
+}
+
+@media (min-width: 600px) and (max-width: 1023px) {
+	.mapetite-installed-shell
+		.mapetite-installed-detail-gallery-thumbnails {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+	}
+}
+
+@media (min-width: 1024px) {
+	.mapetite-installed-bottom-nav {
+		border-right-color: rgba(255, 253, 248, 0.11);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.025), transparent 42%),
+			var(--mapetite-installed-forest-strong);
+		box-shadow: 10px 0 32px rgba(25, 43, 33, 0.14);
+	}
+
+	.mapetite-installed-bottom-nav-inner {
+		gap: 6px;
+		padding-inline: 14px;
+	}
+
+	.mapetite-installed-bottom-nav-link {
+		border-radius: 13px;
+	}
+
+	.mapetite-installed-bottom-nav-link.is-active {
+		box-shadow: inset 3px 0 #e8a17c,
+			inset 0 0 0 1px rgba(239, 176, 143, 0.1);
+	}
+
+	.mapetite-installed-shell .mapetite-installed-search-surface {
+		border-color: var(--mapetite-installed-border);
+		background: rgba(255, 253, 248, 0.94);
+		box-shadow: var(--mapetite-installed-shadow-card);
+	}
+}
+
+@media (min-width: 1261px) {
+	.mapetite-installed-shell .mapetite-installed-active-filter-summary {
+		gap: 6px;
+		padding: 8px 10px;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-installed-active-filter-summary
+		> span:first-child {
+		font-size: 0.6875rem;
+		letter-spacing: 0;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-installed-active-filter-summary
+		> button {
+		min-height: 44px;
+		gap: 6px;
+		padding-inline: 9px;
+		font-size: 0.75rem;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-selected-panel {
+		grid-auto-rows: max-content;
+		align-content: start;
+		gap: 12px;
+	}
+
+	.mapetite-installed-shell
+		.mapetite-adaptive-shell-selected-media {
+		height: 134px;
+		min-height: 134px;
+		aspect-ratio: auto;
 	}
 }
