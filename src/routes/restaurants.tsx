@@ -2323,25 +2323,35 @@ function RestaurantSearchPage() {
 								</div>
 							</div>
 
-							{isInstalledShellPreview ? (
-								<button
-									type="button"
-									onClick={() =>
-										setIsInstalledQualifierDisclosureOpen(
-											showInstalledQualifiers ? false : true,
-										)
-									}
-									aria-expanded={showInstalledQualifiers}
-									aria-controls="installed-search-qualifiers"
-									className="mapetite-installed-search-qualifier-toggle"
-								>
-									{showInstalledQualifiers
-										? "Hide region and country"
-										: "Add region or country"}
-								</button>
-							) : null}
+							<div
+								className={cn(
+									"contents",
+									isInstalledShellPreview &&
+										"mapetite-installed-search-qualifier-section",
+								)}
+							>
+								{isInstalledShellPreview ? (
+									<div className="mapetite-installed-search-qualifier-heading">
+										<span>Location details</span>
+										<button
+											type="button"
+											onClick={() =>
+												setIsInstalledQualifierDisclosureOpen(
+													showInstalledQualifiers ? false : true,
+												)
+											}
+											aria-expanded={showInstalledQualifiers}
+											aria-controls="installed-search-qualifiers"
+											className="mapetite-installed-search-qualifier-toggle"
+										>
+											{showInstalledQualifiers
+												? "Hide details"
+												: "Add region or country"}
+										</button>
+									</div>
+								) : null}
 
-							{!isInstalledShellPreview || showInstalledQualifiers ? (
+								{!isInstalledShellPreview || showInstalledQualifiers ? (
 								<div
 									id={
 										isInstalledShellPreview
@@ -2386,7 +2396,8 @@ function RestaurantSearchPage() {
 										/>
 									</div>
 								</div>
-							) : null}
+								) : null}
+							</div>
 
 							<div className="mapetite-adaptive-shell-search-actions relative grid gap-2 min-[1261px]:grid-cols-2 min-[1261px]:items-end">
 									<Button

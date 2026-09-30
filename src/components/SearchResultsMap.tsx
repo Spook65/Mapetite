@@ -165,6 +165,9 @@ export function SearchResultsMap({
 	const fittedViewportSignatureRef = useRef<string | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [mapError, setMapError] = useState<string | null>(null);
+	const [isOverviewVisible, setIsOverviewVisible] = useState(true);
+	const isInstalledPresentation =
+		restaurantDetailSearch?.ui === "installed-shell";
 	const validDistanceOrigin =
 		distanceOrigin &&
 		hasValidMapCoordinate(distanceOrigin.latitude, distanceOrigin.longitude)
@@ -532,43 +535,53 @@ export function SearchResultsMap({
 			className="mapetite-panel grid gap-3 overflow-hidden p-4 md:p-5"
 			aria-label="Search results map"
 		>
-			<div className="flex flex-wrap items-start justify-between gap-3">
-				<div>
-					<div className="mapetite-eyebrow">
-						Map view
+			{!isInstalledPresentation || isOverviewVisible ? (
+				<div className="mapetite-map-overview flex flex-wrap items-start justify-between gap-3">
+					{isInstalledPresentation ? (
+						<button
+							type="button"
+							onClick={() => setIsOverviewVisible(false)}
+							className="mapetite-map-overview-dismiss"
+							aria-label="Dismiss map overview"
+						>
+							<X className="size-4" />
+						</button>
+					) : null}
+					<div>
+						<div className="mapetite-eyebrow">Map view</div>
+						<h2 className="mt-2 text-[22px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
+							Current search results
+						</h2>
+						<p className="mapetite-muted-copy mt-1 text-sm leading-6">
+							Showing {pins.length.toLocaleString()} mapped of{" "}
+							{restaurants.length.toLocaleString()} results.
+						</p>
 					</div>
-					<h2 className="mt-2 text-[22px] font-semibold tracking-[-0.04em] text-[var(--mapetite-text)]">
-						Current search results
-					</h2>
-					<p className="mapetite-muted-copy mt-1 text-sm leading-6">
-						Showing {pins.length.toLocaleString()} mapped of{" "}
-						{restaurants.length.toLocaleString()} results.
-					</p>
+					<div className="flex flex-wrap items-center gap-2">
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={() => {
+								fitMapToCurrentResults();
+								fittedViewportSignatureRef.current = viewportSignature;
+							}}
+							className="min-h-11 rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+						>
+							<MapPinned className="mr-2 size-4" />
+							Show all
+						</Button>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={onClose}
+							className="min-h-11 rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
+						>
+							<X className="mr-2 size-4" />
+							Hide map
+						</Button>
+					</div>
 				</div>
-				<div className="flex flex-wrap items-center gap-2">
-					<Button
-						type="button"
-						variant="ghost"
-						onClick={() => {
-							fitMapToCurrentResults();
-							fittedViewportSignatureRef.current = viewportSignature;
-						}}
-						className="min-h-11 rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-					>
-						<MapPinned className="mr-2 size-4" />
-						Show all
-					</Button>
-					<Button
-						type="button"
-						variant="ghost"
-						onClick={onClose}
-						className="min-h-11 rounded-full text-[var(--mapetite-text-soft)] hover:bg-[rgba(255,248,242,0.05)] hover:text-[var(--mapetite-text)]"
-					>
-						<X className="mr-2 size-4" />
-						Hide map
-					</Button>
-				</div>
-			</div>
+			) : null}
 
 			{pins.length > 0 ? (
 				<div className="mapetite-map-frame relative overflow-hidden rounded-[14px] border border-[rgba(255,236,220,0.08)] bg-[linear-gradient(180deg,rgba(255,248,242,0.035),rgba(255,248,242,0.01)),linear-gradient(145deg,rgba(183,177,118,0.12),rgba(16,13,10,0.42))]">
