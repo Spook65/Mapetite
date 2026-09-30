@@ -3613,6 +3613,15 @@ body:has(.mapetite-adaptive-shell-preview)
 	height: 44px;
 }
 
+.mapetite-installed-shell
+	.mapetite-map-frame
+	.maplibregl-ctrl-attrib.maplibregl-compact {
+	min-height: 44px;
+	padding-top: 12px;
+	padding-right: 48px;
+	padding-bottom: 12px;
+}
+
 .mapetite-map-frame .maplibregl-popup.mapetite-restaurant-popup .maplibregl-popup-content {
 	padding-right: 44px;
 }
@@ -4216,6 +4225,7 @@ body:has(.mapetite-adaptive-shell-preview)
 
 	.mapetite-installed-shell .mapetite-installed-search-surface {
 		grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+		align-items: start;
 		column-gap: 28px;
 		width: 100%;
 		max-width: 1040px;
@@ -4236,9 +4246,9 @@ body:has(.mapetite-adaptive-shell-preview)
 	.mapetite-installed-shell
 		.mapetite-installed-search-surface
 		> .mapetite-adaptive-shell-search-helpers {
-		grid-row: 1 / span 5;
+		grid-row: 1 / span 3;
 		grid-column: 2;
-		align-self: stretch;
+		align-self: start;
 		align-content: start;
 		padding-top: 0;
 		padding-left: 24px;
@@ -4686,10 +4696,47 @@ body:has(.mapetite-installed-shell)
 }
 
 .mapetite-installed-shell .mapetite-layout-footer-panel {
+	padding: 14px 0;
+	border-width: 1px 0 0;
 	border-color: var(--mapetite-installed-border);
+	border-radius: 0;
 	color: var(--mapetite-installed-faint);
-	background: rgba(255, 253, 248, 0.6);
+	background: transparent;
 	box-shadow: none;
+}
+
+.mapetite-installed-shell .mapetite-layout-footer-panel > div:first-child {
+	gap: 4px;
+}
+
+.mapetite-installed-shell .mapetite-installed-destination-content {
+	width: 100%;
+	max-width: 1120px;
+	margin-inline: auto;
+}
+
+.mapetite-installed-shell .mapetite-installed-destination-header {
+	align-items: start;
+	text-align: left;
+}
+
+.mapetite-installed-shell .mapetite-installed-destination-header .mapetite-eyebrow {
+	justify-content: flex-start;
+}
+
+.mapetite-installed-shell .mapetite-installed-destination-header p {
+	margin-inline: 0;
+}
+
+.mapetite-installed-shell .mapetite-installed-destination-state {
+	width: min(100%, 680px);
+	margin-inline: auto;
+}
+
+.mapetite-installed-shell > .mapetite-layout-footer .mapetite-layout-footer-container {
+	width: min(1120px, calc(100% - 32px));
+	padding-top: 16px;
+	padding-bottom: calc(env(safe-area-inset-bottom) + 16px);
 }
 
 body:has(.mapetite-installed-shell) .mapetite-auth-dialog {

@@ -35,11 +35,11 @@ function AccountPage() {
 
 	return (
 		<Layout>
-			<div className="mapetite-page-shell min-h-full">
-				<div className="mapetite-container px-4 py-4 md:px-6 md:py-6">
-					<main className="grid gap-6 py-6 md:py-8">
-						<div className="mx-auto grid w-full max-w-5xl gap-6">
-							<div className="text-center">
+			<div className="mapetite-installed-destination-page mapetite-page-shell min-h-full">
+				<div className="mapetite-installed-destination-container mapetite-container px-4 py-4 md:px-6 md:py-6">
+					<main className="mapetite-installed-destination-main grid gap-6 py-6 md:py-8">
+						<div className="mapetite-installed-destination-content mx-auto grid w-full max-w-5xl gap-6">
+							<div className="mapetite-installed-destination-header text-center">
 								<div className="mapetite-eyebrow justify-center">Account</div>
 								<h1 className="mt-3 text-[clamp(2.35rem,5vw,4.7rem)] font-semibold leading-[0.95] tracking-[-0.07em] text-[var(--mapetite-text)]">
 									Your Mapetite account.
@@ -51,7 +51,7 @@ function AccountPage() {
 							</div>
 
 							{isLoading ? (
-								<section className="mapetite-panel grid gap-4 px-6 py-12 text-center">
+								<section className="mapetite-installed-destination-state mapetite-panel grid gap-4 px-6 py-12 text-center">
 									<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 										<UserRound className="size-5" />
 									</div>
@@ -66,7 +66,7 @@ function AccountPage() {
 									</div>
 								</section>
 							) : !isAuthenticated ? (
-								<section className="mapetite-panel grid gap-5 px-6 py-12 text-center md:px-10">
+								<section className="mapetite-installed-destination-state mapetite-panel grid gap-5 px-6 py-12 text-center md:px-10">
 									<div className="mx-auto flex size-14 items-center justify-center rounded-[14px] border border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]">
 										<UserRound className="size-6" />
 									</div>

@@ -324,10 +324,10 @@ function SavedPlacesPage() {
 
 	return (
 		<Layout>
-			<div className="mapetite-page-shell min-h-full">
-				<div className="mapetite-container px-4 py-4 md:px-6 md:py-6">
-					<main className="grid gap-6 py-6 md:py-8">
-						<div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
+			<div className="mapetite-installed-destination-page mapetite-page-shell min-h-full">
+				<div className="mapetite-installed-destination-container mapetite-container px-4 py-4 md:px-6 md:py-6">
+					<main className="mapetite-installed-destination-content mapetite-installed-destination-main grid gap-6 py-6 md:py-8">
+						<div className="mapetite-installed-destination-header flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
 							<div>
 								<div className="mapetite-eyebrow justify-center md:justify-start">
 									Saved places
@@ -342,27 +342,22 @@ function SavedPlacesPage() {
 								</p>
 							</div>
 
-							<Button
-								asChild
-								variant="outline"
-								className="mapetite-quiet-button min-h-11 rounded-full px-5 shadow-none min-[1180px]:min-h-9"
-							>
-								<Link
-									to="/restaurants"
-									search={
-										isInstalledShellPreview
-											? getInstalledShellSearch()
-											: undefined
-									}
+							{!isInstalledShellPreview ? (
+								<Button
+									asChild
+									variant="outline"
+									className="mapetite-quiet-button min-h-11 rounded-full px-5 shadow-none min-[1180px]:min-h-9"
 								>
-									<ArrowLeft className="mr-2 size-4" />
-									Back to search
-								</Link>
-							</Button>
+									<Link to="/restaurants">
+										<ArrowLeft className="mr-2 size-4" />
+										Back to search
+									</Link>
+								</Button>
+							) : null}
 						</div>
 
 						{isLoading ? (
-							<section className="mapetite-panel grid gap-4 px-6 py-12 text-center">
+							<section className="mapetite-installed-destination-state mapetite-panel grid gap-4 px-6 py-12 text-center">
 								<div className="mx-auto flex size-12 items-center justify-center rounded-[12px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 									<Heart className="size-5" />
 								</div>
@@ -376,7 +371,7 @@ function SavedPlacesPage() {
 								</div>
 							</section>
 						) : !isAuthenticated ? (
-							<section className="mapetite-panel grid gap-5 px-6 py-12 text-center md:px-10">
+							<section className="mapetite-installed-destination-state mapetite-panel grid gap-5 px-6 py-12 text-center md:px-10">
 								<div className="mx-auto flex size-14 items-center justify-center rounded-[14px] border border-[rgba(213,154,104,0.24)] bg-[var(--mapetite-accent-soft)] text-[var(--mapetite-text)]">
 									<Heart className="size-6" />
 								</div>
@@ -425,7 +420,7 @@ function SavedPlacesPage() {
 								</div>
 							</section>
 						) : savedItems.length === 0 ? (
-							<section className="mapetite-panel grid gap-5 px-6 py-12 text-center md:px-10">
+							<section className="mapetite-installed-destination-state mapetite-panel grid gap-5 px-6 py-12 text-center md:px-10">
 								<div className="mx-auto flex size-14 items-center justify-center rounded-[14px] border border-[var(--mapetite-border)] bg-[rgba(255,248,242,0.04)] text-[var(--mapetite-text)]">
 									<Utensils className="size-6" />
 								</div>
