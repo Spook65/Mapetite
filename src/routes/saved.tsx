@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import {
-	getInstalledShellSearch,
-	isInstalledShellSearch,
+	getInstalledNavigationSearch,
+	isInstalledPresentationSearch,
 } from "@/lib/installed-shell";
 import { buildGoogleMapsDirectionsUrl } from "@/lib/restaurant-directions";
 import { getRestaurantById } from "@/lib/search-restaurants";
@@ -144,7 +144,9 @@ function getHoursLabel(restaurant: Restaurant) {
 
 function SavedPlacesPage() {
 	const location = useLocation();
-	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
+	const isInstalledShellPreview = isInstalledPresentationSearch(
+		location.searchStr,
+	);
 	const restaurants = useRestaurantSearchStore((state) => state.restaurants);
 	const { isAuthenticated, isLoading: isAuthLoading } = useAuthState();
 	const { data: favoritesData, isLoading: isFavoritesLoading } = useFavorites({
@@ -407,11 +409,9 @@ function SavedPlacesPage() {
 									>
 										<Link
 											to="/restaurants"
-											search={
-												isInstalledShellPreview
-													? getInstalledShellSearch()
-													: undefined
-											}
+											search={getInstalledNavigationSearch(
+												location.searchStr,
+											)}
 										>
 											<Search className="mr-2 size-4" />
 											Search restaurants
@@ -440,11 +440,9 @@ function SavedPlacesPage() {
 									>
 										<Link
 											to="/restaurants"
-											search={
-												isInstalledShellPreview
-													? getInstalledShellSearch()
-													: undefined
-											}
+											search={getInstalledNavigationSearch(
+												location.searchStr,
+											)}
 										>
 											<Search className="mr-2 size-4" />
 											Search restaurants
@@ -529,14 +527,12 @@ function SavedPlacesPage() {
 														asChild
 														className="mapetite-accent-button h-10 justify-center rounded-full px-4 text-[#20140d] shadow-none"
 													>
-													<Link
-														to="/restaurants/$restaurantId"
-														params={{ restaurantId: restaurant.id }}
-														search={
-															isInstalledShellPreview
-																? getInstalledShellSearch()
-																: undefined
-														}
+														<Link
+															to="/restaurants/$restaurantId"
+															params={{ restaurantId: restaurant.id }}
+															search={getInstalledNavigationSearch(
+																location.searchStr,
+															)}
 													>
 															View details
 														</Link>

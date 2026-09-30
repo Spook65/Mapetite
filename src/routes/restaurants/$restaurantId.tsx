@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button";
 import { useFavorites, useToggleFavorite } from "@/hooks/use-favorites";
 import { isAuthenticatedSync } from "@/lib/auth-integration";
 import {
-	getInstalledShellSearch,
-	isInstalledShellSearch,
+	getInstalledNavigationSearch,
+	isInstalledPresentationSearch,
 } from "@/lib/installed-shell";
 import {
 	buildGoogleMapsDirectionsUrl,
@@ -192,13 +192,13 @@ function RestaurantDetailPage() {
 	const restaurantId = params.restaurantId as string;
 	const navigate = useNavigate();
 	const location = useLocation();
-	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
+	const isInstalledShellPreview = isInstalledPresentationSearch(
+		location.searchStr,
+	);
 	const navigateToSearch = () =>
 		navigate({
 			to: "/restaurants",
-			search: isInstalledShellPreview
-				? getInstalledShellSearch()
-				: undefined,
+			search: getInstalledNavigationSearch(location.searchStr),
 		});
 	const restaurants = useRestaurantSearchStore((state) => state.restaurants);
 	const [fetchedRestaurant, setFetchedRestaurant] = useState<Restaurant | null>(
@@ -1256,11 +1256,9 @@ function RestaurantDetailPage() {
 							<Button asChild className="mapetite-accent-button min-h-11 rounded-[10px] px-5 min-[1180px]:min-h-9">
 								<Link
 									to="/restaurants"
-									search={
-										isInstalledShellPreview
-											? getInstalledShellSearch()
-											: undefined
-									}
+									search={getInstalledNavigationSearch(
+										location.searchStr,
+									)}
 								>
 									Back to search results
 								</Link>

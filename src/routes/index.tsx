@@ -14,8 +14,8 @@ import { useAuthState } from "@/hooks/use-auth-api";
 import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
 import { warmRestaurantsApiHealth } from "@/lib/api/restaurants";
 import {
-	getInstalledShellSearch,
-	isInstalledShellSearch,
+	getInstalledNavigationSearch,
+	isInstalledPresentationSearch,
 } from "@/lib/installed-shell";
 import { cn } from "@/lib/utils";
 import {
@@ -190,7 +190,9 @@ const howItWorks = [
 function LandingPage() {
 	const navigate = useNavigate();
 	const location = useLocation();
-	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
+	const isInstalledShellPreview = isInstalledPresentationSearch(
+		location.searchStr,
+	);
 	const [selectedCityKey, setSelectedCityKey] =
 		useState<(typeof cityStarts)[number]["key"]>("tokyo");
 	const [selectedRestaurantIndex, setSelectedRestaurantIndex] = useState(0);
@@ -260,7 +262,7 @@ function LandingPage() {
 		return (
 			<Navigate
 				to="/restaurants"
-				search={getInstalledShellSearch()}
+				search={getInstalledNavigationSearch(location.searchStr)}
 				replace
 			/>
 		);

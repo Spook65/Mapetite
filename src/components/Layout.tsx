@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAuthState } from "@/hooks/use-auth-api";
 import { getAccountFirstName, getAccountInitials } from "@/lib/account-display";
-import { isInstalledShellSearch } from "@/lib/installed-shell";
+import { isInstalledPresentationSearch } from "@/lib/installed-shell";
 import { cn } from "@/lib/utils";
 import { Link, useLocation } from "@tanstack/react-router";
 import {
@@ -69,7 +69,9 @@ export function Layout({ children }: LayoutProps) {
 				: "Search";
 	const isAdaptiveShellPreview =
 		new URLSearchParams(location.searchStr).get("ui") === "adaptive-shell";
-	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
+	const isInstalledShellPreview = isInstalledPresentationSearch(
+		location.searchStr,
+	);
 
 	const closeMobileMenu = () => setIsMobileMenuOpen(false);
 	const closeMobileMenuForTransition = () => {

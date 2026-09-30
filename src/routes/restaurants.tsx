@@ -26,7 +26,10 @@ import {
 	shouldShowInstalledQualifiers,
 	shouldShowInstalledSearchEntry,
 } from "@/lib/installed-search";
-import { getInstalledShellSearch } from "@/lib/installed-shell";
+import {
+	getInstalledRouteSearch,
+	isInstalledPresentation,
+} from "@/lib/installed-shell";
 import {
 	clearRecentSearches,
 	formatRecentSearchResultCount,
@@ -621,11 +624,14 @@ function isExpectedLocationError(error: unknown) {
 
 function RestaurantSearchPage() {
 	const { city: searchCity, ui } = Route.useSearch();
-	const isInstalledShellPreview = ui === "installed-shell";
+	const isInstalledShellPreview = isInstalledPresentation({ ui });
 	const isAdaptiveShellPreview = ui === "adaptive-shell" || isInstalledShellPreview;
 	const isAdaptiveCardPreview = ui === "adaptive-card" || isAdaptiveShellPreview;
 	const installedDetailSearch = isInstalledShellPreview
-		? getInstalledShellSearch(searchCity ? { city: searchCity } : undefined)
+		? getInstalledRouteSearch(
+				ui,
+				searchCity ? { city: searchCity } : undefined,
+			)
 		: undefined;
 
 	// Global state from Zustand store
@@ -3308,6 +3314,7 @@ function RestaurantSearchPage() {
 											searchCenterLabel={searchCenterLabel || null}
 											onSelectRestaurant={handleSelectRestaurant}
 											onClose={() => setIsMapOpen(false)}
+											isInstalledPresentation={isInstalledShellPreview}
 											restaurantDetailSearch={installedDetailSearch}
 										/>
 									</Suspense>
@@ -3824,6 +3831,7 @@ function RestaurantSearchPage() {
 												searchCenterLabel={searchCenterLabel || null}
 												onSelectRestaurant={handleSelectRestaurant}
 												onClose={() => setIsMapOpen(false)}
+												isInstalledPresentation={isInstalledShellPreview}
 												restaurantDetailSearch={installedDetailSearch}
 											/>
 										</Suspense>

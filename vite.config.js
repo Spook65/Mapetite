@@ -9,11 +9,13 @@ import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import { creaoPlugins } from "./config/vite/creao-plugin.mjs";
 import { mockApiPlugin } from "./config/vite/mock-api-plugin.mjs";
 
+const tenantId = process.env.TENANT_ID || "";
+
 // https://vitejs.dev/config/
-export default defineConfig({
-	base: process.env.TENANT_ID ? `/${process.env.TENANT_ID}/` : "/",
+const webConfig = {
+	base: tenantId ? `/${tenantId}/` : "/",
 	define: {
-		"import.meta.env.TENANT_ID": JSON.stringify(process.env.TENANT_ID || ""),
+		"import.meta.env.TENANT_ID": JSON.stringify(tenantId),
 	},
 	plugins: [
 		...creaoPlugins(),
@@ -21,9 +23,7 @@ export default defineConfig({
 		TanStackRouterVite({
 			autoCodeSplitting: false, // affects pick-n-edit feature. disabled for now.
 		}),
-		viteReact({
-			
-		}),
+		viteReact({}),
 		svgr(),
 		tailwindcss(),
 	],
@@ -48,4 +48,16 @@ export default defineConfig({
 	build: {
 		chunkSizeWarningLimit: 1500,
 	},
-});
+};
+
+export default defineConfig(({ mode }) =>
+	mode === "native"
+		? {
+				...webConfig,
+				base: "/",
+				define: {
+					"import.meta.env.TENANT_ID": JSON.stringify(""),
+				},
+			}
+		: webConfig,
+);

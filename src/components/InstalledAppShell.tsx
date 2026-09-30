@@ -1,7 +1,7 @@
 import { MapetiteFooter } from "@/components/MapetiteFooter";
 import {
 	getInstalledDestination,
-	getInstalledShellSearch,
+	getInstalledNavigationSearch,
 	type InstalledDestination,
 } from "@/lib/installed-shell";
 import { cn } from "@/lib/utils";
@@ -50,7 +50,7 @@ export function InstalledAppShell({ children }: InstalledAppShellProps) {
 							<Link
 								key={destination.id}
 								to={destination.path}
-								search={getInstalledShellSearch()}
+								search={getInstalledNavigationSearch(location.searchStr)}
 								aria-current={isActive ? "page" : undefined}
 								className={cn(
 									"mapetite-installed-bottom-nav-link",

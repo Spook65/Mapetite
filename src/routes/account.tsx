@@ -6,8 +6,8 @@ import { useAuthState } from "@/hooks/use-auth-api";
 import { useFavorites } from "@/hooks/use-favorites";
 import { getAccountInitials } from "@/lib/account-display";
 import {
-	getInstalledShellSearch,
-	isInstalledShellSearch,
+	getInstalledNavigationSearch,
+	isInstalledPresentationSearch,
 } from "@/lib/installed-shell";
 import { createFileRoute, Link, useLocation } from "@tanstack/react-router";
 import { Heart, LogOut, Search, ShieldCheck, UserRound } from "lucide-react";
@@ -19,7 +19,9 @@ export const Route = createFileRoute("/account")({
 
 function AccountPage() {
 	const location = useLocation();
-	const isInstalledShellPreview = isInstalledShellSearch(location.searchStr);
+	const isInstalledShellPreview = isInstalledPresentationSearch(
+		location.searchStr,
+	);
 	const { isAuthenticated, isLoading, profile, logout } = useAuthState();
 	const [isLogInOpen, setIsLogInOpen] = useState(false);
 	const [isSignUpOpen, setIsSignUpOpen] = useState(false);
@@ -102,11 +104,9 @@ function AccountPage() {
 										>
 											<Link
 												to="/restaurants"
-												search={
-													isInstalledShellPreview
-														? getInstalledShellSearch()
-														: undefined
-												}
+												search={getInstalledNavigationSearch(
+													location.searchStr,
+												)}
 											>
 												<Search className="mr-2 size-4" />
 												Search restaurants
@@ -172,11 +172,9 @@ function AccountPage() {
 											>
 												<Link
 													to="/saved"
-													search={
-														isInstalledShellPreview
-															? getInstalledShellSearch()
-															: undefined
-													}
+													search={getInstalledNavigationSearch(
+														location.searchStr,
+													)}
 												>
 													<Heart className="mr-2 size-4" />
 													View Saved Places
@@ -189,11 +187,9 @@ function AccountPage() {
 											>
 												<Link
 													to="/restaurants"
-													search={
-														isInstalledShellPreview
-															? getInstalledShellSearch()
-															: undefined
-													}
+													search={getInstalledNavigationSearch(
+														location.searchStr,
+													)}
 												>
 													<Search className="mr-2 size-4" />
 													Search restaurants

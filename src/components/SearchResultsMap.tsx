@@ -43,9 +43,10 @@ interface SearchResultsMapProps {
 	searchCenterLabel?: string | null;
 	onSelectRestaurant: (restaurantId: string) => void;
 	onClose: () => void;
+	isInstalledPresentation?: boolean;
 	restaurantDetailSearch?: {
 		city?: string;
-		ui: "installed-shell";
+		ui?: "installed-shell";
 	};
 }
 
@@ -148,6 +149,7 @@ export function SearchResultsMap({
 	searchCenterLabel,
 	onSelectRestaurant,
 	onClose,
+	isInstalledPresentation = false,
 	restaurantDetailSearch,
 }: SearchResultsMapProps) {
 	const router = useRouter();
@@ -166,8 +168,6 @@ export function SearchResultsMap({
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [mapError, setMapError] = useState<string | null>(null);
 	const [isOverviewVisible, setIsOverviewVisible] = useState(true);
-	const isInstalledPresentation =
-		restaurantDetailSearch?.ui === "installed-shell";
 	const validDistanceOrigin =
 		distanceOrigin &&
 		hasValidMapCoordinate(distanceOrigin.latitude, distanceOrigin.longitude)

@@ -1,5 +1,6 @@
 {
   "name": "mapetite",
+  "version": "1.0.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.33.2",
@@ -11,6 +12,7 @@
     "dev": "vite --port 3000",
     "start": "vite --port 3000",
     "build": "pnpm run typecheck && vite build",
+    "build:ios": "pnpm run typecheck && vite build --mode native",
     "serve": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
@@ -26,6 +28,8 @@
     "prepare": "if [ -f ./bin/setup-githooks.sh ]; then ./bin/setup-githooks.sh; fi"
   },
   "dependencies": {
+    "@capacitor/core": "^8.5.2",
+    "@capacitor/ios": "^8.5.2",
     "@fortawesome/fontawesome-svg-core": "^7.0.0",
     "@fortawesome/free-brands-svg-icons": "^7.0.0",
     "@fortawesome/react-fontawesome": "^0.2.3",
@@ -96,6 +100,7 @@
     "@babel/plugin-transform-react-jsx": "^7.27.1",
     "@babel/plugin-transform-react-jsx-development": "^7.27.1",
     "@biomejs/biome": "1.9.4",
+    "@capacitor/cli": "^8.5.2",
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
