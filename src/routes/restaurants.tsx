@@ -3315,6 +3315,9 @@ function RestaurantSearchPage() {
 											onSelectRestaurant={handleSelectRestaurant}
 											onClose={() => setIsMapOpen(false)}
 											isInstalledPresentation={isInstalledShellPreview}
+											suppressRestaurantPopups={
+												isInstalledShellPreview && isAdaptiveSearchCompact
+											}
 											restaurantDetailSearch={installedDetailSearch}
 										/>
 									</Suspense>
@@ -3832,6 +3835,9 @@ function RestaurantSearchPage() {
 												onSelectRestaurant={handleSelectRestaurant}
 												onClose={() => setIsMapOpen(false)}
 												isInstalledPresentation={isInstalledShellPreview}
+												suppressRestaurantPopups={
+													isInstalledShellPreview && isAdaptiveSearchCompact
+												}
 												restaurantDetailSearch={installedDetailSearch}
 											/>
 										</Suspense>

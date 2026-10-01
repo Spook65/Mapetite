@@ -44,6 +44,7 @@ interface SearchResultsMapProps {
 	onSelectRestaurant: (restaurantId: string) => void;
 	onClose: () => void;
 	isInstalledPresentation?: boolean;
+	suppressRestaurantPopups?: boolean;
 	restaurantDetailSearch?: {
 		city?: string;
 		ui?: "installed-shell";
@@ -150,6 +151,7 @@ export function SearchResultsMap({
 	onSelectRestaurant,
 	onClose,
 	isInstalledPresentation = false,
+	suppressRestaurantPopups = false,
 	restaurantDetailSearch,
 }: SearchResultsMapProps) {
 	const router = useRouter();
@@ -164,6 +166,8 @@ export function SearchResultsMap({
 	const popupRef = useRef<Popup | null>(null);
 	const popupPinIdRef = useRef<string | null>(null);
 	const originPopupRef = useRef<Popup | null>(null);
+	const suppressRestaurantPopupsRef = useRef(suppressRestaurantPopups);
+	suppressRestaurantPopupsRef.current = suppressRestaurantPopups;
 	const fittedViewportSignatureRef = useRef<string | null>(null);
 	const [isMapReady, setIsMapReady] = useState(false);
 	const [mapError, setMapError] = useState<string | null>(null);
@@ -339,10 +343,14 @@ export function SearchResultsMap({
 					: "mapetite-map-marker";
 			markerElement.setAttribute("aria-label", `Select ${pin.name}`);
 			const showPopup = () => {
-				markerElement.classList.add("is-hovered");
 				originPopupRef.current?.remove();
 				originPopupRef.current = null;
 				popupRef.current?.remove();
+				popupRef.current = null;
+				popupPinIdRef.current = null;
+				if (suppressRestaurantPopupsRef.current) return;
+
+				markerElement.classList.add("is-hovered");
 				const popup = buildPopup(
 					pin,
 					getRestaurantDetailHref(pin.id),
@@ -394,6 +402,17 @@ export function SearchResultsMap({
 		getRestaurantDetailHref,
 		openRestaurantDetails,
 	]);
+
+	useEffect(() => {
+		if (!suppressRestaurantPopups) return;
+
+		popupRef.current?.remove();
+		popupRef.current = null;
+		popupPinIdRef.current = null;
+		for (const marker of restaurantMarkersRef.current.values()) {
+			marker.getElement().classList.remove("is-hovered");
+		}
+	}, [suppressRestaurantPopups]);
 
 	useEffect(() => {
 		for (const [restaurantId, marker] of restaurantMarkersRef.current) {
