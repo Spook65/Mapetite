@@ -3617,6 +3617,12 @@ body:has(.mapetite-adaptive-shell-preview)
 	height: 44px;
 }
 
+.mapetite-map-frame .maplibregl-ctrl-attrib-button {
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 24px 24px;
+}
+
 .mapetite-installed-shell
 	.mapetite-map-frame
 	.maplibregl-ctrl-attrib.maplibregl-compact {
