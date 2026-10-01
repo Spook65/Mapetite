@@ -25,6 +25,10 @@ html {
 	padding-bottom: var(--mapetite-installed-nav-height);
 }
 
+.mapetite-installed-shell-main {
+	padding-top: env(safe-area-inset-top);
+}
+
 .mapetite-installed-bottom-nav {
 	position: fixed;
 	z-index: 40;
