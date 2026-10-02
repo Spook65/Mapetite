@@ -124,6 +124,11 @@ interface RestaurantSearchState {
 	// Search results
 	restaurants: Restaurant[];
 	setRestaurants: (restaurants: Restaurant[]) => void;
+	isSearching: boolean;
+	activeSearchRequestId: number;
+	beginRestaurantSearch: () => number;
+	isCurrentRestaurantSearch: (requestId: number) => boolean;
+	finishRestaurantSearch: (requestId: number) => boolean;
 
 	// Category filters
 	selectedCategories: Set<string>;
@@ -169,6 +174,8 @@ const initialState = {
 		city: "",
 	},
 	restaurants: [],
+	isSearching: false,
+	activeSearchRequestId: 0,
 	selectedCategories: new Set<string>(),
 	priceFilter: [],
 	minRating: 0,
@@ -203,7 +210,7 @@ const initialState = {
  */
 export const useRestaurantSearchStore = create<RestaurantSearchState>()(
 	persist(
-		(set) => ({
+		(set, get) => ({
 			...initialState,
 
 			// Location setters
@@ -224,6 +231,18 @@ export const useRestaurantSearchStore = create<RestaurantSearchState>()(
 
 			// Restaurant results
 			setRestaurants: (restaurants) => set({ restaurants }),
+			beginRestaurantSearch: () => {
+				const requestId = get().activeSearchRequestId + 1;
+				set({ activeSearchRequestId: requestId, isSearching: true });
+				return requestId;
+			},
+			isCurrentRestaurantSearch: (requestId) =>
+				get().activeSearchRequestId === requestId,
+			finishRestaurantSearch: (requestId) => {
+				if (get().activeSearchRequestId !== requestId) return false;
+				set({ isSearching: false });
+				return true;
+			},
 
 			// Category filters
 			toggleCategory: (category) =>

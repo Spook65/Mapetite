@@ -644,6 +644,16 @@ function RestaurantSearchPage() {
 	const setRestaurants = useRestaurantSearchStore(
 		(state) => state.setRestaurants,
 	);
+	const isSearching = useRestaurantSearchStore((state) => state.isSearching);
+	const beginRestaurantSearch = useRestaurantSearchStore(
+		(state) => state.beginRestaurantSearch,
+	);
+	const isCurrentRestaurantSearch = useRestaurantSearchStore(
+		(state) => state.isCurrentRestaurantSearch,
+	);
+	const finishRestaurantSearch = useRestaurantSearchStore(
+		(state) => state.finishRestaurantSearch,
+	);
 	const selectedCategories = useRestaurantSearchStore(
 		(state) => state.selectedCategories,
 	);
@@ -720,7 +730,6 @@ function RestaurantSearchPage() {
 
 	// Local component state (not persisted)
 	const [isGettingLocation, setIsGettingLocation] = useState(false);
-	const [isSearching, setIsSearching] = useState(false);
 	const [showSlowSearchMessage, setShowSlowSearchMessage] = useState(false);
 	const [isHydratingFavorites, setIsHydratingFavorites] = useState(false);
 	const [isMapOpen, setIsMapOpen] = useState(false);
@@ -734,7 +743,7 @@ function RestaurantSearchPage() {
 	const [adaptiveTransientSurface, setAdaptiveTransientSurface] =
 		useState<AdaptiveTransientSurface>(() =>
 			(isInstalledShellPreview
-				? restaurants.length === 0
+				? restaurants.length === 0 && !isSearching
 				: isAdaptiveShellPreview &&
 						!location.city.trim() &&
 						!location.state.trim() &&
@@ -779,7 +788,8 @@ function RestaurantSearchPage() {
 	const [favoriteSnapshots, setFavoriteSnapshots] = useState<
 		Record<string, Restaurant>
 	>(() => loadFavoriteSnapshotsFromStorage());
-	const activeSearchIdRef = useRef(0);
+	const isExplicitSearchEditRef = useRef(false);
+	const wasSearchingRef = useRef(isSearching);
 	const adaptiveSearchTriggerRef = useRef<HTMLButtonElement>(null);
 	const adaptiveSearchLastTriggerRef = useRef<HTMLButtonElement>(null);
 	const adaptiveSearchCloseRef = useRef<HTMLButtonElement>(null);
@@ -944,6 +954,31 @@ function RestaurantSearchPage() {
 		return () => window.clearTimeout(timeoutId);
 	}, [isSearching]);
 
+	useEffect(() => {
+		const wasSearching = wasSearchingRef.current;
+		wasSearchingRef.current = isSearching;
+		if (
+			!isInstalledShellPreview ||
+			!wasSearching ||
+			isSearching ||
+			isExplicitSearchEditRef.current
+		) {
+			return;
+		}
+
+		setAdaptiveTransientSurface((current) => {
+			if (restaurants.length > 0) {
+				return current === "search" ? null : current;
+			}
+			return current ?? "search";
+		});
+	}, [isInstalledShellPreview, isSearching, restaurants.length]);
+
+	const beginSearchLifecycle = useCallback(() => {
+		isExplicitSearchEditRef.current = false;
+		return beginRestaurantSearch();
+	}, [beginRestaurantSearch]);
+
 	const handleClearLocation = useCallback(() => {
 		setLocation({ city: "", state: "", country: "" });
 		setMapUserLocation(null);
@@ -988,7 +1023,7 @@ function RestaurantSearchPage() {
 	useEffect(() => {
 		if (searchCity) {
 			(async () => {
-				const searchId = ++activeSearchIdRef.current;
+				const searchId = beginSearchLifecycle();
 				const requestedLocation = {
 					city: searchCity,
 					state: "",
@@ -1000,7 +1035,7 @@ function RestaurantSearchPage() {
 				try {
 					const { restaurants: results, location: resolvedLocation } =
 						await searchRestaurants(requestedLocation, []);
-					if (searchId !== activeSearchIdRef.current) {
+					if (!isCurrentRestaurantSearch(searchId)) {
 						return;
 					}
 					const nextLocation = resolvedLocation ?? requestedLocation;
@@ -1008,10 +1043,15 @@ function RestaurantSearchPage() {
 					setRestaurants(results);
 					setShowFavorites(false);
 					setRestoredSearchLabel(null);
-					if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
+					if (
+						isInstalledShellPreview &&
+						!isExplicitSearchEditRef.current
+					) {
+						setAdaptiveTransientSurface(null);
+					}
 					recordSuccessfulTypedSearch(nextLocation, results);
 				} catch (error) {
-					if (searchId !== activeSearchIdRef.current) {
+					if (!isCurrentRestaurantSearch(searchId)) {
 						return;
 					}
 					if (!isExpectedPlaceValidationError(error)) {
@@ -1028,10 +1068,20 @@ function RestaurantSearchPage() {
 					toast.error(getSearchErrorTitle(error), {
 						description: getSearchErrorDescription(error),
 					});
+				} finally {
+					finishRestaurantSearch(searchId);
 				}
 			})();
 		}
-	}, [searchCity, setLocation, setRestaurants, setShowFavorites]);
+	}, [
+		beginSearchLifecycle,
+		finishRestaurantSearch,
+		isCurrentRestaurantSearch,
+		searchCity,
+		setLocation,
+		setRestaurants,
+		setShowFavorites,
+	]);
 
 	const handleSearch = async () => {
 		if (!location.city) {
@@ -1045,9 +1095,8 @@ function RestaurantSearchPage() {
 			country: location.country,
 			categories: selectedCategories.size,
 		});
-		const searchId = ++activeSearchIdRef.current;
+		const searchId = beginSearchLifecycle();
 		suppressedSuggestionQueryRef.current = location.city.trim();
-		setIsSearching(true);
 		setMapUserLocation(null);
 		setRestaurants([]);
 		setRestoredSearchLabel(null);
@@ -1055,14 +1104,16 @@ function RestaurantSearchPage() {
 		try {
 			const { restaurants: results, location: resolvedLocation } =
 				await searchRestaurants(location, Array.from(selectedCategories));
-			if (searchId !== activeSearchIdRef.current) {
+			if (!isCurrentRestaurantSearch(searchId)) {
 				return;
 			}
 			const nextLocation = resolvedLocation ?? location;
 			setLocation(nextLocation);
 			setRestaurants(results);
 			setShowFavorites(false);
-			if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
+			if (isInstalledShellPreview && !isExplicitSearchEditRef.current) {
+				setAdaptiveTransientSurface(null);
+			}
 			recordSuccessfulTypedSearch(nextLocation, results);
 			debugSearchPerf("results_render_queued", {
 				total_ms: Math.round(performance.now() - startedAt),
@@ -1070,6 +1121,9 @@ function RestaurantSearchPage() {
 				resolvedCity: resolvedLocation?.city ?? location.city,
 			});
 		} catch (error) {
+			if (!isCurrentRestaurantSearch(searchId)) {
+				return;
+			}
 			if (!isExpectedPlaceValidationError(error)) {
 				console.error("Search failed", error);
 			}
@@ -1089,9 +1143,7 @@ function RestaurantSearchPage() {
 				description: getSearchErrorDescription(error),
 			});
 		} finally {
-			if (searchId === activeSearchIdRef.current) {
-				setIsSearching(false);
-			}
+			finishRestaurantSearch(searchId);
 		}
 	};
 
@@ -1155,7 +1207,7 @@ function RestaurantSearchPage() {
 	const handleGetCurrentLocation = async () => {
 		setIsGettingLocation(true);
 		setMapUserLocation(null);
-		const searchId = ++activeSearchIdRef.current;
+		const searchId = beginSearchLifecycle();
 
 		try {
 			const position = await getCurrentPositionWithTimeout();
@@ -1177,7 +1229,7 @@ function RestaurantSearchPage() {
 			setRestaurants([]);
 			const { restaurants: results, location: resolvedLocation } =
 				await searchRestaurants(resolved, Array.from(selectedCategories));
-			if (searchId !== activeSearchIdRef.current) {
+			if (!isCurrentRestaurantSearch(searchId)) {
 				return;
 			}
 			setMapUserLocation({ latitude, longitude });
@@ -1185,8 +1237,13 @@ function RestaurantSearchPage() {
 			setRestaurants(results);
 			setShowFavorites(false);
 			setRestoredSearchLabel(null);
-			if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
+			if (isInstalledShellPreview && !isExplicitSearchEditRef.current) {
+				setAdaptiveTransientSurface(null);
+			}
 		} catch (error) {
+			if (!isCurrentRestaurantSearch(searchId)) {
+				return;
+			}
 			if (!isExpectedLocationError(error)) {
 				console.error("Geolocation search failed", error);
 			}
@@ -1194,6 +1251,7 @@ function RestaurantSearchPage() {
 				description: getLocationErrorDescription(error),
 			});
 		} finally {
+			finishRestaurantSearch(searchId);
 			setIsGettingLocation(false);
 		}
 	};
@@ -1204,13 +1262,12 @@ function RestaurantSearchPage() {
 			return;
 		}
 
-		const searchId = ++activeSearchIdRef.current;
-		setIsSearching(true);
+		const searchId = beginSearchLifecycle();
 
 		try {
 			const { restaurants: results, location: resolvedLocation } =
 				await searchRestaurants(location, Array.from(selectedCategories));
-			if (searchId !== activeSearchIdRef.current) {
+			if (!isCurrentRestaurantSearch(searchId)) {
 				return;
 			}
 			const nextLocation = resolvedLocation ?? location;
@@ -1224,6 +1281,9 @@ function RestaurantSearchPage() {
 					"Refreshes current provider data. Results may stay the same.",
 			});
 		} catch (error) {
+			if (!isCurrentRestaurantSearch(searchId)) {
+				return;
+			}
 			if (!isExpectedPlaceValidationError(error)) {
 				console.error("Search refresh failed", error);
 			}
@@ -1231,9 +1291,7 @@ function RestaurantSearchPage() {
 				description: getSearchErrorDescription(error),
 			});
 		} finally {
-			if (searchId === activeSearchIdRef.current) {
-				setIsSearching(false);
-			}
+			finishRestaurantSearch(searchId);
 		}
 	};
 
@@ -1244,25 +1302,26 @@ function RestaurantSearchPage() {
 			country: search.country,
 		};
 		const startedAt = performance.now();
-		const searchId = ++activeSearchIdRef.current;
+		const searchId = beginSearchLifecycle();
 		setLocation(requestedLocation);
 		setMapUserLocation(null);
 		setRestaurants([]);
 		setSelectedRestaurantId(null);
 		setRestoredSearchLabel(null);
-		setIsSearching(true);
 
 		try {
 			const { restaurants: results, location: resolvedLocation } =
 				await searchRestaurants(requestedLocation, Array.from(selectedCategories));
-			if (searchId !== activeSearchIdRef.current) {
+			if (!isCurrentRestaurantSearch(searchId)) {
 				return;
 			}
 			const nextLocation = resolvedLocation ?? requestedLocation;
 			setLocation(nextLocation);
 			setRestaurants(results);
 			setShowFavorites(false);
-			if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
+			if (isInstalledShellPreview && !isExplicitSearchEditRef.current) {
+				setAdaptiveTransientSurface(null);
+			}
 			recordSuccessfulTypedSearch(nextLocation, results);
 			debugSearchPerf("results_render_queued", {
 				total_ms: Math.round(performance.now() - startedAt),
@@ -1270,6 +1329,9 @@ function RestaurantSearchPage() {
 				resolvedCity: resolvedLocation?.city ?? requestedLocation.city,
 			});
 		} catch (error) {
+			if (!isCurrentRestaurantSearch(searchId)) {
+				return;
+			}
 			if (!isExpectedPlaceValidationError(error)) {
 				console.error("Search failed", error);
 			}
@@ -1277,9 +1339,7 @@ function RestaurantSearchPage() {
 				description: getSearchErrorDescription(error),
 			});
 		} finally {
-			if (searchId === activeSearchIdRef.current) {
-				setIsSearching(false);
-			}
+			finishRestaurantSearch(searchId);
 		}
 	};
 
@@ -1298,7 +1358,7 @@ function RestaurantSearchPage() {
 			return;
 		}
 
-		const searchId = ++activeSearchIdRef.current;
+		const searchId = beginSearchLifecycle();
 		setLocation(snapshot.location);
 		setRestaurants(snapshot.restaurants);
 		setShowFavorites(false);
@@ -1306,21 +1366,25 @@ function RestaurantSearchPage() {
 		setMapUserLocation(null);
 		setRestoredSearchLabel(snapshot.search.label);
 		setLastSearchSnapshot(snapshot);
-		setIsSearching(true);
 
 		try {
 			const { restaurants: results, location: resolvedLocation } =
 				await searchRestaurants(snapshot.location, Array.from(selectedCategories));
-			if (searchId !== activeSearchIdRef.current) {
+			if (!isCurrentRestaurantSearch(searchId)) {
 				return;
 			}
 			const nextLocation = resolvedLocation ?? snapshot.location;
 			setLocation(nextLocation);
 			setRestaurants(results);
 			setRestoredSearchLabel(null);
-			if (isInstalledShellPreview) setAdaptiveTransientSurface(null);
+			if (isInstalledShellPreview && !isExplicitSearchEditRef.current) {
+				setAdaptiveTransientSurface(null);
+			}
 			recordSuccessfulTypedSearch(nextLocation, results);
 		} catch (error) {
+			if (!isCurrentRestaurantSearch(searchId)) {
+				return;
+			}
 			if (!isExpectedPlaceValidationError(error)) {
 				console.error("Restored search refresh failed", error);
 			}
@@ -1329,9 +1393,7 @@ function RestaurantSearchPage() {
 					"We could not refresh current provider data. These results may be outdated.",
 			});
 		} finally {
-			if (searchId === activeSearchIdRef.current) {
-				setIsSearching(false);
-			}
+			finishRestaurantSearch(searchId);
 		}
 	};
 
@@ -1806,6 +1868,7 @@ function RestaurantSearchPage() {
 	const closeAdaptiveTransientSurface = useCallback(
 		(restoreFocus = true) => {
 			if (adaptiveTransientSurface === "search") {
+				isExplicitSearchEditRef.current = false;
 				shouldRestoreAdaptiveSearchFocusRef.current = restoreFocus;
 				setAdaptiveTransientSurface(null);
 				if (
@@ -1842,6 +1905,9 @@ function RestaurantSearchPage() {
 	const toggleAdaptiveTransientSurface = useCallback(
 		(surface: Exclude<AdaptiveTransientSurface, null>) => {
 			setAdaptiveTransientSurface((current) => {
+				if (surface === "search") {
+					isExplicitSearchEditRef.current = current !== "search";
+				}
 				if (current === "filters" && surface === "search") {
 					shouldRestoreAdaptiveFilterFocusRef.current = false;
 				}
@@ -2027,9 +2093,11 @@ function RestaurantSearchPage() {
 							modal={!isInstalledShellPreview && isAdaptiveSearchCompact}
 							onOpenChange={(open) => {
 								if (open) {
+									isExplicitSearchEditRef.current = true;
 									shouldRestoreAdaptiveSearchFocusRef.current = true;
 									setAdaptiveTransientSurface("search");
 								} else {
+									isExplicitSearchEditRef.current = false;
 									setAdaptiveTransientSurface((current) =>
 										current === "search" ? null : current,
 									);
