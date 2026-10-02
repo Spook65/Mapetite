@@ -3812,6 +3812,7 @@ function RestaurantSearchPage() {
 										!isMapOpen && "is-placeholder",
 										selectedRestaurant &&
 											adaptiveTransientSurface === null &&
+											!(isInstalledShellPreview && isAdaptiveSearchCompact) &&
 											"has-compact-selection",
 									)}
 								>
