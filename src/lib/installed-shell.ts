@@ -24,7 +24,9 @@ export function isInstalledPresentation({
 	ui?: unknown;
 	isNativePlatform?: boolean;
 }) {
-	return isNativePlatform || ui === INSTALLED_SHELL_UI;
+	return (
+		isNativePlatform || (ui !== "adaptive-shell" && ui !== "adaptive-card")
+	);
 }
 
 export function isInstalledPresentationSearch(

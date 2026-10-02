@@ -16,13 +16,19 @@ describe("installed shell routing", () => {
 		expect(isInstalledShellSearch("")).toBe(false);
 	});
 
-	it("keeps normal and adaptive browser presentations outside the installed shell", () => {
+	it("uses the installed presentation by default while preserving adaptive previews", () => {
 		expect(
 			isInstalledPresentation({ ui: undefined, isNativePlatform: false }),
-		).toBe(false);
+		).toBe(true);
 		expect(
 			isInstalledPresentation({
 				ui: "adaptive-shell",
+				isNativePlatform: false,
+			}),
+		).toBe(false);
+		expect(
+			isInstalledPresentation({
+				ui: "adaptive-card",
 				isNativePlatform: false,
 			}),
 		).toBe(false);
